@@ -8,4 +8,84 @@
     android:layout_height="match_parent"
     tools:context="com.cinggl.cinggl.ui.SignInActivity">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="179dp">
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="233dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="350dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:background="#ECEFF1"
+            android:layout_height="200dp">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:inputType="textPersonName"
+                android:ems="10"
+                android:id="@+id/usernameEditText"
+                android:layout_marginTop="5dp"
+                android:hint="Name"
+                android:singleLine="true" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:inputType="textPassword"
+                android:ems="10"
+                android:id="@+id/passwordEditText"
+                android:layout_marginTop="20dp"
+                android:hint="Password"
+                android:singleLine="true" />
+
+            <Button
+                android:text="Sign In"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/sIgnInButton"
+                android:textAlignment="center"
+                android:textAllCaps="false"
+                android:textSize="17sp"
+                android:layout_marginTop="15dp"
+                android:background="#0077b5" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:text="Don't have an account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/signUpDescriptionTextView"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="22dp"
+            android:layout_marginStart="22dp"
+            android:textStyle="normal|bold|italic"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:text="Sign Up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/signUpTextView"
+            android:layout_alignParentTop="true"
+            android:textColor="#0077b5"
+            android:textStyle="normal|bold" />
+    </RelativeLayout>
 </LinearLayout>

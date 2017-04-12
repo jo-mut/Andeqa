@@ -20,8 +20,8 @@
         <activity
             android:name=".ui.HomeActivity"
             android:label="Home"
-            android:theme="@style/AppTheme">
-        </activity>
+            android:theme="@style/AppTheme"></activity>
+        <activity android:name=".ui.SingUpWithActivity"></activity>
     </application>
 
 </manifest>
