@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.cinggl.cinggl.ui.MainActivity">
+
+    <TextView
+        android:text="Cinggl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="185dp"
+        android:id="@+id/appNameTextView"
+        android:textStyle="normal|bold"
+        android:textSize="40sp"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:text="Empowering Individuals"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="61dp"
+        android:id="@+id/mottoTextView"
+        android:layout_alignTop="@+id/appNameTextView"
+        android:layout_centerHorizontal="true"
+        android:textSize="16sp"
+        android:textColor="@android:color/black" />
+
+    <Button
+        android:text="Home"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/moveToHome"
+        android:textStyle="normal|bold"
+        android:background="@android:color/darker_gray" />
+
+</RelativeLayout>

@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "147173305312",
+    "firebase_url": "https://cinggl-9f41a.firebaseio.com",
+    "project_id": "cinggl-9f41a",
+    "storage_bucket": "cinggl-9f41a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:147173305312:android:0e8a8cfd54eee9cb",
+        "android_client_info": {
+          "package_name": "com.cinggl.cinggl"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "147173305312-jg5lcsa983he31plf7ag0fjg2eae8c8t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9MP8B3SlZyUx4wqyboX26iGd27dFikL0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
