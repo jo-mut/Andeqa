@@ -5,11 +5,11 @@ import android.os.Bundle;
 
 import com.cinggl.cinggl.R;
 
-public class SingUpWithActivity extends AppCompatActivity {
+public class AccountActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sing_up_with);
+        setContentView(R.layout.activity_account);
     }
 }

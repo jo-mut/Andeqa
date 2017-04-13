@@ -16,12 +16,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.SingUpActivity" />
-        <activity android:name=".ui.SignInActivity" />
         <activity
             android:name=".ui.HomeActivity"
             android:label="Home"
-            android:theme="@style/AppTheme"></activity>
-        <activity android:name=".ui.SingUpWithActivity"></activity>
+            android:theme="@style/AppTheme" />
+        <activity android:name=".ui.SignInActivity" />
+        <activity android:name=".ui.AccountActivity"></activity>
     </application>
 
 </manifest>
