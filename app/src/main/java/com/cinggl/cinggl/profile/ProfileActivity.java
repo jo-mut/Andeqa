@@ -1,15 +1,15 @@
-package com.cinggl.cinggl.ui;
+package com.cinggl.cinggl.profile;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.cinggl.cinggl.R;
 
-public class SingUpActivity extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up);
+        setContentView(R.layout.activity_profile);
     }
 }

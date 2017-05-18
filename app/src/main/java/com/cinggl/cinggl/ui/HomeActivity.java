@@ -1,8 +1,8 @@
 package com.cinggl.cinggl.ui;
 
-import android.support.design.widget.TabLayout;
+import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -20,8 +20,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.camera.CreateCingleActivity;
 
-public class HomeActivity extends AppCompatActivity {
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
+public class HomeActivity extends AppCompatActivity implements View.OnClickListener{
+    @Bind(R.id.fab) FloatingActionButton mFab;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -42,6 +47,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        ButterKnife.bind(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -56,14 +62,8 @@ public class HomeActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
+        mFab.setOnClickListener(this);
+
 
     }
 
@@ -71,7 +71,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
+        getMenuInflater().inflate(R.menu.menu_home_activity2, menu);
         return true;
     }
 
@@ -137,21 +137,20 @@ public class HomeActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-           switch (position){
-               case 0:
-                   CingleOut cingleOut = new CingleOut();
-                   return cingleOut;
-               case 1:
-                   Cingles cingles = new Cingles();
-                   return cingles;
-           }
+            switch (position){
+                case 0:
+                    CingleOut cingleOut = new CingleOut();
+                    return cingleOut;
+                case 1:
+                    Cingles cingles = new Cingles();
+                    return cingles;
+            }
             return null;
         }
 
         @Override
         public int getCount() {
-            // Show 2 total pages.
+            // Show 3 total pages.
             return 2;
         }
 
@@ -162,8 +161,18 @@ public class HomeActivity extends AppCompatActivity {
                     return "Cingle Out";
                 case 1:
                     return "Cingles";
+
             }
             return null;
+        }
+    }
+
+    @Override
+    public void onClick(View v){
+        if(v == mFab){
+            Intent intent = new Intent(HomeActivity.this, CreateCingleActivity.class);
+            startActivity(intent);
+
         }
     }
 }

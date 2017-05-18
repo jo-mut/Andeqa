@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_cingle_creation"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.cinggl.cinggl.camera.CreateCingleActivity"
+    android:padding="3dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="39dp">
+
+        <TextView
+            android:text="Create your Cingle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:id="@+id/createCingleTextView"
+            android:textSize="16sp"
+            android:textStyle="normal|bold"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:paddingLeft="3dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/nextTextView"
+            android:textStyle="normal|bold"
+            android:textSize="16sp"
+            android:padding="5dp"
+            android:text="Next"
+            android:layout_alignBaseline="@+id/createCingleTextView"
+            android:layout_alignBottom="@+id/createCingleTextView"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+    </RelativeLayout>
+
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="350sp">
+
+        <ImageView
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/takenImageView"
+            android:scaleType="centerCrop"
+            android:layout_width="match_parent"
+            app:srcCompat="@color/transparentColor" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="140dp">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </android.support.v7.widget.RecyclerView>
+
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            app:srcCompat="@drawable/ic_photo_black_24dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="59dp"
+            android:layout_marginStart="59dp"
+            android:id="@+id/galleryImageView"
+            android:scaleType="centerCrop" />
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            app:srcCompat="@drawable/ic_photo_camera_black_24dp"
+            android:layout_alignTop="@+id/galleryImageView"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="73dp"
+            android:layout_marginEnd="73dp"
+            android:id="@+id/cameraImageView" />
+    </RelativeLayout>
+
+</LinearLayout>

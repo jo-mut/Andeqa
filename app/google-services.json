@@ -1,33 +1,27 @@
 {
   "project_info": {
-    "project_number": "185162422150",
-    "project_id": "cinggl-164409"
+    "project_number": "300546400034",
+    "firebase_url": "https://cinggl-180e0.firebaseio.com",
+    "project_id": "cinggl-180e0",
+    "storage_bucket": "cinggl-180e0.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:185162422150:android:0e8a8cfd54eee9cb",
+        "mobilesdk_app_id": "1:300546400034:android:0e8a8cfd54eee9cb",
         "android_client_info": {
           "package_name": "com.cinggl.cinggl"
         }
       },
       "oauth_client": [
         {
-          "client_id": "185162422150-6utrr926nf9j3mog1sdhqkgfake9oiok.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.cinggl.cinggl",
-            "certificate_hash": "2d3c20de06ef64125667e0b9c3b2567398ad45b6"
-          }
-        },
-        {
-          "client_id": "185162422150-40a9r44939qr6q0tv6svmmpumqtekoco.apps.googleusercontent.com",
+          "client_id": "300546400034-vm12cck4buv2etpjf11i0dsf7thor9po.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAS3A44XInmVvhrhq4XLtDQyK6xP6MCDBI"
+          "current_key": "AIzaSyC61yR-K6OALpJ2XRDwyW84u_b4En9rPT0"
         }
       ],
       "services": {
@@ -39,7 +33,7 @@
           "other_platform_oauth_client": []
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }

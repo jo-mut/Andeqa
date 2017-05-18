@@ -1,100 +1,115 @@
 package com.cinggl.cinggl.models;
 
-import java.util.ArrayList;
+
+import org.parceler.Parcel;
 
 /**
  * Created by J.EL on 4/8/2017.
  */
-
+@Parcel
 public class Cingle {
 
     String title;
     int viewsCount;
-    int cingleHashtagWorth;
-    String cscs;
     String accountUserName;
-    String profileImageUrl;
     String cingleImageUrl;
-
 
     int likesCount;
     int commentsCount;
     int cingleWorth;
 
-
     String description;
-    String slash;
-    String tradeMethod;
+    String moreDescription;
+    private String pushId;
 
-    public Cingle(String title, int viewsCount, int cingleHashtagWorth,
-                  String cscs, String accountUserName, String profileImageUrl,
-                  String cingleImageUrl, int likesCount, int commentsCount,
-                  int cingleWorth, String description, String slash,
-                  String tradeMethod) {
-        this.title = title;
-        this.viewsCount = viewsCount;
-        this.cingleHashtagWorth = cingleHashtagWorth;
-        this.cscs = cscs;
-        this.accountUserName = accountUserName;
-        this.profileImageUrl = profileImageUrl;
+    public Cingle(){
+
+    }
+
+    public Cingle(String cingleImageUrl,
+                  String description, String title) {
         this.cingleImageUrl = cingleImageUrl;
-        this.likesCount = likesCount;
-        this.commentsCount = commentsCount;
-        this.cingleWorth = cingleWorth;
         this.description = description;
-        this.slash = slash;
-        this.tradeMethod = tradeMethod;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public int getViewsCount() {
-        return viewsCount;
-    }
-
-    public int getCingleHashtagWorth() {
-        return cingleHashtagWorth;
-    }
-
-    public String getCscs() {
-        return cscs;
+        this.title = title;
     }
 
     public String getAccountUserName() {
         return accountUserName;
     }
 
+    public void setAccountUserName(String accountUserName) {
+        this.accountUserName = accountUserName;
+    }
+
     public String getCingleImageUrl() {
         return cingleImageUrl;
     }
 
-    public String getProfileImageUrl() {
-        return profileImageUrl;
-    }
-
-    public int getLikesCount() {
-        return likesCount;
-    }
-
-    public int getCommentsCount() {
-        return commentsCount;
+    public void setCingleImageUrl(String cingleImageUrl) {
+        this.cingleImageUrl = cingleImageUrl;
     }
 
     public int getCingleWorth() {
         return cingleWorth;
     }
 
+    public void setCingleWorth(int cingleWorth) {
+        this.cingleWorth = cingleWorth;
+    }
+
+    public int getCommentsCount() {
+        return commentsCount;
+    }
+
+    public void setCommentsCount(int commentsCount) {
+        this.commentsCount = commentsCount;
+    }
+
     public String getDescription() {
         return description;
     }
 
-    public String getSlash() {
-        return slash;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getTradeMethod() {
-        return tradeMethod;
+    public int getLikesCount() {
+        return likesCount;
+    }
+
+    public void setLikesCount(int likesCount) {
+        this.likesCount = likesCount;
+    }
+
+    public String getMoreDescription() {
+        return moreDescription;
+    }
+
+    public void setMoreDescription(String moreDescription) {
+        this.moreDescription = moreDescription;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public int getViewsCount() {
+        return viewsCount;
+    }
+
+    public void setViewsCount(int viewsCount) {
+        this.viewsCount = viewsCount;
+    }
+
+    public String getPushId() {
+        return pushId;
+    }
+
+    public void setPushId(String pushId) {
+        this.pushId = pushId;
     }
 }
