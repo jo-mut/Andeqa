@@ -89,6 +89,24 @@
                 android:layout_marginBottom="19dp"
                 android:id="@+id/imageView" />
 
+            <TextView
+                android:text="0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/followersTextView"
+                android:layout_toLeftOf="@+id/imageView"
+                android:layout_toStartOf="@+id/imageView"
+                android:id="@+id/followersCountTextView" />
+
+            <TextView
+                android:text="0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/followingTextView"
+                android:layout_toRightOf="@+id/acountUsernameTextView"
+                android:layout_toEndOf="@+id/acountUsernameTextView"
+                android:id="@+id/followingCountTextView" />
+
         </RelativeLayout>
 
         <RelativeLayout
@@ -136,4 +154,5 @@
         </RelativeLayout>
 
     </LinearLayout>
+
 </android.support.design.widget.CoordinatorLayout>

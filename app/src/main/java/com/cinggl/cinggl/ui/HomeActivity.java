@@ -1,8 +1,8 @@
 package com.cinggl.cinggl.ui;
 
-import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -20,13 +20,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.camera.CreateCingleActivity;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-
-public class HomeActivity extends AppCompatActivity implements View.OnClickListener{
-    @Bind(R.id.fab) FloatingActionButton mFab;
+public class HomeActivity extends AppCompatActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -47,7 +42,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        ButterKnife.bind(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -62,8 +56,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        mFab.setOnClickListener(this);
-
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
 
     }
 
@@ -71,7 +71,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home_activity2, menu);
+        getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
     }
 
@@ -119,8 +119,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_home, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+
             return rootView;
         }
     }
@@ -139,18 +138,18 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         public Fragment getItem(int position) {
             switch (position){
                 case 0:
-                    CingleOut cingleOut = new CingleOut();
-                    return cingleOut;
+                    CingleOutFragment cingleOutFragment = new CingleOutFragment();
+                    return cingleOutFragment;
                 case 1:
-                    Cingles cingles = new Cingles();
-                    return cingles;
+                    BestCinglesFragment bestCinglesFragment = new BestCinglesFragment();
+                    return bestCinglesFragment;
             }
             return null;
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
+            // Show 2 total pages.
             return 2;
         }
 
@@ -167,12 +166,4 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    @Override
-    public void onClick(View v){
-        if(v == mFab){
-            Intent intent = new Intent(HomeActivity.this, CreateCingleActivity.class);
-            startActivity(intent);
-
-        }
-    }
 }

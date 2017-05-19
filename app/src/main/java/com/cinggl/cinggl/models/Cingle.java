@@ -20,7 +20,7 @@ public class Cingle {
 
     String description;
     String moreDescription;
-    private String pushId;
+    String pushId;
 
     public Cingle(){
 

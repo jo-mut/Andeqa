@@ -19,10 +19,6 @@
         android:theme="@style/AppTheme">
         <activity android:name=".ui.MainActivity" />
         <activity
-            android:name=".ui.HomeActivity"
-            android:label="Home"
-            android:theme="@style/AppTheme" />
-        <activity
             android:name=".profile.ProfileActivity"
             android:label="Profile" />
         <activity android:name=".profile.FollowersActivity" />
@@ -30,9 +26,6 @@
         <activity
             android:name=".ui.TimelineActivity"
             android:label="Timeline" />
-        <activity
-            android:name=".ui.ChatActivity"
-            android:label="Chats" />
         <activity android:name=".profile.SignInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -42,7 +35,13 @@
         </activity>
         <activity android:name=".profile.SignUpActivity" />
         <activity android:name=".camera.PostCingleActivity" />
-        <activity android:name=".camera.CreateCingleActivity"></activity>
+        <activity android:name=".camera.CreateCingleActivity" />
+        <activity
+            android:name=".ui.HomeActivity"
+            android:label="Home"
+            android:theme="@style/AppTheme">
+
+        </activity>
     </application>
 
 </manifest>

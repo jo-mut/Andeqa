@@ -56,8 +56,7 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
     private Uri imageUri = null;
     private Bitmap photoReducedSizeBitmap = null;
 
-    private StorageReference storageReference;
-    private  DatabaseReference databaseReference;
+
     private Cingle cingle;
 
     @Override
@@ -68,7 +67,7 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
 
         createImageGallery();
 
-        storageReference = FirebaseStorage.getInstance().getReference();
+
 
         mGalleryImageView.setOnClickListener(this);
         mCameraImageView.setOnClickListener(this);
@@ -81,7 +80,9 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK){
             if(requestCode == CAMERA_REQUEST_CODE){
-                setReducedImageSize();
+                photoReducedSizeBitmap = (Bitmap) data.getExtras().get("data");
+                mTakenImageView.setImageBitmap(photoReducedSizeBitmap);
+//                setReducedImageSize();
             }
 
             if(requestCode == IMAGE_GALLERY_REQUEST){
@@ -94,7 +95,6 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
                     photoReducedSizeBitmap = BitmapFactory.decodeStream(inputStream);
 
                     mTakenImageView.setImageBitmap(photoReducedSizeBitmap);
-//                    encodeBitmapAndSaveToFirebase(photoReducedSizeBitmap);
 
                 }catch (FileNotFoundException e){
                     e.printStackTrace();
@@ -122,36 +122,25 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
 
     }
 
-    public void setReducedImageSize(){
-        int targetImageViewWidth = mTakenImageView.getWidth();
-        int targetImageViewHeight = mTakenImageView.getHeight();
-
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(ImageFileLocation, bmOptions);
-        int cameraImageWidth = bmOptions.outWidth;
-        int cameraImageHeight = bmOptions.outHeight;
-
-        int scaleFactor = Math.min(cameraImageWidth/targetImageViewWidth, cameraImageHeight/targetImageViewHeight);
-        bmOptions.inSampleSize = scaleFactor;
-        bmOptions.inJustDecodeBounds = false;
-
-        photoReducedSizeBitmap = BitmapFactory.decodeFile(ImageFileLocation, bmOptions);
-        mTakenImageView.setImageBitmap(photoReducedSizeBitmap);
-//        encodeBitmapAndSaveToFirebase(photoReducedSizeBitmap);
-    }
-
-//    public void encodeBitmapAndSaveToFirebase(Bitmap bitmap) {
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-//        String imageEncoded = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
-//        DatabaseReference ref = FirebaseDatabase.getInstance()
-//                .getReference(Constants.FIREBASE_CINGLES)
-//                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-//                .child(cingle.getPushId())
-//                .child("imageUrl");
-//        ref.setValue(imageEncoded);
+//    public void setReducedImageSize(){
+//        int targetImageViewWidth = mTakenImageView.getWidth();
+//        int targetImageViewHeight = mTakenImageView.getHeight();
+//
+//        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+//        bmOptions.inJustDecodeBounds = true;
+//        BitmapFactory.decodeFile(ImageFileLocation, bmOptions);
+//        int cameraImageWidth = bmOptions.outWidth;
+//        int cameraImageHeight = bmOptions.outHeight;
+//
+//        int scaleFactor = Math.min(cameraImageWidth/targetImageViewWidth, cameraImageHeight/targetImageViewHeight);
+//        bmOptions.inSampleSize = scaleFactor;
+//        bmOptions.inJustDecodeBounds = false;
+//
+//        photoReducedSizeBitmap = BitmapFactory.decodeFile(ImageFileLocation, bmOptions);
+//        mTakenImageView.setImageBitmap(photoReducedSizeBitmap);
 //    }
+
+
 
 
     @Override
