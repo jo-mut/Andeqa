@@ -15,7 +15,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="100dp">
 
             <android.support.design.widget.AppBarLayout
                 android:id="@+id/appbar"
@@ -37,7 +37,8 @@
                 <android.support.design.widget.TabLayout
                     android:id="@+id/tabs"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    app:tabTextAppearance="@style/MyCustomTextAppearance"/>
 
             </android.support.design.widget.AppBarLayout>
 
@@ -45,7 +46,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="420dp">
 
             <android.support.v4.view.ViewPager
                 android:id="@+id/container"
@@ -54,7 +55,20 @@
                 app:layout_behavior="@string/appbar_scrolling_view_behavior" />
         </RelativeLayout>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <android.support.design.widget.BottomNavigationView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimary">
+
+            </android.support.design.widget.BottomNavigationView>
+        </RelativeLayout>
+
     </LinearLayout>
+
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -63,6 +77,7 @@
         android:layout_gravity="end|bottom"
         app:srcCompat="@android:drawable/ic_dialog_email"
         android:layout_marginRight="16dp"
-        android:layout_marginBottom="55dp" />
+        android:layout_marginBottom="55dp"
+        app:backgroundTint="@android:color/holo_purple" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -1,224 +1,220 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.cinggl.cinggl.ui.CingleOut">
+    android:orientation="vertical"
+    android:padding="3dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <android.support.v7.widget.CardView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/cingleOutCardView"
-        android:layout_margin="3dp">
+        android:weightSum="1">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp">
+
+            <TextView
+                android:text="jo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/profileImageView"
+                android:layout_toEndOf="@+id/profileImageView"
+                android:layout_marginLeft="27dp"
+                android:layout_marginStart="27dp"
+                android:id="@+id/accountUsernameTextView"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:textStyle="normal|bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:id="@+id/viewCountTextView"
+                android:drawableLeft="@drawable/ic_remove_red_eye_black_24dp"
+                android:layout_alignLeft="@+id/accountUsernameTextView"
+                android:layout_alignStart="@+id/accountUsernameTextView"
+                android:textStyle="normal|bold"
+                android:textColor="@android:color/black"
+                android:layout_below="@+id/accountUsernameTextView"
+                android:textSize="16sp"
+                android:layout_height="14dp" />
+
+            <ImageView
+                android:layout_width="50dp"
+                app:srcCompat="@drawable/profile"
+                android:id="@+id/profileImageView"
+                android:layout_height="50dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:padding="5dp" />
+
+            <TextView
+                android:text="8h"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/timeTextView"
+                android:padding="5dp" />
+
+        </RelativeLayout>
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:weightSum="1">
+            android:orientation="vertical"
+            android:layout_height="423dp"
+            android:paddingTop="5dp"
+            android:layout_marginTop="2dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="2dp"
-                android:paddingRight="2dp">
-
-                <TextView
-                    android:text="jo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_toRightOf="@+id/profileImageView"
-                    android:layout_toEndOf="@+id/profileImageView"
-                    android:layout_marginLeft="27dp"
-                    android:layout_marginStart="27dp"
-                    android:id="@+id/accountUsernameTextView"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/black"
-                    android:textStyle="normal|bold" />
-
-                <TextView
-                    android:text="  0"
-                    android:layout_width="wrap_content"
-                    android:id="@+id/viewCountTextView"
-                    android:drawableLeft="@drawable/ic_remove_red_eye_black_24dp"
-                    android:layout_alignLeft="@+id/accountUsernameTextView"
-                    android:layout_alignStart="@+id/accountUsernameTextView"
-                    android:textStyle="normal|bold"
-                    android:textColor="@android:color/black"
-                    android:layout_below="@+id/accountUsernameTextView"
-                    android:textSize="10sp"
-                    android:layout_height="14dp" />
-
-                <ImageView
-                    android:layout_width="50dp"
-                    app:srcCompat="@drawable/profile"
-                    android:id="@+id/profileImageView"
-                    android:layout_height="50dp"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:padding="5dp" />
-            </RelativeLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:layout_height="423dp"
-                android:paddingTop="5dp"
-                android:layout_marginTop="2dp">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="3dp">
-
-                    <TextView
-                        android:text="TheCityOfLight"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:id="@+id/cingleTitleTextView"
-                        android:textStyle="normal|bold"
-                        android:textColor="@android:color/black"
-                        android:padding="5dp" />
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        app:srcCompat="@drawable/test"
-                        android:id="@+id/cingleImageView"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentTop="true"
-                        android:layout_height="350dp"
-                        android:scaleType="centerCrop" />
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="34dp"
-                    android:padding="3dp">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:srcCompat="@drawable/ic_more_vert_black_24dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true"
-                        android:id="@+id/cingleSettingsImageView"
-                        android:scaleType="centerCrop" />
-
-                    <TextView
-                        android:text="   0"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignBottom="@+id/commentsImageView"
-                        android:id="@+id/likesTextView"
-                        android:drawableLeft="@drawable/ic_favorite_black_24dp"
-                        android:textStyle="normal|bold"
-                        android:textColor="@android:color/black"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true" />
-
-                    <TextView
-                        android:text="   0"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginRight="145dp"
-                        android:layout_marginEnd="145dp"
-                        android:id="@+id/cingleWorthTextview"
-                        android:drawableLeft="@drawable/ic_attach_money_black_24dp"
-                        android:textStyle="normal|bold"
-                        android:textColor="@android:color/black"
-                        android:layout_alignParentTop="true" />
-
-                    <TextView
-                        android:text="    0"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_marginLeft="65dp"
-                        android:layout_marginStart="65dp"
-                        android:id="@+id/commentsCountTextView"
-                        android:drawableLeft="@drawable/ic_chat_bubble_black_24dp"
-                        android:textStyle="normal|bold"
-                        android:textColor="@android:color/black"
-                        android:layout_alignParentTop="true" />
-
-                </RelativeLayout>
-
-            </LinearLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="45dp"
                 android:padding="3dp">
 
                 <TextView
-                    android:text="The Cities of Tomorrow; the Cities of Light, with the evolution of technology"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:id="@+id/cingleDescriptionTextView"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:paddingLeft="2dp"
-                    android:paddingRight="2dp" />
-
-                <TextView
-                    android:text="...more"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/moreDescriptionTextView"
-                    android:textStyle="normal|bold"
-                    android:textSize="16sp"
-                    android:textColor="@android:color/black"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginRight="149dp"
-                    android:layout_marginEnd="149dp" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-
-                <TextView
-                    android:text="Streaming comments"
+                    android:text="TheCityOfLight"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
-                    android:id="@+id/streamedCommentsTextView" />
+                    android:id="@+id/cingleTitleTextView"
+                    android:textStyle="normal|bold"
+                    android:textColor="@android:color/black"
+                    android:padding="5dp" />
+
             </RelativeLayout>
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
+                <ImageView
+                    android:layout_width="match_parent"
+                    app:srcCompat="@drawable/test"
+                    android:id="@+id/cingleImageView"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_height="350dp"
+                    android:scaleType="centerCrop" />
 
+            </RelativeLayout>
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="34dp"
+                android:padding="3dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_more_vert_black_24dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:id="@+id/cingleSettingsImageView"
+                    android:scaleType="centerCrop" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/commentsImageView"
+                    android:id="@+id/likesTextView"
+                    android:drawableLeft="@drawable/ic_favorite_black_24dp"
+                    android:textStyle="normal|bold"
+                    android:textColor="@android:color/black"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="35dp"
+                    android:layout_marginStart="35dp"
+                    android:id="@+id/commentsCountTextView"
+                    android:drawableLeft="@drawable/ic_chat_bubble_black_24dp"
+                    android:textStyle="normal|bold"
+                    android:textColor="@android:color/black"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/likesTextView"
+                    android:layout_toEndOf="@+id/likesTextView" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cingleWorthTextview"
+                    android:drawableLeft="@drawable/ic_attach_money_black_24dp"
+                    android:textStyle="normal|bold"
+                    android:textColor="@android:color/black"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/commentsCountTextView"
+                    android:layout_toEndOf="@+id/commentsCountTextView"
+                    android:layout_marginLeft="95dp"
+                    android:layout_marginStart="95dp" />
+
+            </RelativeLayout>
 
         </LinearLayout>
-    </android.support.v7.widget.CardView>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:padding="3dp">
+
+            <TextView
+                android:text="The Cities of Tomorrow; the Cities of Light, with the evolution of technology"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/cingleDescriptionTextView"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp" />
+
+            <TextView
+                android:text="...more"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/moreDescriptionTextView"
+                android:textStyle="normal|bold"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="149dp"
+                android:layout_marginEnd="149dp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <TextView
+                android:text="Streaming comments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/streamedCommentsTextView" />
+        </RelativeLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

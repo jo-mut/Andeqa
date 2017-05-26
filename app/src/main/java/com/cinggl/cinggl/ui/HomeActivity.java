@@ -2,7 +2,6 @@ package com.cinggl.cinggl.ui;
 
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -17,11 +16,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.widget.TextView;
-
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.camera.NewPostFrament;
 
-public class HomeActivity extends AppCompatActivity {
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
+public class HomeActivity extends AppCompatActivity implements View.OnClickListener{
+    @Bind(R.id.fab)FloatingActionButton mFloatingActionButton;
+
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -42,6 +45,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        ButterKnife.bind(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -55,16 +59,24 @@ public class HomeActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+        mFloatingActionButton.setOnClickListener(this);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
+    }
+
+    private void showNewPostFragment(){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        NewPostFrament newPostFrament = NewPostFrament.newInstance("create your cingle");
+        newPostFrament.show(fragmentManager, "new post fragment");
+    }
+
+    @Override
+    public void onClick(View v){
+        if(v == mFloatingActionButton){
+//            Intent intent = new Intent(HomeActivity.this, NewPostActivity.class);
+//            startActivity(intent);
+            showNewPostFragment();
+        }
     }
 
 

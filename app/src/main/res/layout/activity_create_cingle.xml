@@ -4,10 +4,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_cingle_creation"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.cinggl.cinggl.camera.CreateCingleActivity"
-    android:padding="3dp">
+    android:padding="3dp"
+    android:layout_height="500dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -41,41 +41,44 @@
             android:layout_alignParentEnd="true" />
     </RelativeLayout>
 
-
-
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="350sp">
+        android:layout_centerVertical="true"
+        android:layout_alignLeft="@+id/linearLayout2"
+        android:layout_alignStart="@+id/linearLayout2"
+        android:layout_height="300dp">
 
-        <ImageView
-            android:layout_height="match_parent"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/takenImageView"
-            android:scaleType="centerCrop"
-            android:layout_width="match_parent"
-            app:srcCompat="@color/transparentColor" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="140dp">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerView"
+        <ViewAnimator
+            android:id="@+id/viewAnimator"
+            android:animateFirstView="false"
+            android:background="#ffc0c0c0"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        </android.support.v7.widget.RecyclerView>
+            <ImageView
+                android:background="@drawable/select_image_background"
+                android:id="@+id/chosenImageView"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
 
+            <ProgressBar
+                android:id="@+id/progress"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </ViewAnimator>
 
     </RelativeLayout>
 
-
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="40dp">
 
         <ImageView
             android:layout_width="30dp"
@@ -84,21 +87,29 @@
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_marginLeft="59dp"
-            android:layout_marginStart="59dp"
-            android:id="@+id/galleryImageView"
-            android:scaleType="centerCrop" />
+            android:layout_marginLeft="14dp"
+            android:layout_marginStart="14dp"
+            android:id="@+id/galleryImageView" />
 
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
             app:srcCompat="@drawable/ic_photo_camera_black_24dp"
             android:layout_alignTop="@+id/galleryImageView"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/cameraImageView" />
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignTop="@+id/cameraImageView"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginRight="73dp"
-            android:layout_marginEnd="73dp"
-            android:id="@+id/cameraImageView" />
+            android:layout_marginRight="18dp"
+            android:layout_marginEnd="18dp"
+            android:id="@+id/videoImageView" />
+
+
     </RelativeLayout>
 
 </LinearLayout>

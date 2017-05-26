@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
@@ -19,13 +20,24 @@
         android:layout_marginTop="94dp" />
 
     <TextView
-        android:text="You are welcome Cingulan"
+        android:text="You are welcome "
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/introTextView"
-        android:textSize="20sp"
+        android:textSize="25sp"
         android:layout_marginBottom="146dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:text="Cingulan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:id="@+id/textView2"
+        android:textSize="25sp"
+        android:layout_alignTop="@+id/introTextView"
+        android:layout_alignRight="@+id/appNameTextView"
+        android:layout_alignEnd="@+id/appNameTextView" />
 
 </RelativeLayout>
