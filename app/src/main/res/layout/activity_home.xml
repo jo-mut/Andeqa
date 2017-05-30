@@ -10,6 +10,20 @@
     android:fitsSystemWindows="true"
     tools:context="com.cinggl.cinggl.home.HomeActivity">
 
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/home_container"
+            android:layout_width="match_parent"
+            android:layout_height="519dp">
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -24,20 +38,6 @@
         android:layout_marginRight="16dp"
         android:layout_height="50dp" />
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <RelativeLayout
-            android:id="@+id/home_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </RelativeLayout>
-
-    </LinearLayout>
-
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/bottomNavigationView"
         app:menu="@menu/bottom_navigation_menu"
@@ -49,5 +49,6 @@
         app:itemBackground="@color/colorPrimary">
 
     </android.support.design.widget.BottomNavigationView>
+
 
 </android.support.design.widget.CoordinatorLayout>

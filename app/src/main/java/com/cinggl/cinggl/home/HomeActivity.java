@@ -29,12 +29,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Bind(R.id.fab)FloatingActionButton mFloatingActionButton;
     @Bind(R.id.bottomNavigationView)BottomNavigationView mBottomNavigationView;
 
-    private HomePagerAdapter mHomePagerAdapter;
-    private static final String SELECTED_ITEM = "selected item";
-    private static final String ARG_SECTION_NUMBER = "section_number";
-    private int mSelectedItem;
-
-    private ViewPager mViewPager;
+    final FragmentManager fragmentManager = getSupportFragmentManager();
+    final Fragment timelineFragment = new TimelineFragment();
+    final Fragment chatFragment = new ChatFragment();
+    final Fragment profileFragment = new ProfileFragment();
+    final Fragment homeFragment = new HomeFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,22 +42,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         ButterKnife.bind(this);
 
         mFloatingActionButton.setOnClickListener(this);
+        launchHomeOnStart();
 
-        final FragmentManager fragmentManager = getSupportFragmentManager();
-
-        final Fragment homeFragment = new HomeFragment();
-        final Fragment timelineFragment = new TimelineFragment();
-        final Fragment chatFragment = new ChatFragment();
-        final Fragment profileFragment = new ProfileFragment();
-
-        mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener(){
-
+        mBottomNavigationView.setOnNavigationItemSelectedListener
+                (new BottomNavigationView.OnNavigationItemSelectedListener(){
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.action_home:
-                        FragmentTransaction homeTransaction = fragmentManager.beginTransaction();
-                        homeTransaction.replace(R.id.home_container, homeFragment).commit();
+                        launchHomeOnStart();
                         break;
                     case R.id.action_timeline:
                         FragmentTransaction timelineTransaction = fragmentManager.beginTransaction();
@@ -73,12 +65,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         profileTransaction.replace(R.id.home_container, profileFragment).commit();
                         break;
                 }
-
                 return true;
             }
-
         });
+    }
 
+    private void launchHomeOnStart(){
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.replace(R.id.home_container, homeFragment);
+        ft.commit();
     }
 
     private void showNewPostFragment(){
@@ -99,7 +94,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if(v == mFloatingActionButton){
             showNewPostFragment();
         }
-
     }
 
     @Override

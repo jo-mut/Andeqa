@@ -8,6 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.cinggl.cinggl.ui.SettingsActivity">
+    tools:context="com.cinggl.cinggl.ui.SettingsActivity"
+    android:background="@drawable/gradient_color">
 
 </RelativeLayout>

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.cinggl.cinggl.profile.SignInActivity"
-    android:background="@color/colorAccent"
+    android:background="@drawable/gradient_color"
     android:weightSum="1">
 
     <RelativeLayout
@@ -23,7 +23,8 @@
             android:textSize="30sp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="18dp" />
+            android:layout_marginBottom="18dp"
+            android:textColor="@android:color/white" />
 
     </RelativeLayout>
 
@@ -76,7 +77,8 @@
                 android:background="@drawable/btn_background"
                 android:layout_marginTop="15dp"
                 android:textSize="14sp"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textColor="@android:color/white" />
 
         </LinearLayout>
 
@@ -96,7 +98,7 @@
             android:layout_alignParentStart="true"
             android:layout_marginLeft="33dp"
             android:layout_marginStart="33dp"
-            android:textColor="@android:color/black"
+            android:textColor="@android:color/white"
             android:layout_marginTop="10dp"
             android:id="@+id/registerTextView" />
 
@@ -123,7 +125,8 @@
             android:layout_alignParentEnd="true"
             android:id="@+id/facebookSigninButton"
             android:textAllCaps="false"
-            android:background="@drawable/btn_background" />
+            android:background="@drawable/btn_background"
+            android:textColor="@android:color/white" />
 
 
     </RelativeLayout>

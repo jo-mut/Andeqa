@@ -5,7 +5,7 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/layout_background"
+    android:background="@drawable/gradient_color"
     tools:context="com.cinggl.cinggl.ui.MainActivity">
 
     <TextView
@@ -17,7 +17,8 @@
         android:textSize="40sp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="94dp" />
+        android:layout_marginTop="94dp"
+        android:textColor="@android:color/white" />
 
     <TextView
         android:text="You are welcome "
@@ -27,7 +28,8 @@
         android:textSize="20sp"
         android:layout_marginBottom="146dp"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textColor="@android:color/white" />
 
     <TextView
         android:text="Cingulan"
@@ -37,6 +39,7 @@
         android:id="@+id/textView2"
         android:textSize="20sp"
         android:layout_alignTop="@+id/introTextView"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textColor="@android:color/white" />
 
 </RelativeLayout>

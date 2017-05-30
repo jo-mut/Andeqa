@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.cinggl.cinggl.profile.SignUpActivity"
-    android:background="@android:color/white">
+    android:background="@drawable/gradient_color">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -85,7 +85,8 @@
             android:background="@drawable/btn_background"
             android:layout_marginTop="15dp"
             android:textSize="14sp"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textColor="@android:color/white" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -111,7 +112,7 @@
             android:textAlignment="center"
             android:textSize="18sp"
             android:textStyle="normal|bold"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@android:color/white"
             android:padding="35sp"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
