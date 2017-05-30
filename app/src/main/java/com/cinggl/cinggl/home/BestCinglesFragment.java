@@ -1,4 +1,4 @@
-package com.cinggl.cinggl.ui;
+package com.cinggl.cinggl.home;
 
 
 import android.os.Bundle;

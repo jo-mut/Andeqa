@@ -44,6 +44,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import butterknife.Bind;
@@ -201,7 +202,7 @@ public class NewPostFrament extends DialogFragment implements View.OnClickListen
 
         StorageReference storageReference = FirebaseStorage
                 .getInstance().getReference()
-                .child(Constants.FIREBASE_CINGLES)
+                .child(Constants.FIREBASE_PUBLIC_CINGLES)
                 .child(uid);
         UploadTask uploadTask = storageReference.putBytes(data);
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -217,17 +218,29 @@ public class NewPostFrament extends DialogFragment implements View.OnClickListen
                     cingle.setCingleImageUrl(downloadUrl.toString());
                 }
 
+                /*Getting the current logged in user*/
                 FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
                 String uid = firebaseUser.getUid();
                 DatabaseReference databaseReference = FirebaseDatabase
                         .getInstance()
-                        .getReference(Constants.FIREBASE_CINGLES)
+                        .getReference(Constants.FIREBASE_PRIVATE_CINGLE)
                         .child(uid);
-
-                DatabaseReference pushRef = databaseReference.push();
-                String pushId = pushRef.getKey();
+                /*Pushing the same cingle to a reference from where Cingles posted by the
+                 user will be retrieved and displayed on their profile*/
+                DatabaseReference userRef = databaseReference.push();
+                String pushId = userRef.getKey();
                 cingle.setPushId(pushId);
-                pushRef.setValue(cingle);
+                userRef.setValue(cingle);
+
+                /*Pushing the same cingle to a public reference from where they are retrieved
+                and displayed on the public cingleout platform*/
+                DatabaseReference publicRef = FirebaseDatabase
+                        .getInstance()
+                        .getReference(Constants.FIREBASE_PUBLIC_CINGLES);
+                publicRef.push().setValue(cingle);
+
+                mCingleTitleEditText.setText("");
+                mCingleDescriptionEditText.setText("");
 
                 progressDialog.dismiss();
 

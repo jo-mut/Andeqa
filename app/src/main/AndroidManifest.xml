@@ -29,7 +29,7 @@
         <activity android:name=".profile.FollowersActivity" />
         <activity android:name=".profile.FollowingActivity" />
         <activity
-            android:name=".ui.TimelineActivity"
+            android:name=".timeline.TimelineActivity"
             android:label="Timeline" />
         <activity android:name=".profile.SignInActivity">
             <intent-filter>
@@ -41,12 +41,16 @@
         <activity android:name=".profile.SignUpActivity" />
         <activity android:name=".camera.CreateCingleActivity" />
         <activity
-            android:name=".ui.HomeActivity"
+            android:name=".home.HomeActivity"
             android:label="Home"
             android:theme="@style/AppTheme" />
-        <activity android:name=".camera.CustomGelleryActivity">
-
-        </activity>
+        <activity android:name=".camera.CustomGelleryActivity" />
+        <activity
+            android:name=".chat.ChatActivity"
+            android:label="Chats" />
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:label="Settings" />
     </application>
 
 </manifest>

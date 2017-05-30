@@ -13,6 +13,7 @@ public class Cingle {
     int viewsCount;
     String accountUserName;
     String cingleImageUrl;
+    String profileImageUrl;
 
     int likesCount;
     int commentsCount;
@@ -47,6 +48,14 @@ public class Cingle {
 
     public void setCingleImageUrl(String cingleImageUrl) {
         this.cingleImageUrl = cingleImageUrl;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 
     public int getCingleWorth() {

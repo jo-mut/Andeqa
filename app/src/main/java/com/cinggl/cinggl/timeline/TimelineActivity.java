@@ -1,4 +1,4 @@
-package com.cinggl.cinggl.ui;
+package com.cinggl.cinggl.timeline;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

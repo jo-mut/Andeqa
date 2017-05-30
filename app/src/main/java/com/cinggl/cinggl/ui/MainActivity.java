@@ -2,20 +2,12 @@ package com.cinggl.cinggl.ui;
 
 import android.content.Intent;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TimePicker;
 
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.home.HomeActivity;
 
-import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity{
@@ -63,9 +55,9 @@ public class MainActivity extends AppCompatActivity{
 ////    }
 //
 
-//public class SectionsPagerAdapter extends FragmentPagerAdapter {
+//public class HomePagerAdapter extends FragmentPagerAdapter {
 //
-//    public SectionsPagerAdapter(FragmentManager fm) {
+//    public HomePagerAdapter(FragmentManager fm) {
 //        super(fm);
 //    }
 //
