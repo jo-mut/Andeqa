@@ -65,6 +65,13 @@ dependencies {
     compile 'com.github.clans:fab:1.6.2'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'org.parceler:parceler:1.1.6'
+
+    compile 'com.rom4ek:arcnavigationview:1.0.3'
+    compile 'com.tomer:fadingtextview:1.8.1'
+    compile 'uk.co.chrisjenx:calligraphy:2.3.0'
+    compile 'com.github.medyo:fancybuttons:1.8.3'
+
+
 }
 apply plugin: 'com.google.gms.google-services'
 

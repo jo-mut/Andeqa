@@ -3,6 +3,7 @@ package com.cinggl.cinggl.timeline;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -14,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.home.HomePagerAdapter;
 import com.cinggl.cinggl.ui.SettingsActivity;
 
 /**
@@ -40,7 +40,7 @@ public class TimelineFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
@@ -62,9 +62,7 @@ public class TimelineFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_home, menu);
-
-
+        inflater.inflate(R.menu.menu_layout, menu);
     }
 
     @Override

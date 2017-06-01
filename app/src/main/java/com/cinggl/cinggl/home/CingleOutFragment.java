@@ -2,11 +2,17 @@ package com.cinggl.cinggl.home;
 
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.constraint.solver.Cache;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -38,6 +44,11 @@ public class CingleOutFragment extends Fragment {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,9 +58,27 @@ public class CingleOutFragment extends Fragment {
         ButterKnife.bind(this, view);
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_PUBLIC_CINGLES);
         setUpFirebaseAdapter();
-
-
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.menu_layout, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void setUpFirebaseAdapter(){
@@ -73,4 +102,8 @@ public class CingleOutFragment extends Fragment {
         firebaseRecyclerAdapter.cleanup();
     }
 
+    @Override
+    public void onStop(){
+        super.onStop();
+    }
 }

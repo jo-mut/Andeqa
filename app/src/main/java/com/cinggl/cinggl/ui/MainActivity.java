@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void run() {
                 finish();
-                Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                Intent intent = new Intent(MainActivity.this, AppActivities.class);
                 startActivity(intent);
             }
         },_splashTime);
@@ -32,63 +32,3 @@ public class MainActivity extends AppCompatActivity{
     }
 
 }
-
-//    public CingleOut() {
-//        // Required empty public constructor
-//    }
-//
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//                             Bundle savedInstanceState) {
-//        // Inflate the layout for this fragment
-//        View view = inflater.inflate(R.layout.fragment_cingle_out, container, false);
-//        return view;
-//    }
-//
-////    private void setUpFirebaseAdapter() {
-////
-////        mRecyclerView.setHasFixedSize(true);
-////        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-////        mRecyclerView.setLayoutManager(layoutManager);
-////        mRecyclerView.setAdapter(mFirebaseRecyclerAdapter);
-////
-////    }
-//
-
-//public class HomePagerAdapter extends FragmentPagerAdapter {
-//
-//    public HomePagerAdapter(FragmentManager fm) {
-//        super(fm);
-//    }
-//
-//    @Override
-//    public Fragment getItem(int position) {
-//        switch (position){
-//            case 0:
-//                CingleOut cingleOut = new CingleOut();
-//                return cingleOut;
-//            case 1:
-//                Cingles cingles = new Cingles();
-//                return cingles;
-//        }
-//        return null;
-//    }
-//
-//    @Override
-//    public int getCount() {
-//        // Show 3 total pages.
-//        return 2;
-//    }
-//
-//    @Override
-//    public CharSequence getPageTitle(int position) {
-//        switch (position) {
-//            case 0:
-//                return "Cingle Out";
-//            case 1:
-//                return "Cingles";
-//
-//        }
-//        return null;
-//    }
-//}

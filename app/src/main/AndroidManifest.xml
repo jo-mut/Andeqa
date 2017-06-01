@@ -23,14 +23,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ui.MainActivity" />
-        <activity
-            android:name=".profile.ProfileActivity"
-            android:label="Profile" />
         <activity android:name=".profile.FollowersActivity" />
         <activity android:name=".profile.FollowingActivity" />
-        <activity
-            android:name=".timeline.TimelineActivity"
-            android:label="Timeline" />
         <activity android:name=".profile.SignInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -45,9 +39,6 @@
             android:label="Home"
             android:theme="@style/AppTheme" />
         <activity android:name=".camera.CustomGelleryActivity" />
-        <activity
-            android:name=".chat.ChatActivity"
-            android:label="Chats" />
         <activity
             android:name=".ui.SettingsActivity"
             android:label="Settings" />

@@ -26,90 +26,97 @@
 
         </RelativeLayout>
 
-
-        <RelativeLayout
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="223dp">
+            android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/bioTextView"
-                android:text="Bio"
-                android:textSize="14sp"
-                android:textColor="@android:color/black"
-                android:layout_below="@+id/acountUsernameTextView"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="11dp" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="223dp">
 
-            <TextView
-                android:text="Account Username"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/acountUsernameTextView"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"
-                android:textStyle="normal|bold"
-                android:layout_below="@+id/profileImageView"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="14dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/bioTextView"
+                    android:text="Bio"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/black"
+                    android:layout_below="@+id/acountUsernameTextView"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="11dp" />
 
-            <ImageView
-                app:srcCompat="@drawable/profile"
-                android:layout_marginTop="16dp"
-                android:id="@+id/profileImageView"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_width="80dp"
-                android:layout_height="80dp" />
+                <TextView
+                    android:text="Account Username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/acountUsernameTextView"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:textStyle="normal|bold"
+                    android:layout_below="@+id/profileImageView"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="14dp" />
 
-            <TextView
-                android:text="Following"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/followingTextView"
-                android:textStyle="normal|bold"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"
-                android:layout_alignBottom="@+id/followersTextView"
-                android:layout_alignTop="@+id/followersTextView"
-                android:layout_toRightOf="@+id/profileImageView"
-                android:layout_toEndOf="@+id/profileImageView" />
+                <ImageView
+                    app:srcCompat="@drawable/profile"
+                    android:layout_marginTop="16dp"
+                    android:id="@+id/profileImageView"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp" />
 
-            <TextView
-                android:text="Followers"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/followersTextView"
-                android:textStyle="normal|bold"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"
-                android:layout_marginBottom="17dp"
-                android:layout_alignParentBottom="true"
-                android:layout_toLeftOf="@+id/profileImageView"
-                android:layout_toStartOf="@+id/profileImageView" />
+                <TextView
+                    android:text="Following"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/followingTextView"
+                    android:textStyle="normal|bold"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:layout_alignBottom="@+id/followersTextView"
+                    android:layout_alignTop="@+id/followersTextView"
+                    android:layout_toRightOf="@+id/profileImageView"
+                    android:layout_toEndOf="@+id/profileImageView" />
 
-            <TextView
-                android:text="0"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/followingTextView"
-                android:layout_toRightOf="@+id/acountUsernameTextView"
-                android:layout_toEndOf="@+id/acountUsernameTextView"
-                android:id="@+id/followingCountTextView" />
+                <TextView
+                    android:text="Followers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/followersTextView"
+                    android:textStyle="normal|bold"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:layout_marginBottom="17dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_toLeftOf="@+id/profileImageView"
+                    android:layout_toStartOf="@+id/profileImageView" />
 
-            <TextView
-                android:text="0"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/followingCountTextView"
-                android:layout_alignRight="@+id/followersTextView"
-                android:layout_alignEnd="@+id/followersTextView"
-                android:id="@+id/followersCountTextView"
-                android:layout_alignLeft="@+id/acountUsernameTextView"
-                android:layout_alignStart="@+id/acountUsernameTextView" />
+                <TextView
+                    android:text="0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/followingTextView"
+                    android:layout_toRightOf="@+id/acountUsernameTextView"
+                    android:layout_toEndOf="@+id/acountUsernameTextView"
+                    android:id="@+id/followingCountTextView" />
 
-        </RelativeLayout>
+                <TextView
+                    android:text="0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/followingCountTextView"
+                    android:layout_alignRight="@+id/followersTextView"
+                    android:layout_alignEnd="@+id/followersTextView"
+                    android:id="@+id/followersCountTextView"
+                    android:layout_alignLeft="@+id/acountUsernameTextView"
+                    android:layout_alignStart="@+id/acountUsernameTextView" />
+
+            </RelativeLayout>
+
+
+        </android.support.v7.widget.CardView>
+
 
         <RelativeLayout
             android:layout_width="match_parent"
