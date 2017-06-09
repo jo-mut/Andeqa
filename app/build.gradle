@@ -43,6 +43,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
+    //third party libraries
 
 
     compile 'com.android.support:design:25.3.1'
@@ -63,15 +64,11 @@ dependencies {
     compile 'com.google.firebase:firebase-storage:10.2.4'
     compile 'com.google.android.gms:play-services-auth:10.2.4'
     compile 'com.github.clans:fab:1.6.2'
-    testCompile 'junit:junit:4.12'
-    annotationProcessor 'org.parceler:parceler:1.1.6'
-
     compile 'com.rom4ek:arcnavigationview:1.0.3'
     compile 'com.tomer:fadingtextview:1.8.1'
     compile 'uk.co.chrisjenx:calligraphy:2.3.0'
-    compile 'com.github.medyo:fancybuttons:1.8.3'
-
-
+    testCompile 'junit:junit:4.12'
+    annotationProcessor 'org.parceler:parceler:1.1.6'
 }
 apply plugin: 'com.google.gms.google-services'
 

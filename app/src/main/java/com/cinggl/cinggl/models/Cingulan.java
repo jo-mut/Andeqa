@@ -1,44 +1,27 @@
 package com.cinggl.cinggl.models;
 
+import org.parceler.Parcel;
+
 /**
  * Created by J.EL on 5/4/2017.
  */
-
+@Parcel
 public class Cingulan {
-    String firstNmae;
-    String secondName;
-    String profileImage;
-    String bio;
-    String username;
+    private String profileImage;
+    private String bio;
+    private String username;
+    private String timestamp;
     private String pushId;
+    private String uid;
 
     public Cingulan(){
         //EMPTY CONSTRUCTOR REQUIRED
     }
 
-    public Cingulan(String secondName, String profileImage,
-                    String firstNmae, String bio, String username) {
-        this.secondName = secondName;
+    public Cingulan(String uid) {
         this.profileImage = profileImage;
-        this.firstNmae = firstNmae;
-        this.bio = bio;
         this.username = username;
-    }
-
-    public String getBio() {
-        return bio;
-    }
-
-    public void setBio(String bio) {
-        this.bio = bio;
-    }
-
-    public String getSecondName() {
-        return secondName;
-    }
-
-    public void setSecondName(String secondName) {
-        this.secondName = secondName;
+        this.uid = uid;
     }
 
     public String getProfileImage() {
@@ -49,12 +32,12 @@ public class Cingulan {
         this.profileImage = profileImage;
     }
 
-    public String getFirstNmae() {
-        return firstNmae;
+    public String getBio() {
+        return bio;
     }
 
-    public void setFirstNmae(String firstNmae) {
-        this.firstNmae = firstNmae;
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 
     public String getUsername() {
@@ -65,11 +48,27 @@ public class Cingulan {
         this.username = username;
     }
 
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
     public String getPushId() {
         return pushId;
     }
 
     public void setPushId(String pushId) {
         this.pushId = pushId;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 }

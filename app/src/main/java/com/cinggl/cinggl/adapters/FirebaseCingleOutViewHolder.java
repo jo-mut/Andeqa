@@ -8,8 +8,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cingle;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -22,11 +28,16 @@ public class FirebaseCingleOutViewHolder extends RecyclerView.ViewHolder {
     View mView;
     Context mContext;
     ProgressBar progressBar;
+    public TextView likesCountTextView;
+    public static final int MAX_WIDTH = 400;
+    public static final int MAX_HEIGHT = 400;
 
     public FirebaseCingleOutViewHolder(View itemView){
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
+        likesCountTextView =(TextView)itemView.findViewById(R.id.likesCountTextView);
+
     }
 
     public void bindCingle(Cingle cingle){
@@ -46,9 +57,8 @@ public class FirebaseCingleOutViewHolder extends RecyclerView.ViewHolder {
 
         Picasso.with(mContext)
                 .load(cingle.getCingleImageUrl())
-                .fit()
+                .resize(MAX_WIDTH, MAX_HEIGHT)
                 .centerCrop()
-                .noFade()
                 .into(cingleImageView, new Callback() {
                     @Override
                     public void onSuccess() {
@@ -61,10 +71,11 @@ public class FirebaseCingleOutViewHolder extends RecyclerView.ViewHolder {
                     }
                 });
 
-
         cingleTitleTextView.setText((cingle.getTitle()));
         cingleDescriptionTextView.setText(cingle.getDescription());
         accountUsernameTextView.setText(cingle.getAccountUserName());
 
     }
+
+
 }

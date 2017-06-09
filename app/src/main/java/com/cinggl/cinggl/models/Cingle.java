@@ -9,6 +9,7 @@ import org.parceler.Parcel;
 @Parcel
 public class Cingle {
 
+    Cingulan cingulan;
     String title;
     int viewsCount;
     String accountUserName;
@@ -22,16 +23,42 @@ public class Cingle {
     String description;
     String moreDescription;
     String pushId;
+    String timeStamp;
 
     public Cingle(){
 
     }
 
-    public Cingle(String cingleImageUrl,
-                  String description, String title) {
+    public Cingle(Cingulan cingulan, String cingleImageUrl,
+                  String description, String title, String timeStamp) {
         this.cingleImageUrl = cingleImageUrl;
         this.description = description;
         this.title = title;
+        this.cingulan = cingulan;
+    }
+
+    public Cingulan getCingulan() {
+        return cingulan;
+    }
+
+    public void setCingulan(Cingulan cingulan) {
+        this.cingulan = cingulan;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public int getViewsCount() {
+        return viewsCount;
+    }
+
+    public void setViewsCount(int viewsCount) {
+        this.viewsCount = viewsCount;
     }
 
     public String getAccountUserName() {
@@ -58,12 +85,12 @@ public class Cingle {
         this.profileImageUrl = profileImageUrl;
     }
 
-    public int getCingleWorth() {
-        return cingleWorth;
+    public int getLikesCount() {
+        return likesCount;
     }
 
-    public void setCingleWorth(int cingleWorth) {
-        this.cingleWorth = cingleWorth;
+    public void setLikesCount(int likesCount) {
+        this.likesCount = likesCount;
     }
 
     public int getCommentsCount() {
@@ -74,20 +101,20 @@ public class Cingle {
         this.commentsCount = commentsCount;
     }
 
+    public int getCingleWorth() {
+        return cingleWorth;
+    }
+
+    public void setCingleWorth(int cingleWorth) {
+        this.cingleWorth = cingleWorth;
+    }
+
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public int getLikesCount() {
-        return likesCount;
-    }
-
-    public void setLikesCount(int likesCount) {
-        this.likesCount = likesCount;
     }
 
     public String getMoreDescription() {
@@ -98,27 +125,19 @@ public class Cingle {
         this.moreDescription = moreDescription;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public int getViewsCount() {
-        return viewsCount;
-    }
-
-    public void setViewsCount(int viewsCount) {
-        this.viewsCount = viewsCount;
-    }
-
     public String getPushId() {
         return pushId;
     }
 
     public void setPushId(String pushId) {
         this.pushId = pushId;
+    }
+
+    public String getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(String timeStamp) {
+        this.timeStamp = timeStamp;
     }
 }

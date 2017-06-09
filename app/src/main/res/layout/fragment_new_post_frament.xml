@@ -112,22 +112,23 @@
         android:padding="10dp"
         android:layout_height="300sp">
 
-            <ImageView
-                android:background="@android:color/transparent"
-                android:id="@+id/chosenImageView"
-                android:adjustViewBounds="true"
-                android:scaleType="centerCrop"
-                android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_width="match_parent" />
+        <ImageView
+            android:background="@android:color/transparent"
+            android:id="@+id/chosenImageView"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_width="match_parent" />
 
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="39dp">
+        android:layout_height="39dp"
+        android:keepScreenOn="false"
+        android:layout_gravity="bottom">
 
                 <ImageView
                     android:layout_height="wrap_content"
@@ -148,16 +149,6 @@
                     android:layout_centerHorizontal="true"
                     android:id="@+id/cameraImageView" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_alignTop="@+id/cameraImageView"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginRight="18dp"
-                    android:layout_marginEnd="18dp"
-                    android:id="@+id/videoImageView" />
-
-            </RelativeLayout>
+    </RelativeLayout>
 
 </LinearLayout>

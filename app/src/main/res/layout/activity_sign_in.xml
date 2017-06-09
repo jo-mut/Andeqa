@@ -53,7 +53,7 @@
                 android:padding="10dp"
                 android:layout_marginBottom="10dp"
                 android:textColor="@android:color/black"
-                android:textSize="20sp" />
+                android:textSize="16sp" />
 
             <EditText
                 android:id="@+id/passwordEditText"
@@ -65,7 +65,7 @@
                 android:nextFocusDown="@+id/passwordEditText"
                 android:padding="10dp"
                 android:textColor="@android:color/black"
-                android:textSize="20sp" />
+                android:textSize="16sp" />
 
 
             <Button

@@ -22,10 +22,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ViewAnimator;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.ui.FirebaseUtil;
 import com.cinggl.cinggl.models.Cingle;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,24 +35,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 import static android.app.Activity.RESULT_OK;
-import static android.content.Intent.ACTION_PICK;
-import static android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -100,6 +94,7 @@ public class NewPostFrament extends DialogFragment implements View.OnClickListen
         mCameraImageView.setOnClickListener(this);
         mPostCingleTextView.setOnClickListener(this);
         uploadingToFirebaseDialog();
+
 //        createImageGallery();
 
         return view;
@@ -129,6 +124,7 @@ public class NewPostFrament extends DialogFragment implements View.OnClickListen
 
             if(requestCode == IMAGE_GALLERY_REQUEST){
                 imageUri = data.getData();
+                mChosenImageView.setImageURI(imageUri);
 
                 InputStream inputStream;
 
@@ -197,13 +193,17 @@ public class NewPostFrament extends DialogFragment implements View.OnClickListen
         photoReducedSizeBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
         byte [] data = baos.toByteArray();
 
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String uid = user.getUid();
 
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final String uid = user.getUid();
+
+        final Long timeStamp = System.currentTimeMillis();
         StorageReference storageReference = FirebaseStorage
                 .getInstance().getReference()
                 .child(Constants.FIREBASE_PUBLIC_CINGLES)
-                .child(uid);
+                .child(uid)
+                .child(timeStamp.toString());
+
         UploadTask uploadTask = storageReference.putBytes(data);
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -211,20 +211,20 @@ public class NewPostFrament extends DialogFragment implements View.OnClickListen
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
                 Cingle cingle = new Cingle();
-
                 cingle.setTitle(mCingleTitleEditText.getText().toString());
                 cingle.setDescription(mCingleDescriptionEditText.getText().toString());
-                if(photoReducedSizeBitmap != null){
+                cingle.setTimeStamp(timeStamp.toString());
+                cingle.setCingulan(FirebaseUtil.getCingulan());
+
+                 if(photoReducedSizeBitmap != null){
                     cingle.setCingleImageUrl(downloadUrl.toString());
                 }
 
                 /*Getting the current logged in user*/
-                FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-                String uid = firebaseUser.getUid();
                 DatabaseReference databaseReference = FirebaseDatabase
                         .getInstance()
-                        .getReference(Constants.FIREBASE_PRIVATE_CINGLE)
-                        .child(uid);
+                        .getReference(Constants.FIREBASE_PUBLIC_CINGLES);
+
                 /*Pushing the same cingle to a reference from where Cingles posted by the
                  user will be retrieved and displayed on their profile*/
                 DatabaseReference userRef = databaseReference.push();
@@ -232,15 +232,9 @@ public class NewPostFrament extends DialogFragment implements View.OnClickListen
                 cingle.setPushId(pushId);
                 userRef.setValue(cingle);
 
-                /*Pushing the same cingle to a public reference from where they are retrieved
-                and displayed on the public cingleout platform*/
-                DatabaseReference publicRef = FirebaseDatabase
-                        .getInstance()
-                        .getReference(Constants.FIREBASE_PUBLIC_CINGLES);
-                publicRef.push().setValue(cingle);
-
                 mCingleTitleEditText.setText("");
                 mCingleDescriptionEditText.setText("");
+                mChosenImageView.setImageBitmap(null);
 
                 progressDialog.dismiss();
 

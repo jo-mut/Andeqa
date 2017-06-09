@@ -155,7 +155,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private void createAuthProgressDialog() {
         mAuthProgressDialog = new ProgressDialog(this);
         mAuthProgressDialog.setTitle("Loading...");
-        mAuthProgressDialog.setMessage("Authenticating with Firebase...");
+        mAuthProgressDialog.setMessage("Authenticating your credentials...");
         mAuthProgressDialog.setCancelable(false);
     }
 
