@@ -53,6 +53,7 @@ public class CingleOutFragment extends Fragment {
     private DatabaseReference likesRef;
     private FirebaseAuth firebaseAuth;
     private static final String TAG = "CingleOutFragment";
+    private static final String EXTRA_POST_KEY = "post key";
 
 
     public CingleOutFragment() {
@@ -161,6 +162,7 @@ public class CingleOutFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(getActivity(), CommentsActivity.class);
+                        intent.putExtra(CingleOutFragment.EXTRA_POST_KEY, postKey);
                         startActivity(intent);
                     }
                 });
