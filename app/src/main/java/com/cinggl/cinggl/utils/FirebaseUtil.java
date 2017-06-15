@@ -1,4 +1,4 @@
-package com.cinggl.cinggl.ui;
+package com.cinggl.cinggl.utils;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.models.Cingulan;
@@ -12,9 +12,19 @@ import com.google.firebase.database.FirebaseDatabase;
  */
 
 public class FirebaseUtil {
+    private  static  FirebaseDatabase firebaseDatabase;
 
     public static DatabaseReference getAppRef(){
         return FirebaseDatabase.getInstance().getReference();
+    }
+
+    public static  FirebaseDatabase getDatabase(){
+        if(firebaseDatabase == null){
+            firebaseDatabase = FirebaseDatabase.getInstance();
+            firebaseDatabase.setPersistenceEnabled(true);
+        }
+
+        return firebaseDatabase;
     }
 
     public static String getCurrentUserId(){

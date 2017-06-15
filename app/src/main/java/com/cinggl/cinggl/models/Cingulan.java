@@ -13,6 +13,7 @@ public class Cingulan {
     private String timestamp;
     private String pushId;
     private String uid;
+    private String email;
 
     public Cingulan(){
         //EMPTY CONSTRUCTOR REQUIRED
@@ -22,6 +23,7 @@ public class Cingulan {
         this.profileImage = profileImage;
         this.username = username;
         this.uid = uid;
+        this.email = email;
     }
 
     public String getProfileImage() {
@@ -70,5 +72,13 @@ public class Cingulan {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

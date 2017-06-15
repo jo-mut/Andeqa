@@ -51,4 +51,6 @@ public class FirebaseProfileCinglesViewHolder extends RecyclerView.ViewHolder {
 
     }
 
+
+
 }

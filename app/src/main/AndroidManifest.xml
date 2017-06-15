@@ -42,7 +42,8 @@
         <activity
             android:name=".ui.SettingsActivity"
             android:label="Settings" />
-        <activity android:name=".profile.ProfileActivity"></activity>
+        <activity android:name=".profile.UpdateProfileActivity" />
+        <activity android:name=".home.CommentsActivity"></activity>
     </application>
 
 </manifest>

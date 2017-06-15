@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/action_home"
-        android:icon="@drawable/ic_view_comfy_black_24dp"
+        android:icon="@drawable/ic_home_white_24dp"
         app:showAsAction="ifRoom"
         android:enabled="true"
         android:title="Home">
@@ -12,7 +12,7 @@
 
     <item
         android:id="@+id/action_chat"
-        android:icon="@drawable/ic_chat_bubble_black_24dp"
+        android:icon="@drawable/ic_chat_white_24dp"
         app:showAsAction="ifRoom"
         android:enabled="true"
         android:title="Chats">

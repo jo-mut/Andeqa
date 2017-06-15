@@ -7,17 +7,12 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cingle;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+
+import static com.cinggl.cinggl.R.id.likesImageView;
 
 /**
  * Created by J.EL on 5/26/2017.
@@ -28,6 +23,8 @@ public class FirebaseCingleOutViewHolder extends RecyclerView.ViewHolder {
     View mView;
     Context mContext;
     ProgressBar progressBar;
+    public ImageView likesImageView;
+    public ImageView commentsImageView;
     public TextView likesCountTextView;
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
@@ -36,15 +33,18 @@ public class FirebaseCingleOutViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
+        likesImageView = (ImageView) itemView.findViewById(R.id.likesImageView);
         likesCountTextView =(TextView)itemView.findViewById(R.id.likesCountTextView);
+        commentsImageView = (ImageView) itemView.findViewById(R.id.commentsImageView);
 
     }
 
     public void bindCingle(Cingle cingle){
-        ImageView profileImageView = (ImageView) mView.findViewById(R.id.profileImageView);
+        ImageView profileImageView = (ImageView) mView.findViewById(R.id.chosenImageView);
         ImageView cingleImageView = (ImageView) mView.findViewById(R.id.cingleImageView);
         TextView viewCountTextView = (TextView) mView.findViewById(R.id.viewCountTextView);
         TextView likesCountImageView = (TextView) mView.findViewById(R.id.likesCountTextView);
+        ImageView likesImageView =(ImageView) mView.findViewById(R.id.likesImageView);
         TextView commentsCountTextView = (TextView) mView.findViewById(R.id.commentsCountTextView);
         TextView cingleWorthTextView = (TextView) mView.findViewById(R.id.cingleWorthTextView);
         ImageView cingleSettingsImageView = (ImageView) mView.findViewById(R.id.cingleSettingsImageView);
@@ -52,7 +52,6 @@ public class FirebaseCingleOutViewHolder extends RecyclerView.ViewHolder {
         TextView timeTextView = (TextView) mView.findViewById(R.id.timeTextView);
         TextView cingleTitleTextView = (TextView) mView.findViewById(R.id.cingleTitleTextView);
         TextView cingleDescriptionTextView = (TextView) mView.findViewById(R.id.cingleDescriptionTextView);
-        TextView streamedCommentsTextView = (TextView) mView.findViewById(R.id.streamedCommentsTextView);
 
 
         Picasso.with(mContext)
@@ -74,6 +73,7 @@ public class FirebaseCingleOutViewHolder extends RecyclerView.ViewHolder {
         cingleTitleTextView.setText((cingle.getTitle()));
         cingleDescriptionTextView.setText(cingle.getDescription());
         accountUsernameTextView.setText(cingle.getAccountUserName());
+//        likesCountTextView.setText(cingle.getLikesCount());
 
     }
 

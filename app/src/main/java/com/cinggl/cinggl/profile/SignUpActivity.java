@@ -12,7 +12,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.models.Cingulan;
 import com.cinggl.cinggl.ui.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -20,6 +22,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -42,6 +46,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private FirebaseAuth.AuthStateListener mAuthListener;
     private ProgressDialog mAuthProgressDialog;
     private String mName;
+    private DatabaseReference usersRef;
+    private DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +108,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
         mAuthProgressDialog.show();
 
-        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
 
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -123,18 +130,25 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void createFirebaseUserProfile(final FirebaseUser user) {
-        UserProfileChangeRequest addProfileName = new UserProfileChangeRequest.Builder()
-                .setDisplayName(mName)
-                .build();
-        user.updateProfile(addProfileName)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, user.getDisplayName());
-                        }
-                    }
-                });
+        final FirebaseUser thisUser = FirebaseAuth.getInstance().getCurrentUser();
+        final String uid = thisUser.getUid();
+
+        Cingulan cingulan = new Cingulan();
+        cingulan.setUsername(mNameEditText.getText().toString());
+        cingulan.setEmail(mEmailEditText.getText().toString());
+        cingulan.setUid(mAuth.getCurrentUser().getUid());
+
+
+        DatabaseReference usersRef= FirebaseDatabase.getInstance()
+                .getReference(Constants.FIREBASE_USERS)
+                .child(uid);
+
+        DatabaseReference pushRef = usersRef;
+        String pushId = pushRef.getKey();
+        cingulan.setPushId(pushId);
+        pushRef.setValue(cingulan);
+
+
     }
 
     private void createAuthStateListener() {

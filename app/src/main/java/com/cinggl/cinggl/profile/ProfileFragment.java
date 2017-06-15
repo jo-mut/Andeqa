@@ -1,19 +1,15 @@
 package com.cinggl.cinggl.profile;
 
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,51 +17,39 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.adapters.FirebaseCingleOutViewHolder;
 import com.cinggl.cinggl.adapters.FirebaseProfileCinglesViewHolder;
-import com.cinggl.cinggl.home.HomeActivity;
+import com.cinggl.cinggl.adapters.ProfileInfoViewHolder;
+import com.cinggl.cinggl.camera.NewPostFrament;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.models.Cingulan;
-import com.cinggl.cinggl.ui.FirebaseUtil;
+import com.cinggl.cinggl.ui.SettingsActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-import static android.app.Activity.RESULT_OK;
-
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ProfileFragment extends Fragment {
-    @Bind(R.id.accountUsernameTextView)TextView mAccountUsernameTextView;
-    @Bind(R.id.profileImageView)ImageView mProfileImageView;
-    @Bind(R.id.bioTextView)TextView mBioTextView;
+public class ProfileFragment extends Fragment{
     @Bind(R.id.profileCinglesRecyclerView)RecyclerView mProfileCinglesRecyclerView;
+    @Bind(R.id.profileInfoRecyclerView)RecyclerView mProfileInfoRecyclerView;
 
     private DatabaseReference databaseReference;
+    private DatabaseReference usersRef;
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
+    private Query profileCinglesQuery;
+    private Query profileInfoQuery;
     private FirebaseAuth firebaseAuth;
-    private FirebaseAuth.AuthStateListener firebaseAuthListener;
+    private FirebaseUser firebaseUser;
 
 
     public ProfileFragment() {
@@ -87,7 +71,13 @@ public class ProfileFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_PUBLIC_CINGLES);
+        profileCinglesQuery = databaseReference.orderByChild("uid").equalTo(firebaseAuth.getCurrentUser().getUid());
+        databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
+        profileInfoQuery = databaseReference.orderByChild("uid").equalTo(firebaseAuth.getCurrentUser().getUid());
 
+        setUpProfile();
         setUpFirebaseAdapter();
 
         return view;
@@ -95,20 +85,45 @@ public class ProfileFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_layout, menu);
+        // Inflate the menu; this adds items to the action bar if it is present.
         super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_layout, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action b item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            launchSettings();
+            return true;
+        }
+
+        if(id == R.id.action_search){
+            return true;
+        }
+
+        if(id == R.id.action_notifications){
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
+    public void launchSettings(){
+        Intent intentSettings = new Intent(getActivity(), SettingsActivity.class);
+        startActivity(intentSettings);
+    }
+
+
     private void setUpFirebaseAdapter(){
-        databaseReference = FirebaseDatabase.getInstance()
-                .getReference(Constants.FIREBASE_PUBLIC_CINGLES);
+
         firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Cingle, FirebaseProfileCinglesViewHolder>
-                (Cingle.class, R.layout.profile_cingles_item_list, FirebaseProfileCinglesViewHolder.class, databaseReference) {
+                (Cingle.class, R.layout.profile_cingles_item_list, FirebaseProfileCinglesViewHolder.class, profileCinglesQuery) {
             @Override
             protected void populateViewHolder(FirebaseProfileCinglesViewHolder viewHolder, Cingle model, int position) {
                 viewHolder.bindProfileCingle(model);
@@ -116,30 +131,35 @@ public class ProfileFragment extends Fragment {
 
             }
         };
+
         mProfileCinglesRecyclerView.setAdapter(firebaseRecyclerAdapter);
-        mProfileCinglesRecyclerView.setHasFixedSize(false);
+        mProfileCinglesRecyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
         layoutManager.setAutoMeasureEnabled(true);
         mProfileCinglesRecyclerView.setLayoutManager(layoutManager);
+
     }
 
-//    private void setUpFirebaseAdapter(){
-////        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-////        String uid = user.getUid();
-//
-//        Query query = FirebaseDatabase.getInstance()
-//                .getReference(Constants.FIREBASE_PUBLIC_CINGLES).addValueEventListener(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(DataSnapshot dataSnapshot) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(DatabaseError databaseError) {
-//
-//                    }
-//                })
-//    }
+
+    public void setUpProfile(){
+        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Cingulan, ProfileInfoViewHolder>
+                (Cingulan.class, R.layout.profile_info_viewholder, ProfileInfoViewHolder.class, profileInfoQuery) {
+            @Override
+            protected void populateViewHolder(ProfileInfoViewHolder viewHolder, Cingulan model, int position) {
+                viewHolder.bindProfileInfo(model);
+
+
+            }
+        };
+
+        mProfileInfoRecyclerView.setAdapter(firebaseRecyclerAdapter);
+        mProfileInfoRecyclerView.setHasFixedSize(true);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        layoutManager.setAutoMeasureEnabled(true);
+        mProfileInfoRecyclerView.setLayoutManager(layoutManager);
+
+    }
+
 
     @Override
     public void onDestroy(){

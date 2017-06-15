@@ -7,16 +7,72 @@
     android:layout_height="wrap_content"
     android:weightSum="1">
 
-        <ImageView
-            app:srcCompat="@drawable/test"
-            android:id="@+id/cingleItemImageView"
-            android:scaleType="centerCrop"
-            android:cropToPadding="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_width="110dp"
-            android:layout_height="110dp" />
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+                <ImageView
+                    app:srcCompat="@drawable/test"
+                    android:id="@+id/cingleItemImageView"
+                    android:scaleType="centerCrop"
+                    android:cropToPadding="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_width="110dp"
+                    android:layout_height="110dp" />
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    app:srcCompat="@drawable/ic_favorite_black_24dp"
+                    android:id="@+id/likesImageView"
+                    android:layout_below="@+id/cingleItemImageView"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
+
+                <TextView
+                    android:text="0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/likeCountTextView"
+                    android:layout_below="@+id/cingleItemImageView"
+                    android:layout_toRightOf="@+id/likesImageView"
+                    android:layout_toEndOf="@+id/likesImageView"
+                    android:textSize="12sp"
+                    android:textColor="@android:color/black"
+                    android:layout_marginLeft="5dp" />
+
+                <TextView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:id="@+id/senseCreditsTextView"
+                    android:textStyle="normal|bold"
+                    android:textAlignment="center"
+                    android:text="SP"
+                    android:layout_below="@+id/cingleItemImageView"
+                    android:layout_centerHorizontal="true"
+                    android:padding="3dp"
+                    android:textSize="7sp"
+                    android:background="@drawable/circle_image_background"
+                    android:layout_alignBottom="@+id/likesImageView"
+                    android:textColor="@android:color/black" />
+
+                <TextView
+                    android:text="0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/senseCreditCountTextView"
+                    android:textSize="12sp"
+                    android:textColor="@android:color/black"
+                    android:layout_below="@+id/cingleItemImageView"
+                    android:layout_toRightOf="@+id/senseCreditsTextView"
+                    android:layout_toEndOf="@+id/senseCreditsTextView"
+                    android:layout_marginLeft="5dp" />
+
+
+        </RelativeLayout>
+
 </RelativeLayout>
 
 

@@ -47,6 +47,7 @@
         android:layout_height="50dp"
         app:elevation="0dp" />
 
+
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/bottomNavigationView"
         app:menu="@menu/bottom_navigation_menu"
@@ -55,9 +56,6 @@
         android:layout_gravity="bottom"
         app:itemTextColor="@android:color/white"
         app:itemIconTint="@android:color/white"
-        app:itemBackground="@color/colorPrimary">
-
-    </android.support.design.widget.BottomNavigationView>
-
+        app:itemBackground="@color/colorPrimary"/>
 
 </android.support.design.widget.CoordinatorLayout>

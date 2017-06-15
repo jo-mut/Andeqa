@@ -5,96 +5,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="2dp"
     tools:context="com.cinggl.cinggl.profile.ProfileFragment">
+
+    <ScrollView
+        android:scrollbars="none"
+        android:fillViewport="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:weightSum="1">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="223dp">
-
-                <ImageView
-                    app:srcCompat="@drawable/profile"
-                    android:layout_marginTop="16dp"
-                    android:id="@+id/profileImageView"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp" />
-
-                <TextView
-                    android:text="Following"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/followingTextView"
-                    android:textStyle="normal|bold"
-                    android:textSize="16sp"
-                    android:textColor="@android:color/black"
-                    android:layout_marginLeft="25dp"
-                    android:layout_marginStart="25dp"
-                    android:layout_toRightOf="@+id/profileImageView"
-                    android:layout_toEndOf="@+id/profileImageView"
-                    android:layout_alignBottom="@+id/followersTextView" />
-
-                <TextView
-                    android:text="Followers"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/followersTextView"
-                    android:textStyle="normal|bold"
-                    android:textSize="16sp"
-                    android:textColor="@android:color/black"
-                    android:layout_marginRight="19dp"
-                    android:layout_marginEnd="19dp"
-                    android:layout_alignParentBottom="true"
-                    android:layout_toLeftOf="@+id/profileImageView"
-                    android:layout_toStartOf="@+id/profileImageView"
-                    android:layout_marginBottom="20dp" />
-
-                <TextView
-                    android:text="Username"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/profileImageView"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="22dp"
-                    android:id="@+id/accountUsernameTextView"
-                    android:textStyle="normal|bold"
-                    android:textColor="@android:color/black" />
-
-                <TextView
-                    android:text="Bio"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/accountUsernameTextView"
-                    android:layout_alignRight="@+id/accountUsernameTextView"
-                    android:layout_alignEnd="@+id/accountUsernameTextView"
-                    android:layout_marginTop="12dp"
-                    android:id="@+id/bioTextView"
-                    android:layout_alignLeft="@+id/accountUsernameTextView"
-                    android:layout_alignStart="@+id/accountUsernameTextView"
-                    android:textAlignment="center" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/profile_container"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/profileInfoRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/profileCinglesRecyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+            </android.support.v7.widget.RecyclerView>
 
-                </android.support.v7.widget.RecyclerView>
 
-            </RelativeLayout>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/profileCinglesRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </android.support.v7.widget.RecyclerView>
 
         </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

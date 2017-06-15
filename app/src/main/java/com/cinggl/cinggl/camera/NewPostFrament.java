@@ -25,7 +25,6 @@ import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.ui.FirebaseUtil;
 import com.cinggl.cinggl.models.Cingle;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -69,6 +68,8 @@ public class NewPostFrament extends DialogFragment implements View.OnClickListen
     private StorageReference storageReference;
     private DatabaseReference databaseReference;
     private ProgressDialog progressDialog;
+    private FirebaseUser firebaseUser;
+    private FirebaseAuth firebaseAuth;
 
 
     public NewPostFrament() {
@@ -94,6 +95,9 @@ public class NewPostFrament extends DialogFragment implements View.OnClickListen
         mCameraImageView.setOnClickListener(this);
         mPostCingleTextView.setOnClickListener(this);
         uploadingToFirebaseDialog();
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
 
 //        createImageGallery();
 
@@ -126,18 +130,19 @@ public class NewPostFrament extends DialogFragment implements View.OnClickListen
                 imageUri = data.getData();
                 mChosenImageView.setImageURI(imageUri);
 
-                InputStream inputStream;
-
-                try{
-                    inputStream = getContext().getContentResolver().openInputStream(imageUri);
-
-                    photoReducedSizeBitmap = BitmapFactory.decodeStream(inputStream);
-                    mChosenImageView.setImageBitmap(photoReducedSizeBitmap);
-
-                }catch (FileNotFoundException e){
-                    e.printStackTrace();
-                    Toast.makeText(getContext(), "Unable to open image", Toast.LENGTH_LONG).show();
-                }
+//
+//                InputStream inputStream;
+//
+//                try{
+//                    inputStream = getContext().getContentResolver().openInputStream(imageUri);
+//
+//                    photoReducedSizeBitmap = BitmapFactory.decodeStream(inputStream);
+//                    mChosenImageView.setImageBitmap(photoReducedSizeBitmap);
+//
+//                }catch (FileNotFoundException e){
+//                    e.printStackTrace();
+//                    Toast.makeText(getContext(), "Unable to open image", Toast.LENGTH_LONG).show();
+//                }
             }
 
         }
@@ -170,12 +175,11 @@ public class NewPostFrament extends DialogFragment implements View.OnClickListen
         }
 
         if(v == mGalleryImageView){
-            Intent galleryIntent = new Intent(Intent.ACTION_PICK);
-            File photo = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-            String photoPath = photo.getPath();
-            imageUri = Uri.parse(photoPath);
-            galleryIntent.setDataAndType(imageUri, "image/*");
-            startActivityForResult(galleryIntent, IMAGE_GALLERY_REQUEST);
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            intent.setType("image/*");
+            startActivityForResult(intent, IMAGE_GALLERY_REQUEST);
+
         }
 
         if(v == mPostCingleTextView){
@@ -214,7 +218,8 @@ public class NewPostFrament extends DialogFragment implements View.OnClickListen
                 cingle.setTitle(mCingleTitleEditText.getText().toString());
                 cingle.setDescription(mCingleDescriptionEditText.getText().toString());
                 cingle.setTimeStamp(timeStamp.toString());
-                cingle.setCingulan(FirebaseUtil.getCingulan());
+                cingle.setUid(firebaseAuth.getCurrentUser().getUid());
+//                cingle.setCingulan(FirebaseUtil.getCingulan());
 
                  if(photoReducedSizeBitmap != null){
                     cingle.setCingleImageUrl(downloadUrl.toString());
@@ -224,6 +229,7 @@ public class NewPostFrament extends DialogFragment implements View.OnClickListen
                 DatabaseReference databaseReference = FirebaseDatabase
                         .getInstance()
                         .getReference(Constants.FIREBASE_PUBLIC_CINGLES);
+
 
                 /*Pushing the same cingle to a reference from where Cingles posted by the
                  user will be retrieved and displayed on their profile*/

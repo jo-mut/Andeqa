@@ -1,14 +1,18 @@
 package com.cinggl.cinggl.models;
 
 
+import com.google.firebase.database.Exclude;
+
 import org.parceler.Parcel;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by J.EL on 4/8/2017.
  */
 @Parcel
 public class Cingle {
-
     Cingulan cingulan;
     String title;
     int viewsCount;
@@ -16,14 +20,15 @@ public class Cingle {
     String cingleImageUrl;
     String profileImageUrl;
 
-    int likesCount;
+    public int likesCount = 0;
+    public Map<String, Boolean>likeByUser = new HashMap<>();
     int commentsCount;
     int cingleWorth;
-
     String description;
     String moreDescription;
     String pushId;
     String timeStamp;
+    String uid;
 
     public Cingle(){
 
@@ -140,4 +145,22 @@ public class Cingle {
     public void setTimeStamp(String timeStamp) {
         this.timeStamp = timeStamp;
     }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    @Exclude
+    public Map<String, Object> toMap(){
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("likeCount", likesCount);
+        result.put("likeByUser", likeByUser);
+
+        return result;
+    }
+
 }
