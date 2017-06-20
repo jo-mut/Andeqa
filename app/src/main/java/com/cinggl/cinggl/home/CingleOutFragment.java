@@ -3,10 +3,12 @@ package com.cinggl.cinggl.home;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,6 +23,7 @@ import android.widget.TextView;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.FirebaseCingleOutViewHolder;
+import com.cinggl.cinggl.models.Cingulan;
 import com.cinggl.cinggl.utils.FirebaseUtil;
 import com.cinggl.cinggl.models.Cingle;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -44,12 +47,15 @@ public class CingleOutFragment extends Fragment {
     private DatabaseReference databaseReference;
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     @Bind(R.id.cingleOutRecyclerView)RecyclerView cingleOutRecyclerView;
-    @Bind(R.id.scrollView) ScrollView cingleOutScrollView;
+//    @Bind(R.id.scrollView) ScrollView cingleOutScrollView;
 
     private TextView likesCountTextView;
     private ImageView likesImageView;
     private ImageView commentsImageView;
+    private TextView cingleTitleTextView;
+    private TextView cingleDescriptionTextView;
     private boolean processLikes = false;
+    private DatabaseReference usernameRef;
     private DatabaseReference likesRef;
     private FirebaseAuth firebaseAuth;
     private static final String TAG = "CingleOutFragment";
@@ -61,13 +67,6 @@ public class CingleOutFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -75,36 +74,29 @@ public class CingleOutFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         likesRef = FirebaseDatabase.getInstance().getReference("likesByUser");
+//        usernameRef = FirebaseDatabase.getInstance().getReference()
+//                .child("Users")
+//                .child(firebaseAuth.getCurrentUser().getUid())
+//                .child("username");
 
         firebaseAuth = FirebaseAuth.getInstance();
 
         likesRef.keepSynced(true);
 
+
         setUpFirebaseAdapter();
         return view;
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        inflater.inflate(R.menu.menu_layout, menu);
-        super.onCreateOptionsMenu(menu, inflater);
 
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-
-        return super.onOptionsItemSelected(item);
-    }
+//    public Query getQuery(DatabaseReference ref){
+//        return ref.child("Users").child(firebaseAuth.getCurrentUser()
+//                .getUid()).child("username");
+//
+//    }
 
     private void setUpFirebaseAdapter(){
+//        final Query username = getQuery(usernameRef);
         databaseReference = FirebaseDatabase.getInstance()
                 .getReference(Constants.FIREBASE_PUBLIC_CINGLES);
         firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Cingle, FirebaseCingleOutViewHolder>
@@ -114,14 +106,12 @@ public class CingleOutFragment extends Fragment {
                 viewHolder.bindCingle(model);
                 DatabaseReference cingleRef = getRef(position);
                 final String postKey = cingleRef.getKey();
-//
+             //
 //                if(model.likeByUser.containsKey(firebaseAuth.getCurrentUser().getUid())){
 //                    viewHolder.likesImageView.setImageResource(R.drawable.ic_favorite_black_24dp);
 //                }else{
 //                    viewHolder.likesImageView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
 //                }
-//
-
 
                 viewHolder.likesImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -169,9 +159,14 @@ public class CingleOutFragment extends Fragment {
             }
         };
 
+
         cingleOutRecyclerView.setAdapter(firebaseRecyclerAdapter);
         cingleOutRecyclerView.setHasFixedSize(false);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
+        layoutManager.onSaveInstanceState();
+//        layoutManager.onSaveInstanceState();
         layoutManager.setAutoMeasureEnabled(true);
         cingleOutRecyclerView.setLayoutManager(layoutManager);
     }

@@ -159,10 +159,10 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
         }
 
         if(v == mNextTextView){
-            Cingle cingle = new Cingle();
-            Intent intent = new Intent(CreateCingleActivity.this, CustomGelleryActivity.class);
-            intent.putExtra(Constants.CINGLE_IMAGE, Parcels.wrap(image));
-            startActivity(intent);
+//            Cingle cingle = new Cingle();
+//            Intent intent = new Intent(CreateCingleActivity.this, CustomGelleryActivity.class);
+//            intent.putExtra(Constants.CINGLE_IMAGE, Parcels.wrap(image));
+//            startActivity(intent);
 
 //            InputStream inputStream;
 //            try{

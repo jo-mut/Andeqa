@@ -1,4 +1,4 @@
-package com.cinggl.cinggl.timeline;
+package com.cinggl.cinggl.profile;
 
 
 import android.os.Bundle;
@@ -12,10 +12,10 @@ import com.cinggl.cinggl.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class  TimelineActivities extends Fragment {
+public class FollowersFragment extends Fragment {
 
 
-    public TimelineActivities() {
+    public FollowersFragment() {
         // Required empty public constructor
     }
 
@@ -24,7 +24,7 @@ public class  TimelineActivities extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_timeline_activities, container, false);
+        return inflater.inflate(R.layout.fragment_followers, container, false);
     }
 
 }

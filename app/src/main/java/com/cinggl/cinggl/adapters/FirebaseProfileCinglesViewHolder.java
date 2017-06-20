@@ -31,6 +31,10 @@ public class FirebaseProfileCinglesViewHolder extends RecyclerView.ViewHolder {
 
     public void bindProfileCingle(Cingle cingle){
         ImageView cingleImageView = (ImageView) mView.findViewById(R.id.cingleItemImageView);
+        TextView cingleTitleTextView = (TextView) mView.findViewById(R.id.cingleTitleTextView);
+        TextView likesCountTextView = (TextView) mView.findViewById(R.id.likesCountTextView);
+        TextView creditCountTextView = (TextView) mView.findViewById(R.id.createCingleTextView);
+        TextView commentCountTextView = (TextView) mView.findViewById(R.id.commentsCountTextView);
 
 
         Picasso.with(mContext)
@@ -48,6 +52,8 @@ public class FirebaseProfileCinglesViewHolder extends RecyclerView.ViewHolder {
 
                     }
                 });
+
+        cingleTitleTextView.setText(cingle.getTitle());
 
     }
 

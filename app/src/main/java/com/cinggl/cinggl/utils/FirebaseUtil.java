@@ -40,10 +40,11 @@ public class FirebaseUtil {
         return new Cingulan(user.getUid());
     }
 
+
     public static DatabaseReference getCurrentUserReference(){
         String uid = getCurrentUserId();
         if(uid != null){
-            return getAppRef().child("Cingulans").child(getCurrentUserId());
+            return getAppRef().child("Users").child(getCurrentUserId());
         }
         return null;
     }
@@ -53,7 +54,7 @@ public class FirebaseUtil {
     }
 
     public static DatabaseReference getUsersRef(){
-        return getAppRef().child("Cingulans");
+        return getAppRef().child("Users");
     }
 
     public static DatabaseReference getLikesRef() {

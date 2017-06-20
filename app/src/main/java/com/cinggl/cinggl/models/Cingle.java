@@ -20,8 +20,8 @@ public class Cingle {
     String cingleImageUrl;
     String profileImageUrl;
 
-    public int likesCount = 0;
-    public Map<String, Boolean>likeByUser = new HashMap<>();
+    int likesCount = 0;
+    Map<String, Boolean>likeByUser = new HashMap<>();
     int commentsCount;
     int cingleWorth;
     String description;

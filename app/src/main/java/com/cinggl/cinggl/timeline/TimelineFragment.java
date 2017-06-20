@@ -73,10 +73,6 @@ public class TimelineFragment extends Fragment {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            launchSettings();
-            return true;
-        }
 
         if(id == R.id.action_search){
             return true;
@@ -87,10 +83,5 @@ public class TimelineFragment extends Fragment {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    public void launchSettings(){
-        Intent intentSettings = new Intent(getActivity(), SettingsActivity.class);
-        startActivity(intentSettings);
     }
 }

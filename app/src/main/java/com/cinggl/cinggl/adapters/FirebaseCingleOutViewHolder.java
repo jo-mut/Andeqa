@@ -12,6 +12,8 @@ import com.cinggl.cinggl.models.Cingle;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import static com.cinggl.cinggl.R.id.cingleDescriptionTextView;
+import static com.cinggl.cinggl.R.id.cingleTitleTextView;
 import static com.cinggl.cinggl.R.id.likesImageView;
 
 /**
@@ -26,6 +28,8 @@ public class FirebaseCingleOutViewHolder extends RecyclerView.ViewHolder {
     public ImageView likesImageView;
     public ImageView commentsImageView;
     public TextView likesCountTextView;
+    public TextView cingleTitleTextView;
+    public TextView cingleDescriptionTextView;
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
 
@@ -36,6 +40,8 @@ public class FirebaseCingleOutViewHolder extends RecyclerView.ViewHolder {
         likesImageView = (ImageView) itemView.findViewById(R.id.likesImageView);
         likesCountTextView =(TextView)itemView.findViewById(R.id.likesCountTextView);
         commentsImageView = (ImageView) itemView.findViewById(R.id.commentsImageView);
+        cingleDescriptionTextView = (TextView) itemView.findViewById(R.id.cingleDescriptionTextView);
+        cingleTitleTextView = (TextView) itemView.findViewById(R.id.cingleTitleTextView);
 
     }
 

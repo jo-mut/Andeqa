@@ -9,20 +9,13 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <ScrollView
-        android:scrollbars="none"
-        android:id="@+id/scrollView"
+    <android.support.v7.widget.RecyclerView
+        android:overScrollMode="never"
+        android:id="@+id/cingleOutRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/cingleOutRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+    </android.support.v7.widget.RecyclerView>
 
-        </android.support.v7.widget.RecyclerView>
-
-
-    </ScrollView>
 
 </LinearLayout>

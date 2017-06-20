@@ -4,9 +4,7 @@ package com.cinggl.cinggl.profile;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,13 +14,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.FirebaseProfileCinglesViewHolder;
 import com.cinggl.cinggl.adapters.ProfileInfoViewHolder;
-import com.cinggl.cinggl.camera.NewPostFrament;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.models.Cingulan;
 import com.cinggl.cinggl.ui.SettingsActivity;
@@ -87,7 +83,7 @@ public class ProfileFragment extends Fragment{
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_layout, menu);
+        inflater.inflate(R.menu.profile_menu, menu);
     }
 
     @Override
@@ -133,13 +129,13 @@ public class ProfileFragment extends Fragment{
         };
 
         mProfileCinglesRecyclerView.setAdapter(firebaseRecyclerAdapter);
-        mProfileCinglesRecyclerView.setHasFixedSize(true);
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
+        mProfileCinglesRecyclerView.setHasFixedSize(false);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
         layoutManager.setAutoMeasureEnabled(true);
+        mProfileCinglesRecyclerView.setNestedScrollingEnabled(false);
         mProfileCinglesRecyclerView.setLayoutManager(layoutManager);
 
     }
-
 
     public void setUpProfile(){
         firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Cingulan, ProfileInfoViewHolder>
@@ -153,9 +149,10 @@ public class ProfileFragment extends Fragment{
         };
 
         mProfileInfoRecyclerView.setAdapter(firebaseRecyclerAdapter);
-        mProfileInfoRecyclerView.setHasFixedSize(true);
+        mProfileInfoRecyclerView.setHasFixedSize(false);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setAutoMeasureEnabled(true);
+
         mProfileInfoRecyclerView.setLayoutManager(layoutManager);
 
     }

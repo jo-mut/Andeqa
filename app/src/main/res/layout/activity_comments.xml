@@ -9,78 +9,105 @@
     android:weightSum="1"
     tools:context="com.cinggl.cinggl.home.CommentsActivity">
 
-    <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-    </android.support.v7.widget.RecyclerView>
-
-
     <LinearLayout
         android:orientation="vertical"
-        android:layout_gravity="bottom"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:weightSum="1">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="449dp"
+            android:layout_weight="0.94">
 
-            <TextView
-                android:text="Username"
-                android:layout_width="wrap_content"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/commentsRecyclerView"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/userProfileImageView"
-                android:layout_toEndOf="@+id/userProfileImageView"
-                android:id="@+id/usernameTestView"
-                android:textStyle="normal|bold"
-                android:textColor="@android:color/black" />
-
-            <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                app:srcCompat="@drawable/profle_image_background"
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="10dp"
-                android:id="@+id/userProfileImageView"
+                android:overScrollMode="never"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true" />
 
         </RelativeLayout>
 
-        <RelativeLayout
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_gravity="bottom"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:paddingTop="5dp">
 
-            <EditText
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textMultiLine"
-                android:ems="10"
-                android:id="@+id/commentEditText"
-                android:textSize="16sp"
-                android:hint="Comment on this Cingle"
-                android:background="@drawable/edit_text_background"
-                android:paddingBottom="20dp"
-                android:paddingTop="20dp"
-                android:paddingLeft="10dp" />
+                android:layout_height="match_parent">
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_menu_send"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginRight="11dp"
-                android:layout_marginEnd="11dp"
-                android:layout_marginTop="16dp"
-                android:id="@+id/sendCommentImageView" />
+                <TextView
+                    android:text="Username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/userProfileImageView"
+                    android:layout_toEndOf="@+id/userProfileImageView"
+                    android:id="@+id/usernameTestView"
+                    android:textStyle="normal|bold"
+                    android:textColor="@android:color/black" />
 
-        </RelativeLayout>
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    app:srcCompat="@drawable/profle_image_background"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:id="@+id/userProfileImageView"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_menu_send"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="11dp"
+                    android:layout_marginEnd="11dp"
+                    android:layout_marginTop="16dp"
+                    android:id="@+id/sendCommentImageView" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:ems="10"
+                    android:id="@+id/commentEditText"
+                    android:textSize="16sp"
+                    android:hint="Comment on this Cingle"
+                    android:background="@drawable/edit_text_background"
+                    android:paddingBottom="20dp"
+                    android:paddingTop="20dp"
+                    android:paddingLeft="10dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
 
     </LinearLayout>
+
 
 </android.support.design.widget.CoordinatorLayout>

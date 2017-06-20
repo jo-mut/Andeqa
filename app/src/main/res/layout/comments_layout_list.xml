@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:srcCompat="@drawable/circle_image_background"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="13dp"
+            android:id="@+id/userProfileImageView" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.3dp"
+            android:background="@color/greyColor"
+            android:layout_marginTop="70dp"
+            android:layout_marginLeft="40dp" />
+
+        <TextView
+            android:text="username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/userProfileImageView"
+            android:layout_toRightOf="@+id/userProfileImageView"
+            android:layout_toEndOf="@+id/userProfileImageView"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:id="@+id/usernameTextView"
+            android:textColor="@android:color/black"
+            android:textStyle="normal|bold" />
+
+        <TextView
+            android:text="user comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/usernameTextView"
+            android:layout_alignLeft="@+id/usernameTextView"
+            android:layout_alignStart="@+id/usernameTextView"
+            android:id="@+id/commentTextView"
+            android:textColor="@android:color/black" />
+
+    </RelativeLayout>
+</LinearLayout>

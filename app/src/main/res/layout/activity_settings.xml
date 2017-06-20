@@ -12,53 +12,23 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="41dp">
+        android:layout_height="59dp"
+        android:layout_weight="0.12">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_height="match_parent">
-
-            <View
-                android:layout_alignParentBottom="true"
-                android:layout_width="match_parent"
-                android:layout_height="0.3dp"
-                android:background="@android:color/black" />
-
-            <TextView
-                android:text="Account"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:textColor="@android:color/black"
-                android:textStyle="normal|bold"
-                android:textSize="18sp"
-                android:padding="10dp" />
-        </RelativeLayout>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_weight="0.20"
-        android:layout_height="50dp">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
             android:paddingLeft="10dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_alignParentBottom="true">
+            android:layout_height="wrap_content"
+            android:paddingRight="10dp">
 
             <View
                 android:layout_alignParentBottom="true"
                 android:layout_width="match_parent"
                 android:layout_height="0.3dp"
-                android:background="@color/greyColor" />
+                android:background="@color/colorDivider" />
 
             <TextView
                 android:text="Edit Profile"
@@ -67,16 +37,72 @@
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:id="@+id/editProfileTextView"
                 android:textSize="16sp"
-                android:layout_marginTop="5dp" />
+                android:layout_marginTop="5dp"
+                android:textColor="@android:color/black"
+                android:textStyle="normal|bold" />
+
+            <TextView
+                android:text="Make changes to your profile photo, username and your personal bio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/editProfileTextView"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="25dp" />
+
         </RelativeLayout>
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_weight="0.20"
-        android:layout_height="50dp">
+        android:layout_height="57dp"
+        android:layout_weight="0.10">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
+            android:paddingRight="10dp">
+
+            <View
+                android:layout_alignParentBottom="true"
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:background="@color/colorDivider" />
+
+            <TextView
+                android:text="Blocked Cingulans"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:textSize="16sp"
+                android:layout_marginTop="5dp"
+                android:textColor="@android:color/black"
+                android:textStyle="normal|bold" />
+
+            <TextView
+                android:text="View Cingulans that you have block and choose to unblock them"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/blockedCingulansTextView"
+                android:layout_alignTop="@+id/textView14"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="25dp" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_weight="0.09">
+
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -85,21 +111,80 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_alignParentBottom="true">
+            android:layout_alignParentBottom="true"
+            android:paddingRight="10dp">
 
             <View
                 android:layout_alignParentBottom="true"
                 android:layout_width="match_parent"
                 android:layout_height="0.3dp"
-                android:background="@color/greyColor" />
+                android:background="@color/colorDivider" />
 
+            <TextView
+                android:text="Clear search history"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:textSize="16sp"
+                android:layout_marginTop="5dp"
+                android:textColor="@android:color/black"
+                android:textStyle="normal|bold" />
+
+            <TextView
+                android:text="Delete all of your search history"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/clearSearchTextView"
+                android:layout_alignBottom="@+id/textView16"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="25dp" />
         </RelativeLayout>
     </RelativeLayout>
 
+
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_weight="0.20"
-        android:layout_height="50dp">
+        android:layout_height="32dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:paddingRight="10dp">
+
+            <View
+                android:layout_alignParentBottom="true"
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:background="@color/colorDivider" />
+
+            <TextView
+                android:text="Cinggl Help"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/helpTextView"
+                android:textSize="16sp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:textColor="@android:color/black"
+                android:textStyle="normal|bold" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_weight="0.10">
+
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -108,21 +193,44 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_alignParentBottom="true">
+            android:layout_alignParentBottom="true"
+            android:paddingRight="10dp">
 
             <View
                 android:layout_alignParentBottom="true"
                 android:layout_width="match_parent"
                 android:layout_height="0.3dp"
-                android:background="@color/greyColor" />
+                android:background="@color/colorDivider" />
 
+            <TextView
+                android:text="Blog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:textSize="16sp"
+                android:layout_marginTop="5dp"
+                android:textColor="@android:color/black"
+                android:textStyle="normal|bold" />
+
+            <TextView
+                android:text="Head over to our blog and read about what people say about what cinggl is and get insights of why cinggl exists for you"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="viewStart"
+                android:id="@+id/blogTextView"
+                android:layout_above="@+id/view3"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="25dp" />
         </RelativeLayout>
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_weight="0.20"
-        android:layout_height="50dp">
+        android:layout_height="36dp">
+
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -131,21 +239,35 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_alignParentBottom="true">
+            android:layout_alignParentBottom="true"
+            android:paddingRight="10dp">
 
             <View
                 android:layout_alignParentBottom="true"
                 android:layout_width="match_parent"
                 android:layout_height="0.3dp"
-                android:background="@color/greyColor" />
+                android:background="@color/colorDivider" />
 
+            <TextView
+                android:text="Privacy Policy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/privacyPolicyTextView"
+                android:textSize="16sp"
+                android:layout_marginTop="5dp"
+                android:textColor="@android:color/black"
+                android:textStyle="normal|bold" />
         </RelativeLayout>
     </RelativeLayout>
 
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_weight="0.20"
-        android:layout_height="50dp">
+        android:layout_height="41dp">
+
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -154,14 +276,23 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_alignParentBottom="true">
+            android:layout_alignParentBottom="true"
+            android:paddingRight="10dp">
 
-            <View
-                android:layout_alignParentBottom="true"
-                android:layout_width="match_parent"
-                android:layout_height="0.3dp"
-                android:background="@color/greyColor" />
-
+            <TextView
+                android:text="Terms and Conditions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/termsAndConditionsTextView"
+                android:textSize="16sp"
+                android:layout_marginTop="5dp"
+                android:textColor="@android:color/black"
+                android:textStyle="normal|bold" />
         </RelativeLayout>
     </RelativeLayout>
+
+
 </LinearLayout>

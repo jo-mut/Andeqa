@@ -49,6 +49,8 @@ public class HomeFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
     }
 
     @Override
@@ -80,10 +82,6 @@ public class HomeFragment extends Fragment{
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            launchSettings();
-            return true;
-        }
 
         if(id == R.id.action_search){
             return true;
@@ -94,11 +92,6 @@ public class HomeFragment extends Fragment{
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    public void launchSettings(){
-        Intent intentSettings = new Intent(getActivity(), SettingsActivity.class);
-        startActivity(intentSettings);
     }
 
 }

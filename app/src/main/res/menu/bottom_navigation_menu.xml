@@ -10,13 +10,13 @@
         android:title="Home">
     </item>
 
-    <item
-        android:id="@+id/action_chat"
-        android:icon="@drawable/ic_chat_white_24dp"
-        app:showAsAction="ifRoom"
-        android:enabled="true"
-        android:title="Chats">
-    </item>
+    <!--<item-->
+        <!--android:id="@+id/action_chat"-->
+        <!--android:icon="@drawable/ic_chat_white_24dp"-->
+        <!--app:showAsAction="ifRoom"-->
+        <!--android:enabled="true"-->
+        <!--android:title="Chats">-->
+    <!--</item>-->
 
     <item
         android:id="@+id/action_timeline"

@@ -7,31 +7,35 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            app:srcCompat="@drawable/profile"
-            android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginLeft="12dp"
-            android:layout_marginStart="12dp"
-            android:id="@+id/chosenImageView"
-            android:layout_width="70dp"
-            android:layout_height="70dp" />
+        android:layout_height="wrap_content"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp">
 
         <TextView
-            android:text="Account Username"
+            android:text="First"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="12dp"
-            android:layout_marginStart="12dp"
-            android:id="@+id/accountUsernameTextView"
-            android:textColor="@android:color/black"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/userProfileImageView"
+            android:layout_toEndOf="@+id/userProfileImageView"
+            android:layout_marginTop="11dp"
+            android:id="@+id/firstNameTextView"
             android:textStyle="normal|bold"
-            android:layout_alignTop="@+id/chosenImageView"
-            android:layout_toRightOf="@+id/chosenImageView"
-            android:layout_toEndOf="@+id/chosenImageView" />
+            android:textColor="@android:color/black"
+            android:layout_marginLeft="5dp" />
+
+        <TextView
+            android:text="Second"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:id="@+id/secondNameTextView"
+            android:layout_alignBaseline="@+id/firstNameTextView"
+            android:layout_alignBottom="@+id/firstNameTextView"
+            android:layout_toRightOf="@+id/firstNameTextView"
+            android:textStyle="normal|bold"
+            android:textColor="@android:color/black" />
 
         <TextView
             android:text="Follow"
@@ -56,6 +60,17 @@
             android:layout_marginRight="15dp"
             android:layout_marginEnd="15dp"
             android:id="@+id/imageView9" />
+
+        <ImageView
+            app:srcCompat="@drawable/profile"
+            android:layout_marginLeft="11dp"
+            android:layout_marginStart="11dp"
+            android:id="@+id/userProfileImageView"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
     </RelativeLayout>
 

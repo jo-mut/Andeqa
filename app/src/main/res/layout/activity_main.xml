@@ -37,19 +37,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
-        android:id="@+id/textView2"
+        android:id="@+id/intro2TextView"
         android:textSize="20sp"
         android:layout_alignTop="@+id/introTextView"
         android:layout_centerHorizontal="true"
         android:textColor="@android:color/white" />
-
-    <ImageView
-        app:srcCompat="@drawable/logo"
-        android:id="@+id/imageView"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_above="@+id/introTextView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="48dp" />
 
 </RelativeLayout>
