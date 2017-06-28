@@ -35,10 +35,10 @@ public class FirebaseUtil {
         return null;
     }
 
-    public static Cingulan getCingulan() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        return new Cingulan(user.getUid());
-    }
+//    public static Cingulan getCingulan() {
+//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//        return new Cingulan(user.getUid());
+//    }
 
 
     public static DatabaseReference getCurrentUserReference(){
@@ -50,7 +50,7 @@ public class FirebaseUtil {
     }
 
     public static DatabaseReference getCinglesRef(){
-        return getAppRef().child(Constants.FIREBASE_PUBLIC_CINGLES);
+        return getAppRef().child(Constants.FIREBASE_CINGLES);
     }
 
     public static DatabaseReference getUsersRef(){

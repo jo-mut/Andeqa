@@ -5,7 +5,6 @@ package com.cinggl.cinggl.camera;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -13,7 +12,6 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,21 +28,26 @@ import com.cinggl.cinggl.models.Cingle;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -58,6 +61,8 @@ public class NewPostFrament extends DialogFragment implements View.OnClickListen
     @Bind(R.id.chosenImageView)ImageView mChosenImageView;
     @Bind(R.id.cameraImageView)ImageView mCameraImageView;
     @Bind(R.id.galleryImageView)ImageView mGalleryImageView;
+    @Bind(R.id.profileImageView)CircleImageView mProfileImageView;
+    @Bind(R.id.accountUsernameTextView)TextView mAccountUsernameTextView;
 
     private static final int CAMERA_REQUEST_CODE = 111;
     private static final int IMAGE_GALLERY_REQUEST = 112;
@@ -71,6 +76,7 @@ public class NewPostFrament extends DialogFragment implements View.OnClickListen
     private ProgressDialog progressDialog;
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
+    private DatabaseReference usernameRef;
 
 
     public NewPostFrament() {
@@ -99,8 +105,44 @@ public class NewPostFrament extends DialogFragment implements View.OnClickListen
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
+        usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
 
-//        createImageGallery();
+        usernameRef.child(firebaseAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+                String username = (String) dataSnapshot.child("username").getValue();
+
+                mAccountUsernameTextView.setText(username);
+
+                Picasso.with(getContext())
+                        .load(profileImage)
+                        .fit()
+                        .centerCrop()
+                        .networkPolicy(NetworkPolicy.OFFLINE)
+                        .into(mProfileImageView, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError() {
+                                Picasso.with(getContext())
+                                        .load(profileImage)
+                                        .fit()
+                                        .centerCrop()
+                                        .into(mProfileImageView);
+                            }
+                        });
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         return view;
     }
@@ -205,51 +247,68 @@ public class NewPostFrament extends DialogFragment implements View.OnClickListen
         final Long timeStamp = System.currentTimeMillis();
         StorageReference storageReference = FirebaseStorage
                 .getInstance().getReference()
-                .child(Constants.FIREBASE_PUBLIC_CINGLES)
+                .child(Constants.FIREBASE_CINGLES)
                 .child(uid)
                 .child(timeStamp.toString());
 
-        UploadTask uploadTask = storageReference.putBytes(data);
-        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+            UploadTask uploadTask = storageReference.putBytes(data);
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                   final Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
-                Cingle cingle = new Cingle();
-                cingle.setTitle(mCingleTitleEditText.getText().toString());
-                cingle.setDescription(mCingleDescriptionEditText.getText().toString());
-                cingle.setTimeStamp(timeStamp.toString());
-                cingle.setUid(firebaseAuth.getCurrentUser().getUid());
-//                cingle.setCingulan(FirebaseUtil.getCingulan());
+                    usernameRef.child(firebaseAuth.getCurrentUser().getUid())
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            String username = (String) dataSnapshot.child("username").getValue();
+                            String uid = (String) dataSnapshot.child("uid").getValue();
+                            String profileImage = (String) dataSnapshot.child("profileImage").getValue();
 
-                 if(photoReducedSizeBitmap != null){
-                    cingle.setCingleImageUrl(downloadUrl.toString());
-                }
+                            Cingle cingle = new Cingle();
+                            cingle.setTitle(mCingleTitleEditText.getText().toString());
+                            cingle.setDescription(mCingleDescriptionEditText.getText().toString());
+                            cingle.setTimeStamp(timeStamp.toString());
+                            cingle.setUid(uid);
+                            cingle.setAccountUserName(username);
+                            cingle.setProfileImageUrl(profileImage);
+
+                            if(photoReducedSizeBitmap != null){
+                                cingle.setCingleImageUrl(downloadUrl.toString());
+                            }
 
                 /*Getting the current logged in user*/
-                DatabaseReference databaseReference = FirebaseDatabase
-                        .getInstance()
-                        .getReference(Constants.FIREBASE_PUBLIC_CINGLES);
+                            DatabaseReference databaseReference = FirebaseDatabase
+                                    .getInstance()
+                                    .getReference(Constants.FIREBASE_CINGLES);
 
 
                 /*Pushing the same cingle to a reference from where Cingles posted by the
                  user will be retrieved and displayed on their profile*/
-                DatabaseReference userRef = databaseReference.push();
-                String pushId = userRef.getKey();
-                cingle.setPushId(pushId);
-                userRef.setValue(cingle);
+                            DatabaseReference userRef = databaseReference.push();
+                            String pushId = userRef.getKey();
+                            cingle.setPushId(pushId);
+                            userRef.setValue(cingle);
 
-                mCingleTitleEditText.setText("");
-                mCingleDescriptionEditText.setText("");
-                mChosenImageView.setImageBitmap(null);
+                            mCingleTitleEditText.setText("");
+                            mCingleDescriptionEditText.setText("");
+                            mChosenImageView.setImageBitmap(null);
 
-                progressDialog.dismiss();
+                            progressDialog.dismiss();
 
-                Toast.makeText(getContext(), "Your Cingle has successfully been posted", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "Your Cingle has successfully been posted", Toast.LENGTH_LONG).show();
 
-            }
-        });
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+
+
+                }
+            });
     }
-
-
 }

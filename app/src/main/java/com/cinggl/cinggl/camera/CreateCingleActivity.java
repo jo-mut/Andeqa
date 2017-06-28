@@ -1,6 +1,5 @@
 package com.cinggl.cinggl.camera;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,28 +8,18 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ViewAnimator;
 
-import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cingle;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-import org.parceler.Parcels;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import butterknife.Bind;
@@ -42,7 +31,7 @@ import static android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 public class CreateCingleActivity extends AppCompatActivity implements View.OnClickListener{
     @Bind(R.id.nextTextView)TextView mNextTextView;
     @Bind(R.id.cameraImageView)ImageView mCameraImageView;
-    @Bind(R.id.chosenImageView)ImageView mChosenImageView;
+    @Bind(R.id.profileImageView)ImageView mChosenImageView;
     @Bind(R.id.galleryImageView)ImageView mGalleryImageView;
     @Bind(R.id.viewAnimator)ViewAnimator mViewAnimator;
 
@@ -116,7 +105,6 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
                         .fit()
                         .centerCrop()
                         .into(mChosenImageView);
-//                mChosenImageView.setImageURI(Uri.fromFile(new File(photoUri)));
 
             }
 

@@ -44,6 +44,7 @@ public class ProfileFragment extends Fragment{
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     private Query profileCinglesQuery;
     private Query profileInfoQuery;
+    public String userKey;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
 
@@ -68,13 +69,15 @@ public class ProfileFragment extends Fragment{
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
-        databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_PUBLIC_CINGLES);
+        databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
         profileCinglesQuery = databaseReference.orderByChild("uid").equalTo(firebaseAuth.getCurrentUser().getUid());
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
         profileInfoQuery = databaseReference.orderByChild("uid").equalTo(firebaseAuth.getCurrentUser().getUid());
 
         setUpProfile();
         setUpFirebaseAdapter();
+
+        databaseReference.keepSynced(true);
 
         return view;
     }
@@ -123,6 +126,16 @@ public class ProfileFragment extends Fragment{
             @Override
             protected void populateViewHolder(FirebaseProfileCinglesViewHolder viewHolder, Cingle model, int position) {
                 viewHolder.bindProfileCingle(model);
+                final String postKey = getRef(position).getKey();
+
+                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getActivity(), CingleDetailActivity.class);
+                        intent.putExtra("cingle_id", postKey);
+                        startActivity(intent);
+                    }
+                });
 
 
             }
@@ -130,7 +143,7 @@ public class ProfileFragment extends Fragment{
 
         mProfileCinglesRecyclerView.setAdapter(firebaseRecyclerAdapter);
         mProfileCinglesRecyclerView.setHasFixedSize(false);
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
         layoutManager.setAutoMeasureEnabled(true);
         mProfileCinglesRecyclerView.setNestedScrollingEnabled(false);
         mProfileCinglesRecyclerView.setLayoutManager(layoutManager);
@@ -143,6 +156,8 @@ public class ProfileFragment extends Fragment{
             @Override
             protected void populateViewHolder(ProfileInfoViewHolder viewHolder, Cingulan model, int position) {
                 viewHolder.bindProfileInfo(model);
+                DatabaseReference cingleRef = getRef(position);
+                userKey = cingleRef.getKey();
 
 
             }
@@ -152,7 +167,6 @@ public class ProfileFragment extends Fragment{
         mProfileInfoRecyclerView.setHasFixedSize(false);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setAutoMeasureEnabled(true);
-
         mProfileInfoRecyclerView.setLayoutManager(layoutManager);
 
     }

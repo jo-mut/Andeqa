@@ -23,7 +23,9 @@ import android.widget.TextView;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.FirebaseCingleOutViewHolder;
+import com.cinggl.cinggl.adapters.LikesAdapter;
 import com.cinggl.cinggl.models.Cingulan;
+import com.cinggl.cinggl.models.Like;
 import com.cinggl.cinggl.utils.FirebaseUtil;
 import com.cinggl.cinggl.models.Cingle;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -36,9 +38,17 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,17 +57,22 @@ public class CingleOutFragment extends Fragment {
     private DatabaseReference databaseReference;
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     @Bind(R.id.cingleOutRecyclerView)RecyclerView cingleOutRecyclerView;
-//    @Bind(R.id.scrollView) ScrollView cingleOutScrollView;
 
     private TextView likesCountTextView;
     private ImageView likesImageView;
     private ImageView commentsImageView;
     private TextView cingleTitleTextView;
+    private TextView commentsCountTextView;
     private TextView cingleDescriptionTextView;
+    private TextView accountUsernameTextView;
+    private CircleImageView profileImageView;
+    private LikesAdapter likesAdapter;
     private boolean processLikes = false;
     private DatabaseReference usernameRef;
     private DatabaseReference likesRef;
+    private DatabaseReference recentLikesRef;
     private FirebaseAuth firebaseAuth;
+    private DatabaseReference commentReference;
     private static final String TAG = "CingleOutFragment";
     private static final String EXTRA_POST_KEY = "post key";
 
@@ -73,45 +88,118 @@ public class CingleOutFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_cingle_out, container, false);
         ButterKnife.bind(this, view);
 
-        likesRef = FirebaseDatabase.getInstance().getReference("likesByUser");
-//        usernameRef = FirebaseDatabase.getInstance().getReference()
-//                .child("Users")
-//                .child(firebaseAuth.getCurrentUser().getUid())
-//                .child("username");
+        likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
+        usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
+
+        commentReference = FirebaseDatabase.getInstance()
+                .getReference(Constants.COMMENTS);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
         likesRef.keepSynced(true);
-
+        usernameRef.keepSynced(true);
+        commentReference.keepSynced(true);
 
         setUpFirebaseAdapter();
         return view;
     }
 
-
-//    public Query getQuery(DatabaseReference ref){
-//        return ref.child("Users").child(firebaseAuth.getCurrentUser()
-//                .getUid()).child("username");
-//
-//    }
-
     private void setUpFirebaseAdapter(){
-//        final Query username = getQuery(usernameRef);
         databaseReference = FirebaseDatabase.getInstance()
-                .getReference(Constants.FIREBASE_PUBLIC_CINGLES);
+                .getReference(Constants.FIREBASE_CINGLES);
+        databaseReference.keepSynced(true);
         firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Cingle, FirebaseCingleOutViewHolder>
                 (Cingle.class, R.layout.cingle_out_list, FirebaseCingleOutViewHolder.class, databaseReference) {
             @Override
-            protected void populateViewHolder(FirebaseCingleOutViewHolder viewHolder, Cingle model, int position) {
+            protected void populateViewHolder(final FirebaseCingleOutViewHolder viewHolder, Cingle model, int position) {
                 viewHolder.bindCingle(model);
                 DatabaseReference cingleRef = getRef(position);
                 final String postKey = cingleRef.getKey();
-             //
-//                if(model.likeByUser.containsKey(firebaseAuth.getCurrentUser().getUid())){
-//                    viewHolder.likesImageView.setImageResource(R.drawable.ic_favorite_black_24dp);
-//                }else{
-//                    viewHolder.likesImageView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-//                }
+
+                commentReference.child(postKey).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                            Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "commentsCount");
+                        }
+
+                        viewHolder.commentsCountTextView.setText(dataSnapshot.getChildrenCount() + "");
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+                likesRef.child(postKey).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                            Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "likesCount");
+
+                        }
+                        viewHolder.likesCountTextView.setText(dataSnapshot.getChildrenCount() + " " + "Likes");
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+                databaseReference.child(postKey).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        String uid = (String) dataSnapshot.child("uid").getValue();
+
+                        usernameRef.child(uid).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                String username = (String) dataSnapshot.child("username").getValue();
+                                final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+
+                                viewHolder.accountUsernameTextView.setText(username);
+
+
+                                Picasso.with(getContext())
+                                        .load(profileImage)
+                                        .fit()
+                                        .centerCrop()
+                                        .networkPolicy(NetworkPolicy.OFFLINE)
+                                        .into(viewHolder.profileImageView, new Callback() {
+                                            @Override
+                                            public void onSuccess() {
+
+                                            }
+
+                                            @Override
+                                            public void onError() {
+                                                Picasso.with(getContext())
+                                                        .load(profileImage)
+                                                        .fit()
+                                                        .centerCrop()
+                                                        .into(viewHolder.profileImageView);
+                                            }
+                                        });
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
 
                 viewHolder.likesImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -120,6 +208,9 @@ public class CingleOutFragment extends Fragment {
                             likesRef.addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
+                                    String username = (String) dataSnapshot.child("username").getValue();
+                                    String uid = (String) dataSnapshot.child("uid").getValue();
+                                    String profileImage = (String) dataSnapshot.child("profileImage").getValue();
 
                                     if(processLikes){
                                         if(dataSnapshot.child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
@@ -130,13 +221,36 @@ public class CingleOutFragment extends Fragment {
                                             processLikes = false;
 
                                         }else {
-                                            likesRef.child(postKey).child(firebaseAuth.getCurrentUser()
-                                                    .getUid())
-                                                    .setValue(firebaseAuth.getCurrentUser().getUid());
-                                            onLikeCounter(true);
-                                            Log.i(dataSnapshot.getKey(), dataSnapshot.getChildrenCount() + "Count");
-                                            processLikes = false;
+                                            usernameRef.child(firebaseAuth.getCurrentUser().getUid())
+                                                    .addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                                    final String username = (String) dataSnapshot.child("username").getValue();
+                                                    final String uid = (String) dataSnapshot.child("uid").getValue();
+                                                    final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+
+                                                    final Like like = new Like();
+
+                                                    like.setUid(uid);
+                                                    like.setUsername(username);
+                                                    like.setProfileImage(profileImage);
+
+                                                    likesRef.child(postKey).child(firebaseAuth.getCurrentUser()
+                                                            .getUid())
+                                                            .setValue(like);
+                                                    onLikeCounter(true);
+                                                    processLikes = false;
+
+                                                }
+
+                                                @Override
+                                                public void onCancelled(DatabaseError databaseError) {
+
+                                                }
+                                            });
+
                                         }
+
                                     }
                                 }
 
@@ -156,6 +270,17 @@ public class CingleOutFragment extends Fragment {
                         startActivity(intent);
                     }
                 });
+
+                viewHolder.likesCountTextView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getActivity(), LikesActivity.class);
+                        intent.putExtra(CingleOutFragment.EXTRA_POST_KEY, postKey);
+                        startActivity(intent);
+                    }
+                });
+
+
             }
         };
 
@@ -166,41 +291,10 @@ public class CingleOutFragment extends Fragment {
         layoutManager.setReverseLayout(true);
         layoutManager.setStackFromEnd(true);
         layoutManager.onSaveInstanceState();
-//        layoutManager.onSaveInstanceState();
         layoutManager.setAutoMeasureEnabled(true);
         cingleOutRecyclerView.setLayoutManager(layoutManager);
-    }
 
-//    public void onLikeCounter(DatabaseReference likesRef){
-//        likesRef.runTransaction(new Transaction.Handler() {
-//                    @Override
-//                    public Transaction.Result doTransaction(MutableData mutableData) {
-//                        Cingle cingle = mutableData.getValue(Cingle.class);
-//                        if(cingle == null){
-//                            return Transaction.success(mutableData);
-//                        }
-//
-//                        if(cingle.likeByUser.containsKey(firebaseAuth.getCurrentUser().getUid())){
-//                            Log.i(TAG, "Cingulan had already liked the cingle, now he just unliked");
-//                            cingle.likesCount = cingle.likesCount - 1;
-//                            cingle.likeByUser.remove(firebaseAuth.getCurrentUser().getUid());
-//                        }else {
-//                            Log.i(TAG, "Cingulan has liked the cingle");
-//                            cingle.likesCount = cingle.likesCount + 1;
-//                            cingle.likeByUser.put(firebaseAuth.getCurrentUser().getUid(), true);
-//                        }
-//
-//                        mutableData.setValue(cingle);
-//                        return  Transaction.success(mutableData);
-//                    }
-//
-//                    @Override
-//                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-//                        Log.d(TAG, "postTransaction:onComplete:" + databaseError);
-//                    }
-//                });
-//
-//    }
+    }
 
     private void onLikeCounter(final boolean increament){
         likesRef.runTransaction(new Transaction.Handler() {
@@ -233,8 +327,4 @@ public class CingleOutFragment extends Fragment {
         firebaseRecyclerAdapter.cleanup();
     }
 
-    @Override
-    public void onStop(){
-        super.onStop();
-    }
 }

@@ -32,15 +32,14 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
     public static final String TAG = SignUpActivity.class.getSimpleName();
 
-    @Bind(R.id.createUserButton)
-    Button mCreateUserButton;
-    @Bind(R.id.nameEditText)
-    EditText mNameEditText;
+    @Bind(R.id.createUserButton) Button mCreateUserButton;
+    @Bind(R.id.nameEditText) EditText mNameEditText;
     @Bind(R.id.emailEditText) EditText mEmailEditText;
     @Bind(R.id.passwordEditText) EditText mPasswordEditText;
     @Bind(R.id.confirmPasswordEditText) EditText mConfirmPasswordEditText;
-    @Bind(R.id.loginTextView)
-    TextView mLoginTextView;
+    @Bind(R.id.loginTextView) TextView mLoginTextView;
+    @Bind(R.id.fisrtNameEditText)EditText mFirstNameEditText;
+    @Bind(R.id.secondNameEditText)EditText mSecondNameEditText;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -134,6 +133,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         final String uid = thisUser.getUid();
 
         Cingulan cingulan = new Cingulan();
+        cingulan.setFirstName(mFirstNameEditText.getText().toString());
+        cingulan.setSecondName(mSecondNameEditText.getText().toString());
         cingulan.setUsername(mNameEditText.getText().toString());
         cingulan.setEmail(mEmailEditText.getText().toString());
         cingulan.setUid(mAuth.getCurrentUser().getUid());
@@ -145,7 +146,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
         DatabaseReference pushRef = usersRef;
         String pushId = pushRef.getKey();
-        cingulan.setPushId(pushId);
         pushRef.setValue(cingulan);
 
 

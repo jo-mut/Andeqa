@@ -17,6 +17,8 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 /**
  * Created by J.EL on 6/10/2017.
  */
@@ -32,22 +34,23 @@ public class ProfileInfoViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
-        sendMessageImageView = (ImageView) itemView.findViewById(R.id.sendMessageImageView);
 
     }
 
-    public void bindProfileInfo(Cingulan cingulan) {
-        ImageView profilePictureImageView = (ImageView) mView.findViewById(R.id.profilePictureImageView);
+    public void bindProfileInfo(final Cingulan cingulan) {
+        final CircleImageView profilePictureImageView = (CircleImageView) mView.findViewById(R.id.profilePictureImageView);
         TextView accountUsernameTextView = (TextView) mView.findViewById(R.id.accountUsernameTextView);
         TextView bioTextView = (TextView) mView.findViewById(R.id.bioTextView);
+        TextView firstNameTextView = (TextView) mView.findViewById(R.id.firstNameTextView);
+        TextView secondNameTextView = (TextView) mView.findViewById(R.id.secondNameTextView);
 //        TextView followersCountTextView = (TextView) mView.findViewById(R.id.followersCountTextView);
 //        TextView followingCountTextView = (TextView) mView.findViewById(R.id.followingCountTextView);
-
 
         Picasso.with(mContext)
                 .load(cingulan.getProfileImage())
                 .fit()
                 .centerCrop()
+                .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(profilePictureImageView, new Callback() {
                     @Override
                     public void onSuccess() {
@@ -56,12 +59,18 @@ public class ProfileInfoViewHolder extends RecyclerView.ViewHolder {
 
                     @Override
                     public void onError() {
+                        Picasso.with(mContext)
+                                .load(cingulan.getProfileImage())
+                                .fit()
+                                .centerCrop()
+                                .into(profilePictureImageView);
 
                     }
                 });
 
-        accountUsernameTextView.setText(cingulan.getUsername());
         bioTextView.setText(cingulan.getBio());
+        firstNameTextView.setText(cingulan.getFirstName());
+        secondNameTextView.setText(cingulan.getSecondName());
     }
 
 

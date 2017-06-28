@@ -49,6 +49,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
                 mComments.add(comment);
                 notifyItemInserted(mComments.size() - 1);
 
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "commentsCount");
+
+                }
+
             }
 
             @Override
@@ -71,6 +76,12 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
                     Log.w(TAG, "onChildeChnaged: the child is not known" + commentKey);
                 }
 
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "commentsCount");
+
+                }
+
+
             }
 
             @Override
@@ -92,11 +103,21 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
                     Log.w(TAG, "onChildRemoved: the child is not known" + commentKey);
                 }
 
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "commentsCount");
+
+                }
+
+
             }
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "commentsCount");
+
+                }
 
             }
 
@@ -104,6 +125,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "newComment:onCancelled", databaseError.toException());
                 Toast.makeText(mContext, "Failed to load more comments.", Toast.LENGTH_SHORT).show();
+
+
 
             }
         };

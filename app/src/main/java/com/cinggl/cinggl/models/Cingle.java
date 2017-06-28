@@ -13,6 +13,7 @@ import java.util.Map;
  */
 @Parcel
 public class Cingle {
+    Cingle cingle;
     Cingulan cingulan;
     String title;
     int viewsCount;
@@ -20,8 +21,7 @@ public class Cingle {
     String cingleImageUrl;
     String profileImageUrl;
 
-    int likesCount = 0;
-    Map<String, Boolean>likeByUser = new HashMap<>();
+    int likesCount;
     int commentsCount;
     int cingleWorth;
     String description;
@@ -34,12 +34,24 @@ public class Cingle {
 
     }
 
+    public Cingle(Cingle cingle) {
+        this.cingle = cingle;
+    }
+
     public Cingle(Cingulan cingulan, String cingleImageUrl,
                   String description, String title, String timeStamp) {
         this.cingleImageUrl = cingleImageUrl;
         this.description = description;
         this.title = title;
         this.cingulan = cingulan;
+    }
+
+    public Cingle getCingle() {
+        return cingle;
+    }
+
+    public void setCingle(Cingle cingle) {
+        this.cingle = cingle;
     }
 
     public Cingulan getCingulan() {
@@ -152,15 +164,6 @@ public class Cingle {
 
     public void setUid(String uid) {
         this.uid = uid;
-    }
-
-    @Exclude
-    public Map<String, Object> toMap(){
-        HashMap<String, Object> result = new HashMap<>();
-        result.put("likeCount", likesCount);
-        result.put("likeByUser", likeByUser);
-
-        return result;
     }
 
 }

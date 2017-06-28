@@ -8,28 +8,27 @@
         android:layout_width="match_parent"
         android:layout_height="60dp">
 
-        <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            app:srcCompat="@drawable/ic_person_black_24dp"
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profileImageView"
+            android:src="@drawable/test"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_marginLeft="10dp"
-            android:layout_marginStart="10dp"
-            android:id="@+id/chosenImageView" />
+            android:layout_width="55dp"
+            android:layout_height="55dp" />
 
         <TextView
             android:text="First Name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/chosenImageView"
-            android:layout_toRightOf="@+id/chosenImageView"
-            android:layout_toEndOf="@+id/chosenImageView"
+            android:layout_alignTop="@+id/profileImageView"
+            android:layout_toRightOf="@+id/profileImageView"
+            android:layout_toEndOf="@+id/profileImageView"
             android:layout_marginLeft="12dp"
             android:layout_marginStart="12dp"
             android:id="@+id/firstNameTextView"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black"
+            android:textStyle="normal|bold" />
 
         <TextView
             android:text="Second Name"
@@ -38,7 +37,8 @@
             android:layout_alignTop="@+id/firstNameTextView"
             android:layout_centerHorizontal="true"
             android:id="@+id/secondNameTextView"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black"
+            android:textStyle="normal|bold" />
 
         <Button
             android:id="@+id/laceButton"
@@ -54,4 +54,61 @@
             android:layout_width="60dp" />
 
     </RelativeLayout>
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:weightSum="1">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp">
+
+
+
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:padding="10dp"
+            android:layout_weight="0.27"
+            android:layout_height="30dp">
+
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="38dp"
+            android:background="#ECEFF1"
+            android:elevation="24dp"
+            android:fadingEdge="horizontal">
+
+
+        </RelativeLayout>
+
+    </LinearLayout>
 </LinearLayout>

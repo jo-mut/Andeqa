@@ -17,6 +17,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
+        android:name=".utils.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="Cinggl"
@@ -32,15 +33,26 @@
         </activity>
         <activity android:name=".profile.SignUpActivity" />
         <activity android:name=".camera.CreateCingleActivity" />
-        <activity
-            android:name=".home.HomeActivity"
-            android:label="Home"
-            android:theme="@style/AppTheme" />
+        <activity android:name=".home.HomeActivity" />
         <activity
             android:name=".ui.SettingsActivity"
-            android:label="Settings" />
-        <activity android:name=".profile.UpdateProfileActivity" />
-        <activity android:name=".home.CommentsActivity" />
+            android:label="Settings"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:label="Update your profile"
+            android:theme="@style/AppTheme"
+            android:name=".profile.UpdateProfileActivity" />
+        <activity
+            android:name=".home.CommentsActivity"
+            android:label="Comments"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".profile.CingleDetailActivity" />
+        <activity
+            android:theme="@style/AppTheme"
+            android:label="Cingulans who liked"
+            android:name=".home.LikesActivity">
+
+        </activity>
     </application>
 
 </manifest>

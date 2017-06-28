@@ -3,11 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
+
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/userProfileImageView"
@@ -26,28 +27,19 @@
             android:layout_marginLeft="40dp" />
 
         <TextView
-            android:text="user comment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/accountUsernameTextView"
-            android:layout_alignLeft="@+id/accountUsernameTextView"
-            android:layout_alignStart="@+id/accountUsernameTextView"
-            android:id="@+id/commentTextView"
-            android:textColor="@android:color/black" />
-
-        <TextView
             android:text="username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="11dp"
-            android:layout_marginStart="11dp"
             android:id="@+id/accountUsernameTextView"
             android:textColor="@android:color/black"
             android:textStyle="normal|bold"
-            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_alignTop="@+id/userProfileImageView"
             android:layout_toRightOf="@+id/userProfileImageView"
             android:layout_toEndOf="@+id/userProfileImageView"
-            android:layout_marginTop="5dp" />
+            android:layout_marginTop="10dp" />
 
     </RelativeLayout>
+
 </LinearLayout>

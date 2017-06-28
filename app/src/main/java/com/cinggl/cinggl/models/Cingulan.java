@@ -7,23 +7,31 @@ import org.parceler.Parcel;
  */
 @Parcel
 public class Cingulan {
-    private String profileImage;
-    private String bio;
-    private String username;
-    private String timestamp;
-    private String pushId;
-    private String uid;
-    private String email;
+    String profileImage;
+    String bio;
+    String username;
+    String pushId;
+    String uid;
+    String email;
+    String firstName;
+    String secondName;
 
     public Cingulan(){
         //EMPTY CONSTRUCTOR REQUIRED
     }
 
-    public Cingulan(String uid) {
+    public Cingulan(String profileImage, String bio,
+                    String username,
+                    String pushId, String uid, String email,
+                    String firstName, String secondName) {
         this.profileImage = profileImage;
+        this.bio = bio;
         this.username = username;
+        this.pushId = pushId;
         this.uid = uid;
         this.email = email;
+        this.firstName = firstName;
+        this.secondName = secondName;
     }
 
     public String getProfileImage() {
@@ -50,14 +58,6 @@ public class Cingulan {
         this.username = username;
     }
 
-    public String getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
-    }
-
     public String getPushId() {
         return pushId;
     }
@@ -80,5 +80,21 @@ public class Cingulan {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getSecondName() {
+        return secondName;
+    }
+
+    public void setSecondName(String secondName) {
+        this.secondName = secondName;
     }
 }

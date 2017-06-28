@@ -7,7 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.models.Comment;
+import com.cinggl.cinggl.models.Like;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -15,37 +15,31 @@ import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
- * Created by J.EL on 6/16/2017.
+ * Created by J.EL on 6/25/2017.
  */
 
-public class CommentViewHolder extends RecyclerView.ViewHolder {
+public class LikesViewHolder extends RecyclerView.ViewHolder {
 
     View mView;
     Context mContext;
     private ImageView userProfileImageView;
     private TextView usernameTextView;
-    private TextView commentCountTextView;
 
-    public CommentViewHolder(View itemView) {
+    public LikesViewHolder(View itemView) {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
         usernameTextView = (TextView)itemView.findViewById(R.id.accountUsernameTextView);
-        commentCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
-
     }
 
-    public void bindComment(final Comment comment){
+    public void bindLikes(final Like like){
         TextView usernameTextView =(TextView) mView.findViewById(R.id.accountUsernameTextView);
-        TextView commentTextView = (TextView) mView.findViewById(R.id.commentTextView);
         final CircleImageView userProfileImageView = (CircleImageView) mView.findViewById(R.id.userProfileImageView);
 
-
-        usernameTextView.setText(comment.getUsername());
-        commentTextView.setText(comment.getCommentText());
+        usernameTextView.setText(like.getUsername());
 
         Picasso.with(mContext)
-                .load(comment.getProfileImage())
+                .load(like.getProfileImage())
                 .fit()
                 .centerCrop()
                 .networkPolicy(NetworkPolicy.OFFLINE)
@@ -58,13 +52,15 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
                     @Override
                     public void onError() {
                         Picasso.with(mContext)
-                                .load(comment.getProfileImage())
+                                .load(like.getProfileImage())
                                 .fit()
                                 .centerCrop()
                                 .into(userProfileImageView);
+
+
                     }
                 });
 
-
     }
+
 }

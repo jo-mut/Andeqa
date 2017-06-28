@@ -27,4 +27,8 @@
     <string name="title_activity_app_activities">AppActivities</string>
     <string name="title_activity_test">TestActivity</string>
     <string name="title_activity_main2">Main2Activity</string>
+    <string name="likes">Likes</string>
+    <string name="followers">Followers</string>
+    <string name="credits">SP</string>
+    <string name="views">Views</string>
 </resources>
