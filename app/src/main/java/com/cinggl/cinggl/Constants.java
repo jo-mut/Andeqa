@@ -8,8 +8,10 @@ public final class Constants {
     public  static  final String FIREBASE_CINGLES = "Cingles";
     public static final String CINGLE_IMAGE = "cingleImageUrl";
     public  static  final String FIREBASE_USERS = "Cingulans";
+    public static final String FIREBASE_USER_RELATIONS = "Relations";
     public static final String COMMENTS = "Comments";
     public static final String LIKES= "Likes";
+    public static final String FOLLOWERS = "Followers";
     public static  final String EXTRA_KEY_CINGLES = "cingles";
     public static final String EXTRA_KEY_POSITION = "position";
     public static final String KEY_SOURCE = "source";

@@ -26,29 +26,26 @@
             android:textSize="16sp"
             android:textStyle="normal|bold" />
 
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profileImageView"
+            android:background="@drawable/profle_image_background"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignBottom="@+id/postCingleTextView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
         <TextView
             android:text="Username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="64dp"
-            android:layout_marginStart="64dp"
             android:id="@+id/accountUsernameTextView"
             android:textStyle="normal|bold"
             android:textSize="16sp"
             android:textColor="@android:color/black"
             android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:padding="5dp" />
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profileImageView"
-            android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
-            android:background="@drawable/profle_image_background" />
+            android:layout_toRightOf="@+id/profileImageView"
+            android:layout_toEndOf="@+id/profileImageView" />
 
     </RelativeLayout>
 
