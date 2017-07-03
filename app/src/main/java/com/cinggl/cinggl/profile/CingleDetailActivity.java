@@ -119,7 +119,9 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
                         });
 
                 Picasso.with(CingleDetailActivity.this).load(cingle.getProfileImageUrl())
-                        .fit().centerCrop().networkPolicy(NetworkPolicy.OFFLINE)
+                        .fit().centerCrop()
+                        .placeholder(R.drawable.profle_image_background)
+                        .networkPolicy(NetworkPolicy.OFFLINE)
                         .into(mProfileImageView, new Callback() {
                             @Override
                             public void onSuccess() {
@@ -129,7 +131,9 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
                             @Override
                             public void onError() {
                                 Picasso.with(CingleDetailActivity.this).load(cingle.getProfileImageUrl())
-                                        .fit().centerCrop().into(mProfileImageView);
+                                        .fit().centerCrop()
+                                        .placeholder(R.drawable.profle_image_background)
+                                        .into(mProfileImageView);
 
                             }
                         });

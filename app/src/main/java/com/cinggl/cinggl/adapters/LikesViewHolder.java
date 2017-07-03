@@ -42,6 +42,7 @@ public class LikesViewHolder extends RecyclerView.ViewHolder {
                 .load(like.getProfileImage())
                 .fit()
                 .centerCrop()
+                .placeholder(R.drawable.profle_image_background)
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(userProfileImageView, new Callback() {
                     @Override
@@ -55,6 +56,7 @@ public class LikesViewHolder extends RecyclerView.ViewHolder {
                                 .load(like.getProfileImage())
                                 .fit()
                                 .centerCrop()
+                                .placeholder(R.drawable.profle_image_background)
                                 .into(userProfileImageView);
 
 

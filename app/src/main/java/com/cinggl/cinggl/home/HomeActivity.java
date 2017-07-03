@@ -1,5 +1,6 @@
 package com.cinggl.cinggl.home;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
@@ -17,6 +18,9 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.camera.CingleCreateFragment;
+import com.cinggl.cinggl.camera.CingleCreationActivity;
+import com.cinggl.cinggl.camera.CreateCingleActivity;
 import com.cinggl.cinggl.camera.NewPostFrament;
 import com.cinggl.cinggl.profile.ProfileFragment;
 import com.cinggl.cinggl.timeline.TimelineFragment;
@@ -63,7 +67,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v){
         if(v == mFloatingActionButton){
-            showNewPostFragment();
+//            showNewPostFragment();
+            Intent intent = new Intent(HomeActivity.this, CreateCingleActivity.class);
+            startActivity(intent);
+
         }
     }
 

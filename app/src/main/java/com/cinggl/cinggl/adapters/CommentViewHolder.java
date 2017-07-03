@@ -48,6 +48,7 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
                 .load(comment.getProfileImage())
                 .fit()
                 .centerCrop()
+                .placeholder(R.drawable.profle_image_background)
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(userProfileImageView, new Callback() {
                     @Override
@@ -61,6 +62,7 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
                                 .load(comment.getProfileImage())
                                 .fit()
                                 .centerCrop()
+                                .placeholder(R.drawable.profle_image_background)
                                 .into(userProfileImageView);
                     }
                 });

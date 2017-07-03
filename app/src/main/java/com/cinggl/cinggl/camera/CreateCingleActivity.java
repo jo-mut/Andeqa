@@ -1,5 +1,6 @@
 package com.cinggl.cinggl.camera;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,46 +9,73 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewAnimator;
 
+import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cingle;
+import com.cinggl.cinggl.utils.ProportionalImageView;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
-
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import butterknife.Bind;
 import butterknife.ButterKnife;
-
-import static android.content.Intent.ACTION_PICK;
-import static android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CreateCingleActivity extends AppCompatActivity implements View.OnClickListener{
-    @Bind(R.id.nextTextView)TextView mNextTextView;
+    @Bind(R.id.cingleTitleEditText)EditText mCingleTitleEditText;
+    @Bind(R.id.cingleDescriptionEditText)EditText mCingleDescriptionEditText;
+    @Bind(R.id.postCingleImageView)ImageView mPostCingleImageView;
+//    @Bind(R.id.chosenImageView)ImageView mChosenImageView;
     @Bind(R.id.cameraImageView)ImageView mCameraImageView;
-    @Bind(R.id.profileImageView)ImageView mChosenImageView;
     @Bind(R.id.galleryImageView)ImageView mGalleryImageView;
-    @Bind(R.id.viewAnimator)ViewAnimator mViewAnimator;
+    @Bind(R.id.profileImageView)CircleImageView mProfileImageView;
+    @Bind(R.id.accountUsernameTextView)TextView mAccountUsernameTextView;
+    @Bind(R.id.img)ProportionalImageView mProportionalImageView;
 
-    private static final int CAMERA_REQUEST_CODE = 111;
-    private static final int IMAGE_GALLERY_REQUEST = 112;
-    private static final int MAX_WIDTH = 400;
-    private static final int MAX_HEIGHT = 400;
     private String ImageFileLocation = "";
     private String GALLERY_LOCATION = "Cingles";
     private File mGalleryFolder;
-    private Uri imageUri = null;
-    private Bitmap photoReducedSizeBitmap = null;
     private String image;
     private String photoUri;
     private static final String KEY_IMAGE = "IMAGE FROM GALLERY";
+    private static final int CAMERA_REQUEST_CODE = 111;
+    private static final int IMAGE_GALLERY_REQUEST = 112;
+    private static final String TAG = "CreateCingleActivity";
+    private static final int MAX_WIDTH = 400;
+    private static final int MAX_HEIGHT = 400;
+    private Uri imageUri;
+    private Bitmap photoReducedSizeBitmap = null;
     private Cingle cingle;
+    private StorageReference storageReference;
+    private DatabaseReference databaseReference;
+    private ProgressDialog progressDialog;
+    private FirebaseUser firebaseUser;
+    private FirebaseAuth firebaseAuth;
+    private DatabaseReference usernameRef;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,24 +87,52 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
 
         mGalleryImageView.setOnClickListener(this);
         mCameraImageView.setOnClickListener(this);
-        mNextTextView.setOnClickListener(this);
 
-        findViewById(R.id.galleryImageView).setOnClickListener(new View.OnClickListener(){
+        mGalleryImageView.setOnClickListener(this);
+        mCameraImageView.setOnClickListener(this);
+        mPostCingleImageView.setOnClickListener(this);
+        uploadingToFirebaseDialog();
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
+
+        usernameRef.child(firebaseAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
-            public void onClick(View v){
-                Intent intent = new Intent(ACTION_PICK, EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, IMAGE_GALLERY_REQUEST);
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+                String username = (String) dataSnapshot.child("username").getValue();
+
+                mAccountUsernameTextView.setText(username);
+
+                Picasso.with(CreateCingleActivity.this)
+                        .load(profileImage)
+                        .fit()
+                        .centerCrop()
+                        .networkPolicy(NetworkPolicy.OFFLINE)
+                        .into(mProfileImageView, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError() {
+                                Picasso.with(CreateCingleActivity.this)
+                                        .load(profileImage)
+                                        .fit()
+                                        .centerCrop()
+                                        .into(mProfileImageView);
+                            }
+                        });
 
             }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
         });
-
-        if(savedInstanceState != null){
-            image = savedInstanceState.getString(KEY_IMAGE);
-            if(image != null){
-                loadImage();
-            }
-        }
     }
 
 
@@ -84,7 +140,7 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
     protected void onPause(){
         super.onPause();
         if(isFinishing()){
-            Picasso.with(this).cancelRequest(mChosenImageView);
+            Picasso.with(this).cancelRequest(mProportionalImageView);
         }
     }
 
@@ -104,7 +160,7 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
                         .load(photoUri)
                         .fit()
                         .centerCrop()
-                        .into(mChosenImageView);
+                        .into(mProportionalImageView);
 
             }
 
@@ -133,20 +189,20 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
         }
 
 
-        if(v == mCameraImageView){
-            Intent cameraIntent =new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            File photoFile = null;
-            try{
-                photoFile = createImageFile();
-            }catch (IOException e) {
-                e.printStackTrace();
-            }cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
-            photoUri = photoFile.getAbsolutePath();
-            startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+        if(v == mGalleryImageView){
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            intent.setType("image/*");
+            startActivityForResult(intent, IMAGE_GALLERY_REQUEST);
 
         }
 
-        if(v == mNextTextView){
+        if(v == mPostCingleImageView){
+            saveToFirebase();
+        }
+
+
+//        if(v == mNextTextView){
 //            Cingle cingle = new Cingle();
 //            Intent intent = new Intent(CreateCingleActivity.this, CustomGelleryActivity.class);
 //            intent.putExtra(Constants.CINGLE_IMAGE, Parcels.wrap(image));
@@ -171,23 +227,21 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
 //            photoReducedSizeBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
 //            intent.putExtra("byteArray", baos.toByteArray());
 //            startActivity(intent);
-
-        }
+//
+//        }
     }
 
     public void loadImage(){
         /**index 1 is the progress bar and it show as the image is loading*/
-        mViewAnimator.setDisplayedChild(1);
 
         Picasso.with(this)
                 .load(image)
                 .fit()
                 .centerInside()
-                .into(mChosenImageView, new Callback.EmptyCallback(){
+                .into(mProportionalImageView, new Callback.EmptyCallback(){
                     @Override
                     public void onSuccess(){
                         /**index 0 is the mChosenImageView*/
-                        mViewAnimator.setDisplayedChild(0);
                     }
                 });
 
@@ -210,25 +264,113 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
 
     }
 
-    public void setReducedImageSize(){
-        int targetImageViewWidth = mChosenImageView.getWidth();
-        int targetImageViewHeight = mChosenImageView.getHeight();
+//    public void setReducedImageSize(){
+//        int targetImageViewWidth = mChosenImageView.getWidth();
+//        int targetImageViewHeight = mChosenImageView.getHeight();
+//
+//
+//        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+//        bmOptions.inJustDecodeBounds = true;
+//        BitmapFactory.decodeFile(ImageFileLocation, bmOptions);
+//        int cameraImageWidth = bmOptions.outWidth;
+//        int cameraImageHeight = bmOptions.outHeight;
+//
+//        int scaleFactor = Math.min
+//                (cameraImageWidth/targetImageViewWidth, cameraImageHeight/targetImageViewHeight);
+//        bmOptions.inSampleSize = scaleFactor;
+//        bmOptions.inJustDecodeBounds = false;
+//
+//
+//        photoReducedSizeBitmap = BitmapFactory.decodeFile(ImageFileLocation, bmOptions);
+//        mChosenImageView.setImageBitmap(photoReducedSizeBitmap);
+//    }
+
+    public void uploadingToFirebaseDialog(){
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Adding your Cingle...");
+        progressDialog.setCancelable(true);
+    }
 
 
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(ImageFileLocation, bmOptions);
-        int cameraImageWidth = bmOptions.outWidth;
-        int cameraImageHeight = bmOptions.outHeight;
-
-        int scaleFactor = Math.min
-                (cameraImageWidth/targetImageViewWidth, cameraImageHeight/targetImageViewHeight);
-        bmOptions.inSampleSize = scaleFactor;
-        bmOptions.inJustDecodeBounds = false;
+    public void saveToFirebase(){
+        progressDialog.show();
+        mProportionalImageView.setDrawingCacheEnabled(true);
+        mProportionalImageView.buildDrawingCache();
+        photoReducedSizeBitmap = mProportionalImageView.getDrawingCache();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        photoReducedSizeBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte [] data = baos.toByteArray();
 
 
-        photoReducedSizeBitmap = BitmapFactory.decodeFile(ImageFileLocation, bmOptions);
-        mChosenImageView.setImageBitmap(photoReducedSizeBitmap);
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final String uid = user.getUid();
+
+        final Long timeStamp = System.currentTimeMillis();
+        StorageReference storageReference = FirebaseStorage
+                .getInstance().getReference()
+                .child(Constants.FIREBASE_CINGLES)
+                .child(uid)
+                .child(timeStamp.toString());
+
+        UploadTask uploadTask = storageReference.putBytes(data);
+        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                final Uri downloadUrl = taskSnapshot.getDownloadUrl();
+
+                usernameRef.child(firebaseAuth.getCurrentUser().getUid())
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                String username = (String) dataSnapshot.child("username").getValue();
+                                String uid = (String) dataSnapshot.child("uid").getValue();
+                                String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+
+                                Cingle cingle = new Cingle();
+                                cingle.setTitle(mCingleTitleEditText.getText().toString());
+                                cingle.setDescription(mCingleDescriptionEditText.getText().toString());
+                                cingle.setTimeStamp(timeStamp.toString());
+                                cingle.setUid(uid);
+                                cingle.setAccountUserName(username);
+                                cingle.setProfileImageUrl(profileImage);
+
+                                if(photoReducedSizeBitmap != null){
+                                    cingle.setCingleImageUrl(downloadUrl.toString());
+                                }
+
+                /*Getting the current logged in user*/
+                                DatabaseReference databaseReference = FirebaseDatabase
+                                        .getInstance()
+                                        .getReference(Constants.FIREBASE_CINGLES);
+
+
+                /*Pushing the same cingle to a reference from where Cingles posted by the
+                 user will be retrieved and displayed on their profile*/
+                                DatabaseReference userRef = databaseReference.push();
+                                String pushId = userRef.getKey();
+                                cingle.setPushId(pushId);
+                                userRef.setValue(cingle);
+
+                                mCingleTitleEditText.setText("");
+                                mCingleDescriptionEditText.setText("");
+                                mProportionalImageView.setImageBitmap(null);
+
+                                progressDialog.dismiss();
+
+                                Toast.makeText(CreateCingleActivity.this, "Your Cingle has successfully been posted", Toast.LENGTH_LONG).show();
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+
+
+            }
+        });
     }
 
 }

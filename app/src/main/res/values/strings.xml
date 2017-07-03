@@ -31,4 +31,5 @@
     <string name="followers">Followers</string>
     <string name="credits">SP</string>
     <string name="views">Views</string>
+    <string name="title_activity_people">PeopleActivity</string>
 </resources>

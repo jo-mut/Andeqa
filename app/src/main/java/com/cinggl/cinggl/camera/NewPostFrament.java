@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -57,7 +58,7 @@ import static android.app.Activity.RESULT_OK;
 public class NewPostFrament extends DialogFragment implements View.OnClickListener {
     @Bind(R.id.cingleTitleEditText)EditText mCingleTitleEditText;
     @Bind(R.id.cingleDescriptionEditText)EditText mCingleDescriptionEditText;
-    @Bind(R.id.postCingleTextView)TextView mPostCingleTextView;
+    @Bind(R.id.postCingleImageView)ImageView mPostCingleImageView;
     @Bind(R.id.chosenImageView)ImageView mChosenImageView;
     @Bind(R.id.cameraImageView)ImageView mCameraImageView;
     @Bind(R.id.galleryImageView)ImageView mGalleryImageView;
@@ -100,7 +101,7 @@ public class NewPostFrament extends DialogFragment implements View.OnClickListen
 
         mGalleryImageView.setOnClickListener(this);
         mCameraImageView.setOnClickListener(this);
-        mPostCingleTextView.setOnClickListener(this);
+        mPostCingleImageView.setOnClickListener(this);
         uploadingToFirebaseDialog();
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -225,7 +226,7 @@ public class NewPostFrament extends DialogFragment implements View.OnClickListen
 
         }
 
-        if(v == mPostCingleTextView){
+        if(v == mPostCingleImageView){
             saveToFirebase();
         }
 

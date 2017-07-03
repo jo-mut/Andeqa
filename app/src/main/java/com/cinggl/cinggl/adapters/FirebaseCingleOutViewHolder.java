@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cingle;
+import com.cinggl.cinggl.utils.ProportionalImageView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -52,7 +53,7 @@ public class FirebaseCingleOutViewHolder extends RecyclerView.ViewHolder {
 
     public void bindCingle(final Cingle cingle){
         final CircleImageView profileImageView = (CircleImageView) mView.findViewById(R.id.profileImageView);
-        final ImageView cingleImageView = (ImageView) mView.findViewById(R.id.cingleImageView);
+        final ProportionalImageView cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
         TextView viewCountTextView = (TextView) mView.findViewById(R.id.viewCountTextView);
         TextView likesCountImageView = (TextView) mView.findViewById(R.id.likesCountTextView);
         ImageView likesImageView =(ImageView) mView.findViewById(R.id.likesImageView);
@@ -65,8 +66,6 @@ public class FirebaseCingleOutViewHolder extends RecyclerView.ViewHolder {
 
         Picasso.with(mContext)
                 .load(cingle.getCingleImageUrl())
-                .fit()
-                .centerCrop()
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(cingleImageView, new Callback() {
                     @Override
@@ -78,8 +77,6 @@ public class FirebaseCingleOutViewHolder extends RecyclerView.ViewHolder {
                     public void onError() {
                         Picasso.with(mContext)
                                 .load(cingle.getCingleImageUrl())
-                                .fit()
-                                .centerCrop()
                                 .into(cingleImageView);
 
 

@@ -4,7 +4,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:scrollbars="none"
-    android:padding="1dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -103,17 +102,23 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <ImageView
-                            app:srcCompat="@drawable/test"
+                        <!--<com.cinggl.cinggl.utils.ProportionalImageView-->
+                            <!--app:srcCompat="@drawable/test"-->
+                            <!--android:id="@+id/cingleImageView"-->
+                            <!--android:layout_alignParentLeft="true"-->
+                            <!--android:layout_alignParentStart="true"-->
+                            <!--android:layout_alignParentTop="true"-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:adjustViewBounds="false"-->
+                            <!--android:layout_height="300dp" />-->
+
+                        <com.cinggl.cinggl.utils.ProportionalImageView
                             android:id="@+id/cingleImageView"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true"
-                            android:layout_alignParentTop="true"
                             android:layout_width="match_parent"
-                            android:cropToPadding="true"
-                            android:scaleType="centerCrop"
-                            android:adjustViewBounds="false"
-                            android:layout_height="300dp" />
+                            android:layout_alignParentTop="true"
+                            android:layout_centerHorizontal="true"
+                            android:adjustViewBounds="true"
+                            android:layout_height="400dp" />
 
                     </RelativeLayout>
 

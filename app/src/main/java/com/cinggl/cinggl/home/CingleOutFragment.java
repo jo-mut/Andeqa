@@ -169,6 +169,7 @@ public class CingleOutFragment extends Fragment {
                                         .load(profileImage)
                                         .fit()
                                         .centerCrop()
+                                        .placeholder(R.drawable.profle_image_background)
                                         .networkPolicy(NetworkPolicy.OFFLINE)
                                         .into(viewHolder.profileImageView, new Callback() {
                                             @Override
@@ -182,6 +183,7 @@ public class CingleOutFragment extends Fragment {
                                                         .load(profileImage)
                                                         .fit()
                                                         .centerCrop()
+                                                        .placeholder(R.drawable.profle_image_background)
                                                         .into(viewHolder.profileImageView);
                                             }
                                         });

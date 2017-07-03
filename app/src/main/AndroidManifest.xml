@@ -39,18 +39,20 @@
             android:label="Settings"
             android:theme="@style/AppTheme" />
         <activity
+            android:name=".profile.UpdateProfileActivity"
             android:label="Update your profile"
-            android:theme="@style/AppTheme"
-            android:name=".profile.UpdateProfileActivity" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".home.CommentsActivity"
             android:label="Comments"
             android:theme="@style/AppTheme" />
         <activity android:name=".profile.CingleDetailActivity" />
         <activity
-            android:theme="@style/AppTheme"
+            android:name=".home.LikesActivity"
             android:label="Cingulans who liked"
-            android:name=".home.LikesActivity">
+            android:theme="@style/AppTheme" />
+        <activity android:name=".camera.CingleCreationActivity" />
+        <activity android:name=".profile.PeopleActivity">
 
         </activity>
     </application>

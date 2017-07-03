@@ -5,8 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,9 +22,7 @@ import android.widget.TextView;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.FirebaseProfileCinglesViewHolder;
-import com.cinggl.cinggl.adapters.ProfileInfoViewHolder;
 import com.cinggl.cinggl.models.Cingle;
-import com.cinggl.cinggl.models.Cingulan;
 import com.cinggl.cinggl.ui.SettingsActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -72,6 +71,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
     private boolean processFollow = false;
     private DatabaseReference followingRef;
     private DatabaseReference followersRef;
+    private FragmentManager fragmentManager;
     private static final String TAG = "ProfileFragment";
 
 
@@ -97,6 +97,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
                 .child(firebaseAuth.getCurrentUser().getUid());
         followersRef = FirebaseDatabase.getInstance().getReference(Constants.FOLLOWERS)
                 .child(firebaseAuth.getCurrentUser().getUid());
+        fragmentManager = getChildFragmentManager();
 
 
     }
@@ -109,109 +110,22 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
         ButterKnife.bind(this, view);
 
         setUpFirebaseAdapter();
+        calculateDate();
 
         mFollowButton.setOnClickListener(this);
+        mFollowingCountTextView.setOnClickListener(this);
+        mFollowersCountTextView.setOnClickListener(this);
+
+        if (firebaseUser.equals(firebaseAuth.getCurrentUser().getUid())){
+            mFollowButton.setVisibility(View.INVISIBLE);
+        }else {
+            mFollowButton.setVisibility(View.VISIBLE);
+        }
+
         databaseReference.keepSynced(true);
         usernameRef.keepSynced(true);
         followersRef.keepSynced(true);
         followingRef.keepSynced(true);
-
-        profileCinglesQuery.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "cingles Count");
-
-                    mCinglesCountTextView.setText(dataSnapshot.getChildrenCount()+ "");
-
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        followersRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "followers Count");
-
-                    mFollowersCountTextView.setText(dataSnapshot.getChildrenCount() + "");
-
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        followingRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                if (dataSnapshot.hasChild(firebaseAuth.getCurrentUser().getUid())){
-                    Log.e(dataSnapshot.getKey(), dataSnapshot.getChildrenCount() + "following Count");
-                    mFollowingCountTextView.setText(dataSnapshot.getChildrenCount() + "");
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        usernameRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String firstName = (String) dataSnapshot.child("firstName").getValue();
-                String secondName = (String) dataSnapshot.child("secondName").getValue();
-                final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
-                String bio = (String) dataSnapshot.child("bio").getValue();
-
-                mFirstNameTextView.setText(firstName);
-                mSecondNameTextView.setText(secondName);
-                mBioTextView.setText(bio);
-
-                Picasso.with(getContext())
-                        .load(profileImage)
-                        .fit()
-                        .centerCrop()
-                        .networkPolicy(NetworkPolicy.OFFLINE)
-                        .into(mProifleImageView, new Callback() {
-                            @Override
-                            public void onSuccess() {
-
-                            }
-
-                            @Override
-                            public void onError() {
-                                Picasso.with(getContext())
-                                        .load(profileImage)
-                                        .fit()
-                                        .centerCrop()
-                                        .into(mProifleImageView);
-
-                            }
-                        });
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-
 
         return view;
     }
@@ -252,6 +166,115 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
         startActivity(intentSettings);
     }
 
+
+    private void calculateDate(){
+        DatabaseReference reference = usernameRef;
+        final String refKey = reference.getKey();
+        profileCinglesQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "cingles Count");
+
+                    mCinglesCountTextView.setText(dataSnapshot.getChildrenCount()+ "");
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        followersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "followers Count");
+
+                    mFollowersCountTextView.setText(dataSnapshot.getChildrenCount() + "");
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        followingRef.child(refKey).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot
+                        .hasChild(firebaseAuth.getCurrentUser().getUid())){
+                    mFollowButton.setText("UNFOLLOW");
+                }else {
+                    mFollowButton.setText("FOLLOW");
+                }
+
+                if (dataSnapshot.hasChild(firebaseAuth.getCurrentUser().getUid())){
+                    Log.e(dataSnapshot.getKey(), dataSnapshot.getChildrenCount() + "following Count");
+                    mFollowingCountTextView.setText(dataSnapshot.getChildrenCount() + "");
+
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        usernameRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String firstName = (String) dataSnapshot.child("firstName").getValue();
+                String secondName = (String) dataSnapshot.child("secondName").getValue();
+                final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+                String bio = (String) dataSnapshot.child("bio").getValue();
+
+                mFirstNameTextView.setText(firstName);
+                mSecondNameTextView.setText(secondName);
+                mBioTextView.setText(bio);
+
+                Picasso.with(getContext())
+                        .load(profileImage)
+                        .fit()
+                        .centerCrop()
+                        .networkPolicy(NetworkPolicy.OFFLINE)
+                        .into(mProifleImageView, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError() {
+                                Picasso.with(getContext())
+                                        .load(profileImage)
+                                        .fit()
+                                        .centerCrop()
+                                        .placeholder(R.drawable.profle_image_background)
+                                        .into(mProifleImageView);
+
+                            }
+                        });
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     private void setUpFirebaseAdapter(){
 
@@ -299,29 +322,23 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
                                     .removeValue();
                             processFollow = false;
                             onFollow(false);
-
+                            //set the text on the button to follow if the user in not yet following;
+                            mFollowButton.setText("FOLLOW");
 
                         }else {
                             followingRef.child(refKey).child(firebaseAuth.getCurrentUser().getUid())
                                     .setValue(firebaseAuth.getCurrentUser().getUid());
                             processFollow = false;
                             onFollow(false);
+
+                            //set text on the button to unfollow onClicj to follow;
+                            mFollowButton.setText("UNFOLLOW");
+
                         }
 
-                        followersRef.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                                mFollowersCountTextView.setText(dataSnapshot.getChildrenCount() + "");
-
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
                     }
+
+                    mFollowingCountTextView.setText(dataSnapshot.getChildrenCount() + "");
 
                 }
 
@@ -330,8 +347,24 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
 
                 }
             });
+        }
 
+        if (v == mFollowingCountTextView) {
+            Intent intent = new Intent(getActivity(), PeopleActivity.class);
+            startActivity(intent);
+        }
 
+        if (v == mFollowersCountTextView){
+            Intent intent = new Intent(getActivity(), PeopleActivity.class);
+            startActivity(intent);
+
+//            PeopleFragment peopleFragment = new PeopleFragment();
+//            fragmentManager = getActivity().getSupportFragmentManager();
+//            FragmentTransaction ft = fragmentManager.beginTransaction();
+//            ft.add(R.id.people_container, peopleFragment);
+//            ft.replace(R.id.people_container, peopleFragment);
+//            ft.addToBackStack(null);
+//            ft.commit();
         }
     }
 
