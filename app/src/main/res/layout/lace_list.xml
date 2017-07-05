@@ -44,7 +44,7 @@
             android:id="@+id/laceButton"
             android:textAllCaps="false"
             android:text="Lace"
-            android:background="@drawable/btn_background"
+            android:background="@drawable/google_btn_background"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"

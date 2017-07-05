@@ -22,9 +22,9 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
 
     View mView;
     Context mContext;
-    private ImageView userProfileImageView;
-    private TextView usernameTextView;
     private TextView commentCountTextView;
+    public TextView usernameTextView;
+    public CircleImageView profileImageView;
 
     public CommentViewHolder(View itemView) {
         super(itemView);
@@ -32,40 +32,13 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
         mContext = itemView.getContext();
         usernameTextView = (TextView)itemView.findViewById(R.id.accountUsernameTextView);
         commentCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
-
+        profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
     }
 
     public void bindComment(final Comment comment){
-        TextView usernameTextView =(TextView) mView.findViewById(R.id.accountUsernameTextView);
         TextView commentTextView = (TextView) mView.findViewById(R.id.commentTextView);
-        final CircleImageView userProfileImageView = (CircleImageView) mView.findViewById(R.id.userProfileImageView);
 
-
-        usernameTextView.setText(comment.getUsername());
         commentTextView.setText(comment.getCommentText());
-
-        Picasso.with(mContext)
-                .load(comment.getProfileImage())
-                .fit()
-                .centerCrop()
-                .placeholder(R.drawable.profle_image_background)
-                .networkPolicy(NetworkPolicy.OFFLINE)
-                .into(userProfileImageView, new Callback() {
-                    @Override
-                    public void onSuccess() {
-
-                    }
-
-                    @Override
-                    public void onError() {
-                        Picasso.with(mContext)
-                                .load(comment.getProfileImage())
-                                .fit()
-                                .centerCrop()
-                                .placeholder(R.drawable.profle_image_background)
-                                .into(userProfileImageView);
-                    }
-                });
 
 
     }

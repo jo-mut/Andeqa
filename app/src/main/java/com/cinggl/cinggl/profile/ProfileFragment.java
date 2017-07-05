@@ -59,7 +59,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
 
 
     private DatabaseReference databaseReference;
-    private DatabaseReference usersRef;
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     private Query profileCinglesQuery;
     private Query profileInfoQuery;
@@ -93,8 +92,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
         profileInfoQuery = databaseReference.orderByChild("uid").equalTo(firebaseAuth.getCurrentUser().getUid());
         usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS)
                 .child(firebaseAuth.getCurrentUser().getUid());
-        followingRef = FirebaseDatabase.getInstance().getReference(Constants.FOLLOWERS)
-                .child(firebaseAuth.getCurrentUser().getUid());
+        followingRef = FirebaseDatabase.getInstance().getReference(Constants.FOLLOWERS);
         followersRef = FirebaseDatabase.getInstance().getReference(Constants.FOLLOWERS)
                 .child(firebaseAuth.getCurrentUser().getUid());
         fragmentManager = getChildFragmentManager();
@@ -110,17 +108,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
         ButterKnife.bind(this, view);
 
         setUpFirebaseAdapter();
-        calculateDate();
+        fetchData();
 
         mFollowButton.setOnClickListener(this);
         mFollowingCountTextView.setOnClickListener(this);
         mFollowersCountTextView.setOnClickListener(this);
-
-        if (firebaseUser.equals(firebaseAuth.getCurrentUser().getUid())){
-            mFollowButton.setVisibility(View.INVISIBLE);
-        }else {
-            mFollowButton.setVisibility(View.VISIBLE);
-        }
 
         databaseReference.keepSynced(true);
         usernameRef.keepSynced(true);
@@ -167,7 +159,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
     }
 
 
-    private void calculateDate(){
+    private void fetchData(){
         DatabaseReference reference = usernameRef;
         final String refKey = reference.getKey();
         profileCinglesQuery.addValueEventListener(new ValueEventListener() {
@@ -211,8 +203,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                if (dataSnapshot
-                        .hasChild(firebaseAuth.getCurrentUser().getUid())){
+                if (dataSnapshot.hasChild(firebaseAuth.getCurrentUser().getUid())){
                     mFollowButton.setText("UNFOLLOW");
                 }else {
                     mFollowButton.setText("FOLLOW");
@@ -296,6 +287,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
 
 
             }
+
+            @Override
+            public Cingle getItem(int position) {
+                return super.getItem(getItemCount() - 1 - position);
+            }
+
         };
 
         mProfileCinglesRecyclerView.setAdapter(firebaseRecyclerAdapter);
@@ -327,7 +324,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
 
                         }else {
                             followingRef.child(refKey).child(firebaseAuth.getCurrentUser().getUid())
-                                    .setValue(firebaseAuth.getCurrentUser().getUid());
+                                    .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
                             processFollow = false;
                             onFollow(false);
 
@@ -358,13 +355,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
             Intent intent = new Intent(getActivity(), PeopleActivity.class);
             startActivity(intent);
 
-//            PeopleFragment peopleFragment = new PeopleFragment();
-//            fragmentManager = getActivity().getSupportFragmentManager();
-//            FragmentTransaction ft = fragmentManager.beginTransaction();
-//            ft.add(R.id.people_container, peopleFragment);
-//            ft.replace(R.id.people_container, peopleFragment);
-//            ft.addToBackStack(null);
-//            ft.commit();
         }
     }
 

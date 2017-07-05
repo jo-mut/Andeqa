@@ -10,7 +10,7 @@
         android:layout_height="match_parent">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/userProfileImageView"
+            android:id="@+id/profileImageView"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
@@ -45,8 +45,8 @@
             android:textColor="@android:color/black"
             android:textStyle="normal|bold"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/userProfileImageView"
-            android:layout_toEndOf="@+id/userProfileImageView"
+            android:layout_toRightOf="@+id/profileImageView"
+            android:layout_toEndOf="@+id/profileImageView"
             android:layout_marginTop="5dp" />
 
     </RelativeLayout>

@@ -61,7 +61,7 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private static final String TAG = "CingleOutFragment";
-    private boolean processLikes = true;
+    private boolean processLikes = false;
     public static final String EXTRA_POST_KEY = "post key";
 
 
@@ -91,7 +91,7 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
         usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS)
                 .child(firebaseAuth.getCurrentUser().getUid());
         likesRef = FirebaseDatabase.getInstance()
-                .getReference(Constants.LIKES).child(mPostKey);
+                .getReference(Constants.LIKES);
 
         cinglesReference.keepSynced(true);
         usernameRef.keepSynced(true);
@@ -166,7 +166,7 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
             }
         });
 
-        likesRef.addValueEventListener(new ValueEventListener() {
+        likesRef.child(mPostKey).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -189,6 +189,29 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
     public void onClick(View v){
         if (v == mLikesImageView){
             processLikes = true;
+            likesRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(processLikes){
+                        if (dataSnapshot.child(mPostKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
+                            likesRef.child(mPostKey)
+                                    .removeValue();
+                            processLikes = false;
+                            onLikeCounter(false);
+                        }else {
+                            likesRef.child(mPostKey).child(firebaseAuth.getCurrentUser().getUid())
+                                    .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
+                            processLikes = false;
+                            onLikeCounter(false);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
 
         }
 

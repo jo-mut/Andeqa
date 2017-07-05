@@ -12,14 +12,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.camera.CingleCreateFragment;
-import com.cinggl.cinggl.camera.CingleCreationActivity;
 import com.cinggl.cinggl.camera.CreateCingleActivity;
 import com.cinggl.cinggl.camera.NewPostFrament;
 import com.cinggl.cinggl.profile.ProfileFragment;

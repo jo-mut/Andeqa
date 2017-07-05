@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.adapters.CommentAdapter;
+import com.cinggl.cinggl.adapters.CommentViewHolder;
 import com.cinggl.cinggl.models.Cingulan;
 import com.cinggl.cinggl.models.Comment;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -33,6 +33,7 @@ import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CommentsActivity extends AppCompatActivity implements View.OnClickListener {
     @Bind(R.id.sendCommentImageView)ImageView mSendCommentImageView;
@@ -47,10 +48,11 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     private DatabaseReference commentReference;
     private DatabaseReference cinglesReference;
     public static final String EXTRA_POST_KEY = "post key";
-    private CommentAdapter commentAdapter;
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
     private DatabaseReference usernameRef;
+    private TextView usernameTextView;
+    private CircleImageView profileImageView;
 
 
     @Override
@@ -76,7 +78,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         commentReference = FirebaseDatabase.getInstance()
                 .getReference(Constants.COMMENTS).child(mPostKey);
         usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
-
+        setUpFirebaseComments();
         cinglesReference.keepSynced(true);
         usernameRef.keepSynced(true);
         cinglesReference.keepSynced(true);
@@ -126,16 +128,89 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
+    public void setUpFirebaseComments(){
+        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Comment, CommentViewHolder>
+                (Comment.class, R.layout.comments_layout_list, CommentViewHolder.class, commentReference) {
+            @Override
+            protected void populateViewHolder(final CommentViewHolder viewHolder, final Comment model, int position) {
+                DatabaseReference userRef = getRef(position);
+                final String postKey = userRef.getKey();
+                viewHolder.bindComment(model);
+
+                commentReference.child(postKey).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        String uid = (String) dataSnapshot.child("uid").getValue();
+
+                        usernameRef.child(uid).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                String username = (String) dataSnapshot.child("username").getValue();
+                                final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+
+                                viewHolder.usernameTextView.setText(username);
+                                Picasso.with(CommentsActivity.this)
+                                        .load(profileImage)
+                                        .fit()
+                                        .centerCrop()
+                                        .placeholder(R.drawable.profle_image_background)
+                                        .networkPolicy(NetworkPolicy.OFFLINE)
+                                        .into(viewHolder.profileImageView, new Callback() {
+                                            @Override
+                                            public void onSuccess() {
+
+                                            }
+
+                                            @Override
+                                            public void onError() {
+                                                Picasso.with(CommentsActivity.this)
+                                                        .load(profileImage)
+                                                        .fit()
+                                                        .centerCrop()
+                                                        .placeholder(R.drawable.profle_image_background)
+                                                        .into(viewHolder.profileImageView);
+                                            }
+                                        });
+
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+        };
+
+        mCommentsRecyclerView.setAdapter(firebaseRecyclerAdapter);
+        mCommentsRecyclerView.setHasFixedSize(false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
+        layoutManager.onSaveInstanceState();
+        layoutManager.setAutoMeasureEnabled(true);
+        mCommentsRecyclerView.setLayoutManager(layoutManager);
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
-        commentAdapter = new CommentAdapter(this, commentReference);
-        mCommentsRecyclerView.setAdapter(commentAdapter);
-        mCommentsRecyclerView.setHasFixedSize(false);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setAutoMeasureEnabled(true);
-        mCommentsRecyclerView.setNestedScrollingEnabled(false);
-        mCommentsRecyclerView.setLayoutManager(layoutManager);
+//        commentAdapter = new CommentAdapter(this, commentReference);
+//        mCommentsRecyclerView.setAdapter(commentAdapter);
+//        mCommentsRecyclerView.setHasFixedSize(false);
+//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+//        layoutManager.setAutoMeasureEnabled(true);
+//        mCommentsRecyclerView.setNestedScrollingEnabled(false);
+//        mCommentsRecyclerView.setLayoutManager(layoutManager);
     }
 
 
@@ -143,7 +218,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     public void onStop(){
         super.onStop();
         //remove the event listner
-        commentAdapter.cleanupListener();
+        firebaseRecyclerAdapter.cleanup();
     }
 
     @Override
@@ -184,11 +259,8 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                                         String profileImage = (String) dataSnapshot.child("profileImage").getValue();
 
                                         Comment comment = new Comment();
-                                        comment.setUsername(username);
                                         comment.setUid(uid);
-                                        comment.setProfileImage(profileImage);
-//                                        comment.setUid(firebaseAuth.getCurrentUser().getUid());
-//                                        comment.setUsername(cingulan.getUsername());
+//
                                         comment.setCommentText(mCommentEditText.getText().toString());
                                         commentReference.push().setValue(comment);
                                         mCommentEditText.setText("");
@@ -212,7 +284,5 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         }
 
     }
-
-
 
 }

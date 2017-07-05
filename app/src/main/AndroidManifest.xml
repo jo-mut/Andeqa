@@ -51,8 +51,10 @@
             android:name=".home.LikesActivity"
             android:label="Cingulans who liked"
             android:theme="@style/AppTheme" />
-        <activity android:name=".camera.CingleCreationActivity" />
-        <activity android:name=".profile.PeopleActivity">
+        <activity
+            android:label="People"
+            android:theme="@style/AppTheme"
+            android:name=".profile.PeopleActivity">
 
         </activity>
     </application>

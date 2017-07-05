@@ -1,33 +1,27 @@
 package com.cinggl.cinggl.home;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.FirebaseCingleOutViewHolder;
 import com.cinggl.cinggl.adapters.LikesAdapter;
-import com.cinggl.cinggl.models.Cingulan;
 import com.cinggl.cinggl.models.Like;
-import com.cinggl.cinggl.utils.FirebaseUtil;
+import com.cinggl.cinggl.models.TraceData;
 import com.cinggl.cinggl.models.Cingle;
+import com.cinggl.cinggl.utils.Trace;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -35,7 +29,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Callback;
@@ -43,8 +36,6 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -53,9 +44,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CingleOutFragment extends Fragment {
+public class CingleOutFragment extends Fragment implements Trace.TracingListener{
     private DatabaseReference databaseReference;
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
+    private Trace trace;
+    private Context mContext;
     @Bind(R.id.cingleOutRecyclerView)RecyclerView cingleOutRecyclerView;
 
     private TextView likesCountTextView;
@@ -75,6 +68,8 @@ public class CingleOutFragment extends Fragment {
     private DatabaseReference commentReference;
     private static final String TAG = "CingleOutFragment";
     private static final String EXTRA_POST_KEY = "post key";
+    private ArrayList<String> mDataSet = new ArrayList<>();
+
 
 
     public CingleOutFragment() {
@@ -88,26 +83,33 @@ public class CingleOutFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_cingle_out, container, false);
         ButterKnife.bind(this, view);
 
+        setUpFirebaseAdapter();
+
         likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
         usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
-
         commentReference = FirebaseDatabase.getInstance()
                 .getReference(Constants.COMMENTS);
-
         firebaseAuth = FirebaseAuth.getInstance();
-
         likesRef.keepSynced(true);
         usernameRef.keepSynced(true);
         commentReference.keepSynced(true);
+//
+//        mDataSet = getMockData();
+//        cingleOutRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+//        cingleOutRecyclerView.setAdapter(new ImpressionAdapter(CingleOutFragment.this, mDataSet));
+//
+//
 
-        setUpFirebaseAdapter();
+
         return view;
     }
+
 
     private void setUpFirebaseAdapter(){
         databaseReference = FirebaseDatabase.getInstance()
                 .getReference(Constants.FIREBASE_CINGLES);
         databaseReference.keepSynced(true);
+
         firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Cingle, FirebaseCingleOutViewHolder>
                 (Cingle.class, R.layout.cingle_out_list, FirebaseCingleOutViewHolder.class, databaseReference) {
             @Override
@@ -234,8 +236,6 @@ public class CingleOutFragment extends Fragment {
                                                     final Like like = new Like();
 
                                                     like.setUid(uid);
-                                                    like.setUsername(username);
-                                                    like.setProfileImage(profileImage);
 
                                                     likesRef.child(postKey).child(firebaseAuth.getCurrentUser()
                                                             .getUid())
@@ -282,10 +282,8 @@ public class CingleOutFragment extends Fragment {
                     }
                 });
 
-
             }
         };
-
 
         cingleOutRecyclerView.setAdapter(firebaseRecyclerAdapter);
         cingleOutRecyclerView.setHasFixedSize(false);
@@ -296,7 +294,61 @@ public class CingleOutFragment extends Fragment {
         layoutManager.setAutoMeasureEnabled(true);
         cingleOutRecyclerView.setLayoutManager(layoutManager);
 
+        trace = new Trace.Builder()
+                .setRecyclerView(cingleOutRecyclerView)
+                .setMinimumViewingTimeThreshold(1000)
+                .setMinimumVisibleHeightThreshold(60)
+                .setTracingListener(this)
+                .setDataDumpInterval(1000)
+                .dumpDataAfterInterval(true)
+                .build();
+
+
     }
+
+//    private ArrayList<String> getMockData() {
+//        ArrayList<String> data = new ArrayList<>();
+//        for (int i = 0; i < 10; i++) {
+//            String item = "Title " + i;
+//            data.add(item);
+//
+//        }
+//        return data;
+//    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        try{
+            trace.startTracing();
+        }catch (Exception e){
+
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        try{
+            trace.getTraceData(true);
+
+        }catch (Exception e){
+
+        }
+    }
+
+
+    @Override
+    public void traceDataDump(ArrayList<TraceData> data) {
+
+        if(data != null) {
+            // Do something with the data.
+            for(int i = 0 ; i < data.size(); ++i)
+                Log.d("Data dump", data.get(i).getViewId());
+
+        }
+    }
+
 
     private void onLikeCounter(final boolean increament){
         likesRef.runTransaction(new Transaction.Handler() {

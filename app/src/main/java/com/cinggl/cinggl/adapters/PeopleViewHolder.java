@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.models.Like;
+import com.cinggl.cinggl.models.Cingulan;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -16,35 +16,37 @@ import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
- * Created by J.EL on 6/25/2017.
+ * Created by J.EL on 7/3/2017.
  */
 
-public class LikesViewHolder extends RecyclerView.ViewHolder {
-
+public class PeopleViewHolder extends RecyclerView.ViewHolder {
     View mView;
     Context mContext;
-    private ImageView userProfileImageView;
-    public TextView usernameTextView;
+    public TextView firstNameTextView;
+    public TextView secondNameTextView;
     public CircleImageView profileImageView;
     public Button followButton;
 
-    public LikesViewHolder(View itemView) {
+    public PeopleViewHolder(View itemView) {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
-        usernameTextView = (TextView)itemView.findViewById(R.id.accountUsernameTextView);
+        firstNameTextView = (TextView) itemView.findViewById(R.id.firstNameTextView);
+        secondNameTextView = (TextView) itemView.findViewById(R.id.secondNameTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         followButton = (Button) itemView.findViewById(R.id.followButton);
     }
 
-    public void bindLikes(final Like like){
-        TextView usernameTextView =(TextView) mView.findViewById(R.id.accountUsernameTextView);
+    public void bindPeople(final Cingulan cingulan){
         final CircleImageView profileImageView = (CircleImageView) mView.findViewById(R.id.profileImageView);
+        final TextView firstNameTextView = (TextView) mView.findViewById(R.id.firstNameTextView);
+        final TextView secondNameTextView = (TextView) mView.findViewById(R.id.secondNameTextView);
 
-        usernameTextView.setText(like.getUsername());
+        firstNameTextView.setText(cingulan.getFirstName());
+        secondNameTextView.setText(cingulan.getSecondName());
 
         Picasso.with(mContext)
-                .load(like.getProfileImage())
+                .load(cingulan.getProfileImage())
                 .fit()
                 .centerCrop()
                 .placeholder(R.drawable.profle_image_background)
@@ -58,7 +60,7 @@ public class LikesViewHolder extends RecyclerView.ViewHolder {
                     @Override
                     public void onError() {
                         Picasso.with(mContext)
-                                .load(like.getProfileImage())
+                                .load(cingulan.getProfileImage())
                                 .fit()
                                 .centerCrop()
                                 .placeholder(R.drawable.profle_image_background)
@@ -67,7 +69,5 @@ public class LikesViewHolder extends RecyclerView.ViewHolder {
 
                     }
                 });
-
     }
-
 }
