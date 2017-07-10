@@ -54,7 +54,7 @@ public class TimelineFragment extends Fragment {
         tabLayout = (TabLayout)view.findViewById(R.id.tabs);
         viewPager = (ViewPager)view.findViewById(R.id.container);
         viewPager.setAdapter(timelinePagerAdapter);
-        tabLayout.setupWithViewPager(viewPager);
+//        tabLayout.setupWithViewPager(viewPager);
         return view;
     }
 
@@ -74,9 +74,9 @@ public class TimelineFragment extends Fragment {
 
         //noinspection SimplifiableIfStatement
 
-        if(id == R.id.action_search){
-            return true;
-        }
+//        if(id == R.id.action_search){
+//            return true;
+//        }
 
         if(id == R.id.action_notifications){
             return true;

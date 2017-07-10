@@ -44,71 +44,15 @@
             android:id="@+id/laceButton"
             android:textAllCaps="false"
             android:text="Lace"
-            android:background="@drawable/google_btn_background"
+            android:background="@drawable/colour_btn_background"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_marginRight="11dp"
             android:layout_marginEnd="11dp"
             android:layout_height="20dp"
-            android:layout_width="60dp" />
+            android:layout_width="60dp"
+            android:textColor="@android:color/white" />
 
     </RelativeLayout>
-
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:weightSum="1">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="5dp">
-
-
-
-
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:padding="10dp"
-            android:layout_weight="0.27"
-            android:layout_height="30dp">
-
-
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="38dp"
-            android:background="#ECEFF1"
-            android:elevation="24dp"
-            android:fadingEdge="horizontal">
-
-
-        </RelativeLayout>
-
-    </LinearLayout>
 </LinearLayout>

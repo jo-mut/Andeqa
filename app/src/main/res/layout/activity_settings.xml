@@ -28,291 +28,192 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <ScrollView
+        android:scrollbars="none"
+        android:fillViewport="true"
         android:layout_width="match_parent"
-        android:layout_weight="0.04"
-        android:layout_height="60sp">
+        android:layout_height="match_parent">
 
-        <RelativeLayout
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_height="match_parent"
-            android:layout_width="40sp"
-            android:layout_marginLeft="3dp">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_person_black_24dp"
-                android:id="@+id/profileIconImageView"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true" />
-
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <View
-                android:layout_alignParentBottom="true"
-                android:layout_width="match_parent"
-                android:layout_height="0.3dp"
-                android:background="@color/colorDivider" />
-
-            <TextView
-                android:text="Make changes to your profile photo, username and your personal bio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/editProfileTextView"
-                android:layout_above="@+id/view"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true" />
-
-            <TextView
-                android:text="Edit Profile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"
-                android:textStyle="normal|bold"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
-
-        </RelativeLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="57dp"
-        android:layout_weight="0.06">
-
-        <RelativeLayout
-            android:layout_width="40sp"
-            android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="3dp">
-
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <View
-                android:layout_alignParentBottom="true"
-                android:layout_width="match_parent"
-                android:layout_height="0.3dp"
-                android:background="@color/colorDivider" />
-
-            <TextView
-                android:text="View Cingulans that you have block and choose to unblock them"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/blockedCingulansTextView"
-                android:layout_centerVertical="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
-
-            <TextView
-                android:text="Blocked Cingulans"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"
-                android:textStyle="normal|bold"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:id="@+id/blockedCingulans" />
-
-
-        </RelativeLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_weight="0.09">
-
-
-        <RelativeLayout
-            android:layout_width="40sp"
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="3dp">
-
-        </RelativeLayout>
-
-        <RelativeLayout
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <View
-                android:layout_alignParentBottom="true"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="0.3dp"
-                android:background="@color/colorDivider" />
+                android:layout_height="80dp"
+                android:id="@+id/editProifleLayout">
 
-            <TextView
-                android:text="Delete all of your search history"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/clearSearchTextView"
-                android:layout_centerVertical="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
+                <TextView
+                    android:text="Edit Profile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:textStyle="normal|bold"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="10dp"
+                    android:layout_margin="10dp" />
 
-            <TextView
-                android:text="Clear search history"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"
-                android:textStyle="normal|bold"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:id="@+id/clearHistory" />
-        </RelativeLayout>
-    </LinearLayout>
+                <TextView
+                    android:text="Make changes to your profile photo, username and your personal bio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/editProfileTextView"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_margin="10dp" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="32dp">
+                <View
+                    android:layout_alignParentBottom="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.3dp"
+                    android:background="@color/colorDivider" />
 
-        <RelativeLayout
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_width="40sp"
-            android:layout_marginLeft="3dp">
+            </RelativeLayout>
 
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <View
-                android:layout_alignParentBottom="true"
+            <RelativeLayout
+                android:id="@+id/blockedCingulansLayout"
                 android:layout_width="match_parent"
-                android:layout_height="0.3dp"
-                android:background="@color/colorDivider" />
+                android:layout_height="80dp">
 
-            <TextView
-                android:text="Cinggl Help"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/helpTextView"
-                android:textSize="16sp"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:textColor="@android:color/black"
-                android:textStyle="normal|bold" />
+                <View
+                    android:layout_alignParentBottom="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.3dp"
+                    android:background="@color/colorDivider" />
 
-        </RelativeLayout>
+                <TextView
+                    android:text="Blocked Cingulans"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:textStyle="normal|bold"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_margin="10dp" />
 
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="32dp">
-
-        <RelativeLayout
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_width="40sp"
-            android:layout_marginLeft="3dp">
+                <TextView
+                    android:text="View Cingulans that you have block and choose to unblock them"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_margin="10dp" />
 
 
-        </RelativeLayout>
+            </RelativeLayout>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <View
-                android:layout_alignParentBottom="true"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="0.3dp"
-                android:background="@color/colorDivider" />
+                android:layout_height="80dp">
 
-            <TextView
-                android:text="Privacy Pollicy"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"
-                android:textStyle="normal|bold"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:id="@+id/privacy" />
+                <View
+                    android:layout_alignParentBottom="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.3dp"
+                    android:background="@color/colorDivider" />
 
-        </RelativeLayout>
-
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="32dp">
-
-        <RelativeLayout
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_width="40sp"
-            android:layout_marginLeft="3dp">
+                <TextView
+                    android:text="Clear search history"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:textStyle="normal|bold"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_margin="10dp" />
 
 
-        </RelativeLayout>
+            </RelativeLayout>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <View
-                android:layout_alignParentBottom="true"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="0.3dp"
-                android:background="@color/colorDivider" />
+                android:layout_height="80dp">
 
-            <TextView
-                android:text="Terms and Conditions"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:textColor="@android:color/black"
-                android:textStyle="normal|bold"
-                android:id="@+id/terms" />
 
-        </RelativeLayout>
+                <View
+                    android:layout_alignParentBottom="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.3dp"
+                    android:background="@color/colorDivider" />
 
-    </LinearLayout>
+                <TextView
+                    android:text="Cinggl Help"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/helpTextView"
+                    android:textSize="16sp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:textColor="@android:color/black"
+                    android:textStyle="normal|bold"
+                    android:layout_margin="10dp" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="80dp">
+
+                <View
+                    android:layout_alignParentBottom="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.3dp"
+                    android:background="@color/colorDivider" />
+
+                <TextView
+                    android:text="Privacy Pollicy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:textStyle="normal|bold"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:id="@+id/privacy"
+                    android:layout_margin="10dp" />
+
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="80dp">
+
+                <View
+                    android:layout_alignParentBottom="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.3dp"
+                    android:background="@color/colorDivider" />
+
+                <TextView
+                    android:text="Terms and Conditions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:textColor="@android:color/black"
+                    android:textStyle="normal|bold"
+                    android:id="@+id/terms"
+                    android:layout_margin="10dp" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
 </LinearLayout>

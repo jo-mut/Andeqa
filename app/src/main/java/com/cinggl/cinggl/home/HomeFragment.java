@@ -83,9 +83,9 @@ public class HomeFragment extends Fragment{
 
         //noinspection SimplifiableIfStatement
 
-        if(id == R.id.action_search){
-            return true;
-        }
+//        if(id == R.id.action_search){
+//            return true;
+//        }
 
         if(id == R.id.action_notifications){
             return true;

@@ -148,13 +148,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         String pushId = pushRef.getKey();
         pushRef.setValue(cingulan);
 
-        DatabaseReference relationsRef = FirebaseDatabase.getInstance()
-                .getReference(Constants.FIREBASE_USER_RELATIONS)
-                .child(uid);
-        DatabaseReference ref = relationsRef;
-        String refId = ref.getKey();
-        ref.setValue(cingulan);
-
     }
 
     private void createAuthStateListener() {

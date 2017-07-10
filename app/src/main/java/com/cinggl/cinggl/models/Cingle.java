@@ -29,6 +29,8 @@ public class Cingle {
     String pushId;
     String timeStamp;
     String uid;
+    double sensepoint;
+
 
     public Cingle(){
 
@@ -166,4 +168,11 @@ public class Cingle {
         this.uid = uid;
     }
 
+    public double getSensepoint() {
+        return sensepoint;
+    }
+
+    public void setSensepoint(double sensepoint) {
+        this.sensepoint = sensepoint;
+    }
 }

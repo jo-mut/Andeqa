@@ -6,20 +6,15 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.adapters.LikesAdapter;
-import com.cinggl.cinggl.adapters.PeopleAdapter;
 import com.cinggl.cinggl.adapters.PeopleViewHolder;
-import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.models.Cingulan;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -46,7 +41,6 @@ public class FollowersFragment extends Fragment {
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private DatabaseReference usernameRef;
-    private PeopleAdapter peopleAdapter;
     private TextView firstNameTextView;
     private TextView secondNameTextView;
     private CircleImageView profileImageView;

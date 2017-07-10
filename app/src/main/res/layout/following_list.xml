@@ -5,64 +5,71 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:paddingBottom="3dp"
-        android:paddingTop="3dp">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:text="First"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/profileImageView"
-            android:layout_toEndOf="@+id/profileImageView"
-            android:layout_marginTop="11dp"
-            android:id="@+id/firstNameTextView"
-            android:textStyle="normal|bold"
-            android:textColor="@android:color/black"
-            android:layout_marginLeft="5dp" />
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profileImageView"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:background="@drawable/profle_image_background"
+            android:layout_margin="10dp" />
 
-        <TextView
-            android:text="Second"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginStart="5dp"
-            android:id="@+id/secondNameTextView"
-            android:layout_alignBaseline="@+id/firstNameTextView"
-            android:layout_alignBottom="@+id/firstNameTextView"
-            android:layout_toRightOf="@+id/firstNameTextView"
-            android:textStyle="normal|bold"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            android:text="Unfollow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <Button
+            android:text="Follow"
+            android:id="@+id/followButton"
+            android:textSize="12sp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/colour_btn_background"
+            android:textAllCaps="false"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginRight="16dp"
-            android:layout_marginEnd="16dp"
-            android:id="@+id/unfollowTextView"
-            android:textStyle="normal|bold"
-            android:textColor="@android:color/black" />
+            android:layout_margin="10dp"
+            android:layout_width="60sp"
+            android:layout_height="30sp" />
 
-        <ImageView
-            android:layout_marginLeft="12dp"
-            android:layout_marginStart="12dp"
-            android:id="@+id/profileImageView"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:background="@drawable/profle_image_background" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_toRightOf="@+id/profileImageView"
+            android:layout_toEndOf="@+id/profileImageView"
+            android:layout_alignBottom="@+id/profileImageView"
+            android:layout_marginRight="80sp"
+            android:layout_centerVertical="true">
+
+            <TextView
+                android:text="First"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/firstNameTextView"
+                android:textStyle="normal|bold"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:layout_centerVertical="true" />
+
+            <TextView
+                android:text="Second"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:id="@+id/secondNameTextView"
+                android:layout_alignBaseline="@+id/firstNameTextView"
+                android:layout_alignBottom="@+id/firstNameTextView"
+                android:layout_toRightOf="@+id/firstNameTextView"
+                android:textStyle="normal|bold"
+                android:textColor="@android:color/black"
+                android:layout_centerVertical="true"
+                android:textSize="16sp" />
+
+        </RelativeLayout>
 
     </RelativeLayout>
 

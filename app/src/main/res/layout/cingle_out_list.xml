@@ -28,21 +28,6 @@
                 android:padding="2dp"
                 android:layout_marginTop="5dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:id="@+id/viewCountTextView"
-                    android:drawableLeft="@drawable/ic_remove_red_eye_black_24dp"
-                    android:layout_alignLeft="@+id/accountUsernameTextView"
-                    android:layout_alignStart="@+id/accountUsernameTextView"
-                    android:textStyle="normal|bold"
-                    android:textColor="@android:color/black"
-                    android:layout_below="@+id/accountUsernameTextView"
-                    android:textSize="14sp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="3dp"
-                    android:layout_marginTop="3dp"
-                    android:layout_margin="5dp" />
-
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/profileImageView"
                     android:layout_centerVertical="true"
@@ -64,7 +49,18 @@
                     android:textStyle="normal|bold"
                     android:layout_alignParentTop="true"
                     android:layout_toRightOf="@+id/profileImageView"
-                    android:layout_toEndOf="@+id/profileImageView" />
+                    android:layout_toEndOf="@+id/profileImageView"
+                    android:layout_marginTop="10dp" />
+
+                <TextView
+                    android:text="8h"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/accountUsernameTextView"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:id="@+id/timeTextView"
+                    android:layout_marginRight="10dp" />
 
             </RelativeLayout>
 
@@ -102,23 +98,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <!--<com.cinggl.cinggl.utils.ProportionalImageView-->
-                            <!--app:srcCompat="@drawable/test"-->
-                            <!--android:id="@+id/cingleImageView"-->
-                            <!--android:layout_alignParentLeft="true"-->
-                            <!--android:layout_alignParentStart="true"-->
-                            <!--android:layout_alignParentTop="true"-->
-                            <!--android:layout_width="match_parent"-->
-                            <!--android:adjustViewBounds="false"-->
-                            <!--android:layout_height="300dp" />-->
-
                         <com.cinggl.cinggl.utils.ProportionalImageView
                             android:id="@+id/cingleImageView"
                             android:layout_width="match_parent"
                             android:layout_alignParentTop="true"
                             android:layout_centerHorizontal="true"
                             android:adjustViewBounds="true"
-                            android:layout_height="400dp" />
+                            android:layout_height="400sp" />
 
                     </RelativeLayout>
 
@@ -146,7 +132,7 @@
                     android:text="SP 0.00"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/senseCreditsTextView"
+                    android:id="@+id/sensePointsDescTextView"
                     android:textStyle="normal|bold"
                     android:background="@drawable/text_boarder"
                     android:textSize="12sp"
@@ -192,7 +178,7 @@
                     android:textSize="12sp"
                     android:paddingTop="2dp"
                     android:paddingBottom="2dp"
-                    android:layout_alignTop="@+id/senseCreditsTextView"
+                    android:layout_alignTop="@+id/sensePointsDescTextView"
                     android:layout_toRightOf="@+id/commentsImageView"
                     android:layout_toEndOf="@+id/commentsImageView"
                     android:textStyle="normal|bold"
@@ -238,18 +224,12 @@
                     android:textSize="14sp"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true" />
+                    android:layout_alignParentStart="true"
+                    android:paddingBottom="10dp" />
 
             </RelativeLayout>
 
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp">
-
-            </RelativeLayout>
         </LinearLayout>
 
 

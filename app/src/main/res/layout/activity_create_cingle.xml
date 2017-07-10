@@ -42,19 +42,6 @@
                         android:layout_width="50dp"
                         android:layout_height="50dp" />
 
-                    <TextView
-                        android:text="Username"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/accountUsernameTextView"
-                        android:textStyle="normal|bold"
-                        android:textSize="14sp"
-                        android:textColor="@android:color/black"
-                        android:layout_alignParentTop="true"
-                        android:layout_toRightOf="@+id/profileImageView"
-                        android:layout_toEndOf="@+id/profileImageView"
-                        android:layout_marginLeft="3dp" />
-
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -65,6 +52,20 @@
                         android:padding="5dp"
                         android:layout_alignBottom="@+id/profileImageView"
                         android:tint="@color/colorAccent" />
+
+                    <TextView
+                        android:text="Username"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/accountUsernameTextView"
+                        android:textStyle="normal|bold"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_alignTop="@+id/postCingleImageView"
+                        android:layout_toRightOf="@+id/profileImageView"
+                        android:layout_toEndOf="@+id/profileImageView" />
 
                 </RelativeLayout>
 

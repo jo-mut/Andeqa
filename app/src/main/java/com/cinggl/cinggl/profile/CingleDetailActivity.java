@@ -18,6 +18,7 @@ import com.cinggl.cinggl.home.CommentsActivity;
 import com.cinggl.cinggl.home.LikesActivity;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.models.Like;
+import com.cinggl.cinggl.utils.ProportionalImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -40,7 +41,7 @@ import butterknife.ButterKnife;
 
 public class CingleDetailActivity extends AppCompatActivity implements View.OnClickListener{
     @Bind(R.id.profileImageView)ImageView mProfileImageView;
-    @Bind(R.id.cingleImageView)ImageView mCingleImageView;
+    @Bind(R.id.cingleImageView)ProportionalImageView mCingleImageView;
     @Bind(R.id.accountUsernameTextView)TextView mAccountUsernameTextView;
     @Bind(R.id.cingleTitleTextView)TextView mCingleTitleTextView;
     @Bind(R.id.cingleDescriptionTextView)TextView mCingleDescriptionTextView;
@@ -103,7 +104,7 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
                 final Cingle cingle = dataSnapshot.getValue(Cingle.class);
 
                 Picasso.with(CingleDetailActivity.this).load(cingle.getCingleImageUrl())
-                        .fit().centerCrop().networkPolicy(NetworkPolicy.OFFLINE)
+                        .networkPolicy(NetworkPolicy.OFFLINE)
                         .into(mCingleImageView, new Callback() {
                             @Override
                             public void onSuccess() {
@@ -113,33 +114,33 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
                             @Override
                             public void onError() {
                                 Picasso.with(CingleDetailActivity.this).load(cingle.getCingleImageUrl())
-                                        .fit().centerCrop().into(mCingleImageView);
+                                        .into(mCingleImageView);
 
                             }
                         });
 
-                Picasso.with(CingleDetailActivity.this).load(cingle.getProfileImageUrl())
-                        .fit().centerCrop()
-                        .placeholder(R.drawable.profle_image_background)
-                        .networkPolicy(NetworkPolicy.OFFLINE)
-                        .into(mProfileImageView, new Callback() {
-                            @Override
-                            public void onSuccess() {
-
-                            }
-
-                            @Override
-                            public void onError() {
-                                Picasso.with(CingleDetailActivity.this).load(cingle.getProfileImageUrl())
-                                        .fit().centerCrop()
-                                        .placeholder(R.drawable.profle_image_background)
-                                        .into(mProfileImageView);
-
-                            }
-                        });
-                mAccountUsernameTextView.setText(cingle.getAccountUserName());
-                mCingleTitleTextView.setText(cingle.getTitle());
-                mCingleDescriptionTextView.setText(cingle.getDescription());
+//                Picasso.with(CingleDetailActivity.this).load(cingle.getProfileImageUrl())
+//                        .fit().centerCrop()
+//                        .placeholder(R.drawable.profle_image_background)
+//                        .networkPolicy(NetworkPolicy.OFFLINE)
+//                        .into(mProfileImageView, new Callback() {
+//                            @Override
+//                            public void onSuccess() {
+//
+//                            }
+//
+//                            @Override
+//                            public void onError() {
+//                                Picasso.with(CingleDetailActivity.this).load(cingle.getProfileImageUrl())
+//                                        .fit().centerCrop()
+//                                        .placeholder(R.drawable.profle_image_background)
+//                                        .into(mProfileImageView);
+//
+//                            }
+//                        });
+//                mAccountUsernameTextView.setText(cingle.getAccountUserName());
+//                mCingleTitleTextView.setText(cingle.getTitle());
+//                mCingleDescriptionTextView.setText(cingle.getDescription());
 
             }
 

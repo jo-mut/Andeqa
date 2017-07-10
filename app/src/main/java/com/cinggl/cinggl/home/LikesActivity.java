@@ -9,7 +9,6 @@ import android.widget.Button;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.adapters.LikesAdapter;
 import com.cinggl.cinggl.adapters.LikesViewHolder;
 import com.cinggl.cinggl.models.Like;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -31,7 +30,6 @@ import static com.cinggl.cinggl.home.CommentsActivity.EXTRA_POST_KEY;
 public class LikesActivity extends AppCompatActivity {
     @Bind(R.id.recentLikesRecyclerView)RecyclerView mRecentLikesRecyclerView;
 
-    private LikesAdapter likesAdapter;
     private DatabaseReference likesRef;
     private DatabaseReference usernameRef;
     private CircleImageView profileImageView;
@@ -62,7 +60,7 @@ public class LikesActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-//        likesAdapter = new LikesAdapter(this, likesRef);
+//        likesAdapter = new CinglesAdapter(this, likesRef);
 //        mRecentLikesRecyclerView.setAdapter(likesAdapter);
 //        mRecentLikesRecyclerView.setHasFixedSize(false);
 //        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
@@ -97,46 +95,50 @@ public class LikesActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         String uid = (String) dataSnapshot.child("uid").getValue();
 
-                        usernameRef.child(uid).addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                String username = (String) dataSnapshot.child("username").getValue();
-                                final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+                        try {
+                            usernameRef.child(uid).addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    String username = (String) dataSnapshot.child("username").getValue();
+                                    final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
 
-                                viewHolder.usernameTextView.setText(username);
-
-
-                                Picasso.with(LikesActivity.this)
-                                        .load(profileImage)
-                                        .fit()
-                                        .centerCrop()
-                                        .placeholder(R.drawable.profle_image_background)
-                                        .networkPolicy(NetworkPolicy.OFFLINE)
-                                        .into(viewHolder.profileImageView, new Callback() {
-                                            @Override
-                                            public void onSuccess() {
-
-                                            }
-
-                                            @Override
-                                            public void onError() {
-                                                Picasso.with(LikesActivity.this)
-                                                        .load(profileImage)
-                                                        .fit()
-                                                        .centerCrop()
-                                                        .placeholder(R.drawable.profle_image_background)
-                                                        .into(viewHolder.profileImageView);
+                                    viewHolder.usernameTextView.setText(username);
 
 
-                                            }
-                                        });
-                            }
+                                    Picasso.with(LikesActivity.this)
+                                            .load(profileImage)
+                                            .fit()
+                                            .centerCrop()
+                                            .placeholder(R.drawable.profle_image_background)
+                                            .networkPolicy(NetworkPolicy.OFFLINE)
+                                            .into(viewHolder.profileImageView, new Callback() {
+                                                @Override
+                                                public void onSuccess() {
 
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
+                                                }
 
-                            }
-                        });
+                                                @Override
+                                                public void onError() {
+                                                    Picasso.with(LikesActivity.this)
+                                                            .load(profileImage)
+                                                            .fit()
+                                                            .centerCrop()
+                                                            .placeholder(R.drawable.profle_image_background)
+                                                            .into(viewHolder.profileImageView);
+
+
+                                                }
+                                            });
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                        }catch (Exception e){
+
+                        }
                     }
 
                     @Override

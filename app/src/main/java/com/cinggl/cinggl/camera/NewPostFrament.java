@@ -233,83 +233,87 @@ public class NewPostFrament extends DialogFragment implements View.OnClickListen
     }
 
     public void saveToFirebase(){
-        progressDialog.show();
-        mChosenImageView.setDrawingCacheEnabled(true);
-        mChosenImageView.buildDrawingCache();
-        photoReducedSizeBitmap = mChosenImageView.getDrawingCache();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        photoReducedSizeBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-        byte [] data = baos.toByteArray();
+        try {
+            progressDialog.show();
+            mChosenImageView.setDrawingCacheEnabled(true);
+            mChosenImageView.buildDrawingCache();
+            photoReducedSizeBitmap = mChosenImageView.getDrawingCache();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            photoReducedSizeBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+            byte [] data = baos.toByteArray();
 
 
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        final String uid = user.getUid();
+            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            final String uid = user.getUid();
 
-        final Long timeStamp = System.currentTimeMillis();
-        StorageReference storageReference = FirebaseStorage
-                .getInstance().getReference()
-                .child(Constants.FIREBASE_CINGLES)
-                .child(uid)
-                .child(timeStamp.toString());
+            final Long timeStamp = System.currentTimeMillis();
+            StorageReference storageReference = FirebaseStorage
+                    .getInstance().getReference()
+                    .child(Constants.FIREBASE_CINGLES)
+                    .child(uid)
+                    .child(timeStamp.toString());
 
             UploadTask uploadTask = storageReference.putBytes(data);
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                   final Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                    final Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
                     usernameRef.child(firebaseAuth.getCurrentUser().getUid())
                             .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            String username = (String) dataSnapshot.child("username").getValue();
-                            String uid = (String) dataSnapshot.child("uid").getValue();
-                            String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    String username = (String) dataSnapshot.child("username").getValue();
+                                    String uid = (String) dataSnapshot.child("uid").getValue();
+                                    String profileImage = (String) dataSnapshot.child("profileImage").getValue();
 
-                            Cingle cingle = new Cingle();
-                            cingle.setTitle(mCingleTitleEditText.getText().toString());
-                            cingle.setDescription(mCingleDescriptionEditText.getText().toString());
-                            cingle.setTimeStamp(timeStamp.toString());
-                            cingle.setUid(uid);
-                            cingle.setAccountUserName(username);
-                            cingle.setProfileImageUrl(profileImage);
+                                    Cingle cingle = new Cingle();
+                                    cingle.setTitle(mCingleTitleEditText.getText().toString());
+                                    cingle.setDescription(mCingleDescriptionEditText.getText().toString());
+                                    cingle.setTimeStamp(timeStamp.toString());
+                                    cingle.setUid(uid);
+                                    cingle.setAccountUserName(username);
+                                    cingle.setProfileImageUrl(profileImage);
 
-                            if(photoReducedSizeBitmap != null){
-                                cingle.setCingleImageUrl(downloadUrl.toString());
-                            }
+                                    if(photoReducedSizeBitmap != null){
+                                        cingle.setCingleImageUrl(downloadUrl.toString());
+                                    }
 
                 /*Getting the current logged in user*/
-                            DatabaseReference databaseReference = FirebaseDatabase
-                                    .getInstance()
-                                    .getReference(Constants.FIREBASE_CINGLES);
+                                    DatabaseReference databaseReference = FirebaseDatabase
+                                            .getInstance()
+                                            .getReference(Constants.FIREBASE_CINGLES);
 
 
                 /*Pushing the same cingle to a reference from where Cingles posted by the
                  user will be retrieved and displayed on their profile*/
-                            DatabaseReference userRef = databaseReference.push();
-                            String pushId = userRef.getKey();
-                            cingle.setPushId(pushId);
-                            userRef.setValue(cingle);
+                                    DatabaseReference userRef = databaseReference.push();
+                                    String pushId = userRef.getKey();
+                                    cingle.setPushId(pushId);
+                                    userRef.setValue(cingle);
 
-                            mCingleTitleEditText.setText("");
-                            mCingleDescriptionEditText.setText("");
-                            mChosenImageView.setImageBitmap(null);
+                                    mCingleTitleEditText.setText("");
+                                    mCingleDescriptionEditText.setText("");
+                                    mChosenImageView.setImageBitmap(null);
 
-                            progressDialog.dismiss();
+                                    progressDialog.dismiss();
 
-                            Toast.makeText(getContext(), "Your Cingle has successfully been posted", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getContext(), "Your Cingle has successfully been posted", Toast.LENGTH_LONG).show();
 
-                        }
+                                }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
 
-                        }
-                    });
+                                }
+                            });
 
 
 
                 }
             });
+        }catch (Exception e){
+
+        }
     }
 }

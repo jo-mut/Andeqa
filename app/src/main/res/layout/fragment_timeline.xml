@@ -11,14 +11,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tabs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:tabTextAppearance="@style/MyCustomTextAppearance"
-            android:background="@color/colorPrimary"
-            app:tabTextColor="@android:color/white"
-            app:tabSelectedTextColor="?attr/colorButtonNormal" />
+        <!--<android.support.design.widget.TabLayout-->
+            <!--android:id="@+id/tabs"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--app:tabTextAppearance="@style/MyCustomTextAppearance"-->
+            <!--android:background="@color/colorPrimary"-->
+            <!--app:tabTextColor="@android:color/white"-->
+            <!--app:tabSelectedTextColor="?attr/colorButtonNormal" />-->
 
     </RelativeLayout>
 

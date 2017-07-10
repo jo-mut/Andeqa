@@ -15,7 +15,7 @@ public class TraceData {
     private double percentageHeightVisible;
 
     //number of times the cingle has gained impressions;
-    private String impression;
+    private int impression;
 
     //the cingles unique push id
     private String pushId;
@@ -50,11 +50,11 @@ public class TraceData {
         this.percentageHeightVisible = percentageHeightVisible;
     }
 
-    public String getImpression() {
+    public int getImpression() {
         return impression;
     }
 
-    public void setImpression(String impression) {
+    public void setImpression(int impression) {
         this.impression = impression;
     }
 

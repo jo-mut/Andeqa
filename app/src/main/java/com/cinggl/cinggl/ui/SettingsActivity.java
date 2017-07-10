@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
@@ -16,7 +17,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener{
-    @Bind(R.id.editProfileTextView)TextView mEditProfileTextView;
+    @Bind(R.id.editProifleLayout)RelativeLayout mEditProfileLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,12 +26,12 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.activity_settings);
         ButterKnife.bind(this);
 
-        mEditProfileTextView.setOnClickListener(this);
+        mEditProfileLayout.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v){
-        if(v == mEditProfileTextView){
+        if(v == mEditProfileLayout){
             Intent intent = new Intent(SettingsActivity.this, UpdateProfileActivity.class);
             startActivity(intent);
         }

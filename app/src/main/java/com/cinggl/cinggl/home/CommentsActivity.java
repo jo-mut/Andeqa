@@ -19,6 +19,7 @@ import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.CommentViewHolder;
 import com.cinggl.cinggl.models.Cingulan;
 import com.cinggl.cinggl.models.Comment;
+import com.cinggl.cinggl.utils.ProportionalImageView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -39,7 +40,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     @Bind(R.id.sendCommentImageView)ImageView mSendCommentImageView;
     @Bind(R.id.commentEditText)EditText mCommentEditText;
     @Bind(R.id.commentsRecyclerView)RecyclerView mCommentsRecyclerView;
-    @Bind(R.id.cingleImageView)ImageView mCingleImageView;
+    @Bind(R.id.cingleImageView)ProportionalImageView mCingleImageView;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -48,8 +49,6 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     private DatabaseReference commentReference;
     private DatabaseReference cinglesReference;
     public static final String EXTRA_POST_KEY = "post key";
-    public static final int MAX_WIDTH = 400;
-    public static final int MAX_HEIGHT = 400;
     private DatabaseReference usernameRef;
     private TextView usernameTextView;
     private CircleImageView profileImageView;
@@ -91,15 +90,6 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
                 Picasso.with(CommentsActivity.this)
                         .load(image)
-                        .resize(MAX_WIDTH, MAX_HEIGHT)
-                        .onlyScaleDown()
-                        .centerInside()
-                        .into(mCingleImageView);
-
-                Picasso.with(CommentsActivity.this)
-                        .load(image)
-                        .fit()
-                        .centerCrop()
                         .networkPolicy(NetworkPolicy.OFFLINE)
                         .into(mCingleImageView, new Callback() {
                             @Override
@@ -111,8 +101,6 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                             public void onError() {
                                 Picasso.with(CommentsActivity.this)
                                         .load(image)
-                                        .fit()
-                                        .centerCrop()
                                         .into(mCingleImageView);
                             }
                         });
@@ -194,9 +182,6 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         mCommentsRecyclerView.setAdapter(firebaseRecyclerAdapter);
         mCommentsRecyclerView.setHasFixedSize(false);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setReverseLayout(true);
-        layoutManager.setStackFromEnd(true);
-        layoutManager.onSaveInstanceState();
         layoutManager.setAutoMeasureEnabled(true);
         mCommentsRecyclerView.setLayoutManager(layoutManager);
     }

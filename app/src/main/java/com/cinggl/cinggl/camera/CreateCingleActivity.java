@@ -97,43 +97,45 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
         firebaseUser = firebaseAuth.getCurrentUser();
         usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
 
-        usernameRef.child(firebaseAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
-                String username = (String) dataSnapshot.child("username").getValue();
-
-                mAccountUsernameTextView.setText(username);
-
-                Picasso.with(CreateCingleActivity.this)
-                        .load(profileImage)
-                        .fit()
-                        .centerCrop()
-                        .networkPolicy(NetworkPolicy.OFFLINE)
-                        .into(mProfileImageView, new Callback() {
-                            @Override
-                            public void onSuccess() {
-
-                            }
-
-                            @Override
-                            public void onError() {
-                                Picasso.with(CreateCingleActivity.this)
-                                        .load(profileImage)
-                                        .fit()
-                                        .centerCrop()
-                                        .into(mProfileImageView);
-                            }
-                        });
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+//        usernameRef.child(firebaseAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+//                String username = (String) dataSnapshot.child("username").getValue();
+//
+//                mAccountUsernameTextView.setText(username);
+//
+//                Picasso.with(CreateCingleActivity.this)
+//                        .load(profileImage)
+//                        .fit()
+//                        .centerCrop()
+//                        .networkPolicy(NetworkPolicy.OFFLINE)
+//                        .into(mProfileImageView, new Callback() {
+//                            @Override
+//                            public void onSuccess() {
+//
+//                            }
+//
+//                            @Override
+//                            public void onError() {
+//                                Picasso.with(CreateCingleActivity.this)
+//                                        .load(profileImage)
+//                                        .fit()
+//                                        .centerCrop()
+//                                        .into(mProfileImageView);
+//                            }
+//                        });
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
     }
+
+
 
 
     @Override
@@ -156,11 +158,9 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK){
             if(requestCode == CAMERA_REQUEST_CODE){
-                Picasso.with(this)
-                        .load(photoUri)
-                        .fit()
-                        .centerCrop()
-                        .into(mProportionalImageView);
+//                setPic();
+               Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
+                mProportionalImageView.setImageBitmap(imageBitmap);
 
             }
 
@@ -173,18 +173,20 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
+
     @Override
     public void onClick(View v){
 
         if(v == mCameraImageView){
             Intent cameraIntent =new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            File photoFile = null;
-            try{
-                photoFile = createImageFile();
-            }catch (IOException e) {
-                e.printStackTrace();
-            }cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+//            File photoFile = null;
+//            try{
+//                photoFile = createImageFile();
+//            }catch (IOException e) {
+//                e.printStackTrace();
+//            }cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
             startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+
 
         }
 
@@ -247,6 +249,30 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
 
     }
 
+//    private void setPic() {
+//        // Get the dimensions of the View
+//        int targetW = mProportionalImageView.getWidth();
+//        int targetH = mProportionalImageView.getHeight();
+//
+//        // Get the dimensions of the bitmap
+//        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+//        bmOptions.inJustDecodeBounds = true;
+//        BitmapFactory.decodeFile(ImageFileLocation, bmOptions);
+//        int photoW = bmOptions.outWidth;
+//        int photoH = bmOptions.outHeight;
+//
+//        // Determine how much to scale down the image
+//        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+//
+//        // Decode the image file into a Bitmap sized to fill the View
+//        bmOptions.inJustDecodeBounds = false;
+//        bmOptions.inSampleSize = scaleFactor;
+//        bmOptions.inPurgeable = true;
+//
+//        Bitmap bitmap = BitmapFactory.decodeFile(ImageFileLocation, bmOptions);
+//        mProportionalImageView.setImageBitmap(bitmap);
+//    }
+
     private void createImageGallery(){
         File storageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         mGalleryFolder = new File(storageDirectory, GALLERY_LOCATION);
@@ -293,84 +319,88 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
 
 
     public void saveToFirebase(){
-        progressDialog.show();
-        mProportionalImageView.setDrawingCacheEnabled(true);
-        mProportionalImageView.buildDrawingCache();
-        photoReducedSizeBitmap = mProportionalImageView.getDrawingCache();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        photoReducedSizeBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-        byte [] data = baos.toByteArray();
+        try {
+            progressDialog.show();
+            mProportionalImageView.setDrawingCacheEnabled(true);
+            mProportionalImageView.buildDrawingCache();
+            photoReducedSizeBitmap = mProportionalImageView.getDrawingCache();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            photoReducedSizeBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+            byte [] data = baos.toByteArray();
 
 
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        final String uid = user.getUid();
+            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            final String uid = user.getUid();
 
-        final Long timeStamp = System.currentTimeMillis();
-        StorageReference storageReference = FirebaseStorage
-                .getInstance().getReference()
-                .child(Constants.FIREBASE_CINGLES)
-                .child(uid)
-                .child(timeStamp.toString());
+            final Long timeStamp = System.currentTimeMillis();
+            StorageReference storageReference = FirebaseStorage
+                    .getInstance().getReference()
+                    .child(Constants.FIREBASE_CINGLES)
+                    .child(uid)
+                    .child(timeStamp.toString());
 
-        UploadTask uploadTask = storageReference.putBytes(data);
-        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                final Uri downloadUrl = taskSnapshot.getDownloadUrl();
+            UploadTask uploadTask = storageReference.putBytes(data);
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    final Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
-                usernameRef.child(firebaseAuth.getCurrentUser().getUid())
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                String username = (String) dataSnapshot.child("username").getValue();
-                                String uid = (String) dataSnapshot.child("uid").getValue();
-                                String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+                    usernameRef.child(firebaseAuth.getCurrentUser().getUid())
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    String username = (String) dataSnapshot.child("username").getValue();
+                                    String uid = (String) dataSnapshot.child("uid").getValue();
+                                    String profileImage = (String) dataSnapshot.child("profileImage").getValue();
 
-                                Cingle cingle = new Cingle();
-                                cingle.setTitle(mCingleTitleEditText.getText().toString());
-                                cingle.setDescription(mCingleDescriptionEditText.getText().toString());
-                                cingle.setTimeStamp(timeStamp.toString());
-                                cingle.setUid(uid);
-                                cingle.setAccountUserName(username);
-                                cingle.setProfileImageUrl(profileImage);
+                                    Cingle cingle = new Cingle();
+                                    cingle.setTitle(mCingleTitleEditText.getText().toString());
+                                    cingle.setDescription(mCingleDescriptionEditText.getText().toString());
+                                    cingle.setTimeStamp(timeStamp.toString());
+                                    cingle.setUid(uid);
+                                    cingle.setAccountUserName(username);
+                                    cingle.setProfileImageUrl(profileImage);
 
-                                if(photoReducedSizeBitmap != null){
-                                    cingle.setCingleImageUrl(downloadUrl.toString());
-                                }
+                                    if(photoReducedSizeBitmap != null){
+                                        cingle.setCingleImageUrl(downloadUrl.toString());
+                                    }
 
                 /*Getting the current logged in user*/
-                                DatabaseReference databaseReference = FirebaseDatabase
-                                        .getInstance()
-                                        .getReference(Constants.FIREBASE_CINGLES);
+                                    DatabaseReference databaseReference = FirebaseDatabase
+                                            .getInstance()
+                                            .getReference(Constants.FIREBASE_CINGLES);
 
 
                 /*Pushing the same cingle to a reference from where Cingles posted by the
                  user will be retrieved and displayed on their profile*/
-                                DatabaseReference userRef = databaseReference.push();
-                                String pushId = userRef.getKey();
-                                cingle.setPushId(pushId);
-                                userRef.setValue(cingle);
+                                    DatabaseReference userRef = databaseReference.push();
+                                    String pushId = userRef.getKey();
+                                    cingle.setPushId(pushId);
+                                    userRef.setValue(cingle);
 
-                                mCingleTitleEditText.setText("");
-                                mCingleDescriptionEditText.setText("");
-                                mProportionalImageView.setImageBitmap(null);
+                                    mCingleTitleEditText.setText("");
+                                    mCingleDescriptionEditText.setText("");
+                                    mProportionalImageView.setImageBitmap(null);
 
-                                progressDialog.dismiss();
+                                    progressDialog.dismiss();
 
-                                Toast.makeText(CreateCingleActivity.this, "Your Cingle has successfully been posted", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(CreateCingleActivity.this, "Your Cingle has successfully been posted", Toast.LENGTH_LONG).show();
 
-                            }
+                                }
 
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
 
-                            }
-                        });
+                                }
+                            });
 
 
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+
+        }
     }
 
 }

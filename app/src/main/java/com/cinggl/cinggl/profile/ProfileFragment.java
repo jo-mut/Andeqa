@@ -142,9 +142,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
             return true;
         }
 
-        if(id == R.id.action_search){
-            return true;
-        }
+//        if(id == R.id.action_search){
+//            return true;
+//        }
 
         if(id == R.id.action_notifications){
             return true;
@@ -162,6 +162,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
     private void fetchData(){
         DatabaseReference reference = usernameRef;
         final String refKey = reference.getKey();
+        Log.d(refKey, "current user reference key");
         profileCinglesQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

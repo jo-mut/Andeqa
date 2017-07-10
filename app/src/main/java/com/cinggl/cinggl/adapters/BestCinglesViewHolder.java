@@ -17,10 +17,10 @@ import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
- * Created by J.EL on 5/26/2017.
+ * Created by J.EL on 7/6/2017.
  */
 
-public class FirebaseCingleOutViewHolder extends RecyclerView.ViewHolder {
+public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
 
     View mView;
     Context mContext;
@@ -36,7 +36,7 @@ public class FirebaseCingleOutViewHolder extends RecyclerView.ViewHolder {
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
 
-    public FirebaseCingleOutViewHolder(View itemView){
+    public BestCinglesViewHolder(View itemView) {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
@@ -46,23 +46,20 @@ public class FirebaseCingleOutViewHolder extends RecyclerView.ViewHolder {
         cingleDescriptionTextView = (TextView) itemView.findViewById(R.id.cingleDescriptionTextView);
         cingleTitleTextView = (TextView) itemView.findViewById(R.id.cingleTitleTextView);
         accountUsernameTextView = (TextView) itemView.findViewById(R.id.accountUsernameTextView);
-        profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
+//        profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
 
     }
 
-    public void bindCingle(final Cingle cingle){
-        final CircleImageView profileImageView = (CircleImageView) mView.findViewById(R.id.profileImageView);
+    public void bindBestCingle(final Cingle cingle){
         final ProportionalImageView cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
-        TextView viewCountTextView = (TextView) mView.findViewById(R.id.viewCountTextView);
-        TextView likesCountImageView = (TextView) mView.findViewById(R.id.likesCountTextView);
-        ImageView likesImageView =(ImageView) mView.findViewById(R.id.likesImageView);
-        TextView commentsCountTextView = (TextView) mView.findViewById(R.id.commentsCountTextView);
-        TextView cingleWorthTextView = (TextView) mView.findViewById(R.id.cingleWorthTextView);
-        ImageView cingleSettingsImageView = (ImageView) mView.findViewById(R.id.cingleSettingsImageView);
-        TextView accountUsernameTextView = (TextView) mView.findViewById(R.id.accountUsernameTextView);
+        final CircleImageView profileImageView = (CircleImageView) mView.findViewById(R.id.profileImageView);
         TextView cingleTitleTextView = (TextView) mView.findViewById(R.id.cingleTitleTextView);
         TextView cingleDescriptionTextView = (TextView) mView.findViewById(R.id.cingleDescriptionTextView);
+        TextView sensePointsTextView = (TextView) mView.findViewById(R.id.sensePointsDescTextView);
+        TextView cingleDateTextView = (TextView) mView.findViewById(R.id.cingleDateTextView);
+        TextView cingleCreatorTextView = (TextView) mView.findViewById(R.id.cingleCreatorTextView);
+        TextView currentDateTextView = (TextView) mView.findViewById(R.id.currentDateTextView);
 
         Picasso.with(mContext)
                 .load(cingle.getCingleImageUrl())
@@ -83,10 +80,31 @@ public class FirebaseCingleOutViewHolder extends RecyclerView.ViewHolder {
                     }
                 });
 
+        Picasso.with(mContext)
+                .load(cingle.getProfileImageUrl())
+                .fit()
+                .centerCrop()
+                .networkPolicy(NetworkPolicy.OFFLINE)
+                .into(profileImageView, new Callback() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onError() {
+                        Picasso.with(mContext)
+                                .load(cingle.getProfileImageUrl())
+                                .fit()
+                                .centerCrop()
+                                .placeholder(R.drawable.profle_image_background)
+                                .into(profileImageView);
+
+                    }
+                });
+
 
         cingleTitleTextView.setText((cingle.getTitle()));
         cingleDescriptionTextView.setText(cingle.getDescription());
-
     }
-
 }

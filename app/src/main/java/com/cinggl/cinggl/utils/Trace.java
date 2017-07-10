@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
+import com.cinggl.cinggl.adapters.PeopleViewHolder;
 import com.cinggl.cinggl.models.TraceData;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,7 +45,7 @@ public class Trace {
     private ArrayList<TraceData> traceData = new ArrayList<>();
 
     // The instance of the recyclerView whose views are supposed to be tracked.
-    private RecyclerView cingleOutRecyclerVie;
+    private RecyclerView cingleOutRecyclerView;
 
     // Time interval after which data should be given to the user.
     private long dataDumpInterval;
@@ -64,15 +65,19 @@ public class Trace {
 
     private Timer dataDumpTimer = new Timer();
 
-    private DatabaseReference viewsRef;
     private DatabaseReference traceRef;
 
+    private int impression;
+
     private final static String TAG = Trace.class.getSimpleName();
+
+    private DatabaseReference viewsRef = FirebaseDatabase.getInstance().getReference().child("Data");
+
 
 
     public Trace(Builder builder) {
 
-        this.cingleOutRecyclerVie = builder.cingleOutRecyclerView;
+        this.cingleOutRecyclerView = builder.cingleOutRecyclerView;
         this.dataDumpInterval = builder.dataDumpInterval;
         this.minimumVisibleHeightThreshold = builder.minimumVisibleHeightThreshold;
         this.minimumViewingTimeThreshold = builder.minimumViewingTimeThreshold;
@@ -84,7 +89,7 @@ public class Trace {
     public void startTracing() {
 
         // Track the views when the data is loaded into recycler view for the first time.
-        cingleOutRecyclerVie.getViewTreeObserver()
+        cingleOutRecyclerView.getViewTreeObserver()
                 .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
@@ -94,11 +99,11 @@ public class Trace {
                             startTime = System.currentTimeMillis();
 
                             int firstVisibleItemPosition = ((LinearLayoutManager)
-                                    cingleOutRecyclerVie.getLayoutManager())
+                                    cingleOutRecyclerView.getLayoutManager())
                                     .findFirstVisibleItemPosition();
 
                             int lastVisibleItemPosition = ((LinearLayoutManager)
-                                    cingleOutRecyclerVie.getLayoutManager())
+                                    cingleOutRecyclerView.getLayoutManager())
                                     .findLastVisibleItemPosition();
 
                             analyzeAndAddViewData(firstVisibleItemPosition,
@@ -110,7 +115,7 @@ public class Trace {
                 });
 
         // Track the views when user scrolls through the recyclerview.
-        cingleOutRecyclerVie.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        cingleOutRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -134,11 +139,20 @@ public class Trace {
                                 View itemView = recyclerView.getLayoutManager()
                                         .findViewByPosition(positionOfViewsViewed
                                                 .get(trackedViewsCount));
+                                View postKey = recyclerView.getLayoutManager()
+                                        .findViewByPosition(positionOfViewsViewed
+                                                .get(trackedViewsCount));
 
-                                traceData.add(prepareTrackingData(String
-                                                .valueOf(positionOfViewsViewed
-                                                        .get(trackedViewsCount)),
-                                        duration, getVisibleHeightPercentage(itemView)));
+                                try {
+
+                                    traceData.add(prepareTrackingData(String
+                                                    .valueOf(positionOfViewsViewed
+                                                            .get(trackedViewsCount)),
+                                            duration, getVisibleHeightPercentage(itemView)));
+                                }catch (Exception e){
+
+                                }
+
                             }
                         }
 
@@ -172,28 +186,50 @@ public class Trace {
 
         }
     }
+//
+//    //method to count how many times the Cingle has gained impressions;
+//    public void impressionCount(final boolean inmpressionIncreament){
+//        viewsRef.child("Data").runTransaction(new Transaction.Handler() {
+//            @Override
+//            public Transaction.Result doTransaction(MutableData mutableData) {
+//                if(mutableData.getValue() != null){
+//                    int value = mutableData.getValue(Integer.class);
+//                    if(inmpressionIncreament){
+//                        value++;
+//                    }else{
+//                        value--;
+//                    }
+//                    mutableData.setValue(value);
+//                }
+//                return Transaction.success(mutableData);
+//            }
+//
+//            @Override
+//            public void onComplete(DatabaseError databaseError, boolean b,
+//                                   DataSnapshot dataSnapshot) {
+//                Log.d(TAG, "likeTransaction:onComplete" + databaseError);
+//
+//            }
+//        });
+//    }
 
-    //method to count how many times the Cingle has gained impressions;
-    public void impressionCount(final boolean inmpressionIncreament){
+    private void onImpressionCount(DatabaseReference viewsRef){
         viewsRef.runTransaction(new Transaction.Handler() {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
-                if(mutableData.getValue() != null){
-                    int value = mutableData.getValue(Integer.class);
-                    if(inmpressionIncreament){
-                        value++;
-                    }else{
-                        value--;
-                    }
-                    mutableData.setValue(value);
+                TraceData traceData = mutableData.getValue(TraceData.class);
+
+                if (traceData == null){
+                    return Transaction.success(mutableData);
+                }else {
+                    traceData.setImpression(traceData.getImpression() + 1);
                 }
-                return Transaction.success(mutableData);
+                mutableData.setValue(traceData);
+                return  Transaction.success(mutableData);
             }
 
             @Override
-            public void onComplete(DatabaseError databaseError, boolean b,
-                                   DataSnapshot dataSnapshot) {
-                Log.d(TAG, "likeTransaction:onComplete" + databaseError);
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
 
             }
         });
@@ -207,10 +243,10 @@ public class Trace {
             endTime = System.currentTimeMillis();
 
             int firstVisibleItemPosition = ((LinearLayoutManager)
-                    cingleOutRecyclerVie.getLayoutManager()).findFirstVisibleItemPosition();
+                    cingleOutRecyclerView.getLayoutManager()).findFirstVisibleItemPosition();
 
             int lastVisibleItemPosition = ((LinearLayoutManager)
-                    cingleOutRecyclerVie.getLayoutManager()).findLastVisibleItemPosition();
+                    cingleOutRecyclerView.getLayoutManager()).findLastVisibleItemPosition();
 
             analyzeAndAddViewData(firstVisibleItemPosition, lastVisibleItemPosition);
 
@@ -221,7 +257,7 @@ public class Trace {
 
                 if (duration > minimumViewingTimeThreshold) {
 
-                    View itemView = cingleOutRecyclerVie.getLayoutManager()
+                    View itemView = cingleOutRecyclerView.getLayoutManager()
                             .findViewByPosition(positionOfViewsViewed.get(trackedViewsCount));
 
                     traceData.add(prepareTrackingData(String.valueOf(
@@ -311,7 +347,7 @@ public class Trace {
             Log.i("View being considered", String.valueOf(viewPosition));
 
             // Get the view from its position.
-            View itemView = cingleOutRecyclerVie.getLayoutManager()
+            View itemView = cingleOutRecyclerView.getLayoutManager()
                     .findViewByPosition(viewPosition);
 
             // Check if the visibility of the view is more than or equal
@@ -327,6 +363,9 @@ public class Trace {
             }
         }
     }
+
+    //calaculate how many times the itemView has been viewed above the minimum threshold time
+
 
     //calculate how much height of the view is visible on the screen
     private double getVisibleHeightPercentage(View view) {
@@ -351,11 +390,8 @@ public class Trace {
         traceData.setPercentageHeightVisible(percentageHeightVisible);
 
         traceRef = FirebaseDatabase.getInstance().getReference("Data");
+        traceRef.setValue(traceData);
 
-        DatabaseReference pushRef = traceRef.push();
-        String pushId = pushRef.getKey();
-        traceData.setPushId(pushId);
-        pushRef.setValue(traceData);
 
         Log.d("Traced data", traceData.getViewId());
         return traceData;

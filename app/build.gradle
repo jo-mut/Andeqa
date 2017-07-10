@@ -70,6 +70,7 @@ dependencies {
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'org.parceler:parceler:1.1.6'
+
 }
 apply plugin: 'com.google.gms.google-services'
 
