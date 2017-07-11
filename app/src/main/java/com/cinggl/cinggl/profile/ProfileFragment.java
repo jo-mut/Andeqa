@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -48,7 +47,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
  */
 public class ProfileFragment extends Fragment implements View.OnClickListener{
     @Bind(R.id.profileCinglesRecyclerView)RecyclerView mProfileCinglesRecyclerView;
-    @Bind(R.id.profileImageView)CircleImageView mProifleImageView;
+    @Bind(R.id.userProfileImageView)CircleImageView mProifleImageView;
     @Bind(R.id.firstNameTextView)TextView mFirstNameTextView;
     @Bind(R.id.secondNameTextView)TextView  mSecondNameTextView;
     @Bind(R.id.bioTextView)TextView mBioTextView;
@@ -62,7 +61,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     private Query profileCinglesQuery;
     private Query profileInfoQuery;
-    public String userKey;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private DatabaseReference usernameRef;

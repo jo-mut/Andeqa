@@ -33,7 +33,10 @@
         </activity>
         <activity android:name=".profile.SignUpActivity" />
         <activity android:name=".camera.CreateCingleActivity" />
-        <activity android:name=".home.HomeActivity" />
+        <activity
+            android:label="Cinggl"
+            android:theme="@style/AppTheme"
+            android:name=".home.HomeActivity" />
         <activity
             android:name=".ui.SettingsActivity"
             android:label="Settings"
@@ -46,7 +49,10 @@
             android:name=".home.CommentsActivity"
             android:label="Comments"
             android:theme="@style/AppTheme" />
-        <activity android:name=".profile.CingleDetailActivity" />
+        <activity
+            android:label="Cingle"
+            android:theme="@style/AppTheme"
+            android:name=".profile.CingleDetailActivity" />
         <activity
             android:name=".home.LikesActivity"
             android:label="Cingulans who liked"

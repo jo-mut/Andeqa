@@ -15,6 +15,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         app:layout_scrollFlags="scroll|enterAlways"
+        app:titleTextColor="@android:color/white"
         app:popupTheme="@style/AppTheme.PopupOverlay">
 
     </android.support.v7.widget.Toolbar>
@@ -56,21 +57,21 @@
                         android:textColor="@android:color/black"
                         android:textStyle="normal|bold"
                         android:layout_alignParentTop="true"
-                        android:layout_toRightOf="@+id/profileImageView"
-                        android:layout_toEndOf="@+id/profileImageView" />
+                        android:layout_toRightOf="@+id/userProfileImageView"
+                        android:layout_toEndOf="@+id/userProfileImageView" />
 
                     <TextView
                         android:text="8h"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignTop="@+id/profileImageView"
+                        android:layout_alignTop="@+id/userProfileImageView"
                         android:layout_alignParentRight="true"
                         android:layout_alignParentEnd="true"
                         android:id="@+id/timeTextView"
                         android:layout_marginRight="10dp" />
 
                     <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/profileImageView"
+                        android:id="@+id/userProfileImageView"
                         android:layout_width="55dp"
                         android:layout_height="55dp"
                         android:layout_centerVertical="true"

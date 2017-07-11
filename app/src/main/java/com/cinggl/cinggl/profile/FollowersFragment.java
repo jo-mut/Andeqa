@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
@@ -38,6 +41,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class FollowersFragment extends Fragment {
     private DatabaseReference cingulansRef;
     private DatabaseReference followersRef;
+    private DatabaseReference followingRef;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private DatabaseReference usernameRef;
@@ -45,6 +49,7 @@ public class FollowersFragment extends Fragment {
     private TextView secondNameTextView;
     private CircleImageView profileImageView;
     private Button followButton;
+    private boolean processFollow = false;
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     private static final String TAG = FollowersFragment.class.getSimpleName();
 
@@ -61,6 +66,7 @@ public class FollowersFragment extends Fragment {
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
+        followingRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
         usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
         cingulansRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
 
@@ -161,6 +167,45 @@ public class FollowersFragment extends Fragment {
                     }
                 });
 
+//                viewHolder.followButton.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        processFollow = true;
+//                        followingRef.addValueEventListener(new ValueEventListener() {
+//                            @Override
+//                            public void onDataChange(DataSnapshot dataSnapshot) {
+//                                if (processFollow){
+//                                    if (dataSnapshot.child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
+//                                        followingRef.child(postKey)
+//                                                .removeValue();
+//                                        processFollow = false;
+//                                        onFollow(false);
+//                                        //set the text on the button to follow if the user in not yet following;
+////                                        followButton.setText("FOLLOW");
+//
+//                                    }else {
+//                                        followingRef.child(postKey).child(firebaseAuth.getCurrentUser().getUid())
+//                                                .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
+//                                        processFollow = false;
+//                                        onFollow(false);
+//
+//                                        //set text on the button to unfollow onClicj to follow;
+////                                        followButton.setText("UNFOLLOW");
+//
+//                                    }
+//
+//                                }
+//
+//                            }
+//
+//                            @Override
+//                            public void onCancelled(DatabaseError databaseError) {
+//
+//                            }
+//                        });
+//                    }
+//                });
+
 
             }
         };
@@ -175,6 +220,32 @@ public class FollowersFragment extends Fragment {
         mFollowersRecyclerView.setLayoutManager(layoutManager);
 
     }
+
+    private void onFollow(final boolean increament){
+        followingRef.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                if(mutableData.getValue() != null){
+                    int value = mutableData.getValue(Integer.class);
+                    if(increament){
+                        value++;
+                    }else{
+                        value--;
+                    }
+                    mutableData.setValue(value);
+                }
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b,
+                                   DataSnapshot dataSnapshot) {
+                Log.d(TAG, "followTransaction:onComplete" + databaseError);
+
+            }
+        });
+    }
+
 
 
     @Override

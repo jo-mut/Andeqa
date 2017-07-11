@@ -104,7 +104,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         //update selected item
         mSelectedItem = item.getItemId();
 
-        updateToolbarText(item.getTitle());
+//        updateToolbarText(item.getTitle());
 
         //uncheck the other items
         for(int i = 0; i < mBottomNavigationView.getMenu().size(); i++){

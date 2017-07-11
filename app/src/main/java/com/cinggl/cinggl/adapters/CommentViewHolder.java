@@ -3,14 +3,10 @@ package com.cinggl.cinggl.adapters;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Comment;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -32,7 +28,7 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
         mContext = itemView.getContext();
         usernameTextView = (TextView)itemView.findViewById(R.id.accountUsernameTextView);
         commentCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
-        profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
+        profileImageView = (CircleImageView) itemView.findViewById(R.id.userProfileImageView);
     }
 
     public void bindComment(final Comment comment){

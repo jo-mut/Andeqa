@@ -41,6 +41,8 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     @Bind(R.id.commentEditText)EditText mCommentEditText;
     @Bind(R.id.commentsRecyclerView)RecyclerView mCommentsRecyclerView;
     @Bind(R.id.cingleImageView)ProportionalImageView mCingleImageView;
+    @Bind(R.id.accountUsernameTextView)TextView mAccountUsernameTextView;
+    @Bind(R.id.userProfileImageView)CircleImageView mUserProfileImageView;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -87,6 +89,45 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final String image = (String) dataSnapshot.child(Constants.CINGLE_IMAGE).getValue();
                 String uid = (String) dataSnapshot.child(Constants.UID).getValue();
+
+                usernameRef.child(uid).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        String username = (String) dataSnapshot.child("username").getValue();
+                        final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+
+
+                        mAccountUsernameTextView.setText(username);
+                        Picasso.with(CommentsActivity.this)
+                                .load(profileImage)
+                                .fit()
+                                .centerCrop()
+                                .placeholder(R.drawable.profle_image_background)
+                                .networkPolicy(NetworkPolicy.OFFLINE)
+                                .into(mUserProfileImageView, new Callback() {
+                                    @Override
+                                    public void onSuccess() {
+
+                                    }
+
+                                    @Override
+                                    public void onError() {
+                                        Picasso.with(CommentsActivity.this)
+                                                .load(profileImage)
+                                                .fit()
+                                                .centerCrop()
+                                                .placeholder(R.drawable.profle_image_background)
+                                                .into(mUserProfileImageView);
+                                    }
+                                });
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
 
                 Picasso.with(CommentsActivity.this)
                         .load(image)

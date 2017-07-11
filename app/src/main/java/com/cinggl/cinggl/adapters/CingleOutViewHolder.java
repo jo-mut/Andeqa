@@ -34,6 +34,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder {
     public CircleImageView profileImageView;
     public TextView commentsCountTextView;
     public TextView sensePointsTextView;
+    public TextView timeTextView;
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
 
@@ -47,9 +48,10 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder {
         cingleDescriptionTextView = (TextView) itemView.findViewById(R.id.cingleDescriptionTextView);
         cingleTitleTextView = (TextView) itemView.findViewById(R.id.cingleTitleTextView);
         accountUsernameTextView = (TextView) itemView.findViewById(R.id.accountUsernameTextView);
-        profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
+        profileImageView = (CircleImageView) itemView.findViewById(R.id.userProfileImageView);
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
         sensePointsTextView = (TextView) itemView.findViewById(R.id.sensePointsDescTextView);
+        timeTextView = (TextView) itemView.findViewById(R.id.timeTextView);
 
     }
 
@@ -58,6 +60,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder {
         TextView cingleTitleTextView = (TextView) mView.findViewById(R.id.cingleTitleTextView);
         TextView cingleDescriptionTextView = (TextView) mView.findViewById(R.id.cingleDescriptionTextView);
         TextView sensePointsTextView = (TextView) mView.findViewById(R.id.sensePointsDescTextView);
+        TextView timeTextView = (TextView) mView.findViewById(R.id.timeTextView);
 
         Picasso.with(mContext)
                 .load(cingle.getCingleImageUrl())

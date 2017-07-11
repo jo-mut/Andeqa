@@ -3,19 +3,16 @@ package com.cinggl.cinggl.camera;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ViewAnimator;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
@@ -51,7 +48,7 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
 //    @Bind(R.id.chosenImageView)ImageView mChosenImageView;
     @Bind(R.id.cameraImageView)ImageView mCameraImageView;
     @Bind(R.id.galleryImageView)ImageView mGalleryImageView;
-    @Bind(R.id.profileImageView)CircleImageView mProfileImageView;
+    @Bind(R.id.userProfileImageView)CircleImageView mProfileImageView;
     @Bind(R.id.accountUsernameTextView)TextView mAccountUsernameTextView;
     @Bind(R.id.img)ProportionalImageView mProportionalImageView;
 
@@ -97,42 +94,42 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
         firebaseUser = firebaseAuth.getCurrentUser();
         usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
 
-//        usernameRef.child(firebaseAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
-//                String username = (String) dataSnapshot.child("username").getValue();
-//
-//                mAccountUsernameTextView.setText(username);
-//
-//                Picasso.with(CreateCingleActivity.this)
-//                        .load(profileImage)
-//                        .fit()
-//                        .centerCrop()
-//                        .networkPolicy(NetworkPolicy.OFFLINE)
-//                        .into(mProfileImageView, new Callback() {
-//                            @Override
-//                            public void onSuccess() {
-//
-//                            }
-//
-//                            @Override
-//                            public void onError() {
-//                                Picasso.with(CreateCingleActivity.this)
-//                                        .load(profileImage)
-//                                        .fit()
-//                                        .centerCrop()
-//                                        .into(mProfileImageView);
-//                            }
-//                        });
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
+        usernameRef.child(firebaseAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+                String username = (String) dataSnapshot.child("username").getValue();
+
+                mAccountUsernameTextView.setText(username);
+
+                Picasso.with(CreateCingleActivity.this)
+                        .load(profileImage)
+                        .fit()
+                        .centerCrop()
+                        .networkPolicy(NetworkPolicy.OFFLINE)
+                        .into(mProfileImageView, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError() {
+                                Picasso.with(CreateCingleActivity.this)
+                                        .load(profileImage)
+                                        .fit()
+                                        .centerCrop()
+                                        .into(mProfileImageView);
+                            }
+                        });
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
 
@@ -354,12 +351,27 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
                                     String profileImage = (String) dataSnapshot.child("profileImage").getValue();
 
                                     Cingle cingle = new Cingle();
+
+                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d");
+                                    String date = simpleDateFormat.format(new Date());
+
+                                    if (date.endsWith("1") && !date.endsWith("11"))
+                                        simpleDateFormat = new SimpleDateFormat("d'st' MMM yyyy");
+                                    else if (date.endsWith("2") && !date.endsWith("12"))
+                                        simpleDateFormat = new SimpleDateFormat("d'nd' MMM yyyy");
+                                    else if (date.endsWith("3") && !date.endsWith("13"))
+                                        simpleDateFormat = new SimpleDateFormat("d'rd' MMM yyyy");
+                                    else
+                                        simpleDateFormat = new SimpleDateFormat("d'th' MMM yyyy");
+                                    String currentDate = simpleDateFormat.format(new Date());
+
                                     cingle.setTitle(mCingleTitleEditText.getText().toString());
                                     cingle.setDescription(mCingleDescriptionEditText.getText().toString());
                                     cingle.setTimeStamp(timeStamp.toString());
                                     cingle.setUid(uid);
                                     cingle.setAccountUserName(username);
                                     cingle.setProfileImageUrl(profileImage);
+                                    cingle.setDatePosted(currentDate);
 
                                     if(photoReducedSizeBitmap != null){
                                         cingle.setCingleImageUrl(downloadUrl.toString());

@@ -16,36 +16,44 @@ public class Cingle {
     Cingle cingle;
     Cingulan cingulan;
     String title;
-    int viewsCount;
     String accountUserName;
     String cingleImageUrl;
     String profileImageUrl;
-
-    int likesCount;
-    int commentsCount;
-    int cingleWorth;
     String description;
     String moreDescription;
     String pushId;
     String timeStamp;
     String uid;
+    String datePosted;
     double sensepoint;
-
 
     public Cingle(){
 
     }
 
-    public Cingle(Cingle cingle) {
-        this.cingle = cingle;
+    public Cingle(double sensepoint, String datePosted,
+                  String uid, String timeStamp, String pushId,
+                  String description, String profileImageUrl,
+                  String cingleImageUrl, String accountUserName,
+                  String title) {
+        this.sensepoint = sensepoint;
+        this.datePosted = datePosted;
+        this.uid = uid;
+        this.timeStamp = timeStamp;
+        this.pushId = pushId;
+        this.description = description;
+        this.profileImageUrl = profileImageUrl;
+        this.cingleImageUrl = cingleImageUrl;
+        this.accountUserName = accountUserName;
+        this.title = title;
     }
 
-    public Cingle(Cingulan cingulan, String cingleImageUrl,
-                  String description, String title, String timeStamp) {
-        this.cingleImageUrl = cingleImageUrl;
-        this.description = description;
-        this.title = title;
-        this.cingulan = cingulan;
+    public double getSensepoint() {
+        return sensepoint;
+    }
+
+    public void setSensepoint(double sensepoint) {
+        this.sensepoint = sensepoint;
     }
 
     public Cingle getCingle() {
@@ -72,14 +80,6 @@ public class Cingle {
         this.title = title;
     }
 
-    public int getViewsCount() {
-        return viewsCount;
-    }
-
-    public void setViewsCount(int viewsCount) {
-        this.viewsCount = viewsCount;
-    }
-
     public String getAccountUserName() {
         return accountUserName;
     }
@@ -104,44 +104,12 @@ public class Cingle {
         this.profileImageUrl = profileImageUrl;
     }
 
-    public int getLikesCount() {
-        return likesCount;
-    }
-
-    public void setLikesCount(int likesCount) {
-        this.likesCount = likesCount;
-    }
-
-    public int getCommentsCount() {
-        return commentsCount;
-    }
-
-    public void setCommentsCount(int commentsCount) {
-        this.commentsCount = commentsCount;
-    }
-
-    public int getCingleWorth() {
-        return cingleWorth;
-    }
-
-    public void setCingleWorth(int cingleWorth) {
-        this.cingleWorth = cingleWorth;
-    }
-
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getMoreDescription() {
-        return moreDescription;
-    }
-
-    public void setMoreDescription(String moreDescription) {
-        this.moreDescription = moreDescription;
     }
 
     public String getPushId() {
@@ -168,11 +136,11 @@ public class Cingle {
         this.uid = uid;
     }
 
-    public double getSensepoint() {
-        return sensepoint;
+    public String getDatePosted() {
+        return datePosted;
     }
 
-    public void setSensepoint(double sensepoint) {
-        this.sensepoint = sensepoint;
+    public void setDatePosted(String datePosted) {
+        this.datePosted = datePosted;
     }
 }

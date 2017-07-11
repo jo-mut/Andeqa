@@ -69,15 +69,6 @@
                         android:layout_marginTop="3dp"
                         android:layout_margin="5dp" />
 
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/profileImageView"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_width="55dp"
-                        android:layout_height="55dp"
-                        android:background="@drawable/profle_image_background" />
-
                     <TextView
                         android:text="username"
                         android:layout_width="wrap_content"
@@ -89,8 +80,17 @@
                         android:textColor="@android:color/black"
                         android:textStyle="normal|bold"
                         android:layout_alignParentTop="true"
-                        android:layout_toRightOf="@+id/profileImageView"
-                        android:layout_toEndOf="@+id/profileImageView" />
+                        android:layout_toRightOf="@+id/userProfileImageView"
+                        android:layout_toEndOf="@+id/userProfileImageView" />
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/userProfileImageView"
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:background="@drawable/profle_image_background"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true" />
 
                 </RelativeLayout>
 

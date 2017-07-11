@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
@@ -33,12 +32,12 @@ public class PeopleViewHolder extends RecyclerView.ViewHolder {
         mContext = itemView.getContext();
         firstNameTextView = (TextView) itemView.findViewById(R.id.firstNameTextView);
         secondNameTextView = (TextView) itemView.findViewById(R.id.secondNameTextView);
-        profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
+        profileImageView = (CircleImageView) itemView.findViewById(R.id.userProfileImageView);
         followButton = (Button) itemView.findViewById(R.id.followButton);
     }
 
     public void bindPeople(final Cingulan cingulan){
-        final CircleImageView profileImageView = (CircleImageView) mView.findViewById(R.id.profileImageView);
+        final CircleImageView profileImageView = (CircleImageView) mView.findViewById(R.id.userProfileImageView);
         final TextView firstNameTextView = (TextView) mView.findViewById(R.id.firstNameTextView);
         final TextView secondNameTextView = (TextView) mView.findViewById(R.id.secondNameTextView);
 

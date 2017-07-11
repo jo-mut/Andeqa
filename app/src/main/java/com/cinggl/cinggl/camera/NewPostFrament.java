@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -62,7 +61,7 @@ public class NewPostFrament extends DialogFragment implements View.OnClickListen
     @Bind(R.id.chosenImageView)ImageView mChosenImageView;
     @Bind(R.id.cameraImageView)ImageView mCameraImageView;
     @Bind(R.id.galleryImageView)ImageView mGalleryImageView;
-    @Bind(R.id.profileImageView)CircleImageView mProfileImageView;
+    @Bind(R.id.userProfileImageView)CircleImageView mProfileImageView;
     @Bind(R.id.accountUsernameTextView)TextView mAccountUsernameTextView;
 
     private static final int CAMERA_REQUEST_CODE = 111;

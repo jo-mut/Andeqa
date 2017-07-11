@@ -32,7 +32,10 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
     public TextView cingleDescriptionTextView;
     public TextView accountUsernameTextView;
     public CircleImageView profileImageView;
+    public TextView usernameTextView;
     public TextView commentsCountTextView;
+    public TextView currentDateTextView;
+    public TextView cingleCreatorTextView;
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
 
@@ -46,20 +49,20 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
         cingleDescriptionTextView = (TextView) itemView.findViewById(R.id.cingleDescriptionTextView);
         cingleTitleTextView = (TextView) itemView.findViewById(R.id.cingleTitleTextView);
         accountUsernameTextView = (TextView) itemView.findViewById(R.id.accountUsernameTextView);
-//        profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
+        profileImageView = (CircleImageView) itemView.findViewById(R.id.userProfileImageView);
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
+        currentDateTextView = (TextView) itemView.findViewById(R.id.currentDateTextView);
+        usernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
 
     }
 
     public void bindBestCingle(final Cingle cingle){
         final ProportionalImageView cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
-        final CircleImageView profileImageView = (CircleImageView) mView.findViewById(R.id.profileImageView);
+        final CircleImageView profileImageView = (CircleImageView) mView.findViewById(R.id.userProfileImageView);
         TextView cingleTitleTextView = (TextView) mView.findViewById(R.id.cingleTitleTextView);
         TextView cingleDescriptionTextView = (TextView) mView.findViewById(R.id.cingleDescriptionTextView);
-        TextView sensePointsTextView = (TextView) mView.findViewById(R.id.sensePointsDescTextView);
-        TextView cingleDateTextView = (TextView) mView.findViewById(R.id.cingleDateTextView);
-        TextView cingleCreatorTextView = (TextView) mView.findViewById(R.id.cingleCreatorTextView);
-        TextView currentDateTextView = (TextView) mView.findViewById(R.id.currentDateTextView);
+        TextView sensePointsTextView = (TextView) mView.findViewById(R.id.sensePointsTextView);
+        TextView datePostedTextView = (TextView) mView.findViewById(R.id.datePostedTextView);
 
         Picasso.with(mContext)
                 .load(cingle.getCingleImageUrl())
@@ -106,5 +109,7 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
 
         cingleTitleTextView.setText((cingle.getTitle()));
         cingleDescriptionTextView.setText(cingle.getDescription());
+        datePostedTextView.setText(cingle.getDatePosted());
+        sensePointsTextView.setText("SP" + " " + cingle.getSensepoint());
     }
 }

@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
@@ -28,13 +29,19 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.Random;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -44,21 +51,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * A simple {@link Fragment} subclass.
  */
 public class CingleOutFragment extends Fragment implements Trace.TracingListener{
+    @Bind(R.id.cingleOutRecyclerView)RecyclerView cingleOutRecyclerView;
+
     private DatabaseReference databaseReference;
+    private Query cinglesQuery;
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     private Trace trace;
     private Context mContext;
-    @Bind(R.id.cingleOutRecyclerView)RecyclerView cingleOutRecyclerView;
-
-    private TextView likesCountTextView;
-    private ImageView likesImageView;
-    private ImageView commentsImageView;
-    private TextView cingleTitleTextView;
-    private TextView commentsCountTextView;
-    private TextView cingleDescriptionTextView;
-    private TextView accountUsernameTextView;
-    private CircleImageView profileImageView;
-    private TextView sensePointsTextView;
     private boolean processLikes = false;
     private DatabaseReference usernameRef;
     private DatabaseReference likesRef;
@@ -86,12 +85,18 @@ public class CingleOutFragment extends Fragment implements Trace.TracingListener
         ButterKnife.bind(this, view);
 
         setUpFirebaseAdapter();
+//        generateRandom();
 
         likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
         sensepointRef = FirebaseDatabase.getInstance().getReference("Sense points");
         usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
         commentReference = FirebaseDatabase.getInstance()
                 .getReference(Constants.COMMENTS);
+
+
+        cinglesQuery = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
+
+
         firebaseAuth = FirebaseAuth.getInstance();
         likesRef.keepSynced(true);
         usernameRef.keepSynced(true);
@@ -100,11 +105,11 @@ public class CingleOutFragment extends Fragment implements Trace.TracingListener
         return view;
     }
 
-
     private void setUpFirebaseAdapter(){
         databaseReference = FirebaseDatabase.getInstance()
                 .getReference(Constants.FIREBASE_CINGLES);
         databaseReference.keepSynced(true);
+
 
         firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Cingle, CingleOutViewHolder>
                 (Cingle.class, R.layout.cingle_out_list, CingleOutViewHolder.class, databaseReference) {
@@ -123,7 +128,6 @@ public class CingleOutFragment extends Fragment implements Trace.TracingListener
                         }
 
                         viewHolder.commentsCountTextView.setText(dataSnapshot.getChildrenCount() + "");
-
                     }
 
                     @Override
@@ -260,7 +264,9 @@ public class CingleOutFragment extends Fragment implements Trace.TracingListener
 
                                         final double sensepoint = pv * x/1000;
 
-                                        databaseReference.child(postKey).child("sensepoint").setValue(sensepoint);
+                                        final double finalPoints = Math.round( sensepoint * 1000000.0)/1000000.0;
+
+                                        databaseReference.child(postKey).child("sensepoint").setValue(finalPoints);
                                     }
                                     else {
                                         final double sensepoint = 0.00;
@@ -339,6 +345,36 @@ public class CingleOutFragment extends Fragment implements Trace.TracingListener
         }catch (Exception e){
 
         }
+    }
+
+    public void generateRandom(){
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                long allCngles = dataSnapshot.getChildrenCount();
+                int maxNum = (int) allCngles;
+                int minNum = 1;
+                int randomNum =  new Random().nextInt(maxNum - minNum + 1);
+
+                int count = 0;
+
+                Iterable<DataSnapshot> dataSnapshots = dataSnapshot.getChildren();
+                Iterator<DataSnapshot> snapshotIterator = dataSnapshots.iterator();
+                String newCingle = "";
+
+                while (snapshotIterator.hasNext() && count < randomNum){
+                    newCingle = (String) snapshotIterator.next().getValue();
+                    count ++;
+                }
+
+                Toast.makeText(getContext(), newCingle, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
 
