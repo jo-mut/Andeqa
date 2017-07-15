@@ -37,6 +37,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -57,6 +60,8 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
     private DatabaseReference databaseReference;
     private DatabaseReference usersRef;
     private ProgressDialog progressDialog;
+    private static final int MAX_WIDTH = 300;
+    private static final int MAX_HEIGHT = 300;
 
 
 
@@ -118,6 +123,33 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
                 imageUri = data.getData();
                 mProfilePictureImageView.setImageURI(imageUri);
 
+                Picasso.with(this)
+                        .load(imageUri)
+                        .resize(MAX_WIDTH, MAX_HEIGHT)
+                        .onlyScaleDown()
+                        .centerCrop()
+                        .placeholder(R.drawable.profle_image_background)
+                        .networkPolicy(NetworkPolicy.OFFLINE)
+                        .into(mProfilePictureImageView, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError() {
+                                Picasso.with(UpdateProfileActivity.this)
+                                        .load(imageUri)
+                                        .resize(MAX_WIDTH, MAX_HEIGHT)
+                                        .onlyScaleDown()
+                                        .centerCrop()
+                                        .placeholder(R.drawable.profle_image_background)
+                                        .into(mProfilePictureImageView);
+
+                            }
+                        });
+
+
             }
         }
     }
@@ -149,10 +181,20 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
                 final String profileImage = (downloadUrl.toString());
                 final String bio = (mBioEditText.getText().toString());
 
-                usersRef.child("username").setValue(username);
-                usersRef.child("bio").setValue(bio);
-                usersRef.child("profileImage").setValue(profileImage);
+                if (!TextUtils.isEmpty(username)){
+                    usersRef.child("username").setValue(username);
+                    mUsernameEditText.setText("");
+                }
 
+                if (!TextUtils.isEmpty(bio)){
+                    usersRef.child("bio").setValue(bio);
+                    mBioEditText.setText("");
+                }
+
+                if (imageUri!= null){
+                    usersRef.child("profileImage").setValue(profileImage);
+                    mProfilePictureImageView.setImageBitmap(null);
+                }
                 progressDialog.dismiss();
 
                 Toast.makeText(UpdateProfileActivity.this, "Your profile is updated!", Toast.LENGTH_SHORT).show();
@@ -160,5 +202,4 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
             }
         });
     }
-
 }

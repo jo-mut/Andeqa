@@ -121,7 +121,7 @@
                     android:background="@color/colorDivider" />
 
                 <TextView
-                    android:text="Clear search history"
+                    android:text="Blocked Cingles"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
@@ -131,6 +131,17 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_margin="10dp" />
+
+                <TextView
+                    android:text="View the cingles that you have blocked and choose to unblock them"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView4"
+                    android:layout_centerVertical="false"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentBottom="true"
+                    android:padding="10dp" />
 
 
             </RelativeLayout>
@@ -191,11 +202,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="80dp">
 
-                <View
-                    android:layout_alignParentBottom="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="0.3dp"
-                    android:background="@color/colorDivider" />
+                <!--<View-->
+                    <!--android:layout_alignParentBottom="true"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="0.3dp"-->
+                    <!--android:background="@color/colorDivider" />-->
 
                 <TextView
                     android:text="Terms and Conditions"

@@ -1,6 +1,7 @@
 package com.cinggl.cinggl.profile;
 
 import android.content.Intent;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.home.CingleSettingsDialogFragment;
 import com.cinggl.cinggl.home.CommentsActivity;
 import com.cinggl.cinggl.home.LikesActivity;
 import com.cinggl.cinggl.models.Cingle;
@@ -41,7 +43,8 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
     @Bind(R.id.commentsCountTextView)TextView mCommentsCountTextView;
     @Bind(R.id.commentsImageView)ImageView mCommentsImageView;
     @Bind(R.id.likesImageView)ImageView mLikesImageView;
-//    @Bind(R.id.senseCreditsTextView)TextView mSenseCreditsTextView;
+    @Bind(R.id.sensePointsDescTextView)TextView mSensePointsTextView;
+    @Bind(R.id.cingleSettingsImageView)ImageView mCingleSettngsImageView;
 
     private Cingle cingle;
     private DatabaseReference likesRef;
@@ -70,6 +73,7 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
         mCommentsImageView.setOnClickListener(this);
         mLikesImageView.setOnClickListener(this);
         mLikesCountTextView.setOnClickListener(this);
+        mCingleSettngsImageView.setOnClickListener(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -92,81 +96,91 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
         usernameRef.keepSynced(true);
         cinglesReference.keepSynced(true);
 
-//        cinglesReference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                String uid = (String) dataSnapshot.child("uid").getValue();
-//
-//                try {
-//                    usernameRef.child(uid).addValueEventListener(new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(DataSnapshot dataSnapshot) {
-//                            String username = (String) dataSnapshot.child("username").getValue();
-//                            final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
-//
-//                            mAccountUsernameTextView.setText(username);
-//
-//                            Picasso.with(CingleDetailActivity.this)
-//                                    .load(profileImage)
-//                                    .fit()
-//                                    .centerCrop()
-//                                    .placeholder(R.drawable.profle_image_background)
-//                                    .networkPolicy(NetworkPolicy.OFFLINE)
-//                                    .into(mProfileImageView, new Callback() {
-//                                        @Override
-//                                        public void onSuccess() {
-//
-//                                        }
-//
-//                                        @Override
-//                                        public void onError() {
-//                                            Picasso.with(CingleDetailActivity.this)
-//                                                    .load(profileImage)
-//                                                    .fit()
-//                                                    .centerCrop()
-//                                                    .placeholder(R.drawable.profle_image_background)
-//                                                    .into(mProfileImageView);
-//                                        }
-//                                    });
-//
-//                        }
-//
-//                        @Override
-//                        public void onCancelled(DatabaseError databaseError) {
-//
-//                        }
-//                    });
-//                }catch (Exception e){
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
+        cinglesReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String uid = (String) dataSnapshot.child("uid").getValue();
+
+                try {
+                    usernameRef.child(uid).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            String username = (String) dataSnapshot.child("username").getValue();
+                            final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+
+                            mAccountUsernameTextView.setText(username);
+
+                            Picasso.with(CingleDetailActivity.this)
+                                    .load(profileImage)
+                                    .fit()
+                                    .centerCrop()
+                                    .placeholder(R.drawable.profle_image_background)
+                                    .networkPolicy(NetworkPolicy.OFFLINE)
+                                    .into(mProfileImageView, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+
+                                        }
+
+                                        @Override
+                                        public void onError() {
+                                            Picasso.with(CingleDetailActivity.this)
+                                                    .load(profileImage)
+                                                    .fit()
+                                                    .centerCrop()
+                                                    .placeholder(R.drawable.profle_image_background)
+                                                    .into(mProfileImageView);
+                                        }
+                                    });
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+
+                        }
+                    });
+                }catch (Exception e){
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         cinglesReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final Cingle cingle = dataSnapshot.getValue(Cingle.class);
 
-                Picasso.with(CingleDetailActivity.this).load(cingle.getCingleImageUrl())
-                        .networkPolicy(NetworkPolicy.OFFLINE)
-                        .into(mCingleImageView, new Callback() {
-                            @Override
-                            public void onSuccess() {
+                try {
 
-                            }
+                    Picasso.with(CingleDetailActivity.this).load(cingle.getCingleImageUrl())
+                            .networkPolicy(NetworkPolicy.OFFLINE)
+                            .into(mCingleImageView, new Callback() {
+                                @Override
+                                public void onSuccess() {
 
-                            @Override
-                            public void onError() {
-                                Picasso.with(CingleDetailActivity.this).load(cingle.getCingleImageUrl())
-                                        .into(mCingleImageView);
+                                }
 
-                            }
-                        });
+                                @Override
+                                public void onError() {
+                                    Picasso.with(CingleDetailActivity.this).load(cingle.getCingleImageUrl())
+                                            .into(mCingleImageView);
+
+                                }
+                            });
+
+                    mSensePointsTextView.setText("SP" + " " + Double.toString(cingle.getSensepoint()));
+
+                }catch (Exception e){
+
+                }
+
 
             }
 
@@ -252,6 +266,12 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
             Intent intent = new Intent(CingleDetailActivity.this, CommentsActivity.class);
             intent.putExtra(CingleDetailActivity.EXTRA_POST_KEY, mPostKey);
             startActivity(intent);
+        }
+
+        if (v == mCingleSettngsImageView){
+            FragmentManager fragmenManager = getSupportFragmentManager();
+            CingleSettingsDialogFragment cingleSettingsDialogFragment = CingleSettingsDialogFragment.newInstance("create your cingle");
+            cingleSettingsDialogFragment.show(fragmenManager, "new post fragment");
         }
 
     }

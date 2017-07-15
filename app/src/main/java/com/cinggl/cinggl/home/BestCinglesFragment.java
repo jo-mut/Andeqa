@@ -1,10 +1,12 @@
 package com.cinggl.cinggl.home;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -12,11 +14,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.BestCinglesViewHolder;
+import com.cinggl.cinggl.adapters.CingleOutViewHolder;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.models.Like;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -57,13 +62,14 @@ public class BestCinglesFragment extends Fragment {
     private FirebaseUser firebaseUser;
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     private Query bestQuery;
+    private Context mContext;
     private TextView currentDateTextView;
     private TextView usernameTextView;
     private static final String TAG = "BestCingleFragment";
     private static final String EXTRA_POST_KEY = "post key";
 
 
-    @Bind(R.id.bestCinglesRecyclerView)RecyclerView mBestCinglesRecyclerView;
+    @Bind(R.id.bestCinglesRecyclerView)RecyclerView bestCinglesRecyclerView;
 
 
     public BestCinglesFragment() {
@@ -100,6 +106,7 @@ public class BestCinglesFragment extends Fragment {
     private void setUpBestMomentCingles(){
         firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Cingle, BestCinglesViewHolder>
                 (Cingle.class, R.layout.best_cingles_list, BestCinglesViewHolder.class, bestQuery) {
+
             @Override
             protected void populateViewHolder(final BestCinglesViewHolder viewHolder, final Cingle model, int position) {
                 viewHolder.bindBestCingle(model);
@@ -309,16 +316,39 @@ public class BestCinglesFragment extends Fragment {
 
 
             }
+
+
+            @Override
+            public void onAttachedToRecyclerView(RecyclerView bestCinglesRecyclerView) {
+                super.onAttachedToRecyclerView(bestCinglesRecyclerView);
+            }
+
+            public void animate(BestCinglesViewHolder viewHolder){
+                final Animation animAnticipateOvershooot = AnimationUtils.loadAnimation(getContext(), R.anim.bounce_interpolator);
+                viewHolder.itemView.setAnimation(animAnticipateOvershooot);
+            }
+
+            @Override
+            public int getItemCount() {
+                return super.getItemCount();
+            }
+
+            @Override
+            public void onBindViewHolder(BestCinglesViewHolder viewHolder, int position) {
+                super.onBindViewHolder(viewHolder, position);
+                animate(viewHolder);
+            }
         };
 
-        mBestCinglesRecyclerView.setAdapter(firebaseRecyclerAdapter);
-        mBestCinglesRecyclerView.setHasFixedSize(false);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setReverseLayout(true);
         layoutManager.setStackFromEnd(true);
         layoutManager.onSaveInstanceState();
         layoutManager.setAutoMeasureEnabled(true);
-        mBestCinglesRecyclerView.setLayoutManager(layoutManager);
+
+        bestCinglesRecyclerView.setAdapter(firebaseRecyclerAdapter);
+        bestCinglesRecyclerView.setHasFixedSize(false);
+        bestCinglesRecyclerView.setLayoutManager(layoutManager);
 
     }
 

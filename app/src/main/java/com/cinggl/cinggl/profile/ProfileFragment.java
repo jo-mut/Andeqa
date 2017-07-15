@@ -64,12 +64,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private DatabaseReference usernameRef;
-    private DatabaseReference relationsRef;
     private boolean processFollow = false;
-    private DatabaseReference followingRef;
-    private DatabaseReference followersRef;
+    private DatabaseReference relationsRef;
     private FragmentManager fragmentManager;
     private static final String TAG = "ProfileFragment";
+    private  static final int MAX_WIDTH = 300;
+    private static final int MAX_HEIGHT = 300;
 
 
     public ProfileFragment() {
@@ -90,8 +90,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
         profileInfoQuery = databaseReference.orderByChild("uid").equalTo(firebaseAuth.getCurrentUser().getUid());
         usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS)
                 .child(firebaseAuth.getCurrentUser().getUid());
-        followingRef = FirebaseDatabase.getInstance().getReference(Constants.FOLLOWERS);
-        followersRef = FirebaseDatabase.getInstance().getReference(Constants.FOLLOWERS)
+        relationsRef = FirebaseDatabase.getInstance().getReference(Constants.FOLLOWERS)
                 .child(firebaseAuth.getCurrentUser().getUid());
         fragmentManager = getChildFragmentManager();
 
@@ -114,8 +113,25 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
 
         databaseReference.keepSynced(true);
         usernameRef.keepSynced(true);
-        followersRef.keepSynced(true);
-        followingRef.keepSynced(true);
+        relationsRef.keepSynced(true);
+
+        usernameRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String uid = (String) dataSnapshot.child("uid").getValue();
+
+                if (firebaseAuth.getCurrentUser().getUid() == uid){
+                    mFollowButton.setVisibility(View.INVISIBLE);
+                }else {
+                    mFollowButton.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         return view;
     }
@@ -157,6 +173,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
     }
 
 
+
     private void fetchData(){
         DatabaseReference reference = usernameRef;
         final String refKey = reference.getKey();
@@ -180,14 +197,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
             }
         });
 
-        followersRef.addValueEventListener(new ValueEventListener() {
+        relationsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "followers Count");
-
                     mFollowersCountTextView.setText(dataSnapshot.getChildrenCount() + "");
-
                 }
 
             }
@@ -198,12 +213,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
             }
         });
 
-        followingRef.child(refKey).addValueEventListener(new ValueEventListener() {
+        relationsRef.child(refKey).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 if (dataSnapshot.hasChild(firebaseAuth.getCurrentUser().getUid())){
-                    mFollowButton.setText("UNFOLLOW");
+                    mFollowButton.setText("FOLLOWING");
                 }else {
                     mFollowButton.setText("FOLLOW");
                 }
@@ -211,8 +226,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
                 if (dataSnapshot.hasChild(firebaseAuth.getCurrentUser().getUid())){
                     Log.e(dataSnapshot.getKey(), dataSnapshot.getChildrenCount() + "following Count");
                     mFollowingCountTextView.setText(dataSnapshot.getChildrenCount() + "");
-
-
                 }
             }
 
@@ -236,8 +249,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
 
                 Picasso.with(getContext())
                         .load(profileImage)
-                        .fit()
+                        .resize(MAX_WIDTH, MAX_HEIGHT)
+                        .onlyScaleDown()
                         .centerCrop()
+                        .placeholder(R.drawable.profle_image_background)
                         .networkPolicy(NetworkPolicy.OFFLINE)
                         .into(mProifleImageView, new Callback() {
                             @Override
@@ -249,7 +264,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
                             public void onError() {
                                 Picasso.with(getContext())
                                         .load(profileImage)
-                                        .fit()
+                                        .resize(MAX_WIDTH, MAX_HEIGHT)
+                                        .onlyScaleDown()
                                         .centerCrop()
                                         .placeholder(R.drawable.profle_image_background)
                                         .into(mProifleImageView);
@@ -287,11 +303,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
 
             }
 
-            @Override
-            public Cingle getItem(int position) {
-                return super.getItem(getItemCount() - 1 - position);
-            }
-
         };
 
         mProfileCinglesRecyclerView.setAdapter(firebaseRecyclerAdapter);
@@ -309,12 +320,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
             processFollow = true;
             DatabaseReference reference = usernameRef;
             final String refKey = reference.getKey();
-            followingRef.addValueEventListener(new ValueEventListener() {
+            relationsRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (processFollow){
                         if (dataSnapshot.child(refKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
-                            followingRef.child(refKey)
+                            relationsRef.child(refKey)
                                     .removeValue();
                             processFollow = false;
                             onFollow(false);
@@ -322,13 +333,13 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
                             mFollowButton.setText("FOLLOW");
 
                         }else {
-                            followingRef.child(refKey).child(firebaseAuth.getCurrentUser().getUid())
+                            relationsRef.child(refKey).child(firebaseAuth.getCurrentUser().getUid())
                                     .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
                             processFollow = false;
                             onFollow(false);
 
-                            //set text on the button to unfollow onClicj to follow;
-                            mFollowButton.setText("UNFOLLOW");
+                            //set text on the button following;
+                            mFollowButton.setText("FOLLOWING");
 
                         }
 
@@ -358,7 +369,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
     }
 
     private void onFollow(final boolean increament){
-        followingRef.runTransaction(new Transaction.Handler() {
+        relationsRef.runTransaction(new Transaction.Handler() {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
                 if(mutableData.getValue() != null){

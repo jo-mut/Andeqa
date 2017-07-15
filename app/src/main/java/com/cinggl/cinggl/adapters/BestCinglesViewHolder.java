@@ -110,6 +110,6 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
         cingleTitleTextView.setText((cingle.getTitle()));
         cingleDescriptionTextView.setText(cingle.getDescription());
         datePostedTextView.setText(cingle.getDatePosted());
-        sensePointsTextView.setText("SP" + " " + cingle.getSensepoint());
+        sensePointsTextView.setText("SP" + " " + Double.toString(cingle.getSensepoint()));
     }
 }

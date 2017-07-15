@@ -4,21 +4,26 @@ package com.cinggl.cinggl.home;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.adapters.CingleOutAdapter;
 import com.cinggl.cinggl.adapters.CingleOutViewHolder;
-import com.cinggl.cinggl.models.Like;
 import com.cinggl.cinggl.models.TraceData;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.utils.Trace;
@@ -36,16 +41,17 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Random;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import de.hdodenhof.circleimageview.CircleImageView;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -62,14 +68,21 @@ public class CingleOutFragment extends Fragment implements Trace.TracingListener
     private DatabaseReference usernameRef;
     private DatabaseReference likesRef;
     private DatabaseReference recentLikesRef;
+    private CingleOutAdapter cingleOutAdapter;
     private FirebaseAuth firebaseAuth;
     private static final double GOLDEN_RATIO = 1.618;
+    private static final double MILLE = 1000.0;
+    private static final int PAGE_SIZE = 30;
     private DatabaseReference sensepointRef;
-    private double pv;
     private DatabaseReference commentReference;
     private static final String TAG = "CingleOutFragment";
     private static final String EXTRA_POST_KEY = "post key";
     private ArrayList<String> mDataSet = new ArrayList<>();
+    private LinearLayoutManager layoutManager;
+
+    private static final double DEFAULT_PRICE = 1.5;
+    private boolean isLoading = false;
+    private boolean isLastPage = false;
 
 
 
@@ -92,10 +105,8 @@ public class CingleOutFragment extends Fragment implements Trace.TracingListener
         usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
         commentReference = FirebaseDatabase.getInstance()
                 .getReference(Constants.COMMENTS);
-
-
+        databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
         cinglesQuery = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
-
 
         firebaseAuth = FirebaseAuth.getInstance();
         likesRef.keepSynced(true);
@@ -105,14 +116,56 @@ public class CingleOutFragment extends Fragment implements Trace.TracingListener
         return view;
     }
 
+//
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//
+//        layoutManager = new LinearLayoutManager(getContext());
+//        layoutManager.setReverseLayout(true);
+//        layoutManager.setStackFromEnd(true);
+//        layoutManager.onSaveInstanceState();
+//        layoutManager.setAutoMeasureEnabled(true);
+//        cingleOutAdapter = new CingleOutAdapter(databaseReference, getContext());
+//        cingleOutRecyclerView.setAdapter(cingleOutAdapter);
+//        cingleOutRecyclerView.setHasFixedSize(false);
+//    }
+//
+//    @Override
+//    public void onStop() {
+//        super.onStop();
+//    }
+
     private void setUpFirebaseAdapter(){
         databaseReference = FirebaseDatabase.getInstance()
                 .getReference(Constants.FIREBASE_CINGLES);
         databaseReference.keepSynced(true);
 
-
         firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Cingle, CingleOutViewHolder>
                 (Cingle.class, R.layout.cingle_out_list, CingleOutViewHolder.class, databaseReference) {
+
+            @Override
+            public void onAttachedToRecyclerView(RecyclerView cingleOutRecyclerView) {
+                super.onAttachedToRecyclerView(cingleOutRecyclerView);
+            }
+
+            public void animate(CingleOutViewHolder viewHolder){
+                final Animation animAnticipateOvershooot = AnimationUtils.loadAnimation(getContext(), R.anim.bounce_interpolator);
+                viewHolder.itemView.setAnimation(animAnticipateOvershooot);
+            }
+
+            @Override
+            public int getItemCount() {
+                return super.getItemCount();
+            }
+
+            @Override
+            public void onBindViewHolder(CingleOutViewHolder viewHolder, int position) {
+                super.onBindViewHolder(viewHolder, position);
+                animate(viewHolder);
+            }
+
+
             @Override
             protected void populateViewHolder(final CingleOutViewHolder viewHolder, Cingle model, int position) {
                 viewHolder.bindCingle(model);
@@ -226,28 +279,19 @@ public class CingleOutFragment extends Fragment implements Trace.TracingListener
                                             processLikes = false;
 
                                         }else {
-                                            usernameRef.child(firebaseAuth.getCurrentUser().getUid())
-                                                    .addValueEventListener(new ValueEventListener() {
-                                                        @Override
-                                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                                            final String uid = (String) dataSnapshot.child("uid").getValue();
-
-                                                            final Like like = new Like();
-
-                                                            like.setUid(uid);
-
-                                                            likesRef.child(postKey).child(firebaseAuth.getCurrentUser().getUid())
-                                                                    .setValue(like);
-                                                            onLikeCounter(true);
-                                                            processLikes = false;
-
-                                                        }
-
-                                                        @Override
-                                                        public void onCancelled(DatabaseError databaseError) {
-
-                                                        }
-                                                    });
+                                            if(processLikes){
+                                                if (dataSnapshot.child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
+                                                    likesRef.child(postKey)
+                                                            .removeValue();
+                                                    processLikes = false;
+                                                    onLikeCounter(false);
+                                                }else {
+                                                    likesRef.child(postKey).child(firebaseAuth.getCurrentUser().getUid())
+                                                            .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
+                                                    processLikes = false;
+                                                    onLikeCounter(false);
+                                                }
+                                            }
                                         }
 
                                     }
@@ -255,21 +299,35 @@ public class CingleOutFragment extends Fragment implements Trace.TracingListener
 
                                     String likesCount = dataSnapshot.child(postKey).getChildrenCount() + "";
                                     Log.d(likesCount, "all the likes in one cingle");
+                                    //convert children count which is a string to integer
                                     final int x = Integer.parseInt(likesCount);
 
-
                                     if (x > 0){
+                                        //mille is a thousand likes
+                                        double MILLE = 1000.0;
+                                        //get the number of likes per a thousand likes
+                                        double likesPerMille = x/MILLE;
+                                        //get the default rate of likes per unit time in seconds;
+                                        double rateOfLike = 1000.0/1800.0;
+                                        //get the current rate of likes per unit time in seconds;
+                                        double currentRateOfLkes = x * rateOfLike/MILLE;
+                                        //get the current price of cingle
+                                        final double currentPrice = currentRateOfLkes * DEFAULT_PRICE/rateOfLike;
+                                        //get the perfection value of cingle's interactivity online
+                                        double perfectionValue = GOLDEN_RATIO/x;
+                                        //get the new worth of Cingle price in Sen
+                                        final double cingleWorth = perfectionValue * likesPerMille * currentPrice;
+                                        //round of the worth of the cingle to 4 decimal number
+//                                        double finalPoints = Math.round( cingleWorth * 10000.0)/10000.0;
 
-                                        final double pv = GOLDEN_RATIO/x;
 
-                                        final double sensepoint = pv * x/1000;
+                                        double finalPoints = round( cingleWorth, 10);
 
-                                        final double finalPoints = Math.round( sensepoint * 1000000.0)/1000000.0;
 
                                         databaseReference.child(postKey).child("sensepoint").setValue(finalPoints);
                                     }
                                     else {
-                                        final double sensepoint = 0.00;
+                                        double sensepoint = 0.00;
 
                                         databaseReference.child(postKey).child("sensepoint").setValue(sensepoint);
                                     }
@@ -302,17 +360,28 @@ public class CingleOutFragment extends Fragment implements Trace.TracingListener
                     }
                 });
 
+                viewHolder.cingleSettingsImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        FragmentManager fragmenManager = getChildFragmentManager();
+                        CingleSettingsDialogFragment cingleSettingsDialogFragment = CingleSettingsDialogFragment.newInstance("create your cingle");
+                        cingleSettingsDialogFragment.show(fragmenManager, "new post fragment");
+                    }
+                });
+
+
             }
         };
 
-        cingleOutRecyclerView.setAdapter(firebaseRecyclerAdapter);
-        cingleOutRecyclerView.setHasFixedSize(false);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setReverseLayout(true);
         layoutManager.setStackFromEnd(true);
         layoutManager.onSaveInstanceState();
         layoutManager.setAutoMeasureEnabled(true);
+
         cingleOutRecyclerView.setLayoutManager(layoutManager);
+        cingleOutRecyclerView.setAdapter(firebaseRecyclerAdapter);
+        cingleOutRecyclerView.setHasFixedSize(false);
 
         trace = new Trace.Builder()
                 .setRecyclerView(cingleOutRecyclerView)
@@ -323,8 +392,69 @@ public class CingleOutFragment extends Fragment implements Trace.TracingListener
                 .dumpDataAfterInterval(true)
                 .build();
 
-
     }
+
+
+
+    //region listeners
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+
+    public final class StatefulRecyclerView extends RecyclerView{
+        private static final String SAVED_SUPER_STATE = "super_state";
+        private static final String SAVED_LAYOUT_MANAGER = "layout_manager_state";
+
+        private Parcelable mLayoutManagerSavedState;
+
+        public StatefulRecyclerView(Context context){
+            super(context);
+        }
+
+        public StatefulRecyclerView(Context context, @Nullable AttributeSet attrs) {
+            super(context, attrs);
+        }
+
+        public StatefulRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
+            super(context, attrs, defStyle);
+        }
+
+        @Override
+        protected Parcelable onSaveInstanceState() {
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(SAVED_SUPER_STATE, super.onSaveInstanceState());
+            bundle.putParcelable(SAVED_LAYOUT_MANAGER, this.getLayoutManager().onSaveInstanceState());
+            return bundle;
+        }
+
+        @Override
+        protected void onRestoreInstanceState(Parcelable state) {
+            if (state instanceof Bundle) {
+                Bundle bundle = (Bundle) state;
+                mLayoutManagerSavedState = bundle.getParcelable(SAVED_LAYOUT_MANAGER);
+                state = bundle.getParcelable(SAVED_SUPER_STATE);
+            }
+            super.onRestoreInstanceState(state);
+        }
+
+        private void restorePosition() {
+            if (mLayoutManagerSavedState != null) {
+                this.getLayoutManager().onRestoreInstanceState(mLayoutManagerSavedState);
+                mLayoutManagerSavedState = null;
+            }
+        }
+
+        @Override
+        public void setAdapter(Adapter firebaseRecyclerAdapter) {
+            super.setAdapter(firebaseRecyclerAdapter);
+            restorePosition();
+        }
+    }
+
 
     @Override
     public void onResume() {
@@ -346,36 +476,36 @@ public class CingleOutFragment extends Fragment implements Trace.TracingListener
 
         }
     }
-
-    public void generateRandom(){
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                long allCngles = dataSnapshot.getChildrenCount();
-                int maxNum = (int) allCngles;
-                int minNum = 1;
-                int randomNum =  new Random().nextInt(maxNum - minNum + 1);
-
-                int count = 0;
-
-                Iterable<DataSnapshot> dataSnapshots = dataSnapshot.getChildren();
-                Iterator<DataSnapshot> snapshotIterator = dataSnapshots.iterator();
-                String newCingle = "";
-
-                while (snapshotIterator.hasNext() && count < randomNum){
-                    newCingle = (String) snapshotIterator.next().getValue();
-                    count ++;
-                }
-
-                Toast.makeText(getContext(), newCingle, Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
+//
+//    public void generateRandom(){
+//        databaseReference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                long allCngles = dataSnapshot.getChildrenCount();
+//                int maxNum = (int) allCngles;
+//                int minNum = 1;
+//                int randomNum =  new Random().nextInt(maxNum - minNum + 1);
+//
+//                int count = 0;
+//
+//                Iterable<DataSnapshot> dataSnapshots = dataSnapshot.getChildren();
+//                Iterator<DataSnapshot> snapshotIterator = dataSnapshots.iterator();
+//                String newCingle = "";
+//
+//                while (snapshotIterator.hasNext() && count < randomNum){
+//                    newCingle = (String) snapshotIterator.next().getValue();
+//                    count ++;
+//                }
+//
+//                Toast.makeText(getContext(), newCingle, Toast.LENGTH_LONG).show();
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
 
 
     @Override
@@ -420,5 +550,6 @@ public class CingleOutFragment extends Fragment implements Trace.TracingListener
         super.onDestroy();
         firebaseRecyclerAdapter.cleanup();
     }
+
 
 }

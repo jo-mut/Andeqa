@@ -6,13 +6,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
@@ -27,6 +30,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
@@ -49,8 +54,11 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     private String mPostKey;
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     private DatabaseReference commentReference;
+    private DatabaseReference relationsRef;
     private DatabaseReference cinglesReference;
     public static final String EXTRA_POST_KEY = "post key";
+    private static final String TAG = CommentsActivity.class.getSimpleName();
+    private boolean processFollow = false;
     private DatabaseReference usernameRef;
     private TextView usernameTextView;
     private CircleImageView profileImageView;
@@ -79,6 +87,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         commentReference = FirebaseDatabase.getInstance()
                 .getReference(Constants.COMMENTS).child(mPostKey);
         usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
+        relationsRef =  FirebaseDatabase.getInstance().getReference(Constants.FOLLOWERS);
         setUpFirebaseComments();
         cinglesReference.keepSynced(true);
         usernameRef.keepSynced(true);
@@ -216,6 +225,62 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
                     }
                 });
+
+                relationsRef.child(postKey).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        if (dataSnapshot.hasChild(firebaseAuth.getCurrentUser().getUid())){
+                            viewHolder.followButton.setText("Following");
+                        }else {
+                            viewHolder.followButton.setText("Follow");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+                viewHolder.followButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        processFollow = true;
+                        relationsRef.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (processFollow){
+                                    if (dataSnapshot.child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
+                                        relationsRef.child(postKey)
+                                                .removeValue();
+                                        processFollow = false;
+                                        onFollow(false);
+                                        //set the text on the button to follow if the user in not yet following;
+//                                        followButton.setText("FOLLOW");
+
+                                    }else {
+                                        relationsRef.child(postKey).child(firebaseAuth.getCurrentUser().getUid())
+                                                .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
+                                        processFollow = false;
+                                        onFollow(false);
+
+                                        //set text on the button to following;
+                                        viewHolder.followButton.setText("Following");
+
+                                    }
+
+                                }
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                });
             }
 
         };
@@ -269,35 +334,19 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         final String commentText = mCommentEditText.getText().toString().trim();
         if(!TextUtils.isEmpty(commentText)){
             if(v == mSendCommentImageView){
-                FirebaseDatabase.getInstance().getReference().child(Constants.FIREBASE_USERS).child(uid)
+                usernameRef.child(firebaseAuth.getCurrentUser().getUid())
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                //get the user info
-                                final Cingulan cingulan = dataSnapshot.getValue(Cingulan.class);
+                                String username = (String) dataSnapshot.child("username").getValue();
+                                String uid = (String) dataSnapshot.child("uid").getValue();
+                                String profileImage = (String) dataSnapshot.child("profileImage").getValue();
 
-                                usernameRef.child(firebaseAuth.getCurrentUser().getUid())
-                                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        String username = (String) dataSnapshot.child("username").getValue();
-                                        String uid = (String) dataSnapshot.child("uid").getValue();
-                                        String profileImage = (String) dataSnapshot.child("profileImage").getValue();
-
-                                        Comment comment = new Comment();
-                                        comment.setUid(uid);
-//
-                                        comment.setCommentText(mCommentEditText.getText().toString());
-                                        commentReference.push().setValue(comment);
-                                        mCommentEditText.setText("");
-                                    }
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-
-                                    }
-                                });
-
+                                Comment comment = new Comment();
+                                comment.setUid(uid);
+                                comment.setCommentText(mCommentEditText.getText().toString());
+                                commentReference.push().setValue(comment);
+                                mCommentEditText.setText("");
                             }
 
                             @Override
@@ -306,9 +355,36 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                             }
                         });
 
+
+
             }
         }
 
+    }
+
+    private void onFollow(final boolean increament){
+        relationsRef.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                if(mutableData.getValue() != null){
+                    int value = mutableData.getValue(Integer.class);
+                    if(increament){
+                        value++;
+                    }else{
+                        value--;
+                    }
+                    mutableData.setValue(value);
+                }
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b,
+                                   DataSnapshot dataSnapshot) {
+                Log.d(TAG, "followTransaction:onComplete" + databaseError);
+
+            }
+        });
     }
 
 }

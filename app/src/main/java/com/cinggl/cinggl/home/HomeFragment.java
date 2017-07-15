@@ -1,13 +1,9 @@
 package com.cinggl.cinggl.home;
 
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,16 +11,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.camera.NewPostFrament;
-import com.cinggl.cinggl.ui.SettingsActivity;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
 
 public class HomeFragment extends Fragment{
     private static final String TAG = HomeFragment.class.getSimpleName();

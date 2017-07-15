@@ -76,7 +76,6 @@
 
 
                     <TextView
-                        android:text="0"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/cinglesCountTextView"
@@ -108,7 +107,6 @@
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:text="0"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/followersCountTextView"
@@ -139,7 +137,6 @@
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:text="0"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/followingCountTextView"
@@ -176,7 +173,6 @@
                 android:layout_marginBottom="10dp">
 
                 <Button
-                    android:text="Follow"
                     android:layout_width="wrap_content"
                     android:layout_height="25dp"
                     android:id="@+id/followButton"

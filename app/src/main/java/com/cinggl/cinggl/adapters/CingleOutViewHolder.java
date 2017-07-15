@@ -35,6 +35,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder {
     public TextView commentsCountTextView;
     public TextView sensePointsTextView;
     public TextView timeTextView;
+    public ImageView cingleSettingsImageView;
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
 
@@ -52,6 +53,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder {
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
         sensePointsTextView = (TextView) itemView.findViewById(R.id.sensePointsDescTextView);
         timeTextView = (TextView) itemView.findViewById(R.id.timeTextView);
+        cingleSettingsImageView = (ImageView) itemView.findViewById(R.id.cingleSettingsImageView);
 
     }
 
@@ -84,8 +86,10 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder {
 
         cingleTitleTextView.setText((cingle.getTitle()));
         cingleDescriptionTextView.setText(cingle.getDescription());
-        sensePointsTextView.setText("SP" + " " + Double.toString(cingle.getSensepoint()));
+        sensePointsTextView.setText("SP" + " " + (cingle.getSensepoint()));
 
     }
+
+
 
 }

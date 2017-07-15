@@ -3,6 +3,7 @@ package com.cinggl.cinggl.adapters;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
@@ -21,6 +22,7 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
     private TextView commentCountTextView;
     public TextView usernameTextView;
     public CircleImageView profileImageView;
+    public Button followButton;
 
     public CommentViewHolder(View itemView) {
         super(itemView);
@@ -29,6 +31,7 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
         usernameTextView = (TextView)itemView.findViewById(R.id.accountUsernameTextView);
         commentCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.userProfileImageView);
+        followButton = (Button) itemView.findViewById(R.id.followButton);
     }
 
     public void bindComment(final Comment comment){

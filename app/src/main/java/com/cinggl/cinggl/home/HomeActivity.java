@@ -17,7 +17,6 @@ import android.view.View;
 
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.camera.CreateCingleActivity;
-import com.cinggl.cinggl.camera.NewPostFrament;
 import com.cinggl.cinggl.profile.ProfileFragment;
 import com.cinggl.cinggl.timeline.TimelineFragment;
 
@@ -82,7 +81,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void selectFragment(MenuItem item){
-
         //initialize each corresponding fragment
         switch (item.getItemId()){
             case R.id.action_home:
@@ -122,8 +120,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private void showNewPostFragment(){
         FragmentManager fragmentManager = getSupportFragmentManager();
-        NewPostFrament newPostFrament = NewPostFrament.newInstance("create your cingle");
-        newPostFrament.show(fragmentManager, "new post fragment");
+        CingleSettingsDialogFragment cingleSettingsDialogFragment = CingleSettingsDialogFragment.newInstance("create your cingle");
+        cingleSettingsDialogFragment.show(fragmentManager, "new post fragment");
     }
 
 }
