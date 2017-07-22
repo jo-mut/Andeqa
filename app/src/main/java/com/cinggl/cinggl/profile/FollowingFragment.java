@@ -1,6 +1,7 @@
 package com.cinggl.cinggl.profile;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -51,6 +52,7 @@ public class FollowingFragment extends Fragment {
     private boolean processFollow = false;
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     private static final String TAG = FollowersFragment.class.getSimpleName();
+    private static final String EXTRA_USER_UID = "uid";
 
     @Bind(R.id.followingRecyclerView)RecyclerView mFollowingRecyclerView;
 
@@ -97,7 +99,7 @@ public class FollowingFragment extends Fragment {
                 relationsRef.child(postKey).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        String uid = (String) dataSnapshot.child("uid").getValue();
+                        final String uid = (String) dataSnapshot.child("uid").getValue();
 
                         try {
                             usernameRef.child(uid).addValueEventListener(new ValueEventListener() {
@@ -149,6 +151,20 @@ public class FollowingFragment extends Fragment {
                         }catch (Exception e){
 
                         }
+
+                        viewHolder.profileImageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                    Intent intent = new Intent(getActivity(), PersonalProfileActivity.class);
+                                    startActivity(intent);
+                                }else {
+                                    Intent intent = new Intent(getActivity(), FollowerProfileActivity.class);
+                                    intent.putExtra(FollowingFragment.EXTRA_USER_UID, uid);
+                                    startActivity(intent);
+                                }
+                            }
+                        });
 
                     }
 

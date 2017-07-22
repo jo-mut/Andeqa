@@ -46,10 +46,10 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/applogo"
+        app:srcCompat="@drawable/logo_icon"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:id="@+id/appLogo"
-        android:layout_margin="110sp" />
+        android:id="@+id/logo_icon"
+        android:layout_margin="50sp" />
 
 </RelativeLayout>

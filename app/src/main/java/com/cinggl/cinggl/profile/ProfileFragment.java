@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
@@ -55,6 +56,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
     @Bind(R.id.followingCountTextView)TextView mFollowingCountTextView;
     @Bind(R.id.cinglesCountTextView)TextView mCinglesCountTextView;
     @Bind(R.id.followButton)Button mFollowButton;
+    @Bind(R.id.followButtonRelativeLayout)RelativeLayout mFollowButtonRelativeLayout;
 
 
     private DatabaseReference databaseReference;
@@ -70,6 +72,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
     private static final String TAG = "ProfileFragment";
     private  static final int MAX_WIDTH = 300;
     private static final int MAX_HEIGHT = 300;
+    private String mUid;
 
 
     public ProfileFragment() {
@@ -84,14 +87,14 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
+        mUid = firebaseUser.getUid();
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
         profileCinglesQuery = databaseReference.orderByChild("uid").equalTo(firebaseAuth.getCurrentUser().getUid());
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
         profileInfoQuery = databaseReference.orderByChild("uid").equalTo(firebaseAuth.getCurrentUser().getUid());
         usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS)
                 .child(firebaseAuth.getCurrentUser().getUid());
-        relationsRef = FirebaseDatabase.getInstance().getReference(Constants.FOLLOWERS)
-                .child(firebaseAuth.getCurrentUser().getUid());
+        relationsRef = FirebaseDatabase.getInstance().getReference(Constants.FOLLOWERS);
         fragmentManager = getChildFragmentManager();
 
 
@@ -120,10 +123,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String uid = (String) dataSnapshot.child("uid").getValue();
 
-                if (firebaseAuth.getCurrentUser().getUid() == uid){
-                    mFollowButton.setVisibility(View.INVISIBLE);
+                if (firebaseAuth.getCurrentUser().getUid().equals(uid)){
+//                    mFollowButton.setVisibility(View.INVISIBLE);
+                    mFollowButtonRelativeLayout.setVisibility(View.GONE);
                 }else {
-                    mFollowButton.setVisibility(View.VISIBLE);
+//                    mFollowButton.setVisibility(View.VISIBLE);
+                    mFollowButtonRelativeLayout.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -136,12 +141,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
         return view;
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.profile_menu, menu);
-    }
+//    @Override
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        super.onCreateOptionsMenu(menu, inflater);
+//        inflater.inflate(R.menu.profile_menu, menu);
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -152,7 +157,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            launchSettings();
+//            launchSettings();
+            Intent intent = new Intent(getActivity(), UpdateProfileActivity.class);
+            startActivity(intent);
             return true;
         }
 
@@ -160,17 +167,17 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
 //            return true;
 //        }
 
-        if(id == R.id.action_notifications){
-            return true;
-        }
+//        if(id == R.id.action_notifications){
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
-
-    public void launchSettings(){
-        Intent intentSettings = new Intent(getActivity(), SettingsActivity.class);
-        startActivity(intentSettings);
-    }
+    /**method to launch settings activity*/
+//    public void launchSettings(){
+//        Intent intentSettings = new Intent(getActivity(), SettingsActivity.class);
+//        startActivity(intentSettings);
+//    }
 
 
 
@@ -197,7 +204,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
             }
         });
 
-        relationsRef.addValueEventListener(new ValueEventListener() {
+        relationsRef.child(firebaseAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
@@ -299,7 +306,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
                         startActivity(intent);
                     }
                 });
-
 
             }
 

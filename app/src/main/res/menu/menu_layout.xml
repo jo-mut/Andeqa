@@ -9,10 +9,40 @@
         <!--android:title="Search">-->
     <!--</item>-->
 
+    <!--<item-->
+        <!--android:id="@+id/action_notifications"-->
+        <!--android:icon="@drawable/ic_notifications_white_24dp"-->
+        <!--app:showAsAction="always"-->
+        <!--android:title="Notifications">-->
+    <!--</item>-->
+
     <item
-        android:id="@+id/action_notifications"
-        android:icon="@drawable/ic_notifications_white_24dp"
-        app:showAsAction="always"
-        android:title="Notifications">
+        android:id="@+id/action_profile"
+        android:icon="@drawable/ic_more_vert_white_24dp"
+        app:showAsAction="never"
+        android:title="Profile">
     </item>
+
+    <!--<item-->
+        <!--android:id="@+id/action_flagged_cingle"-->
+        <!--android:icon="@drawable/ic_more_vert_white_24dp"-->
+        <!--app:showAsAction="never"-->
+        <!--android:title="Blocked Cingulan">-->
+    <!--</item>-->
+
+    <!--<item-->
+        <!--android:id="@+id/action_blocked_cingulan"-->
+        <!--android:icon="@drawable/ic_more_vert_white_24dp"-->
+        <!--app:showAsAction="never"-->
+        <!--android:title="Flagged Cingles">-->
+    <!--</item>-->
+
+    <item
+        android:id="@+id/action_account_settings"
+        android:icon="@drawable/ic_more_vert_white_24dp"
+        app:showAsAction="never"
+        android:title="Account Settings">
+    </item>
+
+
 </menu>

@@ -3,32 +3,28 @@ package com.cinggl.cinggl.profile;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+import android.widget.ViewAnimator;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.models.Cingulan;
-import com.cinggl.cinggl.utils.FirebaseUtil;
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.cinggl.cinggl.home.DeleteAccountDialog;
+import com.cinggl.cinggl.services.ConnectivityReceiver;
+import com.cinggl.cinggl.utils.App;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -46,11 +42,15 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class UpdateProfileActivity extends AppCompatActivity implements View.OnClickListener {
+public class UpdateProfileActivity extends AppCompatActivity implements
+        View.OnClickListener, ConnectivityReceiver.ConnectivityReceiverListener {
     @Bind(R.id.profilePictureImageView)CircleImageView mProfilePictureImageView;
     @Bind(R.id.usernameEditText) EditText mUsernameEditText;
     @Bind(R.id.bioEditText)EditText mBioEditText;
-    @Bind(R.id.doneEditButton)Button mDoneEditButton;
+    @Bind(R.id.fisrtNameEditText)EditText mFirstNameEditText;
+    @Bind(R.id.secondNameEditText)EditText mSecondNameEditText;
+    @Bind(R.id.deleteAccountRelativeLayout)RelativeLayout mDeleteAccountRelativeLayout;
+    @Bind(R.id.animator)ViewAnimator viewAnimator;
 
     public static  final int GALLERY_REQUEST = 1;
     public static final String TAG = UpdateProfileActivity.class.getSimpleName();
@@ -65,6 +65,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
 
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,27 +75,42 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mDoneEditButton.setOnClickListener(this);
         mProfilePictureImageView.setOnClickListener(this);
+        mDeleteAccountRelativeLayout.setOnClickListener(this);
+
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         usersRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS)
                 .child(firebaseAuth.getCurrentUser().getUid());
 
         updateProfileProgessDialog();
+
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
     }
 
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.menu_layout, menu);
-//        return super.onCreateOptionsMenu(menu);
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.update_profile_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+
+        if (id == R.id.action_done){
+            updateUsernameAndBio();
+
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -102,15 +118,21 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void onClick(View v){
-        if(v == mDoneEditButton){
-            updateUserProfile();
-        }
 
         if(v == mProfilePictureImageView){
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
             startActivityForResult(intent, GALLERY_REQUEST);
+        }
+
+        if (v == mDeleteAccountRelativeLayout){
+            //delete your account permanently
+
+            FragmentManager fragmenManager = getSupportFragmentManager();
+            DeleteAccountDialog deleteAccountDialog = DeleteAccountDialog.newInstance("create your cingle");
+            deleteAccountDialog.show(fragmenManager, "new post fragment");
+
         }
     }
 
@@ -148,8 +170,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
 
                             }
                         });
-
-
+                updateUserProfile();
             }
         }
     }
@@ -160,46 +181,265 @@ public class UpdateProfileActivity extends AppCompatActivity implements View.OnC
         progressDialog.setCancelable(true);
     }
 
-
     public void updateUserProfile(){
-        progressDialog.show();
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String uid = user.getUid();
+        final String profileImage = (imageUri.toString());
 
-        StorageReference storageReference = FirebaseStorage
-                .getInstance().getReference()
-                .child("profile images")
-                .child(uid);
+        if (imageUri != null){
+            StorageReference storageReference = FirebaseStorage
+                    .getInstance().getReference()
+                    .child("profile images")
+                    .child(uid);
 
-        StorageReference filePath = storageReference.child(imageUri.getLastPathSegment());
-        filePath.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                String downloadUrl = taskSnapshot.getDownloadUrl().toString();
+            StorageReference filePath = storageReference.child(imageUri.getLastPathSegment());
+            filePath.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    String downloadUrl = taskSnapshot.getDownloadUrl().toString();
 
-                final String username = (mUsernameEditText.getText().toString());
-                final String profileImage = (downloadUrl.toString());
-                final String bio = (mBioEditText.getText().toString());
+                    final String profileImage = (downloadUrl.toString());
 
-                if (!TextUtils.isEmpty(username)){
-                    usersRef.child("username").setValue(username);
-                    mUsernameEditText.setText("");
-                }
-
-                if (!TextUtils.isEmpty(bio)){
-                    usersRef.child("bio").setValue(bio);
-                    mBioEditText.setText("");
-                }
-
-                if (imageUri!= null){
                     usersRef.child("profileImage").setValue(profileImage);
                     mProfilePictureImageView.setImageBitmap(null);
+
+                    //progress dialog to show the retrieval of the update profile picture
+//                    viewAnimator.setDisplayedChild(1);
+
+                    usersRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+
+                            Picasso.with(UpdateProfileActivity.this)
+                                    .load(profileImage)
+                                    .resize(MAX_WIDTH, MAX_HEIGHT)
+                                    .onlyScaleDown()
+                                    .centerCrop()
+                                    .placeholder(R.drawable.profle_image_background)
+                                    .networkPolicy(NetworkPolicy.OFFLINE)
+                                    .into(mProfilePictureImageView, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+//                                            viewAnimator.setDisplayedChild(0);
+                                        }
+
+                                        @Override
+                                        public void onError() {
+                                            Picasso.with(UpdateProfileActivity.this)
+                                                    .load(profileImage)
+                                                    .resize(MAX_WIDTH, MAX_HEIGHT)
+                                                    .onlyScaleDown()
+                                                    .centerCrop()
+                                                    .placeholder(R.drawable.profle_image_background)
+                                                    .into(mProfilePictureImageView);
+
+                                        }
+                                    });
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+
                 }
-                progressDialog.dismiss();
+            });
 
-                Toast.makeText(UpdateProfileActivity.this, "Your profile is updated!", Toast.LENGTH_SHORT).show();
+        }
 
-            }
-        });
     }
+
+//   private void updateUser(){
+//       FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//       final String username = (mUsernameEditText.getText().toString());
+//       final String bio = (mBioEditText.getText().toString());
+//       final String password = (mChangePasswordEditText.getText().toString());
+//       final String email = (mChangeEmailEditText.getText().toString());
+//        if (TextUtils.isEmpty(username)){
+//            mUsernameEditText.setError("Username required");
+//        }else {
+//            usersRef.child("username").setValue(username);
+//            mUsernameEditText.setText("");
+//        }
+//
+//        if (TextUtils.isEmpty(email)){
+//            mChangeEmailEditText.setError("Email cannot be empty");
+//        }else {
+//            user.updateEmail(mChangeEmailEditText.getText().toString().trim())
+//                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                        @Override
+//                        public void onComplete(@NonNull Task<Void> task) {
+//                            if (task.isSuccessful()) {
+//                                Toast.makeText(UpdateProfileActivity.this, "Email address is updated.", Toast.LENGTH_LONG).show();
+//                            } else {
+//                                Toast.makeText(UpdateProfileActivity.this, "Failed to update email!", Toast.LENGTH_LONG).show();
+//                            }
+//                        }
+//                    });
+//        }
+//
+//        if (TextUtils.isEmpty(bio)){
+//            mBioEditText.setError(bio);
+//        }else {
+//            usersRef.child("bio").setValue(bio);
+//            mBioEditText.setText("");
+//        }
+//
+//        if (TextUtils.isEmpty(password)){
+//            mChangePasswordEditText.setError("Password cannot be empty");
+//        }else {
+//            user.updatePassword(mChangePasswordEditText.getText().toString().trim())
+//                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                        @Override
+//                        public void onComplete(@NonNull Task<Void> task) {
+//                            if (task.isSuccessful()) {
+//                                Toast.makeText(UpdateProfileActivity.this, "Password is updated!", Toast.LENGTH_SHORT).show();
+//                            } else {
+//                                Toast.makeText(UpdateProfileActivity.this, "Failed to update password!", Toast.LENGTH_SHORT).show();
+//                                progressBar.setVisibility(View.GONE);
+//                            }
+//                        }
+//                    });
+//        }
+//
+//    }
+
+
+    private void updateUsernameAndBio(){
+        final String username = (mUsernameEditText.getText().toString());
+        final String bio = (mBioEditText.getText().toString());
+        final String firstName = (mFirstNameEditText.getText().toString());
+        final String secondName = (mSecondNameEditText.getText().toString());
+
+        if (!TextUtils.isEmpty(username)){
+            usersRef.child("username").setValue(username);
+            mUsernameEditText.setText("");
+        }
+        if(!TextUtils.isEmpty(bio)){
+            usersRef.child("bio").setValue(bio);
+            mBioEditText.setText("");
+        }
+
+        if (!TextUtils.isEmpty(firstName)){
+            usersRef.child("firstName").setValue(firstName);
+            mFirstNameEditText.setText("");
+        }
+
+        if (!TextUtils.isEmpty(secondName)){
+            usersRef.child("secondName").setValue(secondName);
+            mSecondNameEditText.setText("");
+        }
+
+//        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//
+//                if (!TextUtils.isEmpty(username)){
+//                    usersRef.child("username").setValue(username);
+//                    mUsernameEditText.setText("");
+//                }
+//                if(!TextUtils.isEmpty(bio)){
+//                    usersRef.child("bio").setValue(bio);
+//                    mBioEditText.setText("");
+//                }
+//
+//                if (!TextUtils.isEmpty(firstName)){
+//                    usersRef.child("firstName").setValue(firstName);
+//                    mFirstNameEditText.setText("");
+//                }
+//
+//                if (!TextUtils.isEmpty(secondName)){
+//                    usersRef.child("secondName").setValue(secondName);
+//                    mSecondNameEditText.setText("");
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+
+    }
+
+//
+//     private void updateEmailAndPassword(){
+//         final String password = (mChangePasswordEditText.getText().toString());
+//         final String email = (mChangeEmailEditText.getText().toString());
+//        if (!TextUtils.isEmpty(password)){
+//            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//
+//            user.updatePassword(mChangePasswordEditText.getText().toString().trim())
+//                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                        @Override
+//                        public void onComplete(@NonNull Task<Void> task) {
+//                            if (task.isSuccessful()) {
+//                                Toast.makeText(UpdateProfileActivity.this, "Password is updated!", Toast.LENGTH_SHORT).show();
+//                            } else {
+//                                Toast.makeText(UpdateProfileActivity.this, "Failed to update password!", Toast.LENGTH_SHORT).show();
+//
+//                            }
+//                        }
+//                    });
+//
+//        }
+//
+//        if (!TextUtils.isEmpty(email)){
+//            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//
+//            user.updateEmail(mChangeEmailEditText.getText().toString().trim())
+//                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                        @Override
+//                        public void onComplete(@NonNull Task<Void> task) {
+//                            if (task.isSuccessful()) {
+//                                Toast.makeText(UpdateProfileActivity.this, "Email address is updated.", Toast.LENGTH_LONG).show();
+//                            } else {
+//                                Toast.makeText(UpdateProfileActivity.this, "Failed to update email!", Toast.LENGTH_LONG).show();
+//                            }
+//                        }
+//                    });
+//        }
+//    }
+
+    // Method to manually check connection status
+    private void checkConnection() {
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        showConnection(isConnected);
+    }
+
+    //Showing the status in Snackbar
+    private void showConnection(boolean isConnected) {
+        String message;
+        if (isConnected) {
+            message = "Connected to the internet";
+        } else {
+            message = "You are disconnected from the internet";
+        }
+
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // register connection status listener
+        App.getInstance().setConnectivityListener(this);
+//        checkConnection();
+
+    }
+
+    /**
+     * Callback will be triggered when there is change in
+     * network connection
+     */
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        showConnection(isConnected);
+    }
+
 }

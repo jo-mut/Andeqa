@@ -47,7 +47,6 @@ public class HomePagerAdapter extends FragmentPagerAdapter {
                 return "Cingle Out";
             case 1:
                 return "Cingles";
-
         }
         return null;
     }

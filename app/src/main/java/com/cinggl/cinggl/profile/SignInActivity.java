@@ -2,7 +2,9 @@ package com.cinggl.cinggl.profile;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,7 +15,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.services.ConnectivityReceiver;
 import com.cinggl.cinggl.ui.MainActivity;
+import com.cinggl.cinggl.utils.App;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -23,7 +27,8 @@ import com.google.firebase.auth.FirebaseUser;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class SignInActivity extends AppCompatActivity implements View.OnClickListener{
+public class SignInActivity extends AppCompatActivity implements
+        View.OnClickListener, ConnectivityReceiver.ConnectivityReceiverListener{
 
     public static final String TAG = SignInActivity.class.getSimpleName();
 
@@ -34,6 +39,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     @Bind(R.id.passwordEditText) EditText mPasswordEditText;
     @Bind(R.id.registerTextView)
     TextView mRegisterTextView;
+    @Bind(R.id.forgotPasswordTextView)TextView mForgotPasswordTextView;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -49,6 +55,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
         mRegisterTextView.setOnClickListener(this);
         mPasswordLoginButton.setOnClickListener(this);
+        mForgotPasswordTextView.setOnClickListener(this);
 
         mAuth = FirebaseAuth.getInstance();
         createAuthProgressDialog();
@@ -105,33 +112,107 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
                 if (!task.isSuccessful()) {
                     Log.w(TAG, "signInWithEmail", task.getException());
-                    Toast.makeText(SignInActivity.this, "Authentication failed.",
+                    Toast.makeText(SignInActivity.this, "Please confirm that your email and password match",
                             Toast.LENGTH_SHORT).show();
+                }else {
+                    checkIfImailVerified();
                 }
             }
         });
 
     }
 
+    private void checkIfImailVerified(){
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser.isEmailVerified()){
+            //user is verified sp you can finish this activity or send user to activity you want
+            Toast.makeText(SignInActivity.this, "You have Successfully signed in",
+                    Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+
+        }else {
+            //email is not verified so just prompt the massge to the user and restart this activity
+            FirebaseAuth.getInstance().signOut();
+            //restart this activity
+
+            Toast.makeText(SignInActivity.this, "Check that you have confirmed your email",
+                    Toast.LENGTH_SHORT).show();
+
+            overridePendingTransition(0,0);
+            finish();
+            overridePendingTransition(0,0);
+            startActivity(getIntent());
+        }
+    }
+
     private void createAuthProgressDialog() {
         mAuthProgressDialog = new ProgressDialog(this);
         mAuthProgressDialog.setTitle("Loading...");
-        mAuthProgressDialog.setMessage("Authenticating with Firebase...");
+        mAuthProgressDialog.setMessage("Checking your sign in details...");
         mAuthProgressDialog.setCancelable(false);
     }
 
-    @Override
-    public void onClick(View view) {
 
-        if (view == mRegisterTextView) {
+    @Override
+    public void onClick(View v) {
+
+        if (v == mRegisterTextView) {
             Intent intent = new Intent(SignInActivity.this, SignUpActivity.class);
             startActivity(intent);
             finish();
         }
 
-        if (view == mPasswordLoginButton) {
+        if (v == mPasswordLoginButton) {
             loginWithPassword();
         }
 
+        if (v == mForgotPasswordTextView){
+            Intent intent = new Intent(SignInActivity.this, ResetPasswordActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
     }
+
+    // Method to manually check connection status
+    private void checkConnection() {
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        showConnection(isConnected);
+    }
+
+    //Showing the status in Snackbar
+    private void showConnection(boolean isConnected) {
+        String message;
+        if (isConnected) {
+            message = "Connected to the internet";
+        } else {
+            message = "You are disconnected from the internet";
+        }
+
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // register connection status listener
+        App.getInstance().setConnectivityListener(this);
+//        checkConnection();
+
+    }
+
+    /**
+     * Callback will be triggered when there is change in
+     * network connection
+     */
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        showConnection(isConnected);
+    }
+
 }

@@ -9,13 +9,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.home.CingleSettingsDialogFragment;
+import com.cinggl.cinggl.home.DeleteAccountDialog;
 import com.cinggl.cinggl.home.CommentsActivity;
 import com.cinggl.cinggl.home.LikesActivity;
 import com.cinggl.cinggl.models.Cingle;
+import com.cinggl.cinggl.services.ConnectivityReceiver;
+import com.cinggl.cinggl.utils.App;
 import com.cinggl.cinggl.utils.ProportionalImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,7 +36,8 @@ import com.squareup.picasso.Picasso;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class CingleDetailActivity extends AppCompatActivity implements View.OnClickListener{
+public class CingleDetailActivity extends AppCompatActivity implements
+        View.OnClickListener, ConnectivityReceiver.ConnectivityReceiverListener{
     @Bind(R.id.userProfileImageView)ImageView mProfileImageView;
     @Bind(R.id.cingleImageView)ProportionalImageView mCingleImageView;
     @Bind(R.id.accountUsernameTextView)TextView mAccountUsernameTextView;
@@ -270,8 +274,8 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
 
         if (v == mCingleSettngsImageView){
             FragmentManager fragmenManager = getSupportFragmentManager();
-            CingleSettingsDialogFragment cingleSettingsDialogFragment = CingleSettingsDialogFragment.newInstance("create your cingle");
-            cingleSettingsDialogFragment.show(fragmenManager, "new post fragment");
+            DeleteAccountDialog deleteAccountDialog = DeleteAccountDialog.newInstance("create your cingle");
+            deleteAccountDialog.show(fragmenManager, "new post fragment");
         }
 
     }
@@ -299,6 +303,44 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
 
             }
         });
+    }
+
+    // Method to manually check connection status
+    private void checkConnection() {
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        showConnection(isConnected);
+    }
+
+    //Showing the status in Snackbar
+    private void showConnection(boolean isConnected) {
+        String message;
+        if (isConnected) {
+            message = "Connected to the internet";
+        } else {
+            message = "You are disconnected from the internet";
+        }
+
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // register connection status listener
+        App.getInstance().setConnectivityListener(this);
+//        checkConnection();
+
+    }
+
+    /**
+     * Callback will be triggered when there is change in
+     * network connection
+     */
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        showConnection(isConnected);
     }
 
 }

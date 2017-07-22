@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
@@ -36,6 +37,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder {
     public TextView sensePointsTextView;
     public TextView timeTextView;
     public ImageView cingleSettingsImageView;
+    public RelativeLayout cingleTitleRelativeLayout;
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
 
@@ -54,6 +56,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder {
         sensePointsTextView = (TextView) itemView.findViewById(R.id.sensePointsDescTextView);
         timeTextView = (TextView) itemView.findViewById(R.id.timeTextView);
         cingleSettingsImageView = (ImageView) itemView.findViewById(R.id.cingleSettingsImageView);
+        cingleTitleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
 
     }
 
@@ -63,6 +66,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder {
         TextView cingleDescriptionTextView = (TextView) mView.findViewById(R.id.cingleDescriptionTextView);
         TextView sensePointsTextView = (TextView) mView.findViewById(R.id.sensePointsDescTextView);
         TextView timeTextView = (TextView) mView.findViewById(R.id.timeTextView);
+        RelativeLayout cingleTitleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
 
         Picasso.with(mContext)
                 .load(cingle.getCingleImageUrl())
@@ -83,8 +87,11 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder {
                     }
                 });
 
-
-        cingleTitleTextView.setText((cingle.getTitle()));
+        if (cingle.getTitle().equals("")){
+            cingleTitleRelativeLayout.setVisibility(View.GONE);
+        }else {
+            cingleTitleTextView.setText(cingle.getTitle());
+        }
         cingleDescriptionTextView.setText(cingle.getDescription());
         sensePointsTextView.setText("SP" + " " + (cingle.getSensepoint()));
 

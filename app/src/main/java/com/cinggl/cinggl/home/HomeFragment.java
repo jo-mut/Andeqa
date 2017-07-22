@@ -1,6 +1,7 @@
 package com.cinggl.cinggl.home;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.profile.PeopleActivity;
+import com.cinggl.cinggl.profile.PersonalProfileActivity;
+import com.cinggl.cinggl.profile.UpdateProfileActivity;
 
 public class HomeFragment extends Fragment{
     private static final String TAG = HomeFragment.class.getSimpleName();
@@ -55,6 +59,8 @@ public class HomeFragment extends Fragment{
         return view;
     }
 
+
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -69,14 +75,15 @@ public class HomeFragment extends Fragment{
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+        if(id == R.id.action_profile){
+            Intent intent = new Intent(getActivity(), PersonalProfileActivity.class);
+            startActivity(intent);
+        }
 
-//        if(id == R.id.action_search){
-//            return true;
-//        }
+        if (id == R.id.action_account_settings){
+            Intent intent = new Intent(getActivity(), UpdateProfileActivity.class);
+            startActivity(intent);
 
-        if(id == R.id.action_notifications){
-            return true;
         }
 
         return super.onOptionsItemSelected(item);

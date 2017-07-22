@@ -2,6 +2,7 @@ package com.cinggl.cinggl.utils;
 
 import android.app.Application;
 
+import com.cinggl.cinggl.services.ConnectivityReceiver;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
@@ -11,6 +12,9 @@ import com.squareup.picasso.Picasso;
  */
 
 public class App extends Application {
+
+    private static App mInstance;
+
 
     @Override
     public void onCreate() {
@@ -23,5 +27,19 @@ public class App extends Application {
         built.setIndicatorsEnabled(false);
         built.setLoggingEnabled(true);
         Picasso.setSingletonInstance(built);
+
+        mInstance = this;
+
+
     }
+
+    public static synchronized App getInstance() {
+        return mInstance;
+    }
+
+    public void setConnectivityListener(ConnectivityReceiver.ConnectivityReceiverListener listener) {
+        ConnectivityReceiver.connectivityReceiverListener = listener;
+    }
+
+
 }

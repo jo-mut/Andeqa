@@ -1,11 +1,16 @@
 package com.cinggl.cinggl.camera;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,9 +19,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cingle;
+import com.cinggl.cinggl.services.ConnectivityReceiver;
+import com.cinggl.cinggl.utils.App;
 import com.cinggl.cinggl.utils.ProportionalImageView;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,7 +49,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class CreateCingleActivity extends AppCompatActivity implements View.OnClickListener{
+public class CreateCingleActivity extends AppCompatActivity implements View.OnClickListener,
+        ConnectivityReceiver.ConnectivityReceiverListener{
     @Bind(R.id.cingleTitleEditText)EditText mCingleTitleEditText;
     @Bind(R.id.cingleDescriptionEditText)EditText mCingleDescriptionEditText;
     @Bind(R.id.postCingleImageView)ImageView mPostCingleImageView;
@@ -51,6 +60,7 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
     @Bind(R.id.userProfileImageView)CircleImageView mProfileImageView;
     @Bind(R.id.accountUsernameTextView)TextView mAccountUsernameTextView;
     @Bind(R.id.img)ProportionalImageView mProportionalImageView;
+//    @Bind(R.id.cingleImageView)ImageView mProportionalImageView;
 
     private String ImageFileLocation = "";
     private String GALLERY_LOCATION = "Cingles";
@@ -155,12 +165,27 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK){
             if(requestCode == CAMERA_REQUEST_CODE){
-//                setPic();
+
+                setPic();
+
+//                setReducedImageSize();
+
 //               Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
 //                mProportionalImageView.setImageBitmap(imageBitmap);
-                Picasso.with(CreateCingleActivity.this)
-                        .load(Uri.parse(photoUri))
-                        .into(mProfileImageView);
+
+
+//                Bitmap bitmap = createScaledBitmap(getImagePath(data, getApplicationContext()),
+//                        mProportionalImageView.getWidth() ,mProportionalImageView.getHeight());
+//                mProportionalImageView.setImageBitmap(bitmap);
+//
+//                Picasso.with(CreateCingleActivity.this)
+//                        .load(photoFile)
+//                        .resize(MAX_WIDTH, MAX_HEIGHT)
+//                        .onlyScaleDown()
+//                        .into(mProportionalImageView);
+//                Glide.with(this)
+//                        .load(photoFile)
+//                        .into(mProportionalImageView);
             }
 
             if(requestCode == IMAGE_GALLERY_REQUEST && data != null){
@@ -175,16 +200,27 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onClick(View v){
-
-        if(v == mCameraImageView){
-            Intent cameraIntent =new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            photoFile = null;
-            try{
-                photoFile = createImageFile();
-            }catch (IOException e) {
-                e.printStackTrace();
-            }cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+//
+//        if(v == mCameraImageView){
+//            Intent cameraIntent =new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+////            photoFile = null;
+////            try{
+////                photoFile = createImageFile();
+////            }catch (IOException e) {
+////                e.printStackTrace();
+////            }cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
 //            startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+//        }
+
+        if (v ==  mCameraImageView){
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            photoFile = null;
+            try {
+                photoFile = createImageFile();
+            }catch (IOException e){
+                e.printStackTrace();
+            }intent.putExtra(MediaStore.EXTRA_OUTPUT, photoFile);
+            startActivityForResult(intent, CAMERA_REQUEST_CODE);
         }
 
 
@@ -200,7 +236,7 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
             saveToFirebase();
         }
 
- 
+
 //        if(v == mNextTextView){
 //            Cingle cingle = new Cingle();
 //            Intent intent = new Intent(CreateCingleActivity.this, CustomGelleryActivity.class);
@@ -244,29 +280,28 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
 
     }
 
-//    private void setPic() {
-//        // Get the dimensions of the View
-//        int targetW = mProportionalImageView.getWidth();
-//        int targetH = mProportionalImageView.getHeight();
-//
-//        // Get the dimensions of the bitmap
-//        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-//        bmOptions.inJustDecodeBounds = true;
-//        BitmapFactory.decodeFile(ImageFileLocation, bmOptions);
-//        int photoW = bmOptions.outWidth;
-//        int photoH = bmOptions.outHeight;
-//
-//        // Determine how much to scale down the image
-//        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
-//
-//        // Decode the image file into a Bitmap sized to fill the View
-//        bmOptions.inJustDecodeBounds = false;
-//        bmOptions.inSampleSize = scaleFactor;
-//        bmOptions.inPurgeable = true;
-//
-//        Bitmap bitmap = BitmapFactory.decodeFile(ImageFileLocation, bmOptions);
-//        mProportionalImageView.setImageBitmap(bitmap);
-//    }
+    private void setPic() {
+        // Get the dimensions of the View
+        int targetW = mProportionalImageView.getWidth();
+        int targetH = mProportionalImageView.getHeight();
+
+        // Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(ImageFileLocation, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        // Determine how much to scale down the image
+        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(ImageFileLocation, bmOptions);
+        mProportionalImageView.setImageBitmap(bitmap);
+    }
 
     private void createImageGallery(){
         File storageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
@@ -285,31 +320,65 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
 
     }
 
-//    public void setReducedImageSize(){
-//        int targetImageViewWidth = mChosenImageView.getWidth();
-//        int targetImageViewHeight = mChosenImageView.getHeight();
-//
-//
-//        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-//        bmOptions.inJustDecodeBounds = true;
-//        BitmapFactory.decodeFile(ImageFileLocation, bmOptions);
-//        int cameraImageWidth = bmOptions.outWidth;
-//        int cameraImageHeight = bmOptions.outHeight;
-//
-//        int scaleFactor = Math.min
-//                (cameraImageWidth/targetImageViewWidth, cameraImageHeight/targetImageViewHeight);
-//        bmOptions.inSampleSize = scaleFactor;
-//        bmOptions.inJustDecodeBounds = false;
-//
-//
-//        photoReducedSizeBitmap = BitmapFactory.decodeFile(ImageFileLocation, bmOptions);
-//        mChosenImageView.setImageBitmap(photoReducedSizeBitmap);
-//    }
+    public void setReducedImageSize(){
+        int targetImageViewWidth = mProportionalImageView.getWidth();
+        int targetImageViewHeight = mProportionalImageView.getHeight();
+
+
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(ImageFileLocation, bmOptions);
+        int cameraImageWidth = bmOptions.outWidth;
+        int cameraImageHeight = bmOptions.outHeight;
+
+        int scaleFactor = Math.min
+                (cameraImageWidth/targetImageViewWidth, cameraImageHeight/targetImageViewHeight);
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inJustDecodeBounds = false;
+
+
+        photoReducedSizeBitmap = BitmapFactory.decodeFile(ImageFileLocation, bmOptions);
+        mProportionalImageView.setImageBitmap(photoReducedSizeBitmap);
+    }
 
     public void uploadingToFirebaseDialog(){
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Adding your Cingle...");
         progressDialog.setCancelable(true);
+    }
+
+    // Function to get image path from ImagePicker
+    public static String getImagePath(Intent data, Context context) {
+        Uri selectedImage = data.getData();
+        String[] filePathColumn = {MediaStore.Images.Media.DATA};
+        Cursor cursor = context.getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+        cursor.moveToFirst();
+        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+        String picturePath = cursor.getString(columnIndex);
+        cursor.close();
+        return picturePath;
+    }
+
+
+    public Bitmap createScaledBitmap(String pathName, int width, int height) {
+        final BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(ImageFileLocation, opt);
+        opt.inSampleSize = calculateBmpSampleSize(opt, width, height);
+        opt.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(ImageFileLocation, opt);
+    }
+
+    public int calculateBmpSampleSize(BitmapFactory.Options opt, int width, int height) {
+        final int outHeight = opt.outHeight;
+        final int outWidth = opt.outWidth;
+        int sampleSize = 1;
+        if (outHeight > height || outWidth > width) {
+            final int heightRatio = Math.round((float) outHeight / (float) height);
+            final int widthRatio = Math.round((float) outWidth / (float) width);
+            sampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+        }
+        return sampleSize;
     }
 
 
@@ -415,5 +484,45 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
             Toast.makeText(this, "Cingle must be an image", Toast.LENGTH_LONG).show();
         }
     }
+
+    // Method to manually check connection status
+    private void checkConnection() {
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        showConnection(isConnected);
+    }
+
+    //Showing the status in Snackbar
+    private void showConnection(boolean isConnected) {
+        String message;
+        if (isConnected) {
+            message = "Connected to the internet";
+        } else {
+            message = "You are disconnected from the internet";
+        }
+
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // register connection status listener
+        App.getInstance().setConnectivityListener(this);
+        checkConnection();
+
+    }
+
+    /**
+     * Callback will be triggered when there is change in
+     * network connection
+     */
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        showConnection(isConnected);
+    }
+
+
 
 }

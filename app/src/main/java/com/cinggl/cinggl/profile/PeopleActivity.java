@@ -1,5 +1,6 @@
 package com.cinggl.cinggl.profile;
 
+import android.graphics.Color;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,10 +20,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.services.ConnectivityReceiver;
+import com.cinggl.cinggl.utils.App;
 
-public class PeopleActivity extends AppCompatActivity {
+public class PeopleActivity extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener{
     private FragmentManager fragmentManager;
 
     @Override
@@ -47,19 +51,59 @@ public class PeopleActivity extends AppCompatActivity {
 //        getMenuInflater().inflate(R.menu.menu_layout, menu);
 //        return true;
 //    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    // Method to manually check connection status
+    private void checkConnection() {
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        showConnection(isConnected);
+    }
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+    //Showing the status in Snackbar
+    private void showConnection(boolean isConnected) {
+        String message;
+        if (isConnected) {
+            message = "Connected to the internet";
+        } else {
+            message = "You are disconnected from the internet";
         }
 
-        return super.onOptionsItemSelected(item);
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // register connection status listener
+        App.getInstance().setConnectivityListener(this);
+//        checkConnection();
+
+    }
+
+    /**
+     * Callback will be triggered when there is change in
+     * network connection
+     */
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        showConnection(isConnected);
+    }
+
+
 }

@@ -6,10 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,10 +18,13 @@ import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.adapters.BestCinglesAdapter;
 import com.cinggl.cinggl.adapters.BestCinglesViewHolder;
-import com.cinggl.cinggl.adapters.CingleOutViewHolder;
+import com.cinggl.cinggl.adapters.CingleOutAdapter;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.models.Like;
+import com.cinggl.cinggl.profile.FollowerProfileActivity;
+import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -40,7 +41,7 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Date;
 
 import butterknife.Bind;
@@ -67,6 +68,9 @@ public class BestCinglesFragment extends Fragment {
     private TextView usernameTextView;
     private static final String TAG = "BestCingleFragment";
     private static final String EXTRA_POST_KEY = "post key";
+    private static final String EXTRA_USER_UID = "uid";
+    private ArrayList<Cingle> cingles;
+    private BestCinglesAdapter bestCinglesAdapter;
 
 
     @Bind(R.id.bestCinglesRecyclerView)RecyclerView bestCinglesRecyclerView;
@@ -116,7 +120,7 @@ public class BestCinglesFragment extends Fragment {
                 databaseReference.child(postKey).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        String uid = (String) dataSnapshot.child("uid").getValue();
+                       final String uid = (String) dataSnapshot.child("uid").getValue();
 
                         try {
                             usernameRef.child(uid).addValueEventListener(new ValueEventListener() {
@@ -161,6 +165,20 @@ public class BestCinglesFragment extends Fragment {
                         }catch (Exception e){
 
                         }
+
+                        viewHolder.profileImageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                    Intent intent = new Intent(getActivity(), PersonalProfileActivity.class);
+                                    startActivity(intent);
+                                }else {
+                                    Intent intent = new Intent(getActivity(), FollowerProfileActivity.class);
+                                    intent.putExtra(BestCinglesFragment.EXTRA_USER_UID, uid);
+                                    startActivity(intent);
+                                }
+                            }
+                        });
                     }
 
                     @Override

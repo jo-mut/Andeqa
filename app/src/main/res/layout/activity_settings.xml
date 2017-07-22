@@ -18,6 +18,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_gravity="top"
+            app:titleTextAppearance="@style/toolbarTextSize"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways"
@@ -121,7 +122,7 @@
                     android:background="@color/colorDivider" />
 
                 <TextView
-                    android:text="Blocked Cingles"
+                    android:text="Flagged Cingles"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
@@ -158,10 +159,10 @@
                     android:background="@color/colorDivider" />
 
                 <TextView
-                    android:text="Cinggl Help"
+                    android:text="Delete Account"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/helpTextView"
+                    android:id="@+id/deleteAccountTextView"
                     android:textSize="16sp"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentLeft="true"
@@ -183,7 +184,7 @@
                     android:background="@color/colorDivider" />
 
                 <TextView
-                    android:text="Privacy Pollicy"
+                    android:text="Send Feedback"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
@@ -192,7 +193,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
-                    android:id="@+id/privacy"
+                    android:id="@+id/sendFeedbackTextView"
                     android:layout_margin="10dp" />
 
 

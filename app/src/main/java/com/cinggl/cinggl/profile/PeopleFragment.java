@@ -76,9 +76,9 @@ public class PeopleFragment extends Fragment {
 //            return true;
 //        }
 
-        if(id == R.id.action_notifications){
-            return true;
-        }
+//        if(id == R.id.action_notifications){
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }

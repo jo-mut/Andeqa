@@ -1,5 +1,8 @@
 package com.cinggl.cinggl.home;
 
+import android.content.Intent;
+import android.graphics.Color;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,11 +11,17 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.LikesViewHolder;
 import com.cinggl.cinggl.models.Like;
+import com.cinggl.cinggl.profile.FollowerProfileActivity;
+import com.cinggl.cinggl.profile.PersonalProfileActivity;
+import com.cinggl.cinggl.services.ConnectivityReceiver;
+import com.cinggl.cinggl.utils.App;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -32,7 +41,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.cinggl.cinggl.home.CommentsActivity.EXTRA_POST_KEY;
 
-public class LikesActivity extends AppCompatActivity {
+public class LikesActivity extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener{
     @Bind(R.id.recentLikesRecyclerView)RecyclerView mRecentLikesRecyclerView;
 
     private DatabaseReference likesRef;
@@ -45,6 +54,7 @@ public class LikesActivity extends AppCompatActivity {
     private Button followButton;
     private boolean processFollow = false;
     private static final String TAG = LikesActivity.class.getSimpleName();
+    private static final String EXTRA_USER_UID = "uid";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +64,14 @@ public class LikesActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -70,7 +88,6 @@ public class LikesActivity extends AppCompatActivity {
 //        fetchData();
 
     }
-
 
     @Override
     protected void onStart() {
@@ -107,7 +124,7 @@ public class LikesActivity extends AppCompatActivity {
                 likesRef.child(postKey).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        String uid = (String) dataSnapshot.child("uid").getValue();
+                        final String uid = (String) dataSnapshot.child("uid").getValue();
 
                         try {
                             usernameRef.child(uid).addValueEventListener(new ValueEventListener() {
@@ -153,6 +170,20 @@ public class LikesActivity extends AppCompatActivity {
                         }catch (Exception e){
 
                         }
+
+                        viewHolder.profileImageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                    Intent intent = new Intent(LikesActivity.this, PersonalProfileActivity.class);
+                                    startActivity(intent);
+                                }else {
+                                    Intent intent = new Intent(LikesActivity.this, FollowerProfileActivity.class);
+                                    intent.putExtra(LikesActivity.EXTRA_USER_UID, uid);
+                                    startActivity(intent);
+                                }
+                            }
+                        });
                     }
 
                     @Override
@@ -261,6 +292,42 @@ public class LikesActivity extends AppCompatActivity {
             }
         });
     }
+    // Method to manually check connection status
+    private void checkConnection() {
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        showConnection(isConnected);
+    }
 
+    //Showing the status in Snackbar
+    private void showConnection(boolean isConnected) {
+        String message;
+        if (isConnected) {
+            message = "Connected to the internet";
+        } else {
+            message = "You are disconnected from the internet";
+        }
+
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // register connection status listener
+        App.getInstance().setConnectivityListener(this);
+//        checkConnection();
+
+    }
+
+    /**
+     * Callback will be triggered when there is change in
+     * network connection
+     */
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        showConnection(isConnected);
+    }
 
 }

@@ -35,7 +35,6 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
     public TextView usernameTextView;
     public TextView commentsCountTextView;
     public TextView currentDateTextView;
-    public TextView cingleCreatorTextView;
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
 

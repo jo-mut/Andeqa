@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".utils.App"
@@ -23,46 +24,89 @@
         android:label="Cinggl"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.MainActivity" />
-        <activity android:name=".profile.SignInActivity">
+        <activity
+            android:name=".ui.MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".profile.SignInActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".profile.SignUpActivity" />
-        <activity android:name=".camera.CreateCingleActivity" />
         <activity
+            android:name=".profile.SignUpActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".camera.CreateCingleActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".home.HomeActivity"
             android:label="Cinggl"
-            android:theme="@style/AppTheme"
-            android:name=".home.HomeActivity" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.SettingsActivity"
             android:label="Settings"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".profile.UpdateProfileActivity"
             android:label="Update your profile"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".home.CommentsActivity"
             android:label="Comments"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
+            android:name=".profile.CingleDetailActivity"
             android:label="Cingle"
-            android:theme="@style/AppTheme"
-            android:name=".profile.CingleDetailActivity" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".home.LikesActivity"
             android:label="Cingulans who liked"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
+            android:name=".profile.PeopleActivity"
             android:label="People"
-            android:theme="@style/AppTheme"
-            android:name=".profile.PeopleActivity">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
 
-        </activity>
+        <service android:name=".services.FirebaseMessaging">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".services.FirebaseIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name=".profile.PersonalProfileActivity"
+            android:label="Profile"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".profile.ResetPasswordActivity" />
+
+        <receiver
+            android:name=".services.ConnectivityReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".profile.FollowerProfileActivity"
+            android:label="Profile"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

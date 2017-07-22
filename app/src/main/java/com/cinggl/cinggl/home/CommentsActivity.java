@@ -1,5 +1,8 @@
 package com.cinggl.cinggl.home;
 
+import android.content.Intent;
+import android.graphics.Color;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,6 +25,10 @@ import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.CommentViewHolder;
 import com.cinggl.cinggl.models.Cingulan;
 import com.cinggl.cinggl.models.Comment;
+import com.cinggl.cinggl.profile.FollowerProfileActivity;
+import com.cinggl.cinggl.profile.PersonalProfileActivity;
+import com.cinggl.cinggl.services.ConnectivityReceiver;
+import com.cinggl.cinggl.utils.App;
 import com.cinggl.cinggl.utils.ProportionalImageView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,7 +48,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class CommentsActivity extends AppCompatActivity implements View.OnClickListener {
+public class CommentsActivity extends AppCompatActivity implements View.OnClickListener
+    , ConnectivityReceiver.ConnectivityReceiverListener{
     @Bind(R.id.sendCommentImageView)ImageView mSendCommentImageView;
     @Bind(R.id.commentEditText)EditText mCommentEditText;
     @Bind(R.id.commentsRecyclerView)RecyclerView mCommentsRecyclerView;
@@ -57,6 +65,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     private DatabaseReference relationsRef;
     private DatabaseReference cinglesReference;
     public static final String EXTRA_POST_KEY = "post key";
+    private static final String EXTRA_USER_UID = "uid";
     private static final String TAG = CommentsActivity.class.getSimpleName();
     private boolean processFollow = false;
     private DatabaseReference usernameRef;
@@ -73,6 +82,14 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
         mSendCommentImageView.setOnClickListener(this);
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -81,6 +98,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         if(mPostKey == null){
             throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
         }
+
         cinglesReference = FirebaseDatabase.getInstance()
                 .getReference(Constants.FIREBASE_CINGLES).child(mPostKey);
 
@@ -93,6 +111,11 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         usernameRef.keepSynced(true);
         cinglesReference.keepSynced(true);
 
+        setUserProfile();
+
+    }
+
+    public void setUserProfile(){
         cinglesReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -104,7 +127,6 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         String username = (String) dataSnapshot.child("username").getValue();
                         final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
-
 
                         mAccountUsernameTextView.setText(username);
                         Picasso.with(CommentsActivity.this)
@@ -178,7 +200,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                 commentReference.child(postKey).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        String uid = (String) dataSnapshot.child("uid").getValue();
+                        final String uid = (String) dataSnapshot.child("uid").getValue();
 
                         usernameRef.child(uid).addValueEventListener(new ValueEventListener() {
                             @Override
@@ -218,60 +240,16 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
                             }
                         });
-                    }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
-                relationsRef.child(postKey).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-
-                        if (dataSnapshot.hasChild(firebaseAuth.getCurrentUser().getUid())){
-                            viewHolder.followButton.setText("Following");
-                        }else {
-                            viewHolder.followButton.setText("Follow");
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
-                viewHolder.followButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        processFollow = true;
-                        relationsRef.addValueEventListener(new ValueEventListener() {
+                        relationsRef.child(uid).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                if (processFollow){
-                                    if (dataSnapshot.child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
-                                        relationsRef.child(postKey)
-                                                .removeValue();
-                                        processFollow = false;
-                                        onFollow(false);
-                                        //set the text on the button to follow if the user in not yet following;
-//                                        followButton.setText("FOLLOW");
 
-                                    }else {
-                                        relationsRef.child(postKey).child(firebaseAuth.getCurrentUser().getUid())
-                                                .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
-                                        processFollow = false;
-                                        onFollow(false);
-
-                                        //set text on the button to following;
-                                        viewHolder.followButton.setText("Following");
-
-                                    }
-
+                                if (dataSnapshot.hasChild(firebaseAuth.getCurrentUser().getUid())){
+                                    viewHolder.followButton.setText("Following");
+                                }else {
+                                    viewHolder.followButton.setText("Follow");
                                 }
-
                             }
 
                             @Override
@@ -279,8 +257,68 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
                             }
                         });
+
+                        viewHolder.followButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                processFollow = true;
+                                relationsRef.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        if (processFollow){
+                                            if (dataSnapshot.child(uid).hasChild(firebaseAuth.getCurrentUser().getUid())){
+                                                relationsRef.child(uid)
+                                                        .removeValue();
+                                                processFollow = false;
+                                                onFollow(false);
+                                                //set the text on the button to follow if the user in not yet following;
+                                                viewHolder.followButton.setText("Follow");
+
+                                            }else {
+                                                relationsRef.child(uid).child(firebaseAuth.getCurrentUser().getUid())
+                                                        .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
+                                                processFollow = false;
+                                                onFollow(false);
+
+                                                //set text on the button to following;
+                                                viewHolder.followButton.setText("Following");
+
+                                            }
+
+                                        }
+
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+                        });
+
+                        viewHolder.profileImageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                    Intent intent = new Intent(CommentsActivity.this, PersonalProfileActivity.class);
+                                    startActivity(intent);
+                                }else {
+                                    Intent intent = new Intent(CommentsActivity.this, FollowerProfileActivity.class);
+                                    intent.putExtra(CommentsActivity.EXTRA_USER_UID, uid);
+                                    startActivity(intent);
+                                }
+                            }
+                        });
                     }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+
                 });
+
             }
 
         };
@@ -311,20 +349,20 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         //remove the event listner
         firebaseRecyclerAdapter.cleanup();
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_layout, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        return super.onOptionsItemSelected(item);
-    }
+//
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.menu_layout, menu);
+//        return super.onCreateOptionsMenu(menu);
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        int id = item.getItemId();
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
 
     //let a cingulan add a comment to a cingle
@@ -385,6 +423,43 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
             }
         });
+    }
+    // Method to manually check connection status
+    private void checkConnection() {
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        showConnection(isConnected);
+    }
+
+    //Showing the status in Snackbar
+    private void showConnection(boolean isConnected) {
+        String message;
+        if (isConnected) {
+            message = "Connected to the internet";
+        } else {
+            message = "You are disconnected from the internet";
+        }
+
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // register connection status listener
+        App.getInstance().setConnectivityListener(this);
+//        checkConnection();
+
+    }
+
+    /**
+     * Callback will be triggered when there is change in
+     * network connection
+     */
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        showConnection(isConnected);
     }
 
 }
