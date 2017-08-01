@@ -1,7 +1,9 @@
 package com.cinggl.cinggl.adapters;
 
 import android.content.Context;
+import android.icu.math.BigDecimal;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -10,7 +12,8 @@ import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cingle;
-import com.cinggl.cinggl.utils.ProportionalImageView;
+import com.cinggl.cinggl.utils.CinglesItemClickListener;
+import com.cinggl.cinggl.ProportionalImageView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -21,7 +24,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * Created by J.EL on 5/26/2017.
  */
 
-public class CingleOutViewHolder extends RecyclerView.ViewHolder {
+public class CingleOutViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
     View mView;
     Context mContext;
@@ -40,6 +43,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder {
     public RelativeLayout cingleTitleRelativeLayout;
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
+    private CinglesItemClickListener cinglesItemClickListener;
 
     public CingleOutViewHolder(View itemView){
         super(itemView);
@@ -57,6 +61,12 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder {
         timeTextView = (TextView) itemView.findViewById(R.id.timeTextView);
         cingleSettingsImageView = (ImageView) itemView.findViewById(R.id.cingleSettingsImageView);
         cingleTitleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
+        sensePointsTextView = (TextView) mView.findViewById(R.id.sensePointsDescTextView);
+
+
+        likesImageView.setOnClickListener(this);
+        commentsImageView.setOnClickListener(this);
+        likesCountTextView.setOnClickListener(this);
 
     }
 
@@ -94,9 +104,12 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder {
         }
         cingleDescriptionTextView.setText(cingle.getDescription());
         sensePointsTextView.setText("SP" + " " + (cingle.getSensepoint()));
+        timeTextView.setText(DateUtils.getRelativeTimeSpanString((long) cingle.getTimeStamp()));
+    }
+//
+    @Override
+    public void onClick(View view){
+        cinglesItemClickListener.clickPosition(getAdapterPosition(), view.getId());
 
     }
-
-
-
 }

@@ -1,4 +1,4 @@
-package com.cinggl.cinggl.profile;
+package com.cinggl.cinggl.relations;
 
 
 import android.content.Intent;
@@ -18,6 +18,7 @@ import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.PeopleViewHolder;
 import com.cinggl.cinggl.models.Cingulan;
+import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -26,6 +27,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Callback;
@@ -40,11 +42,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * A simple {@link Fragment} subclass.
  */
 public class FollowingFragment extends Fragment {
-    private DatabaseReference followingRef;
     private DatabaseReference relationsRef;
+    private DatabaseReference followingRef;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private DatabaseReference usernameRef;
+    private Query followingQueary;
     private TextView firstNameTextView;
     private TextView secondNameTextView;
     private CircleImageView profileImageView;
@@ -68,7 +71,10 @@ public class FollowingFragment extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
-        followingRef = FirebaseDatabase.getInstance().getReference(Constants.FOLLOWERS);
+        followingRef = FirebaseDatabase.getInstance().getReference(Constants.RELATIONS);
+
+        usernameRef.keepSynced(true);
+
 
 
     }
@@ -86,8 +92,11 @@ public class FollowingFragment extends Fragment {
     }
 
     public void retrieveFollowing(){
-        relationsRef = FirebaseDatabase.getInstance().getReference(Constants.FOLLOWERS)
+        relationsRef = FirebaseDatabase.getInstance().getReference(Constants.RELATIONS).child("following")
                 .child(firebaseAuth.getCurrentUser().getUid());
+        relationsRef.keepSynced(true);
+
+        //Retrive any child that has the curent user uid
         firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Cingulan, PeopleViewHolder>
                 (Cingulan.class, R.layout.followers_list, PeopleViewHolder.class, relationsRef){
             @Override
@@ -166,62 +175,76 @@ public class FollowingFragment extends Fragment {
                             }
                         });
 
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
-                relationsRef.child(postKey).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-
-                        if (dataSnapshot.hasChild(firebaseAuth.getCurrentUser().getUid())){
-                            viewHolder.followButton.setText("Following");
-                        }else {
-                            viewHolder.followButton.setText("Follow");
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
-                viewHolder.followButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        processFollow = true;
-                        followingRef.addValueEventListener(new ValueEventListener() {
+                        viewHolder.followButton.setOnClickListener(new View.OnClickListener() {
                             @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                if (processFollow){
-                                    if (dataSnapshot.child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
-                                        relationsRef.child(postKey)
-                                                .removeValue();
-                                        processFollow = false;
-                                        onFollow(false);
-                                        //set the text on the button to follow if the user in not yet following;
+                            public void onClick(View view) {
+                                processFollow = true;
+                                followingRef.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        if (processFollow){
+                                            if (dataSnapshot.child("followers").child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
 
-                                    }else {
-                                        try {
-                                            relationsRef.child(postKey).child(firebaseAuth.getCurrentUser().getUid())
-                                                    .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
-                                            processFollow = false;
-                                            onFollow(false);
+                                                //remove the uid from the person followed
+                                                followingRef.child("followers").child(postKey).child(firebaseAuth.getCurrentUser().getUid())
+                                                        .removeValue();
 
-                                            //set text on the button to following;
-                                            followButton.setText("Following");
+                                                //remove the person uid is following from the uid
+                                                followingRef.child("following").child(firebaseAuth.getCurrentUser().getUid()).child(postKey)
+                                                        .removeValue();
 
-                                        }catch (Exception e){
+                                                processFollow = false;
+                                                onFollow(false);
+                                                //set the text on the button to follow if the user in not yet following;
+
+                                            }else {
+                                                try {
+                                                    //add uid to the uid of the person followed
+                                                    followingRef.child("followers").child(postKey).child(firebaseAuth.getCurrentUser().getUid())
+                                                            .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
+
+                                                    //add uid of the person followed to the uid that is folowing
+                                                    followingRef.child("following").child(firebaseAuth.getCurrentUser().getUid()).child(postKey)
+                                                            .child("uid").setValue(postKey);
+
+                                                    processFollow = false;
+                                                    onFollow(false);
+
+                                                    //set text on the button to following;
+                                                    viewHolder.followButton.setText("Following");
+
+                                                }catch (Exception e){
+
+                                                }
+
+                                            }
 
                                         }
+
                                     }
 
-                                }
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+                        });
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+                followingRef.child("following").child(firebaseAuth.getCurrentUser().getUid())
+                        .addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                viewHolder.followButton.setText("Unfollow");
 
                             }
 
@@ -230,9 +253,6 @@ public class FollowingFragment extends Fragment {
 
                             }
                         });
-                    }
-                });
-
 
             }
         };
@@ -275,7 +295,6 @@ public class FollowingFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-//        peopleAdapter.cleanUpListener();
         firebaseRecyclerAdapter.cleanup();
     }
 

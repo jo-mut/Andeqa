@@ -2,9 +2,7 @@ package com.cinggl.cinggl.profile;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,15 +15,11 @@ import android.widget.Toast;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cingulan;
-import com.cinggl.cinggl.services.ConnectivityReceiver;
-import com.cinggl.cinggl.ui.MainActivity;
-import com.cinggl.cinggl.utils.App;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -33,8 +27,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class SignUpActivity extends AppCompatActivity implements
-        View.OnClickListener, ConnectivityReceiver.ConnectivityReceiverListener {
-
+        View.OnClickListener{
     public static final String TAG = SignUpActivity.class.getSimpleName();
 
     @Bind(R.id.createUserButton) Button mCreateUserButton;
@@ -255,44 +248,5 @@ public class SignUpActivity extends AppCompatActivity implements
         }
         return true;
     }
-
-    // Method to manually check connection status
-    private void checkConnection() {
-        boolean isConnected = ConnectivityReceiver.isConnected();
-        showConnection(isConnected);
-    }
-
-    //Showing the status in Snackbar
-    private void showConnection(boolean isConnected) {
-        String message;
-        if (isConnected) {
-            message = "Connected to the internet";
-        } else {
-            message = "You are disconnected from the internet";
-        }
-
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // register connection status listener
-        App.getInstance().setConnectivityListener(this);
-//        checkConnection();
-
-    }
-
-    /**
-     * Callback will be triggered when there is change in
-     * network connection
-     */
-    @Override
-    public void onNetworkConnectionChanged(boolean isConnected) {
-        showConnection(isConnected);
-    }
-
 
 }

@@ -1,4 +1,4 @@
-package com.cinggl.cinggl.profile;
+package com.cinggl.cinggl.relations;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

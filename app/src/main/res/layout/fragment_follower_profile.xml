@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.cinggl.cinggl.profile.FollowerProfileFragment">
+    tools:context="com.cinggl.cinggl.relations.FollowerProfileFragment">
 
 
     <ScrollView
@@ -39,9 +39,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <RelativeLayout
-                    android:layout_width="192sp"
-                    android:layout_height="wrap_content">
+                <RelativeLayout android:layout_height="wrap_content"
+                    android:layout_width="193sp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -53,7 +52,6 @@
                         android:layout_alignParentTop="false"
                         android:layout_alignParentLeft="false"
                         android:layout_alignParentStart="false"
-                        tools:text="First"
                         android:layout_centerVertical="true"
                         android:layout_alignParentRight="true" />
 
@@ -71,10 +69,7 @@
                         android:textColor="@android:color/black"
                         android:textSize="25sp"
                         android:layout_alignParentTop="false"
-                        android:layout_toRightOf="@+id/firstNameTextView"
-                        android:layout_toEndOf="@+id/firstNameTextView"
                         android:layout_marginLeft="5dp"
-                        tools:text="Second"
                         android:layout_centerHorizontal="false"
                         android:layout_centerInParent="false"
                         android:layout_centerVertical="true" />
@@ -92,7 +87,7 @@
 
 
                 <RelativeLayout android:layout_height="match_parent"
-                    android:layout_width="140sp">
+                    android:layout_width="145sp">
 
 
                     <TextView
@@ -122,9 +117,8 @@
                         android:layout_alignParentEnd="true" />
                 </RelativeLayout>
 
-                <RelativeLayout
-                    android:layout_width="105dp"
-                    android:layout_height="match_parent">
+                <RelativeLayout android:layout_height="match_parent"
+                    android:layout_width="95dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -211,9 +205,9 @@
 
             <RelativeLayout
                 android:layout_gravity="start"
+                android:background="#e4e4e4"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#ECEFF1">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -232,10 +226,10 @@
                 android:layout_alignParentBottom="true"
                 android:layout_width="match_parent"
                 android:layout_height="0.3dp"
-                android:background="@color/greyColor"
-                android:layout_marginBottom="20dp" />
+                android:background="@color/greyColor" />
 
             <android.support.v7.widget.RecyclerView
+                android:numColumns="auto_fit"
                 android:id="@+id/profileCinglesRecyclerView"
                 android:overScrollMode="never"
                 android:layout_width="match_parent"

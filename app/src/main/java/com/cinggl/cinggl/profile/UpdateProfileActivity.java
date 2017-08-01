@@ -14,14 +14,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.home.DeleteAccountDialog;
-import com.cinggl.cinggl.services.ConnectivityReceiver;
-import com.cinggl.cinggl.utils.App;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -43,7 +40,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class UpdateProfileActivity extends AppCompatActivity implements
-        View.OnClickListener, ConnectivityReceiver.ConnectivityReceiverListener {
+        View.OnClickListener {
     @Bind(R.id.profilePictureImageView)CircleImageView mProfilePictureImageView;
     @Bind(R.id.usernameEditText) EditText mUsernameEditText;
     @Bind(R.id.bioEditText)EditText mBioEditText;
@@ -333,36 +330,6 @@ public class UpdateProfileActivity extends AppCompatActivity implements
             mSecondNameEditText.setText("");
         }
 
-//        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//
-//                if (!TextUtils.isEmpty(username)){
-//                    usersRef.child("username").setValue(username);
-//                    mUsernameEditText.setText("");
-//                }
-//                if(!TextUtils.isEmpty(bio)){
-//                    usersRef.child("bio").setValue(bio);
-//                    mBioEditText.setText("");
-//                }
-//
-//                if (!TextUtils.isEmpty(firstName)){
-//                    usersRef.child("firstName").setValue(firstName);
-//                    mFirstNameEditText.setText("");
-//                }
-//
-//                if (!TextUtils.isEmpty(secondName)){
-//                    usersRef.child("secondName").setValue(secondName);
-//                    mSecondNameEditText.setText("");
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-
     }
 
 //
@@ -403,43 +370,5 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 //                    });
 //        }
 //    }
-
-    // Method to manually check connection status
-    private void checkConnection() {
-        boolean isConnected = ConnectivityReceiver.isConnected();
-        showConnection(isConnected);
-    }
-
-    //Showing the status in Snackbar
-    private void showConnection(boolean isConnected) {
-        String message;
-        if (isConnected) {
-            message = "Connected to the internet";
-        } else {
-            message = "You are disconnected from the internet";
-        }
-
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // register connection status listener
-        App.getInstance().setConnectivityListener(this);
-//        checkConnection();
-
-    }
-
-    /**
-     * Callback will be triggered when there is change in
-     * network connection
-     */
-    @Override
-    public void onNetworkConnectionChanged(boolean isConnected) {
-        showConnection(isConnected);
-    }
 
 }

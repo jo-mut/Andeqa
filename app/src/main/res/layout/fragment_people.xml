@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_height="match_parent"
-    tools:context="com.cinggl.cinggl.profile.PeopleFragment">
+    tools:context="com.cinggl.cinggl.relations.PeopleFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -33,5 +33,7 @@
         android:layout_height="match_parent">
 
     </android.support.v4.view.ViewPager>
+
+
 
 </LinearLayout>

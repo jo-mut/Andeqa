@@ -8,7 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.cinggl.cinggl.profile.PeopleActivity">
+    tools:context="com.cinggl.cinggl.relations.PeopleActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             app:titleTextAppearance="@style/toolbarTextSize"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@color/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
@@ -36,12 +36,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <FrameLayout
-            android:id="@+id/people_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
 
-        </FrameLayout>
+                <FrameLayout
+                    android:id="@+id/people_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                </FrameLayout>
+
 
     </android.support.v4.widget.NestedScrollView>
 

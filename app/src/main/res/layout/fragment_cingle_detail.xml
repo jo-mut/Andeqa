@@ -35,7 +35,6 @@
                     android:layout_marginTop="5dp">
 
                     <TextView
-                        android:text="username"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="12dp"
@@ -82,7 +81,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:paddingTop="5dp"
-                            android:paddingBottom="5dp">
+                            android:paddingBottom="5dp"
+                            android:id="@+id/cingleTitleRelativeLayout">
 
                             <TextView
                                 android:text="TheCityOfLight"
@@ -103,7 +103,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
 
-                            <com.cinggl.cinggl.utils.ProportionalImageView
+                            <com.cinggl.cinggl.ProportionalImageView
                                 app:srcCompat="@drawable/test"
                                 android:id="@+id/cingleImageView"
                                 android:layout_alignParentLeft="true"
@@ -145,16 +145,14 @@
                         android:textStyle="normal|bold"
                         android:background="@drawable/text_boarder"
                         android:textSize="12sp"
-                        android:layout_marginRight="14dp"
-                        android:layout_marginEnd="14dp"
                         android:paddingTop="3dp"
                         android:paddingBottom="3dp"
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
                         android:layout_alignParentTop="true"
-                        android:layout_toLeftOf="@+id/cingleSettingsImageView"
-                        android:layout_toStartOf="@+id/cingleSettingsImageView"
-                        android:layout_marginTop="8dp" />
+                        android:layout_marginTop="8dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="40dp" />
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -222,7 +220,8 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:padding="3dp">
+                    android:padding="3dp"
+                    android:id="@+id/cingleDescriptionRelativeLayout">
 
                     <TextView
                         android:text="The Cities of Tomorrow; the Cities of Light, with the evolution of technology"

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:scrollbars="none"
+    android:background="#e4e4e4"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -46,81 +47,6 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="5dp"
-                android:paddingTop="5dp"
-                android:paddingLeft="3dp"
-                android:paddingRight="3dp">
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="5dp"
-                android:paddingTop="5dp"
-                android:paddingLeft="3dp"
-                android:paddingRight="3dp">
-
-                <TextView
-                    android:text="Cingle Date:"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/cingleDateTextView"
-                    android:textSize="14sp"
-                    android:textStyle="normal|bold"
-                    android:layout_centerVertical="true" />
-
-                <TextView
-                    android:text="10th Sep, 2016"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="13dp"
-                    android:layout_marginStart="13dp"
-                    android:id="@+id/datePostedTextView"
-                    android:layout_alignBaseline="@+id/cingleDateTextView"
-                    android:layout_alignBottom="@+id/cingleDateTextView"
-                    android:layout_toRightOf="@+id/cingleDateTextView"
-                    android:layout_toEndOf="@+id/cingleDateTextView" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="5dp"
-                android:paddingTop="5dp"
-                android:paddingLeft="3dp"
-                android:paddingRight="3dp">
-
-                <TextView
-                    android:text="Sense Points:"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/sensePointsDescTextView"
-                    android:textSize="14sp"
-                    android:textStyle="normal|bold"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true" />
-
-                <TextView
-                    android:text="SP 0.00"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/sensePointsTextView"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginStart="15dp"
-                    android:layout_alignParentTop="true"
-                    android:layout_toRightOf="@+id/sensePointsDescTextView"
-                    android:layout_toEndOf="@+id/sensePointsDescTextView" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="5dp"
-                android:paddingTop="5dp"
                 android:paddingLeft="3dp"
                 android:paddingRight="3dp">
 
@@ -148,14 +74,84 @@
                     android:text="username"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="12dp"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
                     android:id="@+id/usernameTextView"
                     android:layout_centerVertical="true"
                     android:layout_toRightOf="@+id/cingleCreatorTextView"
-                    android:layout_toEndOf="@+id/cingleCreatorTextView" />
+                    android:layout_toEndOf="@+id/cingleCreatorTextView"
+                    android:textSize="12sp" />
 
             </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp">
+
+                <TextView
+                    android:text="Cingle Date:"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cingleDateTextView"
+                    android:textSize="14sp"
+                    android:textStyle="normal|bold"
+                    android:layout_centerVertical="true" />
+
+                <TextView
+                    android:text="10th Sep, 2016"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:id="@+id/datePostedTextView"
+                    android:layout_alignBaseline="@+id/cingleDateTextView"
+                    android:layout_alignBottom="@+id/cingleDateTextView"
+                    android:layout_toRightOf="@+id/cingleDateTextView"
+                    android:layout_toEndOf="@+id/cingleDateTextView"
+                    android:textSize="12sp"
+                    android:layout_centerVertical="true" />
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp">
+
+                <TextView
+                    android:text="Sense Points:"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/sensePointsDescTextView"
+                    android:textSize="14sp"
+                    android:textStyle="normal|bold"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true" />
+
+                <TextView
+                    android:text="SP 0.00"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/sensePointsTextView"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/sensePointsDescTextView"
+                    android:layout_toEndOf="@+id/sensePointsDescTextView"
+                    android:textSize="12sp"
+                    android:layout_centerVertical="true" />
+
+            </RelativeLayout>
+
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -183,7 +179,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <com.cinggl.cinggl.utils.ProportionalImageView
+                <com.cinggl.cinggl.ProportionalImageView
                     android:id="@+id/cingleImageView"
                     android:layout_width="match_parent"
                     android:adjustViewBounds="true"
@@ -233,9 +229,11 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/commentsCountTextView"
                     android:layout_toEndOf="@+id/commentsImageView"
-                    android:layout_alignBottom="@+id/cingleSettingsImageView"
                     android:layout_toRightOf="@+id/commentsImageView"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:layout_centerHorizontal="false"
+                    android:layout_centerVertical="false"
+                    android:layout_marginTop="5dp" />
 
                 <ImageView
                     android:layout_width="wrap_content"

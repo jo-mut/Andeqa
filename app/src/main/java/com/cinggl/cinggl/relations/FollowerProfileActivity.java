@@ -1,9 +1,6 @@
-package com.cinggl.cinggl.profile;
+package com.cinggl.cinggl.relations;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -16,16 +13,18 @@ import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.adapters.FirebaseProfileCinglesViewHolder;
+import com.cinggl.cinggl.adapters.ProfileCinglesViewHolder;
 import com.cinggl.cinggl.models.Cingle;
-import com.cinggl.cinggl.models.Cingulan;
+import com.cinggl.cinggl.profile.CingleDetailActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
@@ -36,6 +35,7 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FollowerProfileActivity extends AppCompatActivity implements View.OnClickListener{
+    private static final String TAG = FollowerProfileActivity.class.getSimpleName();
     private String mUid;
     private DatabaseReference usernameRef;
     private DatabaseReference databaseReference;
@@ -47,6 +47,7 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
     private static final String EXTRA_USER_UID = "uid";
     private static  final int MAX_WIDTH = 400;
     private static final int MAX_HEIGHT = 400;
+    private boolean processFollow = false;
 
     @Bind(R.id.profileCinglesRecyclerView)RecyclerView mProfileCinglesRecyclerView;
     @Bind(R.id.userProfileImageView)CircleImageView mProifleImageView;
@@ -69,6 +70,7 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
 
         mFollowersCountTextView.setOnClickListener(this);
         mFollowingCountTextView.setOnClickListener(this);
+        mFollowButton.setOnClickListener(this);
 //        fetchUserData();
 //        setUpFirebaseAdapter();
 
@@ -85,11 +87,15 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
         profileCinglesQuery = databaseReference.orderByChild("uid").equalTo(mUid);
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
         usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
-        relationsRef = FirebaseDatabase.getInstance().getReference(Constants.FOLLOWERS);
+        relationsRef = FirebaseDatabase.getInstance().getReference(Constants.RELATIONS);
         profileInfoQuery = databaseReference.orderByChild("uid").equalTo(mUid);
 
 
         usernameRef.keepSynced(true);
+        profileInfoQuery.keepSynced(true);
+        relationsRef.keepSynced(true);
+        databaseReference.keepSynced(true);
+        profileCinglesQuery.keepSynced(true);
 
         setUpUserProfile();
 
@@ -108,12 +114,27 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
     private void setUpUserProfile(){
 
         //retrieve the cingles posted by the user
-        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Cingle, FirebaseProfileCinglesViewHolder>
-                (Cingle.class, R.layout.profile_cingles_item_list, FirebaseProfileCinglesViewHolder.class, profileCinglesQuery) {
+        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Cingle, ProfileCinglesViewHolder>
+                (Cingle.class, R.layout.profile_cingles_item_list, ProfileCinglesViewHolder.class, profileCinglesQuery) {
             @Override
-            protected void populateViewHolder(FirebaseProfileCinglesViewHolder viewHolder, Cingle model, int position) {
-                viewHolder.bindProfileCingle(model);
+            protected void populateViewHolder(final ProfileCinglesViewHolder viewHolder, final Cingle model, int position) {
                 final String postKey = getRef(position).getKey();
+
+                profileCinglesQuery.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.hasChildren()){
+                            viewHolder.bindProfileCingle(model);
+                        }else {
+                            //display a message there are no cingles
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
 
                 viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -192,7 +213,11 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "cingles Count");
 
-                    mCinglesCountTextView.setText(dataSnapshot.getChildrenCount()+ "");
+                    if (dataSnapshot.hasChildren()){
+                        mCinglesCountTextView.setText(dataSnapshot.getChildrenCount()+ "");
+                    }else {
+                        mCinglesCountTextView.setText("0");
+                    }
 
                 }
 
@@ -205,42 +230,28 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
         });
 
         //retrieve the count of followers for this user
-        relationsRef.child(mUid).addValueEventListener(new ValueEventListener() {
+        relationsRef.child("followers").child(mUid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "followers Count");
-                    mFollowersCountTextView.setText(dataSnapshot.getChildrenCount() + "");
+
                 }
 
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        //get the database node key of this user
-        DatabaseReference reference = relationsRef;
-        final String refKey = reference.getKey();
-        Log.d(refKey, "current user reference key");
-
-        //retrieve the count of users followed by this user
-        relationsRef.child(refKey).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                if (dataSnapshot.hasChild(mUid)){
+                //SET TEXT ON BUTTON FOLLOWING IF FOLLOWING
+                if (dataSnapshot.hasChild(firebaseAuth.getCurrentUser().getUid())){
                     mFollowButton.setText("FOLLOWING");
                 }else {
                     mFollowButton.setText("FOLLOW");
                 }
 
-                if (dataSnapshot.hasChild(mUid)){
-                    Log.e(dataSnapshot.getKey(), dataSnapshot.getChildrenCount() + "following Count");
-                    mFollowingCountTextView.setText(dataSnapshot.getChildrenCount() + "");
+                //SET FOLLOWERS COUNT IF ANY
+                if (dataSnapshot.hasChildren()){
+                    mFollowersCountTextView.setText(dataSnapshot.getChildrenCount() + "");
+                }else {
+                    mFollowersCountTextView.setText("0");
                 }
+
             }
 
             @Override
@@ -248,21 +259,118 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
 
             }
         });
+//
+//        //get the database node key of this user
+//        DatabaseReference reference = usernameRef.child(mUid);
+//        final String refKey = reference.getKey();
+//        Log.d(refKey, "current user reference key");
+
+        //retrieve the count of users followed by this user
+        relationsRef.child("following").child(mUid)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        if (dataSnapshot.hasChildren()){
+                            mFollowingCountTextView.setText(dataSnapshot.getChildrenCount() + "");
+                        }else {
+                            mFollowingCountTextView.setText("0");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
 
     }
 
     @Override
     public void onClick(View v){
         if (v == mFollowingCountTextView) {
-            Intent intent = new Intent(this, PeopleActivity.class);
+            Intent intent = new Intent(this, FollowingActivity.class);
+            intent.putExtra(FollowerProfileActivity.EXTRA_USER_UID, mUid);
             startActivity(intent);
+
         }
 
         if (v == mFollowersCountTextView){
-            Intent intent = new Intent(this, PeopleActivity.class);
+            Intent intent = new Intent(this, FollowersActivity.class);
+            intent.putExtra(FollowerProfileActivity.EXTRA_USER_UID, mUid);
             startActivity(intent);
 
         }
+
+        if (v == mFollowButton){
+            processFollow = true;
+
+            relationsRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (processFollow){
+                        if (dataSnapshot.child("followers").child(mUid).hasChild(firebaseAuth.getCurrentUser().getUid())){
+                            relationsRef.child("followers").child(mUid)
+                                    .removeValue();
+                            processFollow = false;
+                            onFollow(false);
+                            //set the text on the button to follow if the user in not yet following;
+                            mFollowButton.setText("FOLLOW");
+                            mFollowersCountTextView.setText(dataSnapshot.getChildrenCount() + "");
+
+                        }else {
+                            //set followers of mUid;
+                            relationsRef.child("followers").child(mUid).child(firebaseAuth.getCurrentUser().getUid())
+                                    .child("uid")
+                                    .setValue(firebaseAuth.getCurrentUser().getUid());
+                            //set the uid you are following
+                            relationsRef.child("following").child(firebaseAuth.getCurrentUser().getUid()).child(mUid)
+                                    .child("uid").setValue(mUid);
+                            processFollow = false;
+                            onFollow(false);
+
+                            //set text on the button following;
+                            mFollowButton.setText("FOLLOWING");
+                            mFollowersCountTextView.setText(dataSnapshot.getChildrenCount() + "");
+
+                        }
+
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
+
+    private void onFollow(final boolean increament){
+        relationsRef.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                if(mutableData.getValue() != null){
+                    int value = mutableData.getValue(Integer.class);
+                    if(increament){
+                        value++;
+                    }else{
+                        value--;
+                    }
+                    mutableData.setValue(value);
+                }
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b,
+                                   DataSnapshot dataSnapshot) {
+                Log.d(TAG, "followTransaction:onComplete" + databaseError);
+
+            }
+        });
     }
 
 }

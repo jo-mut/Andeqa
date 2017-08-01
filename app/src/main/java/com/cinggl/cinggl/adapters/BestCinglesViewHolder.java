@@ -9,10 +9,12 @@ import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cingle;
-import com.cinggl.cinggl.utils.ProportionalImageView;
+import com.cinggl.cinggl.ProportionalImageView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
+
+import java.text.DecimalFormat;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -35,6 +37,8 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
     public TextView usernameTextView;
     public TextView commentsCountTextView;
     public TextView currentDateTextView;
+    public ImageView cingleSettingsImageView;
+    public TextView sensePointsTextView;
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
 
@@ -47,11 +51,12 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
         commentsImageView = (ImageView) itemView.findViewById(R.id.commentsImageView);
         cingleDescriptionTextView = (TextView) itemView.findViewById(R.id.cingleDescriptionTextView);
         cingleTitleTextView = (TextView) itemView.findViewById(R.id.cingleTitleTextView);
-        accountUsernameTextView = (TextView) itemView.findViewById(R.id.accountUsernameTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.userProfileImageView);
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
         currentDateTextView = (TextView) itemView.findViewById(R.id.currentDateTextView);
         usernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
+        cingleSettingsImageView = (ImageView) mView.findViewById(R.id.cingleSettingsImageView);
+        sensePointsTextView= (TextView) mView.findViewById(R.id.sensePointsTextView);
 
     }
 
@@ -109,6 +114,10 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
         cingleTitleTextView.setText((cingle.getTitle()));
         cingleDescriptionTextView.setText(cingle.getDescription());
         datePostedTextView.setText(cingle.getDatePosted());
-        sensePointsTextView.setText("SP" + " " + Double.toString(cingle.getSensepoint()));
+
+        //REMOVE SCIENTIFIC NOATATION
+        DecimalFormat formatter =  new DecimalFormat("0.00000000");
+        sensePointsTextView.setText("SP" + " " + formatter.format(cingle.getSensepoint()));
+
     }
 }

@@ -1,4 +1,4 @@
-package com.cinggl.cinggl.utils;
+package com.cinggl.cinggl;
 
 import android.graphics.Rect;
 import android.support.v7.widget.LinearLayoutManager;
@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
-import com.cinggl.cinggl.adapters.PeopleViewHolder;
 import com.cinggl.cinggl.models.TraceData;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

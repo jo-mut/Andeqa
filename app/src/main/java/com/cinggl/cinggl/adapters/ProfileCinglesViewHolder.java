@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
@@ -22,29 +23,25 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
-import org.parceler.Parcels;
-
-import java.util.ArrayList;
-
-import static com.cinggl.cinggl.R.id.cingleItemImageView;
 
 /**
  * Created by J.EL on 6/8/2017.
  */
 
-public class FirebaseProfileCinglesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+public class ProfileCinglesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     View mView;
     Context mContext;
     private ImageView cingleItemImageView;
 
 
-    public FirebaseProfileCinglesViewHolder(View itemView){
+    public ProfileCinglesViewHolder(View itemView){
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
         itemView.setOnClickListener(this);
         cingleItemImageView = (ImageView) itemView.findViewById(R.id.cingleItemImageView);
+
 
     }
 
@@ -73,6 +70,7 @@ public class FirebaseProfileCinglesViewHolder extends RecyclerView.ViewHolder im
 
                     }
                 });
+
     }
 
     @Override
@@ -80,7 +78,5 @@ public class FirebaseProfileCinglesViewHolder extends RecyclerView.ViewHolder im
 
 
     }
-
-
 
 }

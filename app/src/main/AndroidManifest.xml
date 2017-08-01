@@ -18,7 +18,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name=".utils.App"
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="Cinggl"
@@ -43,6 +43,7 @@
             android:name=".camera.CreateCingleActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".home.HomeActivity"
             android:label="Cinggl"
             android:theme="@style/AppTheme" />
@@ -62,6 +63,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".profile.CingleDetailActivity"
             android:label="Cingle"
             android:theme="@style/AppTheme" />
@@ -71,7 +73,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".profile.PeopleActivity"
+            android:name=".relations.PeopleActivity"
             android:label="People"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
@@ -103,10 +105,20 @@
         </receiver>
 
         <activity
-            android:name=".profile.FollowerProfileActivity"
+            android:name=".relations.FollowerProfileActivity"
             android:label="Profile"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
+        <activity
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
+            android:label="Followers"
+            android:name=".relations.FollowersActivity" />
+        <activity
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
+            android:label="Following"
+            android:name=".relations.FollowingActivity"/>
     </application>
 
 </manifest>

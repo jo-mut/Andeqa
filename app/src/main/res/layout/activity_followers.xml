@@ -3,11 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_follower_profile"
+    android:id="@+id/activity_followers"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.cinggl.cinggl.relations.FollowerProfileActivity">
+    tools:context="com.cinggl.cinggl.relations.FollowersActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -17,29 +17,30 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@color/colorPrimary"
             app:titleTextColor="@android:color/white"
             app:layout_scrollFlags="scroll|enterAlways"
+            app:titleTextAppearance="@style/toolbarTextSize"
             app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:titleMarginStart="1080dp"
+            app:titleMarginStart="180sp"
             app:titleMargin="0dp" />
 
 
     </RelativeLayout>
 
-    <FrameLayout
-        android:id="@+id/follower_profile_container"
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <fragment
-            android:id="@+id/fragmentItemsList"
-            android:name="com.cinggl.cinggl.relations.FollowerProfileFragment"
-            android:layout_height="match_parent"
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/followersRecyclerView"
             android:layout_width="match_parent"
-            tools:layout="@layout/fragment_follower_profile" />
+            android:layout_height="wrap_content">
 
-    </FrameLayout>
+        </android.support.v7.widget.RecyclerView>
 
+    </RelativeLayout>
 
 </LinearLayout>

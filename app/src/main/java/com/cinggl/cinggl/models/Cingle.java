@@ -22,7 +22,10 @@ public class Cingle {
     String description;
     String moreDescription;
     String pushId;
-    String timeStamp;
+    long timeStamp;
+    long number;
+    private String cingleIndex;
+    double randomNumber;
     String uid;
     String datePosted;
     double sensepoint;
@@ -32,14 +35,13 @@ public class Cingle {
     }
 
     public Cingle(double sensepoint, String datePosted,
-                  String uid, String timeStamp, String pushId,
+                  String uid, String pushId,
                   String description, String profileImageUrl,
                   String cingleImageUrl, String accountUserName,
                   String title) {
         this.sensepoint = sensepoint;
         this.datePosted = datePosted;
         this.uid = uid;
-        this.timeStamp = timeStamp;
         this.pushId = pushId;
         this.description = description;
         this.profileImageUrl = profileImageUrl;
@@ -120,11 +122,11 @@ public class Cingle {
         this.pushId = pushId;
     }
 
-    public String getTimeStamp() {
+    public long getTimeStamp() {
         return timeStamp;
     }
 
-    public void setTimeStamp(String timeStamp) {
+    public void setTimeStamp(long timeStamp) {
         this.timeStamp = timeStamp;
     }
 
@@ -142,5 +144,29 @@ public class Cingle {
 
     public void setDatePosted(String datePosted) {
         this.datePosted = datePosted;
+    }
+
+    public long getNumber() {
+        return number;
+    }
+
+    public void setNumber(long number) {
+        this.number = number;
+    }
+
+    public String getCingleIndex() {
+        return cingleIndex;
+    }
+
+    public void setCingleIndex(String cingleIndex) {
+        this.cingleIndex = cingleIndex;
+    }
+
+    public double getRandomNumber() {
+        return randomNumber;
+    }
+
+    public void setRandomNumber(double randomNumber) {
+        this.randomNumber = randomNumber;
     }
 }

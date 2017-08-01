@@ -20,7 +20,7 @@
             android:layout_gravity="top"
             app:titleTextAppearance="@style/toolbarTextSize"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@color/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/AppTheme.PopupOverlay"
             app:titleTextColor="@android:color/white">
@@ -104,7 +104,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <com.cinggl.cinggl.utils.ProportionalImageView
+                    <com.cinggl.cinggl.ProportionalImageView
                         android:id="@+id/cingleImageView"
                         android:layout_width="match_parent"
                         android:layout_alignParentTop="true"
@@ -112,6 +112,23 @@
                         android:adjustViewBounds="true"
                         android:layout_height="400dp" />
 
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50sp"
+                    android:background="#e4e4e4"
+                    android:id="@+id/saySomethingRelativeLayout">
+
+
+                    <TextView
+                        android:text="Say something about this Cingle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="16dp"
+                        android:id="@+id/saySomethingTextView" />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -173,6 +190,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:paddingRight="10dp"
+            android:freezesText="true"
             android:layout_marginRight="50sp" />
 
     </RelativeLayout>

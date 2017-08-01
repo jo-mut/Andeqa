@@ -1,6 +1,7 @@
 package com.cinggl.cinggl.home;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -20,6 +21,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import butterknife.Bind;
@@ -33,6 +35,7 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
     private static final String EXTRA_POST_KEY = "post key";
     private String mKey;
     private DatabaseReference databaseReference;
+    private Query mKeyQuery;
     private static final String TAG = CingleSettingsDialog.class.getSimpleName();
 
     public static CingleSettingsDialog newInstance(String title){
@@ -42,7 +45,6 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
         cingleSettingsDialog.setArguments(args);
         return cingleSettingsDialog;
     }
-
 
 
     public CingleSettingsDialog() {
@@ -77,6 +79,9 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
         }
 
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
+        mKeyQuery = databaseReference;
+
+        databaseReference.keepSynced(true);
 
         return view;
     }
@@ -104,6 +109,7 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
                 if (dataSnapshot.hasChild(mKey)){
                     databaseReference.child(mKey).removeValue();
                 }
+                dismiss();
 
             }
 
@@ -112,5 +118,6 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
 
             }
         });
+
     }
 }

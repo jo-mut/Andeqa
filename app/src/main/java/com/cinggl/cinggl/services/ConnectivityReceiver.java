@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.cinggl.cinggl.utils.App;
+import com.cinggl.cinggl.App;
 
 /**
  * Created by J.EL on 7/17/2017.

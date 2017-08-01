@@ -1,8 +1,6 @@
 package com.cinggl.cinggl.home;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,17 +9,14 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.RelativeLayout;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.LikesViewHolder;
 import com.cinggl.cinggl.models.Like;
-import com.cinggl.cinggl.profile.FollowerProfileActivity;
+import com.cinggl.cinggl.relations.FollowerProfileActivity;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
-import com.cinggl.cinggl.services.ConnectivityReceiver;
-import com.cinggl.cinggl.utils.App;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -39,10 +34,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static com.cinggl.cinggl.home.CommentsActivity.EXTRA_POST_KEY;
-
-public class LikesActivity extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener{
+public class LikesActivity extends AppCompatActivity {
     @Bind(R.id.recentLikesRecyclerView)RecyclerView mRecentLikesRecyclerView;
+    @Bind(R.id.emptyLikesRelativeLayout)RelativeLayout mEmptyRelativelayout;
 
     private DatabaseReference likesRef;
     private DatabaseReference usernameRef;
@@ -55,6 +49,7 @@ public class LikesActivity extends AppCompatActivity implements ConnectivityRece
     private boolean processFollow = false;
     private static final String TAG = LikesActivity.class.getSimpleName();
     private static final String EXTRA_USER_UID = "uid";
+    private static final String EXTRA_POST_KEY = "post key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,31 +77,22 @@ public class LikesActivity extends AppCompatActivity implements ConnectivityRece
         likesRef = FirebaseDatabase.getInstance()
                 .getReference(Constants.LIKES).child(mPostKey);
         usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
-        relationsRef = FirebaseDatabase.getInstance().getReference(Constants.FOLLOWERS);
+        relationsRef = FirebaseDatabase.getInstance().getReference(Constants.RELATIONS);
         likesRef.keepSynced(true);
         setUpFirebaseLikes();
-//        fetchData();
 
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-//        likesAdapter = new CinglesAdapter(this, likesRef);
-//        mRecentLikesRecyclerView.setAdapter(likesAdapter);
-//        mRecentLikesRecyclerView.setHasFixedSize(false);
-//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-//        layoutManager.setAutoMeasureEnabled(true);
-//        mRecentLikesRecyclerView.setNestedScrollingEnabled(false);
-//        mRecentLikesRecyclerView.setLayoutManager(layoutManager);
+
     }
 
 
     @Override
     public void onStop(){
         super.onStop();
-        //remove the event listner
-//        likesAdapter.cleanUpListener();
         firebaseRecyclerAdapter.cleanup();
     }
 
@@ -118,8 +104,13 @@ public class LikesActivity extends AppCompatActivity implements ConnectivityRece
             protected void populateViewHolder(final LikesViewHolder viewHolder, Like model, int position) {
                 DatabaseReference userRef = getRef(position);
                 final String postKey = userRef.getKey();
-                viewHolder.bindLikes(model);
-//
+                if (likesRef.child(postKey) != null){
+                    mEmptyRelativelayout.setVisibility(View.GONE);
+                    viewHolder.bindLikes(model);
+                }else {
+                    mEmptyRelativelayout.setVisibility(View.VISIBLE);
+                }
+
 
                 likesRef.child(postKey).addValueEventListener(new ValueEventListener() {
                     @Override
@@ -184,72 +175,78 @@ public class LikesActivity extends AppCompatActivity implements ConnectivityRece
                                 }
                             }
                         });
-                    }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                        if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                            viewHolder.followButton.setVisibility(View.GONE);
 
-                    }
-                });
-
-                relationsRef.child(postKey).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-
-                        if (dataSnapshot.hasChild(firebaseAuth.getCurrentUser().getUid())){
-                            viewHolder.followButton.setText("Following");
                         }else {
-                            viewHolder.followButton.setText("Follow");
-                        }
-                    }
+                            viewHolder.followButton.setVisibility(View.VISIBLE);
+                            viewHolder.followButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    processFollow = true;
+                                    relationsRef.addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            if (processFollow){
+                                                if (dataSnapshot.child("following").child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
+                                                    relationsRef.child("following").child(postKey).child(firebaseAuth.getCurrentUser().getUid())
+                                                            .removeValue();
+                                                    processFollow = false;
+                                                    onFollow(false);
+                                                    //set the text on the button to follow if the user in not yet following;
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                                                }else {
+                                                    try {
+                                                        relationsRef.child("following").child(postKey).child(firebaseAuth.getCurrentUser().getUid())
+                                                                .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
+                                                        processFollow = false;
+                                                        onFollow(false);
 
-                    }
-                });
+                                                        //set text on the button to following;
+                                                        viewHolder.followButton.setText("Following");
 
-                viewHolder.followButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        processFollow = true;
-                        relationsRef.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                if (processFollow){
-                                    if (dataSnapshot.child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
-                                        relationsRef.child(postKey)
-                                                .removeValue();
-                                        processFollow = false;
-                                        onFollow(false);
-                                        //set the text on the button to follow if the user in not yet following;
-//                                        followButton.setText("FOLLOW");
+                                                    }catch (Exception e){
 
-                                    }else {
-                                        try {
-                                            relationsRef.child(postKey).child(firebaseAuth.getCurrentUser().getUid())
-                                                    .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
-                                            processFollow = false;
-                                            onFollow(false);
+                                                    }
 
-                                            //set text on the button to following;
-                                            viewHolder.followButton.setText("Following");
+                                                }
 
-                                        }catch (Exception e){
+                                            }
 
                                         }
 
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
+                                }
+                            });
+                        }
+
+                        relationsRef.child("following").child(uid)
+                                .addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                        if (dataSnapshot.hasChild(firebaseAuth.getCurrentUser().getUid())){
+                                            viewHolder.followButton.setText("Following");
+                                        }else {
+                                            viewHolder.followButton.setText("Follow");
+                                        }
                                     }
 
-                                }
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
 
-                            }
+                                    }
+                                });
+                    }
 
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-                            }
-                        });
                     }
                 });
 
@@ -291,43 +288,6 @@ public class LikesActivity extends AppCompatActivity implements ConnectivityRece
 
             }
         });
-    }
-    // Method to manually check connection status
-    private void checkConnection() {
-        boolean isConnected = ConnectivityReceiver.isConnected();
-        showConnection(isConnected);
-    }
-
-    //Showing the status in Snackbar
-    private void showConnection(boolean isConnected) {
-        String message;
-        if (isConnected) {
-            message = "Connected to the internet";
-        } else {
-            message = "You are disconnected from the internet";
-        }
-
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // register connection status listener
-        App.getInstance().setConnectivityListener(this);
-//        checkConnection();
-
-    }
-
-    /**
-     * Callback will be triggered when there is change in
-     * network connection
-     */
-    @Override
-    public void onNetworkConnectionChanged(boolean isConnected) {
-        showConnection(isConnected);
     }
 
 }

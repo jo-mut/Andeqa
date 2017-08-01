@@ -6,11 +6,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -19,13 +20,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.home.HomeActivity;
 import com.cinggl.cinggl.models.Cingle;
-import com.cinggl.cinggl.services.ConnectivityReceiver;
-import com.cinggl.cinggl.utils.App;
-import com.cinggl.cinggl.utils.ProportionalImageView;
+import com.cinggl.cinggl.ProportionalImageView;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -37,30 +36,33 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.okhttp.internal.Util;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Random;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class CreateCingleActivity extends AppCompatActivity implements View.OnClickListener,
-        ConnectivityReceiver.ConnectivityReceiverListener{
+public class CreateCingleActivity extends AppCompatActivity implements View.OnClickListener{
     @Bind(R.id.cingleTitleEditText)EditText mCingleTitleEditText;
     @Bind(R.id.cingleDescriptionEditText)EditText mCingleDescriptionEditText;
     @Bind(R.id.postCingleImageView)ImageView mPostCingleImageView;
-//    @Bind(R.id.chosenImageView)ImageView mChosenImageView;
     @Bind(R.id.cameraImageView)ImageView mCameraImageView;
-    @Bind(R.id.galleryImageView)ImageView mGalleryImageView;
+//    @Bind(R.id.galleryImageView)ImageView mGalleryImageView;
     @Bind(R.id.userProfileImageView)CircleImageView mProfileImageView;
     @Bind(R.id.accountUsernameTextView)TextView mAccountUsernameTextView;
     @Bind(R.id.img)ProportionalImageView mProportionalImageView;
-//    @Bind(R.id.cingleImageView)ImageView mProportionalImageView;
 
     private String ImageFileLocation = "";
     private String GALLERY_LOCATION = "Cingles";
@@ -74,14 +76,17 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
     private static final int MAX_WIDTH = 400;
     private static final int MAX_HEIGHT = 400;
     private Bitmap photoReducedSizeBitmap = null;
+    private Bitmap bitmap;
     private Cingle cingle;
-    private File photoFile;
+    private File file;
     private StorageReference storageReference;
     private DatabaseReference databaseReference;
     private ProgressDialog progressDialog;
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
     private DatabaseReference usernameRef;
+    private List<Cingle> cingles = new ArrayList<>();
+
 
 
     @Override
@@ -92,10 +97,7 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
 
         createImageGallery();
 
-        mGalleryImageView.setOnClickListener(this);
-        mCameraImageView.setOnClickListener(this);
 
-        mGalleryImageView.setOnClickListener(this);
         mCameraImageView.setOnClickListener(this);
         mPostCingleImageView.setOnClickListener(this);
         uploadingToFirebaseDialog();
@@ -103,6 +105,7 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
+        databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
 
         usernameRef.child(firebaseAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
@@ -166,26 +169,32 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
         if(resultCode == RESULT_OK){
             if(requestCode == CAMERA_REQUEST_CODE){
 
-                setPic();
-
-//                setReducedImageSize();
-
-//               Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
-//                mProportionalImageView.setImageBitmap(imageBitmap);
-
-
-//                Bitmap bitmap = createScaledBitmap(getImagePath(data, getApplicationContext()),
-//                        mProportionalImageView.getWidth() ,mProportionalImageView.getHeight());
-//                mProportionalImageView.setImageBitmap(bitmap);
+                /**diaabled camera intent*/
+//                file = new File(Environment.getExternalStorageDirectory().toString());
+//                for (File temp : file.listFiles()){
+//                    if (temp.getName().equals("temp.jpg")){
+//                        file = temp;
+//                    }
+//                }
+//                try {
 //
-//                Picasso.with(CreateCingleActivity.this)
-//                        .load(photoFile)
-//                        .resize(MAX_WIDTH, MAX_HEIGHT)
-//                        .onlyScaleDown()
-//                        .into(mProportionalImageView);
-//                Glide.with(this)
-//                        .load(photoFile)
-//                        .into(mProportionalImageView);
+//                    BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+//
+//                    bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), bitmapOptions);
+//
+//                    bitmap = ThumbnailUtils.extractThumbnail(bitmap, 400,400);
+//                    // NOTE incredibly useful trick for cropping/resizing square
+//
+//                    Matrix matrix = new Matrix();
+//                    matrix.postRotate(neededRotation(file));
+//
+//                    mProportionalImageView.setImageBitmap(bitmap);
+
+
+//                }catch (Exception e){
+//                    e.printStackTrace();
+//                }
+
             }
 
             if(requestCode == IMAGE_GALLERY_REQUEST && data != null){
@@ -197,40 +206,57 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
+    public static int neededRotation(File ff) {
+        try
+        {
+
+            ExifInterface exif = new ExifInterface(ff.getAbsolutePath());
+            int orientation = exif.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_270)
+            { return 270; }
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_180)
+            { return 180; }
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_90)
+            { return 90; }
+            return 0;
+
+        } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
 
     @Override
     public void onClick(View v){
-//
-//        if(v == mCameraImageView){
-//            Intent cameraIntent =new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-////            photoFile = null;
-////            try{
-////                photoFile = createImageFile();
-////            }catch (IOException e) {
-////                e.printStackTrace();
-////            }cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
-//            startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+
+//        if ( v == mCameraImageView){
+//            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//            file = new File(android.os.Environment.getExternalStorageDirectory(), "temp.jpg");
+//            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+//            startActivityForResult(intent, CAMERA_REQUEST_CODE);
 //        }
 
-        if (v ==  mCameraImageView){
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            photoFile = null;
-            try {
-                photoFile = createImageFile();
-            }catch (IOException e){
-                e.printStackTrace();
-            }intent.putExtra(MediaStore.EXTRA_OUTPUT, photoFile);
-            startActivityForResult(intent, CAMERA_REQUEST_CODE);
-        }
-
-
-        if(v == mGalleryImageView){
+        if(v == mCameraImageView){
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
             startActivityForResult(intent, IMAGE_GALLERY_REQUEST);
-
         }
+
+//        if(v == mGalleryImageView){
+//            Intent intent = new Intent();
+//            intent.setAction(Intent.ACTION_GET_CONTENT);
+//            intent.setType("image/*");
+//            startActivityForResult(intent, IMAGE_GALLERY_REQUEST);
+//
+//        }
 
         if(v == mPostCingleImageView){
             saveToFirebase();
@@ -280,29 +306,6 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
 
     }
 
-    private void setPic() {
-        // Get the dimensions of the View
-        int targetW = mProportionalImageView.getWidth();
-        int targetH = mProportionalImageView.getHeight();
-
-        // Get the dimensions of the bitmap
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(ImageFileLocation, bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-
-        // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
-
-        // Decode the image file into a Bitmap sized to fill the View
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-
-        Bitmap bitmap = BitmapFactory.decodeFile(ImageFileLocation, bmOptions);
-        mProportionalImageView.setImageBitmap(bitmap);
-    }
-
     private void createImageGallery(){
         File storageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         mGalleryFolder = new File(storageDirectory, GALLERY_LOCATION);
@@ -311,79 +314,14 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    public File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "IMAGE_" + timeStamp + "_";
-        File tempFile = File.createTempFile(imageFileName, ".jpg", mGalleryFolder);
-        ImageFileLocation = tempFile.getAbsolutePath();
-        return  tempFile;
-
-    }
-
-    public void setReducedImageSize(){
-        int targetImageViewWidth = mProportionalImageView.getWidth();
-        int targetImageViewHeight = mProportionalImageView.getHeight();
-
-
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(ImageFileLocation, bmOptions);
-        int cameraImageWidth = bmOptions.outWidth;
-        int cameraImageHeight = bmOptions.outHeight;
-
-        int scaleFactor = Math.min
-                (cameraImageWidth/targetImageViewWidth, cameraImageHeight/targetImageViewHeight);
-        bmOptions.inSampleSize = scaleFactor;
-        bmOptions.inJustDecodeBounds = false;
-
-
-        photoReducedSizeBitmap = BitmapFactory.decodeFile(ImageFileLocation, bmOptions);
-        mProportionalImageView.setImageBitmap(photoReducedSizeBitmap);
-    }
-
     public void uploadingToFirebaseDialog(){
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Adding your Cingle...");
         progressDialog.setCancelable(true);
     }
 
-    // Function to get image path from ImagePicker
-    public static String getImagePath(Intent data, Context context) {
-        Uri selectedImage = data.getData();
-        String[] filePathColumn = {MediaStore.Images.Media.DATA};
-        Cursor cursor = context.getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-        cursor.moveToFirst();
-        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-        String picturePath = cursor.getString(columnIndex);
-        cursor.close();
-        return picturePath;
-    }
-
-
-    public Bitmap createScaledBitmap(String pathName, int width, int height) {
-        final BitmapFactory.Options opt = new BitmapFactory.Options();
-        opt.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(ImageFileLocation, opt);
-        opt.inSampleSize = calculateBmpSampleSize(opt, width, height);
-        opt.inJustDecodeBounds = false;
-        return BitmapFactory.decodeFile(ImageFileLocation, opt);
-    }
-
-    public int calculateBmpSampleSize(BitmapFactory.Options opt, int width, int height) {
-        final int outHeight = opt.outHeight;
-        final int outWidth = opt.outWidth;
-        int sampleSize = 1;
-        if (outHeight > height || outWidth > width) {
-            final int heightRatio = Math.round((float) outHeight / (float) height);
-            final int widthRatio = Math.round((float) outWidth / (float) width);
-            sampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
-        }
-        return sampleSize;
-    }
-
-
     public void saveToFirebase(){
-        if (image != null){
+        if (image != null || bitmap != null){
             try {
                 progressDialog.show();
                 mProportionalImageView.setDrawingCacheEnabled(true);
@@ -414,54 +352,76 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
                                 .addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
-                                        String username = (String) dataSnapshot.child("username").getValue();
-                                        String uid = (String) dataSnapshot.child("uid").getValue();
-                                        String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+                                        final String uid = (String) dataSnapshot.child("uid").getValue();
 
-                                        Cingle cingle = new Cingle();
+                                        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                Cingle cingle = new Cingle();
 
-                                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d");
-                                        String date = simpleDateFormat.format(new Date());
+                                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d");
+                                                String date = simpleDateFormat.format(new Date());
 
-                                        if (date.endsWith("1") && !date.endsWith("11"))
-                                            simpleDateFormat = new SimpleDateFormat("d'st' MMM yyyy");
-                                        else if (date.endsWith("2") && !date.endsWith("12"))
-                                            simpleDateFormat = new SimpleDateFormat("d'nd' MMM yyyy");
-                                        else if (date.endsWith("3") && !date.endsWith("13"))
-                                            simpleDateFormat = new SimpleDateFormat("d'rd' MMM yyyy");
-                                        else
-                                            simpleDateFormat = new SimpleDateFormat("d'th' MMM yyyy");
-                                        String currentDate = simpleDateFormat.format(new Date());
+                                                if (date.endsWith("1") && !date.endsWith("11"))
+                                                    simpleDateFormat = new SimpleDateFormat("d'st' MMM yyyy");
+                                                else if (date.endsWith("2") && !date.endsWith("12"))
+                                                    simpleDateFormat = new SimpleDateFormat("d'nd' MMM yyyy");
+                                                else if (date.endsWith("3") && !date.endsWith("13"))
+                                                    simpleDateFormat = new SimpleDateFormat("d'rd' MMM yyyy");
+                                                else
+                                                    simpleDateFormat = new SimpleDateFormat("d'th' MMM yyyy");
+                                                String currentDate = simpleDateFormat.format(new Date());
 
-                                        cingle.setTitle(mCingleTitleEditText.getText().toString());
-                                        cingle.setDescription(mCingleDescriptionEditText.getText().toString());
-                                        cingle.setTimeStamp(timeStamp.toString());
-                                        cingle.setUid(uid);
-                                        cingle.setAccountUserName(username);
-                                        cingle.setProfileImageUrl(profileImage);
-                                        cingle.setDatePosted(currentDate);
-                                        cingle.setCingleImageUrl(downloadUrl.toString());
+                                                long index = dataSnapshot.getChildrenCount();
 
-                /*Getting the current logged in user*/
-                                        DatabaseReference databaseReference = FirebaseDatabase
-                                                .getInstance()
-                                                .getReference(Constants.FIREBASE_CINGLES);
+                                                final long currentIdex = index + 1;
+
+                                                cingle.setCingleIndex("Cingle number" + " " + currentIdex);
+                                                cingle.setRandomNumber((int) new Random().nextInt());
+                                                cingle.setRandomNumber((double) new Random().nextDouble());
+                                                cingle.setTitle(mCingleTitleEditText.getText().toString());
+                                                cingle.setDescription(mCingleDescriptionEditText.getText().toString());
+                                                cingle.setTimeStamp(timeStamp);
+                                                cingle.setUid(uid);
+
+                                                cingle.setDatePosted(currentDate);
+                                                cingle.setCingleImageUrl(downloadUrl.toString());
+
+                                                     /*Getting the current logged in user*/
+                                                DatabaseReference databaseReference = FirebaseDatabase
+                                                        .getInstance()
+                                                        .getReference(Constants.FIREBASE_CINGLES);
 
 
-                /*Pushing the same cingle to a reference from where Cingles posted by the
-                 user will be retrieved and displayed on their profile*/
-                                        DatabaseReference userRef = databaseReference.push();
-                                        String pushId = userRef.getKey();
-                                        cingle.setPushId(pushId);
-                                        userRef.setValue(cingle);
 
-                                        mCingleTitleEditText.setText("");
-                                        mCingleDescriptionEditText.setText("");
-                                        mProportionalImageView.setImageBitmap(null);
+                                                    /*Pushing the same cingle to a reference from where Cingles posted by the
+                                                    user will be retrieved and displayed on their profile*/
+                                                DatabaseReference userRef = databaseReference.push();
+                                                String pushId = userRef.getKey();
+                                                cingle.setPushId(pushId);
+                                                userRef.setValue(cingle);
 
-                                        progressDialog.dismiss();
 
-                                        Toast.makeText(CreateCingleActivity.this, "Your Cingle has successfully been posted", Toast.LENGTH_LONG).show();
+                                                mCingleTitleEditText.setText("");
+                                                mCingleDescriptionEditText.setText("");
+                                                mProportionalImageView.setImageBitmap(null);
+
+                                                progressDialog.dismiss();
+
+                                                Toast.makeText(CreateCingleActivity.this, "Your Cingle has successfully been posted", Toast.LENGTH_LONG).show();
+
+                                                Intent intent = new Intent(CreateCingleActivity.this, HomeActivity.class);
+                                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                startActivity(intent);
+                                                finish();
+
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+
+                                            }
+                                        });
 
                                     }
 
@@ -484,45 +444,5 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
             Toast.makeText(this, "Cingle must be an image", Toast.LENGTH_LONG).show();
         }
     }
-
-    // Method to manually check connection status
-    private void checkConnection() {
-        boolean isConnected = ConnectivityReceiver.isConnected();
-        showConnection(isConnected);
-    }
-
-    //Showing the status in Snackbar
-    private void showConnection(boolean isConnected) {
-        String message;
-        if (isConnected) {
-            message = "Connected to the internet";
-        } else {
-            message = "You are disconnected from the internet";
-        }
-
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // register connection status listener
-        App.getInstance().setConnectivityListener(this);
-        checkConnection();
-
-    }
-
-    /**
-     * Callback will be triggered when there is change in
-     * network connection
-     */
-    @Override
-    public void onNetworkConnectionChanged(boolean isConnected) {
-        showConnection(isConnected);
-    }
-
-
 
 }

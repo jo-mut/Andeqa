@@ -12,14 +12,16 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
+        android:background="@color/colorPrimary"
         app:titleTextColor="@android:color/white"
         app:layout_scrollFlags="scroll|enterAlways"
         app:titleTextAppearance="@style/toolbarTextSize"
         app:popupTheme="@style/AppTheme.PopupOverlay"
         app:titleMarginStart="180sp"
-        app:titleMargin="0dp" />
+        app:titleMargin="0dp"
+        app:theme="@style/ToolbarColored"
 
+        />
 
     <RelativeLayout
         android:id="@+id/profile_container"

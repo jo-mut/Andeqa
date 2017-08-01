@@ -1,36 +1,39 @@
 package com.cinggl.cinggl.home;
 
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.support.v7.widget.ContentFrameLayout;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.camera.CreateCingleActivity;
 import com.cinggl.cinggl.profile.ProfileFragment;
 import com.cinggl.cinggl.services.ConnectivityReceiver;
 import com.cinggl.cinggl.timeline.TimelineFragment;
-import com.cinggl.cinggl.utils.App;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class HomeActivity extends AppCompatActivity implements View.OnClickListener, ConnectivityReceiver.ConnectivityReceiverListener {
+public class HomeActivity extends AppCompatActivity implements View.OnClickListener{
 
     @Bind(R.id.fab)FloatingActionButton mFloatingActionButton;
 //    @Bind(R.id.bottomNavigationView)BottomNavigationView mBottomNavigationView;
@@ -41,6 +44,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     final Fragment homeFragment = new HomeFragment();
     private int mSelectedItem;
     private int orientation;
+    private ContentFrameLayout mContent;
+    private ProgressDialog mProgressDialog;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +58,32 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        launchHomeFragment();
+        if (isNetworkConnected()) {
+//            mProgressDialog = new ProgressDialog(this);
+//            mProgressDialog.setMessage("Please wait...");
+//            mProgressDialog.setCancelable(false);
+//            mProgressDialog.show();
+
+
+        } else {
+
+//            new AlertDialog.Builder(this)
+//                    .setTitle("No Internet Connection")
+//                    .setMessage("It looks like your internet connection is off. Please turn it " +
+//                            "on and try again")
+//                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//                        }
+//                    }).setIcon(android.R.drawable.ic_dialog_alert).show();
+        }
+//
+//        launchHomeFragment();
+
+        if (savedInstanceState == null){
+            launchHomeFragment();
+        }else {
+
+        }
 
         mFloatingActionButton.setOnClickListener(this);
 
@@ -68,6 +100,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 //        MenuItem selectedItem;
 //        selectedItem = mBottomNavigationView.getMenu().getItem(0);
 //        selectFragment(selectedItem);
+
+
 
     }
 
@@ -158,42 +192,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         ft.commit();
     }
 
-    // Method to manually check connection status
-    private void checkConnection() {
-        boolean isConnected = ConnectivityReceiver.isConnected();
-        showConnection(isConnected);
-    }
-
-    //Showing the status in Snackbar
-    private void showConnection(boolean isConnected) {
-        String message;
-        if (isConnected) {
-            message = "Connected to the internet";
-        } else {
-            message = "You are disconnected from the internet";
-        }
-
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // register connection status listener
-        App.getInstance().setConnectivityListener(this);
-//        checkConnection();
-
-    }
-
-    /**
-     * Callback will be triggered when there is change in
-     * network connection
-     */
-    @Override
-    public void onNetworkConnectionChanged(boolean isConnected) {
-        showConnection(isConnected);
+    private boolean isNetworkConnected() {
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE); // 1
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo(); // 2
+        return networkInfo != null && networkInfo.isConnected(); // 3
     }
 
 }

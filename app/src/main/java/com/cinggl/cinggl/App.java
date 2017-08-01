@@ -1,4 +1,4 @@
-package com.cinggl.cinggl.utils;
+package com.cinggl.cinggl;
 
 import android.app.Application;
 
