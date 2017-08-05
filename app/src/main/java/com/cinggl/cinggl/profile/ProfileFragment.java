@@ -3,28 +3,38 @@ package com.cinggl.cinggl.profile;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.adapters.CingleOutAdapter;
 import com.cinggl.cinggl.adapters.ProfileCinglesViewHolder;
 import com.cinggl.cinggl.home.CingleSettingsDialog;
+import com.cinggl.cinggl.home.CommentsActivity;
 import com.cinggl.cinggl.home.HomeActivity;
+import com.cinggl.cinggl.home.LikesActivity;
 import com.cinggl.cinggl.models.Cingle;
+import com.cinggl.cinggl.models.Cingulan;
+import com.cinggl.cinggl.relations.FollowerProfileActivity;
 import com.cinggl.cinggl.relations.PeopleActivity;
 import com.cinggl.cinggl.services.ConnectivityReceiver;
 import com.cinggl.cinggl.ui.MainActivity;
@@ -35,18 +45,26 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.cinggl.cinggl.R.id.cingleSettingsImageView;
+import static com.cinggl.cinggl.R.id.likesCountTextView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -60,6 +78,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
     @Bind(R.id.followersCountTextView) TextView mFollowersCountTextView;
     @Bind(R.id.followingCountTextView)TextView mFollowingCountTextView;
     @Bind(R.id.cinglesCountTextView)TextView mCinglesCountTextView;
+    @Bind(R.id.header_cover_image)ImageView mProfileCover;
+
 
 
     private DatabaseReference databaseReference;
@@ -70,12 +90,19 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private DatabaseReference usernameRef;
+    private DatabaseReference likesRef;
     private boolean processFollow = false;
     private DatabaseReference relationsRef;
+    private DatabaseReference commentReference;
     private FragmentManager fragmentManager;
+    private boolean processLikes = false;
+
     private static final String TAG = "ProfileFragment";
     private  static final int MAX_WIDTH = 300;
     private static final int MAX_HEIGHT = 300;
+    private static final double GOLDEN_RATIO = 1.618;
+    private static final double DEFAULT_PRICE = 1.5;
+    private static final String EXTRA_POST_KEY = "post key";
     private String mUid;
     private static final String EXTRA_USER_UID = "uid";
 
@@ -96,17 +123,22 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
         mUid = firebaseUser.getUid();
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
         profileCinglesQuery = databaseReference.orderByChild("uid").equalTo(firebaseAuth.getCurrentUser().getUid());
-        databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
         profileInfoQuery = databaseReference.orderByChild("uid").equalTo(firebaseAuth.getCurrentUser().getUid());
-        usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
         relationsRef = FirebaseDatabase.getInstance().getReference(Constants.RELATIONS);
+        usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
         relationsQuery = relationsRef.orderByChild("uid").equalTo(firebaseAuth.getCurrentUser().getUid());
+        commentReference = FirebaseDatabase.getInstance().getReference(Constants.COMMENTS);
+        likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
+
+
         fragmentManager = getChildFragmentManager();
 
         databaseReference.keepSynced(true);
         profileCinglesQuery.keepSynced(true);
         profileInfoQuery.keepSynced(true);
         usernameRef.keepSynced(true);
+        likesRef.keepSynced(true);
+        commentReference.keepSynced(true);
         relationsRef.keepSynced(true);
 
 
@@ -250,6 +282,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
                 String secondName = (String) dataSnapshot.child("secondName").getValue();
                 final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
                 String bio = (String) dataSnapshot.child("bio").getValue();
+                final String profileCover = (String) dataSnapshot.child("profileCover").getValue();
 
                 mFirstNameTextView.setText(firstName);
                 mSecondNameTextView.setText(secondName);
@@ -281,6 +314,29 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
                             }
                         });
 
+                Picasso.with(getContext())
+                        .load(profileCover)
+                        .fit()
+                        .centerCrop()
+                        .networkPolicy(NetworkPolicy.OFFLINE)
+                        .into(mProfileCover, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError() {
+                                Picasso.with(getContext())
+                                        .load(profileCover)
+                                        .fit()
+                                        .centerCrop()
+                                        .into(mProfileCover);
+
+
+                            }
+                        });
+
             }
 
             @Override
@@ -293,20 +349,284 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
     private void setUpFirebaseAdapter(){
 
         firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Cingle, ProfileCinglesViewHolder>
-                (Cingle.class, R.layout.profile_cingles_item_list, ProfileCinglesViewHolder.class, profileCinglesQuery) {
+                (Cingle.class, R.layout.cingle_out_list, ProfileCinglesViewHolder.class, profileCinglesQuery) {
             @Override
             protected void populateViewHolder(final ProfileCinglesViewHolder viewHolder, final Cingle model, int position) {
                 final String postKey = getRef(position).getKey();
+                viewHolder.bindProfileCingle(model);
 
-                profileCinglesQuery.addValueEventListener(new ValueEventListener() {
+                //DATABASE REFERENCE TO READ THE UID OF THE USER IN THE CINGLE
+                databaseReference.child(postKey).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.hasChildren()){
-//                            viewHolder.noCinglesRelativeLayout.setVisibility(View.GONE);
-                            viewHolder.bindProfileCingle(model);
+                        final String uid = (String) dataSnapshot.child("uid").getValue();
+
+                        viewHolder.likesCountTextView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent = new Intent(getContext(), LikesActivity.class);
+                                intent.putExtra(ProfileFragment.EXTRA_POST_KEY, postKey);
+                                getContext().startActivity(intent);
+                            }
+                        });
+
+                        viewHolder.commentsImageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent =  new Intent(getContext(), CommentsActivity.class);
+                                intent.putExtra(ProfileFragment.EXTRA_POST_KEY, postKey);
+                                getContext().startActivity(intent);
+                            }
+                        });
+
+                        viewHolder.cingleSettingsImageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                            }
+                        });
+
+
+                        //SHOW CINGLE SETTINGS TO THE CINGLE CREATOR ONLY
+                        if (firebaseAuth.getCurrentUser().getUid().equals(uid)){
+                            viewHolder.cingleSettingsImageView.setVisibility(View.VISIBLE);
+
+                            viewHolder.cingleSettingsImageView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Bundle args = new Bundle();
+                                    args.putString(ProfileFragment.EXTRA_POST_KEY, postKey);
+
+                                    FragmentManager fragmenManager = getChildFragmentManager();
+                                    CingleSettingsDialog cingleSettingsDialog = CingleSettingsDialog.newInstance("cingle settings");
+                                    cingleSettingsDialog.setArguments(args);
+                                    cingleSettingsDialog.show(fragmenManager, "new post fragment");
+
+
+                                }
+                            });
+
+
                         }else {
-//                            viewHolder.noCinglesRelativeLayout.setVisibility(View.VISIBLE);
+                            viewHolder.cingleSettingsImageView.setVisibility(View.GONE);
                         }
+
+
+                        //RETRIEVE USER INFO IF AND CATCH EXCEPTION IF CINGLES IS NOT DELETED;
+                        try {
+                            //SET THE CINGULAN CURRENT USERNAME AND PROFILE IMAGE
+                            usernameRef.child(uid).addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    final Cingulan cingulan = dataSnapshot.getValue(Cingulan.class);
+
+                                    viewHolder.accountUsernameTextView.setText(cingulan.getUsername());
+                                    Picasso.with(getContext())
+                                            .load(cingulan.getProfileImage())
+                                            .fit()
+                                            .centerCrop()
+                                            .placeholder(R.drawable.profle_image_background)
+                                            .networkPolicy(NetworkPolicy.OFFLINE)
+                                            .into(viewHolder.profileImageView, new Callback() {
+                                                @Override
+                                                public void onSuccess() {
+
+                                                }
+
+                                                @Override
+                                                public void onError() {
+                                                    Picasso.with(getContext())
+                                                            .load(cingulan.getProfileImage())
+                                                            .fit()
+                                                            .centerCrop()
+                                                            .placeholder(R.drawable.profle_image_background)
+                                                            .into(viewHolder.profileImageView);
+                                                }
+                                            });
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+
+                        //RETRIEVE SENSEPOINTS AND CATCH EXCEPTION IF CINGLE ISN'T DELETED
+                        try {
+                            databaseReference.child(postKey).addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                                        Log.d(snapshot.getKey(), snapshot.getChildrenCount() + "sensepoint");
+                                    }
+                                    Cingle cingle = dataSnapshot.getValue(Cingle.class);
+
+                                    DecimalFormat formatter =  new DecimalFormat("0.00000000");
+                                    try {
+                                        viewHolder.sensePointsTextView.setText("SP" + " " + formatter.format(cingle.getSensepoint()));
+                                    }catch (Exception e){
+                                        e.printStackTrace();
+                                    }
+
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+
+                        //RETRIEVE TIME POSTED ANC CATCH EXCEPTIONS
+                        try {
+                            databaseReference.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    final Long time = (Long) dataSnapshot.child("timestamp").getValue(Long.class);
+//
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+
+                        //RETRIEVE COMMENTS COUNT AND CATCH EXCEPTIONS IF ANY
+                        try {
+                            commentReference.child(postKey).addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                                        Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "commentsCount");
+                                    }
+
+                                    viewHolder.commentsCountTextView.setText(dataSnapshot.getChildrenCount() + "");
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+
+                        //RETRIEVE LIKES COUNT AND CATCH EXCEPTIONS IF CINGLE DELETED
+                        try {
+                            likesRef.child(postKey).addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                                        Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "likesCount");
+
+                                    }
+                                    viewHolder.likesCountTextView.setText(dataSnapshot.getChildrenCount() + " " + "Likes");
+
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+
+
+                        viewHolder.likesImageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                processLikes = true;
+                                likesRef.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(final DataSnapshot dataSnapshot) {
+                                        if(processLikes){
+                                            if(dataSnapshot.child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
+                                                likesRef.child(postKey).child(firebaseAuth.getCurrentUser()
+                                                        .getUid())
+                                                        .removeValue();
+
+                                                onLikeCounter(false);
+                                                processLikes = false;
+
+                                            }else {
+                                                if(processLikes){
+                                                    if (dataSnapshot.child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
+                                                        likesRef.child(postKey)
+                                                                .removeValue();
+                                                        processLikes = false;
+                                                        onLikeCounter(false);
+                                                    }else {
+                                                        likesRef.child(postKey).child(firebaseAuth.getCurrentUser().getUid())
+                                                                .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
+                                                        processLikes = false;
+                                                        onLikeCounter(false);
+                                                    }
+                                                }
+                                            }
+
+                                        }
+
+
+                                        String likesCount = dataSnapshot.child(postKey).getChildrenCount() + "";
+                                        Log.d(likesCount, "all the likes in one cingle");
+                                        //convert children count which is a string to integer
+                                        final int x = Integer.parseInt(likesCount);
+
+                                        if (x > 0){
+                                            //mille is a thousand likes
+                                            double MILLE = 1000.0;
+                                            //get the number of likes per a thousand likes
+                                            double likesPerMille = x/MILLE;
+                                            //get the default rate of likes per unit time in seconds;
+                                            double rateOfLike = 1000.0/1800.0;
+                                            //get the current rate of likes per unit time in seconds;
+                                            double currentRateOfLkes = x * rateOfLike/MILLE;
+                                            //get the current price of cingle
+                                            final double currentPrice = currentRateOfLkes * DEFAULT_PRICE/rateOfLike;
+                                            //get the perfection value of cingle's interactivity online
+                                            double perfectionValue = GOLDEN_RATIO/x;
+                                            //get the new worth of Cingle price in Sen
+                                            final double cingleWorth = perfectionValue * likesPerMille * currentPrice;
+                                            //round of the worth of the cingle to 4 decimal number
+//                                        double finalPoints = Math.round( cingleWorth * 10000.0)/10000.0;
+
+                                            double finalPoints = round( cingleWorth, 10);
+
+                                            databaseReference.child(postKey).child("sensepoint").setValue(finalPoints);
+                                        }
+                                        else {
+                                            double sensepoint = 0.00;
+
+                                            databaseReference.child(postKey).child("sensepoint").setValue(sensepoint);
+                                        }
+
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+                        });
+
                     }
 
                     @Override
@@ -314,23 +634,13 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
 
                     }
                 });
-
-                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(getActivity(), CingleDetailActivity.class);
-                        intent.putExtra("cingle_id", postKey);
-                        startActivity(intent);
-                    }
-                });
-
             }
 
         };
 
         mProfileCinglesRecyclerView.setAdapter(firebaseRecyclerAdapter);
         mProfileCinglesRecyclerView.setHasFixedSize(false);
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setAutoMeasureEnabled(true);
         mProfileCinglesRecyclerView.setNestedScrollingEnabled(false);
         mProfileCinglesRecyclerView.setLayoutManager(layoutManager);
@@ -349,6 +659,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
             startActivity(intent);
 
         }
+
     }
 
     @Override
@@ -366,6 +677,41 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
     public void onDestroy(){
         super.onDestroy();
         firebaseRecyclerAdapter.cleanup();
+    }
+
+    private void onLikeCounter(final boolean increament){
+        likesRef.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                if(mutableData.getValue() != null){
+                    int value = mutableData.getValue(Integer.class);
+                    if(increament){
+                        value++;
+                    }else{
+                        value--;
+                    }
+                    mutableData.setValue(value);
+                }
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b,
+                                   DataSnapshot dataSnapshot) {
+                Log.d(TAG, "likeTransaction:onComplete" + databaseError);
+
+            }
+        });
+    }
+
+
+    //region listeners
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 //
 //    // Method to manually check connection status

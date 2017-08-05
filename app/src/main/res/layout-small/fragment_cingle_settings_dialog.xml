@@ -1,0 +1,44 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
+    tools:context="com.cinggl.cinggl.home.CingleSettingsDialog"
+    android:layout_width="wrap_content">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/deleteCingleRelativeLayout">
+
+            <TextView
+                android:text="Delete this Cingle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@android:color/black"
+                android:textStyle="normal|bold"
+                android:layout_alignParentTop="false"
+                android:layout_alignParentLeft="false"
+                android:layout_alignParentStart="false"
+                android:layout_marginTop="10dp"
+                android:layout_margin="10dp"
+                android:id="@+id/deleteCingleTextView"
+                android:layout_centerInParent="true" />
+            <!---->
+            <!--<View-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="0.3dp"-->
+            <!--android:background="@color/colorDivider" />-->
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

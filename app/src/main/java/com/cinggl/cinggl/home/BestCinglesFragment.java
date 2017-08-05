@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
@@ -65,19 +66,9 @@ public class BestCinglesFragment extends Fragment implements CinglesItemClickLis
     private DatabaseReference usernameRef;
     private DatabaseReference likesRef;
     private DatabaseReference commentsRef;
-    private CircleImageView profileImageView;
-    private static final double GOLDEN_RATIO = 1.618;
-    private boolean processLikes = false;
-    private FirebaseAuth firebaseAuth;
-    private FirebaseUser firebaseUser;
-    private ChildEventListener mChildEventListener;
-    private Query bestQuery;
     private static final String TAG = "BestCingleFragment";
-    private static final String EXTRA_POST_KEY = "post key";
-    private static final String EXTRA_USER_UID = "uid";
     private static final String KEY_LAYOUT_POSITION = "layout position";
     private int bestCingleRecyclerPosition = 0;
-    private static final double DEFAULT_PRICE = 1.5;
     private List<Cingle> bestCingles = new ArrayList<>();
     private List<String> cinglesIds = new ArrayList<>();
     private BestCinglesAdapter bestCinglesAdapter;
@@ -85,10 +76,14 @@ public class BestCinglesFragment extends Fragment implements CinglesItemClickLis
     private CinglesItemClickListener cinglesItemClickListener;
     private int currentPage = 0;
     private Query bestCinglesQuery;
+    private FirebaseUser firebaseUser;
+    private FirebaseAuth firebaseAuth;
+    private ChildEventListener mChildEventListener;
 
 
     @Bind(R.id.bestCinglesRecyclerView)RecyclerView bestCinglesRecyclerView;
     @Bind(R.id.bestCinglesProgressbar)ProgressBar progressBar;
+    @Bind(R.id.currentDateTextView)TextView mCurrentDateTextView;
 
 
 
@@ -105,12 +100,10 @@ public class BestCinglesFragment extends Fragment implements CinglesItemClickLis
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
         usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
         likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
-        bestQuery = databaseReference.orderByChild("sensepoint").limitToFirst(10);
         commentsRef = FirebaseDatabase.getInstance().getReference(Constants.COMMENTS);
 
         usernameRef.keepSynced(true);
         likesRef.keepSynced(true);
-        bestQuery.keepSynced(true);
         commentsRef.keepSynced(true);
         databaseReference.keepSynced(true);
 
@@ -126,6 +119,7 @@ public class BestCinglesFragment extends Fragment implements CinglesItemClickLis
         cinglesItemClickListener = this;
 
         initializeViewsAdapter();
+        setCurrentDate();
         bestCinglesRecyclerView.addOnScrollListener(mOnScollListener);
         setBestCingles(currentPage);
 
@@ -155,9 +149,26 @@ public class BestCinglesFragment extends Fragment implements CinglesItemClickLis
         bestCinglesRecyclerView.setAdapter(bestCinglesAdapter);
     }
 
+    private void setCurrentDate(){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d");
+        String date = simpleDateFormat.format(new Date());
+
+        if (date.endsWith("1") && !date.endsWith("11"))
+            simpleDateFormat = new SimpleDateFormat("d'st' MMM yyyy");
+        else if (date.endsWith("2") && !date.endsWith("12"))
+            simpleDateFormat = new SimpleDateFormat("d'nd' MMM yyyy");
+        else if (date.endsWith("3") && !date.endsWith("13"))
+            simpleDateFormat = new SimpleDateFormat("d'rd' MMM yyyy");
+        else
+            simpleDateFormat = new SimpleDateFormat("d'th' MMM yyyy");
+        String currentDate = simpleDateFormat.format(new Date());
+
+        mCurrentDateTextView.setText(currentDate);
+    }
+
     public void setBestCingles(int start){
 //        progressBar.setVisibility(View.VISIBLE);
-        bestCinglesQuery = databaseReference.orderByChild("randomNumber").startAt(start)
+        bestCinglesQuery = databaseReference.orderByChild("sensepoint").startAt(start)
                 .endAt(start + 10);
 
         ChildEventListener childEventListener = new ChildEventListener() {
@@ -165,13 +176,6 @@ public class BestCinglesFragment extends Fragment implements CinglesItemClickLis
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d("Snapshot", dataSnapshot.toString());
 //                progressBar.setVisibility(View.GONE);
-
-//                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-//                    Cingle cingle = snapshot.getValue(Cingle.class);
-////                    cingle = snapshot.getValue(Cingle.class);
-//                    cinglesIds.add(dataSnapshot.getKey());
-//                    cingles.add(cingle);
-//                }
 
                 Cingle cingle = dataSnapshot.getValue(Cingle.class);
 //                    cingle = snapshot.getValue(Cingle.class);
@@ -298,7 +302,7 @@ public class BestCinglesFragment extends Fragment implements CinglesItemClickLis
             super.onScrollStateChanged(recyclerView, newState);
             if (newState == RecyclerView.SCROLL_STATE_IDLE
                     && lastVisibileItem + 1 == bestCinglesAdapter.getItemCount()){
-                progressBar.setVisibility(View.VISIBLE);
+//                progressBar.setVisibility(View.VISIBLE);
                 setBestCingles(currentPage + 1);
             }
         }

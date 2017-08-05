@@ -184,7 +184,7 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
                 holder.profileImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                        if ((firebaseAuth.getCurrentUser().getUid()).equals(uid)){
                             Intent intent = new Intent(mContext, PersonalProfileActivity.class);
                             intent.putExtra(CingleOutAdapter.EXTRA_USER_UID, uid);
                             mContext.startActivity(intent);

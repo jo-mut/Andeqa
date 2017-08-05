@@ -19,10 +19,9 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:titleTextColor="@android:color/white"
+            app:titleTextAppearance="@style/toolbarTextSize"
             app:layout_scrollFlags="scroll|enterAlways"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:titleMarginStart="1080dp"
-            app:titleMargin="0dp" />
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
 
 
     </RelativeLayout>

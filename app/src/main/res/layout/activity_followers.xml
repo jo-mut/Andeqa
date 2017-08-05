@@ -21,9 +21,7 @@
             app:titleTextColor="@android:color/white"
             app:layout_scrollFlags="scroll|enterAlways"
             app:titleTextAppearance="@style/toolbarTextSize"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:titleMarginStart="180sp"
-            app:titleMargin="0dp" />
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
 
 
     </RelativeLayout>

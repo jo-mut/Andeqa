@@ -159,7 +159,7 @@ public class CingleOutFragment extends Fragment implements CinglesItemClickListe
             super.onScrollStateChanged(recyclerView, newState);
             if (newState == RecyclerView.SCROLL_STATE_IDLE
                     && lastVisibileItem + 1 == cingleOutAdapter.getItemCount()){
-                progressBar.setVisibility(View.VISIBLE);
+//                progressBar.setVisibility(View.VISIBLE);
                 setAllCingles(currentPage + 1);
             }
         }
@@ -175,13 +175,6 @@ public class CingleOutFragment extends Fragment implements CinglesItemClickListe
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d("Snapshot", dataSnapshot.toString());
 //                progressBar.setVisibility(View.GONE);
-
-//                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-//                    Cingle cingle = snapshot.getValue(Cingle.class);
-////                    cingle = snapshot.getValue(Cingle.class);
-//                    cinglesIds.add(dataSnapshot.getKey());
-//                    cingles.add(cingle);
-//                }
 
                 Cingle cingle = dataSnapshot.getValue(Cingle.class);
 //                    cingle = snapshot.getValue(Cingle.class);

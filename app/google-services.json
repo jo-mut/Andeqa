@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "300546400034-cipm5qev3dro9jgu94slr31c3979mf33.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cinggl.cinggl",
+            "certificate_hash": "cccbb3d34b54a9802aadfa5fce1778b5c0b41f98"
+          }
+        },
+        {
           "client_id": "300546400034-vm12cck4buv2etpjf11i0dsf7thor9po.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "300546400034-vm12cck4buv2etpjf11i0dsf7thor9po.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

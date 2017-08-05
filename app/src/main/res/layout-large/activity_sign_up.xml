@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.cinggl.cinggl.profile.SignUpActivity"
+    android:background="@drawable/gradient_color">
+
+    <ScrollView
+        android:scrollbars="none"
+        android:overScrollMode="never"
+        android:fillViewport="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="150dp">
+
+
+                <TextView
+                    android:text="Cinggl Sign Up"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView"
+                    android:textStyle="normal|bold"
+                    android:textSize="45sp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="27sp"
+                    android:textColor="@android:color/white" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/linearLayout"
+                android:paddingLeft="60dp"
+                android:paddingRight="60dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp">
+
+                    <EditText
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/input_background"
+                        android:hint="First Name"
+                        android:inputType="textCapWords"
+                        android:nextFocusDown="@+id/passwordEditText"
+                        android:padding="15sp"
+                        android:textColor="@android:color/black"
+                        android:layout_toLeftOf="@+id/nameDivider"
+                        android:layout_toStartOf="@+id/nameDivider"
+                        android:textSize="24sp"
+                        android:id="@+id/fisrtNameEditText"
+                        android:layout_centerInParent="false"
+                        android:layout_centerVertical="false"
+                        android:layout_alignParentRight="false"
+                        android:layout_alignParentLeft="true"
+                        android:layout_width="150sp"
+                        android:layout_centerHorizontal="false" />
+
+                    <View
+                        android:id="@+id/nameDivider"
+                        android:layout_height="0.3dp"
+                        android:layout_alignParentLeft="false"
+                        android:background="@android:color/transparent"
+                        android:layout_centerHorizontal="false"
+                        android:layout_centerInParent="true"
+                        android:layout_width="1dp"
+                        android:layout_marginBottom="40dp" />
+
+
+
+                    <EditText
+                        android:inputType="textCapWords"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/input_background"
+                        android:hint="Second Name"
+                        android:nextFocusDown="@+id/passwordEditText"
+                        android:padding="15sp"
+                        android:textColor="@android:color/black"
+                        android:textSize="24sp"
+                        android:layout_toRightOf="@+id/nameDivider"
+                        android:layout_toEndOf="@+id/nameDivider"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:id="@+id/secondNameEditText"
+                        android:layout_alignParentLeft="true"
+                        android:layout_width="150sp"
+                        android:layout_alignParentTop="true" />
+
+
+                </RelativeLayout>
+                <EditText
+                    android:id="@+id/nameEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/input_background"
+                    android:hint="Username"
+                    android:nextFocusDown="@+id/passwordEditText"
+                    android:padding="15sp"
+                    android:layout_marginBottom="15dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="24sp"
+                    android:paddingBottom="15dp" />
+
+                <EditText
+                    android:id="@+id/emailEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/input_background"
+                    android:hint="Email"
+                    android:inputType="textEmailAddress"
+                    android:nextFocusDown="@+id/passwordEditText"
+                    android:padding="15sp"
+                    android:layout_marginBottom="15dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="24sp"
+                    android:paddingBottom="15dp" />
+
+                <EditText
+                    android:id="@+id/passwordEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/input_background"
+                    android:hint="Password"
+                    android:inputType="textPassword"
+                    android:nextFocusDown="@+id/passwordEditText"
+                    android:padding="15sp"
+                    android:layout_marginBottom="15dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="24sp"
+                    android:paddingBottom="15dp" />
+
+                <EditText
+                    android:id="@+id/confirmPasswordEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/input_background"
+                    android:hint="Confirm Password"
+                    android:inputType="textPassword"
+                    android:nextFocusDown="@+id/passwordEditText"
+                    android:padding="15sp"
+                    android:layout_marginBottom="15dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="24sp"
+                    android:paddingBottom="15dp" />
+
+
+                <Button
+                    android:id="@+id/createUserButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:text="Sign up"
+                    android:background="@drawable/colour_btn_background"
+                    android:layout_marginTop="15dp"
+                    android:textSize="21sp"
+                    android:textAlignment="center"
+                    android:textColor="@android:color/white"
+                    android:paddingBottom="15dp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="22sp"
+                        android:text="Already have an account? Sign In"
+                        android:id="@+id/loginTextView"
+                        android:layout_gravity="center_horizontal"
+                        android:textColor="@android:color/white"
+                        android:layout_marginLeft="5dp"
+                        android:padding="5dp" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                </RelativeLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+</LinearLayout>

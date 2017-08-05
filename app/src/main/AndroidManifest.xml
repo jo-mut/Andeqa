@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.cinggl.cinggl">
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.cinggl.cinggl"
+    android:versionCode="1"
+    android:versionName="1.1.0.1">
+
+    <uses-sdk
+        android:minSdkVersion="16"
+        android:targetSdkVersion="25" />
+
+
+    <supports-screens
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true"
+        android:anyDensity="true"/>
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -61,11 +76,6 @@
             android:name=".home.CommentsActivity"
             android:label="Comments"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:screenOrientation="portrait"
-            android:name=".profile.CingleDetailActivity"
-            android:label="Cingle"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".home.LikesActivity"

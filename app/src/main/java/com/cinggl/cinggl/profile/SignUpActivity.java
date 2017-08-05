@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cingulan;
+import com.cinggl.cinggl.ui.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -94,11 +95,13 @@ public class SignUpActivity extends AppCompatActivity implements
     }
 
     private void createNewUser() {
+        //editText for email and password
         mName = mNameEditText.getText().toString().trim();
         final String email = mEmailEditText.getText().toString().trim();
         String password = mPasswordEditText.getText().toString().trim();
         String confirmPassword = mConfirmPasswordEditText.getText().toString().trim();
 
+        //validation for email and password
         boolean validEmail = isValidEmail(email);
         boolean validName = isValidName(mName);
         boolean validPassword = isValidPassword(password, confirmPassword);
@@ -121,6 +124,7 @@ public class SignUpActivity extends AppCompatActivity implements
                             Toast.makeText(SignUpActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }
+
 
                     }
 
@@ -156,7 +160,6 @@ public class SignUpActivity extends AppCompatActivity implements
                 final FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
 
-
                     sendVerificationEmail();
                 }else {
                     //user is not signed in
@@ -166,22 +169,6 @@ public class SignUpActivity extends AppCompatActivity implements
 
     }
 
-//    mAuthListener = new FirebaseAuth.AuthStateListener() {
-//        @Override
-//        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-//            FirebaseUser user = firebaseAuth.getCurrentUser();
-//            if (user != null) {
-//                // User is signed in
-//                // NOTE: this Activity should get onpen only when the user is not signed in, otherwise
-//                // the user will receive another verification email.
-//                sendVerificationEmail();
-//            } else {
-//                // User is signed out
-//
-//            }
-//            // ...
-//        }
-//    };
 
     private void sendVerificationEmail(){
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();

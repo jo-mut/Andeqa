@@ -22,7 +22,6 @@
             app:tabGravity="fill"
             app:tabIndicatorColor="@android:color/white"
             app:tabMode="fixed"
-            app:tabMaxWidth="0dp"
             app:tabSelectedTextColor="@android:color/white"
             app:tabTextColor="@android:color/white" />
 

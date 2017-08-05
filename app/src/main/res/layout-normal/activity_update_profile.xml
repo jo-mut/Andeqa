@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_update_profile"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.cinggl.cinggl.profile.UpdateProfileActivity"
+    android:weightSum="1">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_gravity="top"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:titleTextColor="@android:color/white"
+            app:titleTextAppearance="@style/toolbarTextSize"
+            app:titleMarginStart="-50sp">
+
+        </android.support.v7.widget.Toolbar>
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:fillViewport="true"
+        android:scrollbars="none"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_weight="0.07"
+                    android:background="@drawable/gradient_color"
+                    android:layout_marginBottom="15dp"
+                    android:layout_height="400dp">
+
+                    <ImageView
+                        android:id="@+id/profileCoverImageView"
+                        android:src="@drawable/gradient_color"
+                        android:alpha="0.1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop" />
+
+
+                    <ViewAnimator
+                        android:id="@+id/animator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:animateFirstView="false"
+                        android:layout_centerInParent="true">
+
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/profilePictureImageView"
+                            android:layout_width="100dp"
+                            android:layout_centerHorizontal="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_gravity="center"
+                            android:background="@drawable/profile_circular_border_imageview"
+                            android:layout_height="120dp" />
+
+                        <ProgressBar
+                            android:id="@+id/progress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"/>
+
+                    </ViewAnimator>
+
+                    <ImageButton
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_menu_camera"
+                        android:layout_width="40dp"
+                        android:layout_marginLeft="67dp"
+                        android:layout_marginStart="67dp"
+                        android:id="@+id/updateProfilePictureImageButton"
+                        android:layout_alignBottom="@+id/animator"
+                        android:layout_alignLeft="@+id/animator"
+                        android:layout_alignStart="@+id/animator" />
+
+                    <ImageView
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_more_vert_white_24dp"
+                        android:layout_width="40dp"
+                        android:id="@+id/updateProfileCoverImageButton"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:padding="5dp" />
+
+                </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/clickOnImage"
+                    android:text="Click on the image icon to update your profile photo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="20sp"
+                    android:paddingBottom="20sp"
+                    android:paddingLeft="3dp"
+                    android:paddingRight="3dp"
+                    android:background="#ECEFF1"
+                    android:textAlignment="center" />
+
+            </RelativeLayout>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                app:cardPreventCornerOverlap="false">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:padding="10sp">
+
+                            <ImageView
+                                app:srcCompat="@drawable/ic_person_black_24dp"
+                                android:id="@+id/imageView"
+                                android:layout_centerVertical="true"
+                                android:layout_alignParentLeft="true"
+                                android:layout_alignParentStart="true"
+                                android:layout_width="15sp"
+                                android:layout_height="15sp" />
+
+                        </RelativeLayout>
+
+
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="10sp">
+
+                            <EditText
+                                android:layout_height="wrap_content"
+                                android:inputType="textMultiLine"
+                                android:ems="10"
+                                android:id="@+id/usernameEditText"
+                                android:hint="Username"
+                                android:freezesText="true"
+                                android:textSize="14sp"
+                                android:layout_width="250dp"
+                                android:background="@drawable/edit_text_background"
+                                android:layout_alignParentTop="true"
+                                android:layout_alignParentLeft="true"
+                                android:layout_alignParentStart="true" />
+
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/linearLayout3"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginTop="10dp">
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:padding="10sp">
+
+                            <ImageView
+                                app:srcCompat="@drawable/ic_description_black_24dp"
+                                android:id="@+id/imageView3"
+                                android:layout_alignParentTop="false"
+                                android:layout_alignParentLeft="false"
+                                android:layout_alignParentStart="false"
+                                android:layout_width="15sp"
+                                android:layout_height="15sp"
+                                android:layout_centerVertical="true" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="10sp">
+
+                            <EditText
+                                android:layout_height="wrap_content"
+                                android:ems="10"
+                                android:inputType="textMultiLine"
+                                android:id="@+id/bioEditText"
+                                android:hint="Bio line"
+                                android:freezesText="true"
+                                android:textSize="14sp"
+                                android:layout_width="250dp"
+                                android:background="@drawable/edit_text_background"
+                                android:layout_alignParentLeft="true"
+                                android:layout_alignParentStart="true"
+                                android:layout_alignParentTop="true" />
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:padding="10sp">
+
+                            <ImageView
+                                app:srcCompat="@drawable/ic_account_circle_black_24dp"
+                                android:layout_centerVertical="true"
+                                android:layout_alignParentLeft="true"
+                                android:layout_alignParentStart="true"
+                                android:layout_width="15sp"
+                                android:layout_height="15sp" />
+
+                        </RelativeLayout>
+
+
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="10sp">
+
+                            <EditText
+                                android:layout_height="wrap_content"
+                                android:inputType="textMultiLine"
+                                android:ems="10"
+                                android:id="@+id/fisrtNameEditText"
+                                android:hint="First Name"
+                                android:textSize="14sp"
+                                android:layout_width="250dp"
+                                android:freezesText="true"
+                                android:background="@drawable/edit_text_background"
+                                android:layout_alignParentTop="true"
+                                android:layout_alignParentLeft="true"
+                                android:layout_alignParentStart="true" />
+
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:padding="10sp">
+
+                            <ImageView
+                                app:srcCompat="@drawable/ic_account_circle_black_24dp"
+                                android:layout_centerVertical="true"
+                                android:layout_alignParentLeft="true"
+                                android:layout_alignParentStart="true"
+                                android:layout_width="15sp"
+                                android:layout_height="15sp" />
+
+                        </RelativeLayout>
+
+
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="10sp">
+
+                            <EditText
+                                android:layout_height="wrap_content"
+                                android:inputType="textMultiLine"
+                                android:ems="10"
+                                android:id="@+id/secondNameEditText"
+                                android:hint="Second Name"
+                                android:textSize="14sp"
+                                android:freezesText="true"
+                                android:layout_width="250dp"
+                                android:background="@drawable/edit_text_background"
+                                android:layout_alignParentTop="true"
+                                android:layout_alignParentLeft="true"
+                                android:layout_alignParentStart="true" />
+
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                app:cardPreventCornerOverlap="false"
+                android:layout_marginTop="15dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="10sp"
+                    android:id="@+id/deleteAccountRelativeLayout">
+
+                    <TextView
+                        android:id="@+id/deleteAccountTextView"
+                        android:text="Delete your account"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textSize="18sp"
+                        android:textStyle="normal|bold" />
+
+                    <TextView
+                        android:id="@+id/deleteAccountDescTextView"
+                        android:text="You can permanently delete your account. Click here and confirm your account deletion"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/deleteAccountTextView"
+                        android:paddingTop="10sp"
+                        android:paddingBottom="10sp" />
+
+
+                </RelativeLayout>
+
+
+
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

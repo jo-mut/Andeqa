@@ -114,7 +114,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final String image = (String) dataSnapshot.child(Constants.CINGLE_IMAGE).getValue();
-                String uid = (String) dataSnapshot.child(Constants.UID).getValue();
+                final String uid = (String) dataSnapshot.child(Constants.UID).getValue();
 
                 usernameRef.child(uid).addValueEventListener(new ValueEventListener() {
                     @Override
@@ -145,6 +145,25 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                                                 .into(mUserProfileImageView);
                                     }
                                 });
+
+                        //LAUCNH PROFILE IF ITS NOT DELETED ELSE CATCH THE EXCEPTION
+                        try {
+                            mUserProfileImageView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                        Intent intent = new Intent(CommentsActivity.this, PersonalProfileActivity.class);
+                                        startActivity(intent);
+                                    }else {
+                                        Intent intent = new Intent(CommentsActivity.this, FollowerProfileActivity.class);
+                                        intent.putExtra(CommentsActivity.EXTRA_USER_UID, uid);
+                                        startActivity(intent);
+                                    }
+                                }
+                            });
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
 
                     }
 

@@ -21,18 +21,40 @@
 
            <RelativeLayout
                android:layout_width="match_parent"
-               android:layout_height="98dp"
-               android:background="#ECEFF1">
+               android:layout_height="wrap_content"
+               android:background="#e4e4e4"
+               android:paddingLeft="3dp">
 
                <TextView
-                   android:text="The top best Cingles"
+                   android:text="15th April, 2017"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:id="@+id/currentDateTextView"
+                   android:textStyle="normal|bold"
+                   android:textSize="16sp"
+                   android:textColor="@color/colorPrimary"
+                   android:layout_alignParentTop="false"
+                   android:layout_centerHorizontal="false"
+                   android:layout_centerVertical="true"
+                   android:layout_marginTop="30dp" />
+
+           </RelativeLayout>
+
+
+           <RelativeLayout
+               android:layout_width="match_parent"
+               android:background="#e4e4e4"
+               android:layout_height="wrap_content">
+
+               <TextView
+                   android:text="Cingles from the top best"
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
                    android:layout_centerVertical="true"
                    android:layout_centerHorizontal="true"
                    android:id="@+id/bestCinglesDescription"
-                   android:textSize="24sp"
-                   android:textColor="@color/colorPrimary" />
+                   android:textSize="18sp"
+                   android:paddingBottom="10dp" />
            </RelativeLayout>
 
            <RelativeLayout

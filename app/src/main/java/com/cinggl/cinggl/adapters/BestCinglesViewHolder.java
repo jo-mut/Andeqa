@@ -36,7 +36,6 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
     public CircleImageView profileImageView;
     public TextView usernameTextView;
     public TextView commentsCountTextView;
-    public TextView currentDateTextView;
     public ImageView cingleSettingsImageView;
     public TextView sensePointsTextView;
     public static final int MAX_WIDTH = 400;
@@ -53,7 +52,6 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
         cingleTitleTextView = (TextView) itemView.findViewById(R.id.cingleTitleTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.userProfileImageView);
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
-        currentDateTextView = (TextView) itemView.findViewById(R.id.currentDateTextView);
         usernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
         cingleSettingsImageView = (ImageView) mView.findViewById(R.id.cingleSettingsImageView);
         sensePointsTextView= (TextView) mView.findViewById(R.id.sensePointsTextView);

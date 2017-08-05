@@ -8,6 +8,7 @@ import org.parceler.Parcel;
 @Parcel
 public class Cingulan {
     String profileImage;
+    String profileCover;
     String bio;
     String username;
     String pushId;
@@ -21,7 +22,7 @@ public class Cingulan {
     }
 
     public Cingulan(String profileImage, String bio,
-                    String username,
+                    String username, String profileCover,
                     String pushId, String uid, String email,
                     String firstName, String secondName) {
         this.profileImage = profileImage;
@@ -30,6 +31,7 @@ public class Cingulan {
         this.pushId = pushId;
         this.uid = uid;
         this.email = email;
+        this.profileCover = profileCover;
         this.firstName = firstName;
         this.secondName = secondName;
     }
@@ -40,6 +42,14 @@ public class Cingulan {
 
     public void setProfileImage(String profileImage) {
         this.profileImage = profileImage;
+    }
+
+    public String getProfileCover() {
+        return profileCover;
+    }
+
+    public void setProfileCover(String profileCover) {
+        this.profileCover = profileCover;
     }
 
     public String getBio() {

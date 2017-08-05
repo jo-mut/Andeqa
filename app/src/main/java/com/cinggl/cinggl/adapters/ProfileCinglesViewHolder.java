@@ -1,27 +1,21 @@
 package com.cinggl.cinggl.adapters;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.cinggl.cinggl.Constants;
+import com.cinggl.cinggl.ProportionalImageView;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cingle;
-import com.cinggl.cinggl.profile.CingleDetailActivity;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 /**
@@ -32,26 +26,55 @@ public class ProfileCinglesViewHolder extends RecyclerView.ViewHolder implements
 
     View mView;
     Context mContext;
-    private ImageView cingleItemImageView;
+    public ImageView likesImageView;
+    public ImageView commentsImageView;
+    public TextView likesCountTextView;
+    public TextView cingleTitleTextView;
+    public TextView cingleDescriptionTextView;
+    public TextView accountUsernameTextView;
+    public CircleImageView profileImageView;
+    public TextView commentsCountTextView;
+    public TextView sensePointsTextView;
+    public TextView timeTextView;
+    public ImageView cingleSettingsImageView;
+    public RelativeLayout cingleTitleRelativeLayout;
 
 
     public ProfileCinglesViewHolder(View itemView){
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
-        itemView.setOnClickListener(this);
-        cingleItemImageView = (ImageView) itemView.findViewById(R.id.cingleItemImageView);
+        likesImageView = (ImageView) itemView.findViewById(R.id.likesImageView);
+        likesCountTextView =(TextView)itemView.findViewById(R.id.likesCountTextView);
+        commentsImageView = (ImageView) itemView.findViewById(R.id.commentsImageView);
+        cingleDescriptionTextView = (TextView) itemView.findViewById(R.id.cingleDescriptionTextView);
+        cingleTitleTextView = (TextView) itemView.findViewById(R.id.cingleTitleTextView);
+        accountUsernameTextView = (TextView) itemView.findViewById(R.id.accountUsernameTextView);
+        profileImageView = (CircleImageView) itemView.findViewById(R.id.userProfileImageView);
+        commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
+        sensePointsTextView = (TextView) itemView.findViewById(R.id.sensePointsDescTextView);
+        timeTextView = (TextView) itemView.findViewById(R.id.timeTextView);
+        cingleSettingsImageView = (ImageView) itemView.findViewById(R.id.cingleSettingsImageView);
+        cingleTitleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
+        sensePointsTextView = (TextView) mView.findViewById(R.id.sensePointsDescTextView);
+
+        likesImageView.setOnClickListener(this);
+        commentsImageView.setOnClickListener(this);
+        likesCountTextView.setOnClickListener(this);
 
 
     }
 
     public void bindProfileCingle(final Cingle cingle){
-        final ImageView cingleImageView = (ImageView) mView.findViewById(R.id.cingleItemImageView);
+        final ProportionalImageView cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
+        TextView cingleTitleTextView = (TextView) mView.findViewById(R.id.cingleTitleTextView);
+        TextView cingleDescriptionTextView = (TextView) mView.findViewById(R.id.cingleDescriptionTextView);
+        TextView sensePointsTextView = (TextView) mView.findViewById(R.id.sensePointsDescTextView);
+        TextView timeTextView = (TextView) mView.findViewById(R.id.timeTextView);
+        RelativeLayout cingleTitleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
 
         Picasso.with(mContext)
                 .load(cingle.getCingleImageUrl())
-                .fit()
-                .centerCrop()
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(cingleImageView, new Callback() {
                     @Override
@@ -63,13 +86,21 @@ public class ProfileCinglesViewHolder extends RecyclerView.ViewHolder implements
                     public void onError() {
                         Picasso.with(mContext)
                                 .load(cingle.getCingleImageUrl())
-                                .fit()
-                                .centerCrop()
                                 .into(cingleImageView);
 
 
                     }
                 });
+
+
+        if (cingle.getTitle().equals("")){
+            cingleTitleRelativeLayout.setVisibility(View.GONE);
+        }else {
+            cingleTitleTextView.setText(cingle.getTitle());
+        }
+        cingleDescriptionTextView.setText(cingle.getDescription());
+        sensePointsTextView.setText("SP" + " " + (cingle.getSensepoint()));
+        timeTextView.setText(DateUtils.getRelativeTimeSpanString((long) cingle.getTimeStamp()));
 
     }
 

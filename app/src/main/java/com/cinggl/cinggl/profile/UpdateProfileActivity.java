@@ -13,7 +13,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import com.cinggl.cinggl.Constants;
@@ -48,8 +51,12 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     @Bind(R.id.secondNameEditText)EditText mSecondNameEditText;
     @Bind(R.id.deleteAccountRelativeLayout)RelativeLayout mDeleteAccountRelativeLayout;
     @Bind(R.id.animator)ViewAnimator viewAnimator;
+    @Bind(R.id.profileCoverImageView)ImageView mProfileCoverImageView;
+    @Bind(R.id.updateProfilePictureImageButton)ImageButton mUpdateProfilePictureImageButton;
+    @Bind(R.id.updateProfileCoverImageButton)ImageView mUpdateProfileCoverImageView;
 
-    public static  final int GALLERY_REQUEST = 1;
+    public static  final int GALLERY_PROFILE_PHOTO_REQUEST = 111;
+    public static final int GALLERY_PROFILE_COVER_PHOTO = 222;
     public static final String TAG = UpdateProfileActivity.class.getSimpleName();
     private Uri imageUri;
     private FirebaseUser firebaseUser;
@@ -59,6 +66,8 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     private ProgressDialog progressDialog;
     private static final int MAX_WIDTH = 300;
     private static final int MAX_HEIGHT = 300;
+    private static final int MAX_COVER_WIDTH = 400;
+    private static final int MAX_COVER_HEIGHT = 400;
 
 
 
@@ -72,8 +81,9 @@ public class UpdateProfileActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mProfilePictureImageView.setOnClickListener(this);
         mDeleteAccountRelativeLayout.setOnClickListener(this);
+        mUpdateProfileCoverImageView.setOnClickListener(this);
+        mUpdateProfilePictureImageButton.setOnClickListener(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -106,6 +116,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 
         if (id == R.id.action_done){
             updateUsernameAndBio();
+            Toast.makeText(UpdateProfileActivity.this, "Successfully updated", Toast.LENGTH_SHORT).show();
 
         }
 
@@ -116,11 +127,18 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     @Override
     public void onClick(View v){
 
-        if(v == mProfilePictureImageView){
+        if(v == mUpdateProfilePictureImageButton){
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
-            startActivityForResult(intent, GALLERY_REQUEST);
+            startActivityForResult(intent, GALLERY_PROFILE_PHOTO_REQUEST);
+        }
+
+        if (v == mUpdateProfileCoverImageView){
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            intent.setType("image/*");
+            startActivityForResult(intent, GALLERY_PROFILE_COVER_PHOTO);
         }
 
         if (v == mDeleteAccountRelativeLayout){
@@ -137,10 +155,45 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(resultCode == RESULT_OK){
-            if(requestCode == GALLERY_REQUEST){
+        if(resultCode == RESULT_OK) {
+            //update the profile cover photo
+            if (requestCode == GALLERY_PROFILE_COVER_PHOTO){
                 imageUri = data.getData();
-                mProfilePictureImageView.setImageURI(imageUri);
+
+                Picasso.with(this)
+                        .load(imageUri)
+                        .resize(MAX_COVER_WIDTH, MAX_COVER_HEIGHT)
+                        .onlyScaleDown()
+                        .centerCrop()
+                        .placeholder(R.drawable.profle_image_background)
+                        .networkPolicy(NetworkPolicy.OFFLINE)
+                        .into(mProfileCoverImageView, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError() {
+                                Picasso.with(UpdateProfileActivity.this)
+                                        .load(imageUri)
+                                        .resize(MAX_COVER_WIDTH, MAX_COVER_HEIGHT)
+                                        .onlyScaleDown()
+                                        .centerCrop()
+                                        .placeholder(R.drawable.profle_image_background)
+                                        .into(mProfileCoverImageView);
+
+                            }
+                        });
+                updateCoverPhoto();
+                Toast.makeText(UpdateProfileActivity.this, "Successfully updated", Toast.LENGTH_SHORT).show();
+
+            }
+
+            //update the profile photo
+            if (requestCode == GALLERY_PROFILE_PHOTO_REQUEST) {
+                imageUri = data.getData();
+//                mProfilePictureImageView.setImageURI(imageUri);
 
                 Picasso.with(this)
                         .load(imageUri)
@@ -167,18 +220,22 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 
                             }
                         });
-                updateUserProfile();
+                updateProfilePhoto();
+                Toast.makeText(UpdateProfileActivity.this, "Successfully updated", Toast.LENGTH_SHORT).show();
+
             }
+
+
+
         }
     }
-
     public void updateProfileProgessDialog(){
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Updating your profile ...");
         progressDialog.setCancelable(true);
     }
 
-    public void updateUserProfile(){
+    public void updateProfilePhoto(){
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String uid = user.getUid();
         final String profileImage = (imageUri.toString());
@@ -249,60 +306,75 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 
     }
 
-//   private void updateUser(){
-//       FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//       final String username = (mUsernameEditText.getText().toString());
-//       final String bio = (mBioEditText.getText().toString());
-//       final String password = (mChangePasswordEditText.getText().toString());
-//       final String email = (mChangeEmailEditText.getText().toString());
-//        if (TextUtils.isEmpty(username)){
-//            mUsernameEditText.setError("Username required");
-//        }else {
-//            usersRef.child("username").setValue(username);
-//            mUsernameEditText.setText("");
-//        }
-//
-//        if (TextUtils.isEmpty(email)){
-//            mChangeEmailEditText.setError("Email cannot be empty");
-//        }else {
-//            user.updateEmail(mChangeEmailEditText.getText().toString().trim())
-//                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<Void> task) {
-//                            if (task.isSuccessful()) {
-//                                Toast.makeText(UpdateProfileActivity.this, "Email address is updated.", Toast.LENGTH_LONG).show();
-//                            } else {
-//                                Toast.makeText(UpdateProfileActivity.this, "Failed to update email!", Toast.LENGTH_LONG).show();
-//                            }
-//                        }
-//                    });
-//        }
-//
-//        if (TextUtils.isEmpty(bio)){
-//            mBioEditText.setError(bio);
-//        }else {
-//            usersRef.child("bio").setValue(bio);
-//            mBioEditText.setText("");
-//        }
-//
-//        if (TextUtils.isEmpty(password)){
-//            mChangePasswordEditText.setError("Password cannot be empty");
-//        }else {
-//            user.updatePassword(mChangePasswordEditText.getText().toString().trim())
-//                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<Void> task) {
-//                            if (task.isSuccessful()) {
-//                                Toast.makeText(UpdateProfileActivity.this, "Password is updated!", Toast.LENGTH_SHORT).show();
-//                            } else {
-//                                Toast.makeText(UpdateProfileActivity.this, "Failed to update password!", Toast.LENGTH_SHORT).show();
-//                                progressBar.setVisibility(View.GONE);
-//                            }
-//                        }
-//                    });
-//        }
-//
-//    }
+    public void updateCoverPhoto(){
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final String uid = user.getUid();
+
+        if (imageUri != null){
+            StorageReference storageReference = FirebaseStorage
+                    .getInstance().getReference()
+                    .child("profile cover")
+                    .child(uid);
+
+            StorageReference filePath = storageReference.child(imageUri.getLastPathSegment());
+            filePath.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    String downloadUrl = taskSnapshot.getDownloadUrl().toString();
+
+                    final String profileCover = (downloadUrl.toString());
+
+                    usersRef.child("profileCover").setValue(profileCover);
+                    mProfileCoverImageView.setImageBitmap(null);
+
+                    //progress dialog to show the retrieval of the update profile picture
+//                    viewAnimator.setDisplayedChild(1);
+
+                    usersRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            final String profileImage = (String) dataSnapshot.child("profileCover").getValue();
+
+                            Picasso.with(UpdateProfileActivity.this)
+                                    .load(profileImage)
+                                    .resize(MAX_WIDTH, MAX_HEIGHT)
+                                    .onlyScaleDown()
+                                    .centerCrop()
+                                    .placeholder(R.drawable.gradient_color)
+                                    .networkPolicy(NetworkPolicy.OFFLINE)
+                                    .into(mProfileCoverImageView, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+//                                            viewAnimator.setDisplayedChild(0);
+                                        }
+
+                                        @Override
+                                        public void onError() {
+                                            Picasso.with(UpdateProfileActivity.this)
+                                                    .load(profileImage)
+                                                    .resize(MAX_WIDTH, MAX_HEIGHT)
+                                                    .onlyScaleDown()
+                                                    .centerCrop()
+                                                    .placeholder(R.drawable.gradient_color)
+                                                    .into(mProfileCoverImageView);
+
+                                        }
+                                    });
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+
+                }
+            });
+
+        }
+
+    }
 
 
     private void updateUsernameAndBio(){

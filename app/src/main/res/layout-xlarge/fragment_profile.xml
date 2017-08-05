@@ -1,0 +1,249 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#e4e4e4"
+    tools:context="com.cinggl.cinggl.profile.ProfileFragment">
+
+
+    <ScrollView
+        android:overScrollMode="never"
+        android:scrollbars="none"
+        android:fillViewport="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:id="@+id/header_cover_relative_layout"
+                android:layout_width="match_parent"
+                android:background="@drawable/gradient_color"
+                android:layout_marginBottom="30dp"
+                android:layout_height="500dp">
+
+
+                <ImageView
+                    android:id="@+id/header_cover_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:alpha="0.1"
+                    android:src="@drawable/gradient_color" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/userProfileImageView"
+                    android:background="@drawable/profile_circular_border_imageview"
+                    android:scaleType="centerCrop"
+                    android:padding="10dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="100dp"
+                    android:layout_width="140dp"
+                    android:layout_height="160dp" />
+
+                <RelativeLayout
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="290dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/firstNameTextView"
+                        android:textStyle="normal|bold"
+                        android:textColor="@android:color/black"
+                        android:textSize="50sp"
+                        android:layout_alignParentTop="false"
+                        android:layout_alignParentLeft="false"
+                        android:layout_alignParentStart="false"
+                        android:layout_alignParentRight="false"
+                        android:layout_toStartOf="@+id/nameDivider"
+                        android:layout_toLeftOf="@+id/nameDivider"
+                        android:layout_centerInParent="false"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="4dp" />
+
+                    <View
+                        android:id="@+id/nameDivider"
+                        android:layout_height="0.3dp"
+                        android:layout_alignParentLeft="false"
+                        android:background="@android:color/transparent"
+                        android:layout_centerHorizontal="false"
+                        android:layout_centerInParent="true"
+                        android:layout_width="1dp"
+                        android:layout_marginBottom="40dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/secondNameTextView"
+                        android:textStyle="normal|bold"
+                        android:textColor="@android:color/black"
+                        android:textSize="50sp"
+                        android:layout_alignParentTop="false"
+                        android:layout_toRightOf="@+id/nameDivider"
+                        android:layout_toEndOf="@+id/nameDivider"
+                        android:layout_marginLeft="4dp"
+                        android:layout_centerHorizontal="false"
+                        android:layout_centerVertical="true"
+                        android:layout_centerInParent="true" />
+
+                </RelativeLayout>
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginTop="380dp">
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/cinglesCountTextView"
+                        android:textSize="28sp"
+                        android:background="@drawable/text_boarder"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:textAlignment="center"
+                        android:layout_alignParentRight="false"
+                        android:layout_alignParentEnd="false"
+                        android:layout_toLeftOf="@+id/followersCountTextView"
+                        android:layout_toStartOf="@+id/followersCountTextView"
+                        android:layout_marginRight="120dp"
+                        android:layout_centerInParent="false"
+                        android:layout_marginLeft="120dp"
+                        android:layout_alignParentTop="true"
+                        android:textColor="@android:color/white" />
+
+                    <TextView
+                        android:text="Cingles"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView7"
+                        android:layout_alignParentBottom="false"
+                        android:layout_alignParentRight="false"
+                        android:layout_alignParentEnd="false"
+                        android:layout_toLeftOf="@+id/followersCountTextView"
+                        android:layout_toStartOf="@+id/followersCountTextView"
+                        android:layout_below="@+id/cinglesCountTextView"
+                        android:layout_centerInParent="false"
+                        android:layout_centerVertical="false"
+                        android:layout_centerHorizontal="false"
+                        android:layout_marginRight="80dp"
+                        android:layout_marginTop="10dp"
+                        android:textSize="28sp"
+                        android:textColor="@android:color/white" />
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/followersCountTextView"
+                        android:textSize="28sp"
+                        android:background="@drawable/text_boarder"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:textAlignment="center"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:textColor="@android:color/white" />
+
+                    <TextView
+                        android:text="Followers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/followersTextView"
+                        android:layout_below="@+id/followersCountTextView"
+                        android:layout_alignParentBottom="false"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="10dp"
+                        android:textSize="28sp"
+                        android:textColor="@android:color/white" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/followingCountTextView"
+                        android:textSize="28sp"
+                        android:background="@drawable/text_boarder"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_toRightOf="@+id/followersCountTextView"
+                        android:layout_toEndOf="@+id/followersCountTextView"
+                        android:textAlignment="center"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="false"
+                        android:layout_alignParentStart="false"
+                        android:layout_marginLeft="120dp"
+                        android:layout_centerInParent="false"
+                        android:textColor="@android:color/white" />
+
+                    <TextView
+                        android:text="Following"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/followingTextView"
+                        android:layout_below="@+id/followingCountTextView"
+                        android:layout_toRightOf="@+id/followersCountTextView"
+                        android:layout_toEndOf="@+id/followersCountTextView"
+                        android:layout_alignParentBottom="false"
+                        android:layout_alignParentLeft="false"
+                        android:layout_alignParentStart="false"
+                        android:layout_centerInParent="false"
+                        android:layout_marginTop="10dp"
+                        android:textSize="28sp"
+                        android:layout_marginLeft="80dp"
+                        android:textColor="@android:color/white" />
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/profile_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/header_cover_image"
+                android:elevation="4dp"
+                android:padding="15dp"
+                android:layout_marginBottom="30dp"
+                android:background="@android:color/white">
+
+                <TextView
+                    android:id="@+id/bioTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:textSize="28sp" />
+            </RelativeLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:numColumns="auto_fit"
+                android:id="@+id/profileCinglesRecyclerView"
+                android:overScrollMode="never"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </android.support.v7.widget.RecyclerView>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

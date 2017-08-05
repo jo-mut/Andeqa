@@ -23,7 +23,6 @@
             app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/AppTheme.PopupOverlay"
             app:titleTextColor="@android:color/white"
-            app:titleMargin="0dp"
             app:titleTextAppearance="@style/toolbarTextSize"
             app:titleMarginStart="-50sp">
 
@@ -42,34 +41,38 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <android.support.v7.widget.CardView
-                app:cardCornerRadius="0dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                app:cardPreventCornerOverlap="false">
-
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="300dp"
                     android:layout_weight="0.07"
-                    android:layout_marginBottom="15dp"
-                    android:layout_marginTop="20dp">
+                    android:background="@drawable/gradient_color"
+                    android:layout_marginBottom="15dp">
+
+                    <ImageView
+                        android:id="@+id/profileCoverImageView"
+                        android:src="@drawable/gradient_color"
+                        android:alpha="0.1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop" />
+
 
                     <ViewAnimator
                         android:id="@+id/animator"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:animateFirstView="false">
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:animateFirstView="false"
+                        android:layout_centerInParent="true">
+
 
                         <de.hdodenhof.circleimageview.CircleImageView
                             android:id="@+id/profilePictureImageView"
-                            android:src="@drawable/profle_image_background"
                             android:layout_width="100dp"
-                            android:layout_height="100dp"
                             android:layout_centerHorizontal="true"
                             android:layout_alignParentTop="true"
-                            android:layout_gravity="center" />
+                            android:layout_gravity="center"
+                            android:background="@drawable/profile_circular_border_imageview"
+                            android:layout_height="120dp" />
 
                         <ProgressBar
                             android:id="@+id/progress"
@@ -79,9 +82,28 @@
 
                     </ViewAnimator>
 
+                    <ImageButton
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_menu_camera"
+                        android:layout_width="40dp"
+                        android:layout_marginLeft="67dp"
+                        android:layout_marginStart="67dp"
+                        android:id="@+id/updateProfilePictureImageButton"
+                        android:layout_alignBottom="@+id/animator"
+                        android:layout_alignLeft="@+id/animator"
+                        android:layout_alignStart="@+id/animator" />
+
+                    <ImageView
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_more_vert_white_24dp"
+                        android:layout_width="40dp"
+                        android:id="@+id/updateProfileCoverImageButton"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:padding="5dp" />
+
                 </RelativeLayout>
 
-            </android.support.v7.widget.CardView>
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -102,7 +124,6 @@
             </RelativeLayout>
 
             <android.support.v7.widget.CardView
-                app:cardCornerRadius="0dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
@@ -305,7 +326,6 @@
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
-                app:cardCornerRadius="0dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
