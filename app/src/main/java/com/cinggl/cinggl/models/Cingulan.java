@@ -5,7 +5,7 @@ import org.parceler.Parcel;
 /**
  * Created by J.EL on 5/4/2017.
  */
-@Parcel
+
 public class Cingulan {
     String profileImage;
     String profileCover;

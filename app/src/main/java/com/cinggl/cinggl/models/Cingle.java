@@ -13,8 +13,6 @@ import java.util.Map;
  */
 @Parcel
 public class Cingle {
-    Cingle cingle;
-    Cingulan cingulan;
     String title;
     String accountUserName;
     String cingleImageUrl;
@@ -24,7 +22,7 @@ public class Cingle {
     String pushId;
     long timeStamp;
     long number;
-    private String cingleIndex;
+    String cingleIndex;
     double randomNumber;
     String uid;
     String datePosted;
@@ -56,22 +54,6 @@ public class Cingle {
 
     public void setSensepoint(double sensepoint) {
         this.sensepoint = sensepoint;
-    }
-
-    public Cingle getCingle() {
-        return cingle;
-    }
-
-    public void setCingle(Cingle cingle) {
-        this.cingle = cingle;
-    }
-
-    public Cingulan getCingulan() {
-        return cingulan;
-    }
-
-    public void setCingulan(Cingulan cingulan) {
-        this.cingulan = cingulan;
     }
 
     public String getTitle() {

@@ -53,7 +53,7 @@
                 android:id="@+id/accountUsernameTextView"
                 android:textColor="@android:color/black"
                 android:textStyle="normal|bold"
-                android:textSize="21sp"
+                android:textSize="10sp"
                 android:layout_alignParentTop="false" />
 
         </RelativeLayout>

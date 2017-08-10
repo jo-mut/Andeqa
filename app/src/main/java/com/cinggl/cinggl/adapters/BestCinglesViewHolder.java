@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
@@ -17,6 +18,8 @@ import com.squareup.picasso.Picasso;
 import java.text.DecimalFormat;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.cinggl.cinggl.R.id.cingleToolsRelativeLayout;
 
 /**
  * Created by J.EL on 7/6/2017.
@@ -38,6 +41,7 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
     public TextView commentsCountTextView;
     public ImageView cingleSettingsImageView;
     public TextView sensePointsTextView;
+    public RelativeLayout cingleToolsRelativeLayout;
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
 
@@ -55,6 +59,8 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
         usernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
         cingleSettingsImageView = (ImageView) mView.findViewById(R.id.cingleSettingsImageView);
         sensePointsTextView= (TextView) mView.findViewById(R.id.sensePointsTextView);
+        cingleToolsRelativeLayout = (RelativeLayout) mView.findViewById(R.id.cingleToolsRelativeLayout);
+
 
     }
 

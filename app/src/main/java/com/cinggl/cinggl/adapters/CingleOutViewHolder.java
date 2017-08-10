@@ -10,15 +10,20 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.utils.CinglesItemClickListener;
 import com.cinggl.cinggl.ProportionalImageView;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.cinggl.cinggl.R.id.cingleToolsRelativeLayout;
 
 /**
  * Created by J.EL on 5/26/2017.
@@ -43,7 +48,9 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder implements View
     public RelativeLayout cingleTitleRelativeLayout;
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
+    private DatabaseReference cinglesReference;
     private CinglesItemClickListener cinglesItemClickListener;
+    public RelativeLayout cingleToolsRelativeLayout;
 
     public CingleOutViewHolder(View itemView){
         super(itemView);
@@ -62,6 +69,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder implements View
         cingleSettingsImageView = (ImageView) itemView.findViewById(R.id.cingleSettingsImageView);
         cingleTitleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
         sensePointsTextView = (TextView) mView.findViewById(R.id.sensePointsDescTextView);
+        cingleToolsRelativeLayout = (RelativeLayout) mView.findViewById(R.id.cingleToolsRelativeLayout);
 
 
         likesImageView.setOnClickListener(this);
@@ -112,4 +120,5 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder implements View
         cinglesItemClickListener.clickPosition(getAdapterPosition(), view.getId());
 
     }
+
 }

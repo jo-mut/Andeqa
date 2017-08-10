@@ -55,10 +55,11 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     @Bind(R.id.updateProfilePictureImageButton)ImageButton mUpdateProfilePictureImageButton;
     @Bind(R.id.updateProfileCoverImageButton)ImageView mUpdateProfileCoverImageView;
 
-    public static  final int GALLERY_PROFILE_PHOTO_REQUEST = 111;
-    public static final int GALLERY_PROFILE_COVER_PHOTO = 222;
-    public static final String TAG = UpdateProfileActivity.class.getSimpleName();
+    private static  final int GALLERY_PROFILE_PHOTO_REQUEST = 111;
+    private static final int GALLERY_PROFILE_COVER_PHOTO = 222;
+    private static final String TAG = UpdateProfileActivity.class.getSimpleName();
     private Uri imageUri;
+    private Uri profileUri;
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
     private DatabaseReference databaseReference;
@@ -116,6 +117,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 
         if (id == R.id.action_done){
             updateUsernameAndBio();
+
             Toast.makeText(UpdateProfileActivity.this, "Successfully updated", Toast.LENGTH_SHORT).show();
 
         }
@@ -143,7 +145,6 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 
         if (v == mDeleteAccountRelativeLayout){
             //delete your account permanently
-
             FragmentManager fragmenManager = getSupportFragmentManager();
             DeleteAccountDialog deleteAccountDialog = DeleteAccountDialog.newInstance("create your cingle");
             deleteAccountDialog.show(fragmenManager, "new post fragment");
@@ -192,11 +193,11 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 
             //update the profile photo
             if (requestCode == GALLERY_PROFILE_PHOTO_REQUEST) {
-                imageUri = data.getData();
+                profileUri = data.getData();
 //                mProfilePictureImageView.setImageURI(imageUri);
 
                 Picasso.with(this)
-                        .load(imageUri)
+                        .load(profileUri)
                         .resize(MAX_WIDTH, MAX_HEIGHT)
                         .onlyScaleDown()
                         .centerCrop()
@@ -211,7 +212,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                             @Override
                             public void onError() {
                                 Picasso.with(UpdateProfileActivity.this)
-                                        .load(imageUri)
+                                        .load(profileUri)
                                         .resize(MAX_WIDTH, MAX_HEIGHT)
                                         .onlyScaleDown()
                                         .centerCrop()
@@ -229,6 +230,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 
         }
     }
+
     public void updateProfileProgessDialog(){
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Updating your profile ...");
@@ -401,6 +403,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
             usersRef.child("secondName").setValue(secondName);
             mSecondNameEditText.setText("");
         }
+
 
     }
 

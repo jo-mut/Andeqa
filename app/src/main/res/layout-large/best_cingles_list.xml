@@ -176,7 +176,8 @@
                 android:paddingRight="3dp"
                 android:paddingLeft="3dp"
                 android:paddingBottom="15dp"
-                android:paddingTop="5dp">
+                android:paddingTop="5dp"
+                android:id="@+id/cingleToolsRelativeLayout">
 
                 <ImageView
                     android:layout_width="wrap_content"

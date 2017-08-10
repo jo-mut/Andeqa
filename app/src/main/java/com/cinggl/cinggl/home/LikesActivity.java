@@ -117,7 +117,7 @@ public class LikesActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         final String uid = (String) dataSnapshot.child("uid").getValue();
 
-                        try {
+
                             usernameRef.child(uid).addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -158,9 +158,6 @@ public class LikesActivity extends AppCompatActivity {
 
                                 }
                             });
-                        }catch (Exception e){
-
-                        }
 
                         viewHolder.profileImageView.setOnClickListener(new View.OnClickListener() {
                             @Override

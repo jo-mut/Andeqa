@@ -28,14 +28,9 @@ import com.cinggl.cinggl.services.ConnectivityReceiver;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.Timer;
-import java.util.TimerTask;
 
-import butterknife.Bind;
 import butterknife.ButterKnife;
 
-import static com.cinggl.cinggl.R.id.textView;
-import static com.cinggl.cinggl.profile.UpdateProfileActivity.TAG;
 
 public class HomeFragment extends Fragment{
     private static final String TAG = HomeFragment.class.getSimpleName();
@@ -183,5 +178,7 @@ public class HomeFragment extends Fragment{
 //    public void onNetworkConnectionChanged(boolean isConnected) {
 //        showConnection(isConnected);
 //    }
+
+
 }
 

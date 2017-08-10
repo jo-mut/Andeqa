@@ -108,6 +108,7 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChild(mKey)){
                     databaseReference.child(mKey).removeValue();
+
                 }
                 dismiss();
 

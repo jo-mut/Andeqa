@@ -2,9 +2,6 @@ package com.cinggl.cinggl.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,7 +13,6 @@ import android.view.animation.AnimationUtils;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.home.BestCinglesFragment;
-import com.cinggl.cinggl.home.CingleSettingsDialog;
 import com.cinggl.cinggl.home.CommentsActivity;
 import com.cinggl.cinggl.home.LikesActivity;
 import com.cinggl.cinggl.models.Cingle;
@@ -40,12 +36,8 @@ import com.squareup.picasso.Picasso;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * Created by J.EL on 7/19/2017.
@@ -53,7 +45,7 @@ import java.util.TimeZone;
 
 //CURRENTLY NOT IN USE
 
-public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHolder> {
+public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHolder>{
 
     private CinglesItemClickListener cinglesItemClickListener;
     private Context mContext;
@@ -83,6 +75,9 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
         notifyDataSetChanged();
     }
 
+
+
+
     public void animate(BestCinglesViewHolder viewHolder){
         final Animation animAnticipateOvershoot = AnimationUtils.loadAnimation(mContext, R.anim.bounce_interpolator);
         viewHolder.itemView.setAnimation(animAnticipateOvershoot);
@@ -106,6 +101,7 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
     @Override
     public BestCinglesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.best_cingles_list, parent, false );
+
         return new BestCinglesViewHolder(view);
     }
 
@@ -124,6 +120,10 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
         likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
         databaseReference = FirebaseDatabase.getInstance()
                 .getReference(Constants.FIREBASE_CINGLES);
+        usersRef.keepSynced(true);
+        databaseReference.keepSynced(true);
+        likesRef.keepSynced(true);
+        commentReference.keepSynced(true);
 
         //DATABASE REFERENCE TO READ THE UID OF THE USER IN THE CINGLE
         databaseReference.child(postKey).addValueEventListener(new ValueEventListener() {
@@ -164,14 +164,30 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                     holder.cingleSettingsImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Bundle args = new Bundle();
-                            args.putString(BestCinglesAdapter.EXTRA_POST_KEY, postKey);
 
-                            FragmentManager fragmenManager = ((AppCompatActivity) mContext).getSupportFragmentManager();
-                            CingleSettingsDialog cingleSettingsDialog = CingleSettingsDialog.newInstance("cingle settings");
-                            cingleSettingsDialog.setArguments(args);
-                            cingleSettingsDialog.show(fragmenManager, "new post fragment");
+                            databaseReference.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.child(postKey).exists()){
+                                        if (dataSnapshot.hasChild(postKey)){
+                                            databaseReference.child(postKey).removeValue();
+                                            bestCingles.remove(bestCingles.get(position));
 
+                                        }
+
+                                        notifyItemRemoved(position);
+                                        notifyItemRangeChanged(position, bestCingles.size());
+                                    }else {
+                                        Log.d("data is deleted", postKey);
+
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
 
                         }
                     });
@@ -198,35 +214,37 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                 });
 
                 //SET THE CINGULAN CURRENT USERNAME AND PROFILE IMAGE
-                try {
+                if (dataSnapshot.exists()){
                     usersRef.child(uid).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            final Cingulan cingulan = dataSnapshot.getValue(Cingulan.class);
+                            if (dataSnapshot.exists()){
+                                final Cingulan cingulan = dataSnapshot.getValue(Cingulan.class);
 
-                            holder.usernameTextView.setText(cingulan.getUsername());
-                            Picasso.with(mContext)
-                                    .load(cingulan.getProfileImage())
-                                    .fit()
-                                    .centerCrop()
-                                    .placeholder(R.drawable.profle_image_background)
-                                    .networkPolicy(NetworkPolicy.OFFLINE)
-                                    .into(holder.profileImageView, new Callback() {
-                                        @Override
-                                        public void onSuccess() {
+                                holder.usernameTextView.setText(cingulan.getUsername());
+                                Picasso.with(mContext)
+                                        .load(cingulan.getProfileImage())
+                                        .fit()
+                                        .centerCrop()
+                                        .placeholder(R.drawable.profle_image_background)
+                                        .networkPolicy(NetworkPolicy.OFFLINE)
+                                        .into(holder.profileImageView, new Callback() {
+                                            @Override
+                                            public void onSuccess() {
 
-                                        }
+                                            }
 
-                                        @Override
-                                        public void onError() {
-                                            Picasso.with(mContext)
-                                                    .load(cingulan.getProfileImage())
-                                                    .fit()
-                                                    .centerCrop()
-                                                    .placeholder(R.drawable.profle_image_background)
-                                                    .into(holder.profileImageView);
-                                        }
-                                    });
+                                            @Override
+                                            public void onError() {
+                                                Picasso.with(mContext)
+                                                        .load(cingulan.getProfileImage())
+                                                        .fit()
+                                                        .centerCrop()
+                                                        .placeholder(R.drawable.profle_image_background)
+                                                        .into(holder.profileImageView);
+                                            }
+                                        });
+                            }
                         }
 
                         @Override
@@ -234,26 +252,25 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
 
                         }
                     });
-                }catch (Exception e){
-                    e.printStackTrace();
                 }
 
+
                 //RETRIEVE SENSEPOINTS AND CATCH EXCEPTION IF CINGLE ID DELETED;
-                try {
                     databaseReference.child(postKey).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                                Log.d(snapshot.getKey(), snapshot.getChildrenCount() + "sensepoint");
-                            }
-                            Cingle cingle = dataSnapshot.getValue(Cingle.class);
+                            if (dataSnapshot.exists()){
+                                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                                    Log.d(snapshot.getKey(), snapshot.getChildrenCount() + "sensepoint");
+                                }
+                                Cingle cingle = dataSnapshot.getValue(Cingle.class);
 
-                            DecimalFormat formatter =  new DecimalFormat("0.00000000");
-                            try {
+                                DecimalFormat formatter =  new DecimalFormat("0.00000000");
+
                                 holder.sensePointsTextView.setText("SP" + " " + formatter.format(cingle.getSensepoint()));
-                            }catch (Exception e){
-                                e.printStackTrace();
+
                             }
+
                         }
 
                         @Override
@@ -262,21 +279,20 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                         }
                     });
 
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
 
                 //RETRIVE COMMENTS COUNTS AND CATCH EXCEPTION IF CINGLE IS DELETED
-                try {
+
                     commentReference.child(postKey).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()){
+                                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                                    Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "commentsCount");
+                                }
 
-                            for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                                Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "commentsCount");
+                                holder.commentsCountTextView.setText(dataSnapshot.getChildrenCount() + "");
                             }
 
-                            holder.commentsCountTextView.setText(dataSnapshot.getChildrenCount() + "");
                         }
 
                         @Override
@@ -285,21 +301,20 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                         }
                     });
 
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
+
 
                 //RETRIEVE LIKES COUNT AND CATCH EXCEPTION IF CINGLE IS DELETED;
-                try {
                     likesRef.child(postKey).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
+
                             for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                                 Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "likesCount");
 
                             }
                             holder.likesCountTextView.setText(dataSnapshot.getChildrenCount() + " " + "Likes");
 
+
                         }
 
                         @Override
@@ -307,85 +322,102 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
 
                         }
                     });
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
 
-                holder.likesImageView.setOnClickListener(new View.OnClickListener() {
+
+
+                databaseReference.addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onClick(View view) {
-                        processLikes = true;
-                        likesRef.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(final DataSnapshot dataSnapshot) {
-                                if(processLikes){
-                                    if(dataSnapshot.child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
-                                        likesRef.child(postKey).child(firebaseAuth.getCurrentUser()
-                                                .getUid())
-                                                .removeValue();
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.child(postKey).exists()){
+                            holder.likesImageView.setVisibility(View.VISIBLE);
+                            holder.likesImageView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    processLikes = true;
+                                    likesRef.addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(final DataSnapshot dataSnapshot) {
+                                            if(processLikes){
+                                                if(dataSnapshot.child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
+                                                    likesRef.child(postKey).child(firebaseAuth.getCurrentUser()
+                                                            .getUid())
+                                                            .removeValue();
 
-                                        onLikeCounter(false);
-                                        processLikes = false;
+                                                    onLikeCounter(false);
+                                                    processLikes = false;
 
-                                    }else {
-                                        if(processLikes){
-                                            if (dataSnapshot.child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
-                                                likesRef.child(postKey)
-                                                        .removeValue();
-                                                processLikes = false;
-                                                onLikeCounter(false);
-                                            }else {
-                                                likesRef.child(postKey).child(firebaseAuth.getCurrentUser().getUid())
-                                                        .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
-                                                processLikes = false;
-                                                onLikeCounter(false);
+                                                }else {
+                                                    if(processLikes){
+                                                        if (dataSnapshot.child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
+                                                            likesRef.child(postKey)
+                                                                    .removeValue();
+                                                            processLikes = false;
+                                                            onLikeCounter(false);
+                                                        }else {
+                                                            likesRef.child(postKey).child(firebaseAuth.getCurrentUser().getUid())
+                                                                    .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
+                                                            processLikes = false;
+                                                            onLikeCounter(false);
+                                                        }
+                                                    }
+                                                }
                                             }
-                                        }
-                                    }
-
-                                }
 
 
-                                String likesCount = dataSnapshot.child(postKey).getChildrenCount() + "";
-                                Log.d(likesCount, "all the likes in one cingle");
-                                //convert children count which is a string to integer
-                                final int x = Integer.parseInt(likesCount);
+                                            String likesCount = dataSnapshot.child(postKey).getChildrenCount() + "";
+                                            Log.d(likesCount, "all the likes in one cingle");
+                                            //convert children count which is a string to integer
+                                            final int x = Integer.parseInt(likesCount);
 
-                                if (x > 0){
-                                    //mille is a thousand likes
-                                    double MILLE = 1000.0;
-                                    //get the number of likes per a thousand likes
-                                    double likesPerMille = x/MILLE;
-                                    //get the default rate of likes per unit time in seconds;
-                                    double rateOfLike = 1000.0/1800.0;
-                                    //get the current rate of likes per unit time in seconds;
-                                    double currentRateOfLkes = x * rateOfLike/MILLE;
-                                    //get the current price of cingle
-                                    final double currentPrice = currentRateOfLkes * DEFAULT_PRICE/rateOfLike;
-                                    //get the perfection value of cingle's interactivity online
-                                    double perfectionValue = GOLDEN_RATIO/x;
-                                    //get the new worth of Cingle price in Sen
-                                    final double cingleWorth = perfectionValue * likesPerMille * currentPrice;
-                                    //round of the worth of the cingle to 4 decimal number
+                                            if (x > 0){
+                                                //mille is a thousand likes
+                                                double MILLE = 1000.0;
+                                                //get the number of likes per a thousand likes
+                                                double likesPerMille = x/MILLE;
+                                                //get the default rate of likes per unit time in seconds;
+                                                double rateOfLike = 1000.0/1800.0;
+                                                //get the current rate of likes per unit time in seconds;
+                                                double currentRateOfLkes = x * rateOfLike/MILLE;
+                                                //get the current price of cingle
+                                                final double currentPrice = currentRateOfLkes * DEFAULT_PRICE/rateOfLike;
+                                                //get the perfection value of cingle's interactivity online
+                                                double perfectionValue = GOLDEN_RATIO/x;
+                                                //get the new worth of Cingle price in Sen
+                                                final double cingleWorth = perfectionValue * likesPerMille * currentPrice;
+                                                //round of the worth of the cingle to 4 decimal number
 //                                        double finalPoints = Math.round( cingleWorth * 10000.0)/10000.0;
 
-                                    double finalPoints = round( cingleWorth, 10);
+                                                double finalPoints = round( cingleWorth, 10);
 
-                                    databaseReference.child(postKey).child("sensepoint").setValue(finalPoints);
+                                                databaseReference.child(postKey).child("sensepoint").setValue(finalPoints);
+                                            }
+                                            else {
+                                                double sensepoint = 0.00;
+
+                                                databaseReference.child(postKey).child("sensepoint").setValue(sensepoint);
+                                            }
+
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
                                 }
-                                else {
-                                    double sensepoint = 0.00;
+                            });
+                        }else {
+                            holder.cingleToolsRelativeLayout.setVisibility(View.GONE);
+                            holder.likesCountTextView.setVisibility(View.GONE);
+                            holder.profileImageView.setVisibility(View.GONE);
 
-                                    databaseReference.child(postKey).child("sensepoint").setValue(sensepoint);
-                                }
+                        }
 
-                            }
+                    }
 
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-                            }
-                        });
                     }
                 });
 

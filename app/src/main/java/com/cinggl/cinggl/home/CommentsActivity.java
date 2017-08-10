@@ -39,6 +39,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static android.R.attr.description;
+
 public class CommentsActivity extends AppCompatActivity implements View.OnClickListener {
     @Bind(R.id.sendCommentImageView)ImageView mSendCommentImageView;
     @Bind(R.id.commentEditText)EditText mCommentEditText;
@@ -47,6 +49,8 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     @Bind(R.id.accountUsernameTextView)TextView mAccountUsernameTextView;
     @Bind(R.id.userProfileImageView)CircleImageView mUserProfileImageView;
     @Bind(R.id.saySomethingRelativeLayout)RelativeLayout mSaySomethingRelativeLayout;
+    @Bind(R.id.cingleTitleTextView)TextView mCingleTitleTextView;
+    @Bind(R.id.cingleTitleRelativeLayout)RelativeLayout mCingleTitleRelativeLayout;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -113,83 +117,93 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         cinglesReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                final String image = (String) dataSnapshot.child(Constants.CINGLE_IMAGE).getValue();
-                final String uid = (String) dataSnapshot.child(Constants.UID).getValue();
+               if (dataSnapshot.exists()){
+                   final String image = (String) dataSnapshot.child(Constants.CINGLE_IMAGE).getValue();
+                   final String uid = (String) dataSnapshot.child(Constants.UID).getValue();
+                   final String title = (String) dataSnapshot.child(Constants.CINGLE_TITLE).getValue();
 
-                usernameRef.child(uid).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        String username = (String) dataSnapshot.child("username").getValue();
-                        final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
 
-                        mAccountUsernameTextView.setText(username);
-                        Picasso.with(CommentsActivity.this)
-                                .load(profileImage)
-                                .fit()
-                                .centerCrop()
-                                .placeholder(R.drawable.profle_image_background)
-                                .networkPolicy(NetworkPolicy.OFFLINE)
-                                .into(mUserProfileImageView, new Callback() {
-                                    @Override
-                                    public void onSuccess() {
+                   usernameRef.child(uid).addValueEventListener(new ValueEventListener() {
+                       @Override
+                       public void onDataChange(DataSnapshot dataSnapshot) {
+                           String username = (String) dataSnapshot.child("username").getValue();
+                           final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
 
-                                    }
+                           mAccountUsernameTextView.setText(username);
+                           Picasso.with(CommentsActivity.this)
+                                   .load(profileImage)
+                                   .fit()
+                                   .centerCrop()
+                                   .placeholder(R.drawable.profle_image_background)
+                                   .networkPolicy(NetworkPolicy.OFFLINE)
+                                   .into(mUserProfileImageView, new Callback() {
+                                       @Override
+                                       public void onSuccess() {
 
-                                    @Override
-                                    public void onError() {
-                                        Picasso.with(CommentsActivity.this)
-                                                .load(profileImage)
-                                                .fit()
-                                                .centerCrop()
-                                                .placeholder(R.drawable.profle_image_background)
-                                                .into(mUserProfileImageView);
-                                    }
-                                });
+                                       }
 
-                        //LAUCNH PROFILE IF ITS NOT DELETED ELSE CATCH THE EXCEPTION
-                        try {
-                            mUserProfileImageView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                        Intent intent = new Intent(CommentsActivity.this, PersonalProfileActivity.class);
-                                        startActivity(intent);
-                                    }else {
-                                        Intent intent = new Intent(CommentsActivity.this, FollowerProfileActivity.class);
-                                        intent.putExtra(CommentsActivity.EXTRA_USER_UID, uid);
-                                        startActivity(intent);
-                                    }
-                                }
-                            });
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
+                                       @Override
+                                       public void onError() {
+                                           Picasso.with(CommentsActivity.this)
+                                                   .load(profileImage)
+                                                   .fit()
+                                                   .centerCrop()
+                                                   .placeholder(R.drawable.profle_image_background)
+                                                   .into(mUserProfileImageView);
+                                       }
+                                   });
 
-                    }
+                           //LAUCNH PROFILE IF ITS NOT DELETED ELSE CATCH THE EXCEPTION
+                           mUserProfileImageView.setOnClickListener(new View.OnClickListener() {
+                               @Override
+                               public void onClick(View view) {
+                                   if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                       Intent intent = new Intent(CommentsActivity.this, PersonalProfileActivity.class);
+                                       startActivity(intent);
+                                   }else {
+                                       Intent intent = new Intent(CommentsActivity.this, FollowerProfileActivity.class);
+                                       intent.putExtra(CommentsActivity.EXTRA_USER_UID, uid);
+                                       startActivity(intent);
+                                   }
+                               }
+                           });
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
 
-                    }
-                });
+                       }
 
-                Picasso.with(CommentsActivity.this)
-                        .load(image)
-                        .networkPolicy(NetworkPolicy.OFFLINE)
-                        .into(mCingleImageView, new Callback() {
-                            @Override
-                            public void onSuccess() {
+                       @Override
+                       public void onCancelled(DatabaseError databaseError) {
 
-                            }
+                       }
+                   });
 
-                            @Override
-                            public void onError() {
-                                Picasso.with(CommentsActivity.this)
-                                        .load(image)
-                                        .into(mCingleImageView);
-                            }
-                        });
 
+                   //set the title of the cingle
+                   if (title.equals("")){
+                       mCingleTitleRelativeLayout.setVisibility(View.GONE);
+                   }else {
+                       mCingleTitleTextView.setText(title);
+                   }
+
+                   //set the cingle image
+                   Picasso.with(CommentsActivity.this)
+                           .load(image)
+                           .networkPolicy(NetworkPolicy.OFFLINE)
+                           .into(mCingleImageView, new Callback() {
+                               @Override
+                               public void onSuccess() {
+
+                               }
+
+                               @Override
+                               public void onError() {
+                                   Picasso.with(CommentsActivity.this)
+                                           .load(image)
+                                           .into(mCingleImageView);
+                               }
+                           });
+
+               }
 
             }
 
@@ -225,33 +239,35 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                         usernameRef.child(uid).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                String username = (String) dataSnapshot.child("username").getValue();
-                                final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+                                if (dataSnapshot.exists()){
+                                    String username = (String) dataSnapshot.child("username").getValue();
+                                    final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
 
-                                viewHolder.usernameTextView.setText(username);
-                                Picasso.with(CommentsActivity.this)
-                                        .load(profileImage)
-                                        .fit()
-                                        .centerCrop()
-                                        .placeholder(R.drawable.profle_image_background)
-                                        .networkPolicy(NetworkPolicy.OFFLINE)
-                                        .into(viewHolder.profileImageView, new Callback() {
-                                            @Override
-                                            public void onSuccess() {
+                                    viewHolder.usernameTextView.setText(username);
+                                    Picasso.with(CommentsActivity.this)
+                                            .load(profileImage)
+                                            .fit()
+                                            .centerCrop()
+                                            .placeholder(R.drawable.profle_image_background)
+                                            .networkPolicy(NetworkPolicy.OFFLINE)
+                                            .into(viewHolder.profileImageView, new Callback() {
+                                                @Override
+                                                public void onSuccess() {
 
-                                            }
+                                                }
 
-                                            @Override
-                                            public void onError() {
-                                                Picasso.with(CommentsActivity.this)
-                                                        .load(profileImage)
-                                                        .fit()
-                                                        .centerCrop()
-                                                        .placeholder(R.drawable.profle_image_background)
-                                                        .into(viewHolder.profileImageView);
-                                            }
-                                        });
+                                                @Override
+                                                public void onError() {
+                                                    Picasso.with(CommentsActivity.this)
+                                                            .load(profileImage)
+                                                            .fit()
+                                                            .centerCrop()
+                                                            .placeholder(R.drawable.profle_image_background)
+                                                            .into(viewHolder.profileImageView);
+                                                }
+                                            });
 
+                                }
 
                             }
 
@@ -280,7 +296,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                         });
 
                         //LAUCNH PROFILE IF ITS NOT DELETED ELSE CATCH THE EXCEPTION
-                        try {
+
                             viewHolder.profileImageView.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
@@ -294,9 +310,6 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                                     }
                                 }
                             });
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
 
                         if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
                             viewHolder.followButton.setVisibility(View.GONE);

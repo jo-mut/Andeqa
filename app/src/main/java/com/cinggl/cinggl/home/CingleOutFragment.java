@@ -143,6 +143,7 @@ public class CingleOutFragment extends Fragment implements CinglesItemClickListe
         cingleOutRecyclerView.setHasFixedSize(true);
         cingleOutAdapter = new CingleOutAdapter(getContext(), this);
         cingleOutRecyclerView.setAdapter(cingleOutAdapter);
+        cingleOutAdapter.notifyDataSetChanged();
     }
 
     private RecyclerView.OnScrollListener mOnScollListener = new RecyclerView.OnScrollListener(){
@@ -168,7 +169,8 @@ public class CingleOutFragment extends Fragment implements CinglesItemClickListe
     public void setAllCingles(int start){
 //        progressBar.setVisibility(View.VISIBLE);
         cinglesQuery = databaseReference.orderByChild("randomNumber").startAt(start)
-                .endAt(start + 10);
+                .endAt(start + TOTAL_ITEM_EACH_LOAD);
+        cinglesQuery.keepSynced(true);
 
         ChildEventListener childEventListener = new ChildEventListener() {
             @Override
@@ -184,6 +186,7 @@ public class CingleOutFragment extends Fragment implements CinglesItemClickListe
                 currentPage += 10;
                 cingleOutAdapter.setCingles(cingles);
                 cingleOutAdapter.notifyItemInserted(cingles.size());
+                cingleOutAdapter.getItemCount();
                 Log.d("size of cingles list", cingles.size() + "");
 
             }
@@ -201,6 +204,8 @@ public class CingleOutFragment extends Fragment implements CinglesItemClickListe
                     //replace with the new cingle
                     cingles.set(cingle_index, cingle);
                     cingleOutAdapter.notifyItemChanged(cingle_index);
+                    cingleOutAdapter.notifyDataSetChanged();
+                    cingleOutAdapter.getItemCount();
                 }else {
                     Log.w(TAG, "onChildChanged:unknown_child" + cingle_key);
                 }
@@ -211,21 +216,18 @@ public class CingleOutFragment extends Fragment implements CinglesItemClickListe
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "onChiledRemoved:" + dataSnapshot.getKey());
 
-                //a cingle has changed. use the key to determine if the comment
+                //a cingle has changed. use the key to determine if the cingle
                 // is being displayed and
                 //so remove it.
-
                 String cingle_key = dataSnapshot.getKey();
-
                 //exclude
                 int cingle_index = cinglesIds.indexOf(cingle_key);
                 if (cingle_index > - 1){
-
                     //remove data from the list
                     cinglesIds.remove(cingle_index);
                     cingles.remove(cingle_key);
-
                     cingleOutAdapter.notifyItemRemoved(cingle_index);
+
                 }else {
                     Log.w(TAG, "onChildRemoved:unknown_child:" + cingle_key);
                 }
@@ -271,6 +273,8 @@ public class CingleOutFragment extends Fragment implements CinglesItemClickListe
 
     }
 
+
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         //save currently selected layout manager;
@@ -295,5 +299,10 @@ public class CingleOutFragment extends Fragment implements CinglesItemClickListe
     public void onDestroy() {
         super.onDestroy();
         cleanUpListener();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 }

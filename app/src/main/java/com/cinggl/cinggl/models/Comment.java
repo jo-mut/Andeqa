@@ -5,9 +5,9 @@ package com.cinggl.cinggl.models;
  */
 
 public class Comment {
-    public String uid;
-    public String username;
-    public String commentText;
+    String uid;
+    String username;
+    String commentText;
 
     public Comment() {
     }

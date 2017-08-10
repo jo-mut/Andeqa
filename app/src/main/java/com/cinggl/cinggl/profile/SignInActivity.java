@@ -12,16 +12,25 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.home.HomeActivity;
 import com.cinggl.cinggl.ui.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+
+import static android.os.Build.VERSION_CODES.M;
 
 public class SignInActivity extends AppCompatActivity implements
         View.OnClickListener{
@@ -40,7 +49,7 @@ public class SignInActivity extends AppCompatActivity implements
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private ProgressDialog mAuthProgressDialog;
-
+    private DatabaseReference usersRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,17 +64,37 @@ public class SignInActivity extends AppCompatActivity implements
 
         mAuth = FirebaseAuth.getInstance();
         createAuthProgressDialog();
+        usersRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
-
             @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            public void onAuthStateChanged(@NonNull final FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    Intent intent = new Intent(SignInActivity.this, MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    finish();
+                    //check if the user has created personal profile
+                    usersRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (!dataSnapshot.hasChild(firebaseAuth.getCurrentUser().getUid())){
+                                //LAUCNH SETUP PROFIFLE ACTIVITY IF NO
+                                Intent intent = new Intent(SignInActivity.this, SetupPorifleInfo.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                                finish();
+                            }else {
+                                Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                                finish();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+
+                    });
                 }
             }
 
@@ -106,7 +135,6 @@ public class SignInActivity extends AppCompatActivity implements
             public void onComplete(@NonNull Task<AuthResult> task) {
                 Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
                 mAuthProgressDialog.dismiss();
-
                 if (!task.isSuccessful()) {
                     Log.w(TAG, "signInWithEmail", task.getException());
                     Toast.makeText(SignInActivity.this, "Please confirm that your email and password match",
@@ -123,10 +151,12 @@ public class SignInActivity extends AppCompatActivity implements
     private void checkIfImailVerified(){
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser.isEmailVerified()){
+
             //user is verified sp you can finish this activity or send user to activity you want
             Toast.makeText(SignInActivity.this, "You have Successfully signed in",
                     Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+
+            Intent intent = new Intent(SignInActivity.this, SetupPorifleInfo.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();

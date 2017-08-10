@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -32,13 +33,11 @@ public class SignUpActivity extends AppCompatActivity implements
     public static final String TAG = SignUpActivity.class.getSimpleName();
 
     @Bind(R.id.createUserButton) Button mCreateUserButton;
-    @Bind(R.id.nameEditText) EditText mNameEditText;
     @Bind(R.id.emailEditText) EditText mEmailEditText;
     @Bind(R.id.passwordEditText) EditText mPasswordEditText;
     @Bind(R.id.confirmPasswordEditText) EditText mConfirmPasswordEditText;
     @Bind(R.id.loginTextView) TextView mLoginTextView;
-    @Bind(R.id.fisrtNameEditText)EditText mFirstNameEditText;
-    @Bind(R.id.secondNameEditText)EditText mSecondNameEditText;
+
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -96,16 +95,14 @@ public class SignUpActivity extends AppCompatActivity implements
 
     private void createNewUser() {
         //editText for email and password
-        mName = mNameEditText.getText().toString().trim();
         final String email = mEmailEditText.getText().toString().trim();
         String password = mPasswordEditText.getText().toString().trim();
         String confirmPassword = mConfirmPasswordEditText.getText().toString().trim();
 
         //validation for email and password
         boolean validEmail = isValidEmail(email);
-        boolean validName = isValidName(mName);
         boolean validPassword = isValidPassword(password, confirmPassword);
-        if (!validEmail || !validName || !validPassword) return;
+        if (!validEmail || !validPassword) return;
 
         mAuthProgressDialog.show();
 
@@ -114,44 +111,25 @@ public class SignUpActivity extends AppCompatActivity implements
 
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-
                         mAuthProgressDialog.dismiss();
-
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "Authentication successful");
-                            createFirebaseUserProfile(task.getResult().getUser());
-                        } else {
+                        if (!task.isSuccessful()) {
+                            //sign up failed
                             Toast.makeText(SignUpActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
+                            //check email exists
+                            if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                                Toast.makeText(SignUpActivity.this, "User with this email already exist.", Toast.LENGTH_SHORT).show();
+                            }
+                        }else {
+                            //sign up successful
+                            Log.d(TAG, "Authentication successful");
                         }
-
 
                     }
 
                 });
     }
 
-    private void createFirebaseUserProfile(final FirebaseUser user) {
-        final FirebaseUser thisUser = FirebaseAuth.getInstance().getCurrentUser();
-        final String uid = thisUser.getUid();
-
-        Cingulan cingulan = new Cingulan();
-        cingulan.setFirstName(mFirstNameEditText.getText().toString());
-        cingulan.setSecondName(mSecondNameEditText.getText().toString());
-        cingulan.setUsername(mNameEditText.getText().toString());
-        cingulan.setEmail(mEmailEditText.getText().toString());
-        cingulan.setUid(mAuth.getCurrentUser().getUid());
-
-
-        DatabaseReference usersRef= FirebaseDatabase.getInstance()
-                .getReference(Constants.FIREBASE_USERS)
-                .child(uid);
-
-        DatabaseReference pushRef = usersRef;
-        String pushId = pushRef.getKey();
-        pushRef.setValue(cingulan);
-
-    }
 
     private void createAuthStateListener() {
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -159,10 +137,9 @@ public class SignUpActivity extends AppCompatActivity implements
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 final FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-
                     sendVerificationEmail();
                 }else {
-                    //user is not signed in
+                    //user has not created an account
                 }
             }
         };
@@ -177,7 +154,6 @@ public class SignUpActivity extends AppCompatActivity implements
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()){
                     //email sent
-
                     Toast.makeText(SignUpActivity.this, "Confirm your email! Verification email successfully sent to" + " " +
                             firebaseUser.getEmail(), Toast.LENGTH_LONG).show();
                     //after email is sent, sign out and finish this activity
@@ -185,7 +161,6 @@ public class SignUpActivity extends AppCompatActivity implements
                     Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
                     startActivity(intent);
                     finish();
-
                 }else {
                     //email not sent, so display a message and restart the activity and restart this activity
 
@@ -217,13 +192,7 @@ public class SignUpActivity extends AppCompatActivity implements
         return isGoodEmail;
     }
 
-    private boolean isValidName(String name) {
-        if (name.equals("")) {
-            mNameEditText.setError("Please enter your name");
-            return false;
-        }
-        return true;
-    }
+
 
     private boolean isValidPassword(String password, String confirmPassword) {
         if (password.length() < 6) {

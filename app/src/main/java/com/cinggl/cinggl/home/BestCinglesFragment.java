@@ -1,19 +1,15 @@
 package com.cinggl.cinggl.home;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,14 +17,8 @@ import android.widget.Toast;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.BestCinglesAdapter;
-import com.cinggl.cinggl.adapters.BestCinglesViewHolder;
-import com.cinggl.cinggl.adapters.CingleOutAdapter;
 import com.cinggl.cinggl.models.Cingle;
-import com.cinggl.cinggl.models.Like;
-import com.cinggl.cinggl.relations.FollowerProfileActivity;
-import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.utils.CinglesItemClickListener;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -36,13 +26,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.Transaction;
-import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,12 +35,8 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.media.CamcorderProfile.get;
-import static android.system.Os.remove;
-import static com.cinggl.cinggl.R.id.cingleOutRecyclerView;
-import static com.cinggl.cinggl.adapters.CingleOutAdapter.round;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -79,6 +59,8 @@ public class BestCinglesFragment extends Fragment implements CinglesItemClickLis
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
     private ChildEventListener mChildEventListener;
+    private static final int TOTAL_ITEM_EACH_LOAD = 10;
+
 
 
     @Bind(R.id.bestCinglesRecyclerView)RecyclerView bestCinglesRecyclerView;
@@ -169,7 +151,8 @@ public class BestCinglesFragment extends Fragment implements CinglesItemClickLis
     public void setBestCingles(int start){
 //        progressBar.setVisibility(View.VISIBLE);
         bestCinglesQuery = databaseReference.orderByChild("sensepoint").startAt(start)
-                .endAt(start + 10);
+                .endAt(start + TOTAL_ITEM_EACH_LOAD);
+        bestCinglesQuery.keepSynced(true);
 
         ChildEventListener childEventListener = new ChildEventListener() {
             @Override
@@ -178,13 +161,13 @@ public class BestCinglesFragment extends Fragment implements CinglesItemClickLis
 //                progressBar.setVisibility(View.GONE);
 
                 Cingle cingle = dataSnapshot.getValue(Cingle.class);
-//                    cingle = snapshot.getValue(Cingle.class);
                 cinglesIds.add(dataSnapshot.getKey());
                 bestCingles.add(cingle);
 
                 currentPage += 10;
                 bestCinglesAdapter.setCingles(bestCingles);
                 bestCinglesAdapter.notifyItemInserted(bestCingles.size());
+                bestCinglesAdapter.getItemCount();
                 Log.d("size of cingles list", bestCingles.size() + "");
 
             }
@@ -202,6 +185,7 @@ public class BestCinglesFragment extends Fragment implements CinglesItemClickLis
                     //replace with the new cingle
                     bestCingles.set(cingle_index, cingle);
                     bestCinglesAdapter.notifyItemChanged(cingle_index);
+                    bestCinglesAdapter.getItemCount();
                 }else {
                     Log.w(TAG, "onChildChanged:unknown_child" + cingle_key);
                 }
@@ -225,8 +209,8 @@ public class BestCinglesFragment extends Fragment implements CinglesItemClickLis
                     //remove data from the list
                     cinglesIds.remove(cingle_index);
                     bestCingles.remove(cingle_key);
-
                     bestCinglesAdapter.notifyItemRemoved(cingle_index);
+                    bestCinglesAdapter.getItemCount();
                 }else {
                     Log.w(TAG, "onChildRemoved:unknown_child:" + cingle_key);
                 }
@@ -307,5 +291,7 @@ public class BestCinglesFragment extends Fragment implements CinglesItemClickLis
             }
         }
     };
+
+
 
 }

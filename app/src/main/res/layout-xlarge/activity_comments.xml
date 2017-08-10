@@ -83,10 +83,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="5dp"
-                    android:paddingBottom="5dp">
+                    android:paddingBottom="5dp"
+                    android:id="@+id/cingleTitleRelativeLayout">
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
                     <TextView
-                        android:text="TheCityOfLight"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
@@ -97,12 +103,6 @@
                         android:textColor="@android:color/black"
                         android:textSize="32sp"
                         android:layout_marginLeft="3dp" />
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
 
                     <com.cinggl.cinggl.ProportionalImageView
                         android:id="@+id/cingleImageView"

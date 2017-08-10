@@ -10,25 +10,28 @@ android {
         versionCode 1
         versionName "1.1.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+
     }
 
-    //singing configurations for build variants "release"
-    signingConfigs {
-        release {
-            storeFile file("C:/Users/J.EL/CINGGL_RELEASE_KEYSTOREjks")
-            storePassword "enkaeprsa1.1.0.1"
-            keyAlias "CINGGL_ALIAS_KEYSTORE"
-            keyPassword "enkaeprsa1.1.0.1"
-        }
-    }
+//    //singing configurations for build variants "release"
+//    signingConfigs {
+//        release {
+//            storeFile file("C:/Users/J.EL/CINGGL_RELEASE_KEYSTORE")
+//            storePassword "enkaeprsa"
+//            keyAlias "CINGGL_KEY"
+//            keyPassword "enkaeprsa"
+//        }
+//    }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+//            signingConfig signingConfigs.release
 
         }
+
     }
 
     packagingOptions {
@@ -52,10 +55,14 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2') {
         exclude group: 'com.android.support', module: 'support-annotations'
-    })
+    }
 
+    androidTestCompile('com.android.support.test:runner:0.3') {
+        exclude group: 'com.android.support', module: 'support-annotations'
+
+    }
 
     compile 'com.yashoid:instacropper:1.0.6'
     compile 'com.android.support:design:25.3.1'
@@ -83,7 +90,10 @@ dependencies {
     compile 'com.tomer:fadingtextview:1.8.1'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'com.afollestad:sectioned-recyclerview:0.5.0'
+
     testCompile 'junit:junit:4.12'
+    testCompile 'org.robolectric:robolectric:3.0'
+    testCompile 'org.robolectric:shadows-support-v4:3.0'
     annotationProcessor 'org.parceler:parceler:1.1.6'
 }
 apply plugin: 'com.google.gms.google-services'
