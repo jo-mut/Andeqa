@@ -137,7 +137,8 @@
                 android:paddingBottom="5dp"
                 android:paddingTop="5dp"
                 android:paddingLeft="3dp"
-                android:paddingRight="3dp">
+                android:paddingRight="3dp"
+                android:id="@+id/titleRelativeLayout">
 
                 <TextView
                     android:text="TheCitiesOfLights"
@@ -194,7 +195,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_more_vert_black_24dp"
+                    app:srcCompat="@drawable/ic_delete_black_24dp"
                     android:id="@+id/cingleSettingsImageView"
                     tools:scaleType="centerCrop"
                     android:scaleType="centerCrop"
@@ -256,7 +257,8 @@
                 android:paddingLeft="3dp"
                 android:paddingRight="3dp"
                 android:paddingTop="5dp"
-                android:paddingBottom="10dp">
+                android:paddingBottom="10dp"
+                android:id="@+id/descriptionRelativeLayout">
 
                 <TextView
                     android:text="The future of tomorrow; the cities of lights"

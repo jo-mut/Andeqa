@@ -104,7 +104,6 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
         firebaseAuth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
         profileCinglesQuery = databaseReference.orderByChild("uid").equalTo(mUid);
-        databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
         usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
         relationsRef = FirebaseDatabase.getInstance().getReference(Constants.RELATIONS);
         profileInfoQuery = databaseReference.orderByChild("uid").equalTo(mUid);
@@ -320,13 +319,6 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
                             }
                         });
 
-                        viewHolder.cingleSettingsImageView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-
-                            }
-                        });
-
 
                         //SHOW CINGLE SETTINGS TO THE CINGLE CREATOR ONLY
                         if (firebaseAuth.getCurrentUser().getUid().equals(uid)){
@@ -353,7 +345,6 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
                         }
 
                         //RETRIEVE USER INFO IF AND CATCH EXCEPTION IF CINGLES IS NOT DELETED;
-                        try {
                             //SET THE CINGULAN CURRENT USERNAME AND PROFILE IMAGE
                             usernameRef.child(mUid).addValueEventListener(new ValueEventListener() {
                                 @Override
@@ -391,12 +382,7 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
                                 }
                             });
 
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
-
                         //RETRIEVE SENSEPOINTS AND CATCH EXCEPTION IF CINGLE ISN'T DELETED
-                        try {
                             databaseReference.child(postKey).addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -419,12 +405,8 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
 
                                 }
                             });
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
 
                         //RETRIEVE TIME POSTED ANC CATCH EXCEPTIONS
-                        try {
                             databaseReference.addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -438,12 +420,8 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
                                 }
                             });
 
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
 
                         //RETRIEVE COMMENTS COUNT AND CATCH EXCEPTIONS IF ANY
-                        try {
                             commentReference.child(postKey).addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -461,12 +439,8 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
                                 }
                             });
 
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
 
                         //RETRIEVE LIKES COUNT AND CATCH EXCEPTIONS IF CINGLE DELETED
-                        try {
                             likesRef.child(postKey).addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -483,11 +457,6 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
 
                                 }
                             });
-
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
-
 
                         viewHolder.likesImageView.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -578,12 +547,12 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
 
         };
 
-        mProfileCinglesRecyclerView.setAdapter(firebaseRecyclerAdapter);
-        mProfileCinglesRecyclerView.setHasFixedSize(false);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setAutoMeasureEnabled(true);
-        mProfileCinglesRecyclerView.setNestedScrollingEnabled(false);
         mProfileCinglesRecyclerView.setLayoutManager(layoutManager);
+        mProfileCinglesRecyclerView.setAdapter(firebaseRecyclerAdapter);
+        mProfileCinglesRecyclerView.setHasFixedSize(false);
+        mProfileCinglesRecyclerView.setNestedScrollingEnabled(false);
 
     }
 

@@ -277,12 +277,12 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                             }
                         });
 
-                        relationsRef.child("following").child(uid)
+                        relationsRef.child("following").child(firebaseAuth.getCurrentUser().getUid())
                                 .addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                if (dataSnapshot.hasChild(firebaseAuth.getCurrentUser().getUid())){
+                                if (dataSnapshot.hasChild(uid)){
                                     viewHolder.followButton.setText("Following");
                                 }else {
                                     viewHolder.followButton.setText("Follow");
@@ -325,17 +325,23 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                                             @Override
                                             public void onDataChange(DataSnapshot dataSnapshot) {
                                                 if (processFollow){
-                                                    if (dataSnapshot.child("following").child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
-                                                        relationsRef.child("following").child(postKey).child(firebaseAuth.getCurrentUser().getUid())
+                                                    if (dataSnapshot.child("following").child(firebaseAuth.getCurrentUser().getUid()).hasChild(uid)){
+                                                        relationsRef.child("following").child(firebaseAuth.getCurrentUser().getUid()).child(uid)
+                                                                .removeValue();
+                                                        relationsRef.child("followers").child(uid).child(firebaseAuth.getCurrentUser().getUid())
                                                                 .removeValue();
                                                         processFollow = false;
                                                         onFollow(false);
                                                         //set the text on the button to follow if the user in not yet following;
-//                                        followButton.setText("FOLLOW");
 
                                                     }else {
                                                         try {
-                                                            relationsRef.child("following").child(postKey).child(firebaseAuth.getCurrentUser().getUid())
+                                                            relationsRef.child("following").child(firebaseAuth.getCurrentUser().getUid())
+                                                                    .child(uid).child("uid").setValue(uid);
+                                                            processFollow = false;
+                                                            onFollow(false);
+
+                                                            relationsRef.child("followers").child(uid).child(firebaseAuth.getCurrentUser().getUid())
                                                                     .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
                                                             processFollow = false;
                                                             onFollow(false);

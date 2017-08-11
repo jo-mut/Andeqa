@@ -70,9 +70,8 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
     private static final double DEFAULT_PRICE = 1.5;
     private static final double GOLDEN_RATIO = 1.618;
 
-    public CingleOutAdapter(Context mContext, CinglesItemClickListener cinglesItemClickListener) {
+    public CingleOutAdapter(Context mContext) {
         this.mContext = mContext;
-        this.cinglesItemClickListener = cinglesItemClickListener;
 
     }
 

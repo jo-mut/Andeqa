@@ -40,7 +40,7 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CingleOutFragment extends Fragment implements CinglesItemClickListener{
+public class CingleOutFragment extends Fragment{
     @Bind(R.id.cingleOutRecyclerView)RecyclerView cingleOutRecyclerView;
     @Bind(R.id.cingleOutProgressbar)ProgressBar progressBar;
 
@@ -103,7 +103,6 @@ public class CingleOutFragment extends Fragment implements CinglesItemClickListe
         likesRef.keepSynced(true);
         usernameRef.keepSynced(true);
         commentReference.keepSynced(true);
-        cinglesItemClickListener = this;
 
 
         initializeViewsAdapter();
@@ -141,7 +140,7 @@ public class CingleOutFragment extends Fragment implements CinglesItemClickListe
         layoutManager =  new LinearLayoutManager(getContext());
         cingleOutRecyclerView.setLayoutManager(layoutManager);
         cingleOutRecyclerView.setHasFixedSize(true);
-        cingleOutAdapter = new CingleOutAdapter(getContext(), this);
+        cingleOutAdapter = new CingleOutAdapter(getContext());
         cingleOutRecyclerView.setAdapter(cingleOutAdapter);
         cingleOutAdapter.notifyDataSetChanged();
     }
@@ -260,19 +259,6 @@ public class CingleOutFragment extends Fragment implements CinglesItemClickListe
         }
     }
 
-    @Override
-    public void clickPosition(int position, int id){
-        final String postKey = cingles.get(position).getPushId();
-        if (id == R.id.likesImageView){
-
-        }
-
-        if (id == R.id.cingleSettingsImageView){
-
-        }
-
-    }
-
 
 
     @Override
@@ -301,8 +287,5 @@ public class CingleOutFragment extends Fragment implements CinglesItemClickListe
         cleanUpListener();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
+
 }

@@ -118,7 +118,7 @@ public class SignUpActivity extends AppCompatActivity implements
                                     Toast.LENGTH_SHORT).show();
                             //check email exists
                             if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                                Toast.makeText(SignUpActivity.this, "User with this email already exist.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignUpActivity.this, "User with this email already exist.", Toast.LENGTH_LONG).show();
                             }
                         }else {
                             //sign up successful
@@ -178,7 +178,7 @@ public class SignUpActivity extends AppCompatActivity implements
     private void createAuthProgressDialog() {
         mAuthProgressDialog = new ProgressDialog(this);
         mAuthProgressDialog.setTitle("Loading...");
-        mAuthProgressDialog.setMessage("Authenticating your sing up details...");
+        mAuthProgressDialog.setMessage("Authenticating your sign up details...");
         mAuthProgressDialog.setCancelable(false);
     }
 

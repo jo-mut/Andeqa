@@ -41,7 +41,7 @@ import static android.media.CamcorderProfile.get;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class BestCinglesFragment extends Fragment implements CinglesItemClickListener {
+public class BestCinglesFragment extends Fragment {
     private DatabaseReference databaseReference;
     private DatabaseReference usernameRef;
     private DatabaseReference likesRef;
@@ -98,8 +98,6 @@ public class BestCinglesFragment extends Fragment implements CinglesItemClickLis
         View view = inflater.inflate(R.layout.fragment_best_cingles, container, false);
         ButterKnife.bind(this, view);
 
-        cinglesItemClickListener = this;
-
         initializeViewsAdapter();
         setCurrentDate();
         bestCinglesRecyclerView.addOnScrollListener(mOnScollListener);
@@ -127,7 +125,7 @@ public class BestCinglesFragment extends Fragment implements CinglesItemClickLis
         layoutManager.setReverseLayout(true);
         bestCinglesRecyclerView.setLayoutManager(layoutManager);
         bestCinglesRecyclerView.setHasFixedSize(true);
-        bestCinglesAdapter = new BestCinglesAdapter(getContext(), this);
+        bestCinglesAdapter = new BestCinglesAdapter(getContext());
         bestCinglesRecyclerView.setAdapter(bestCinglesAdapter);
     }
 
@@ -259,18 +257,7 @@ public class BestCinglesFragment extends Fragment implements CinglesItemClickLis
         return scrollPosition;
     }
 
-    @Override
-    public void clickPosition(int position, int id){
-        final String postKey = bestCingles.get(position).getPushId();
-        if (id == R.id.likesImageView){
 
-        }
-
-        if (id == R.id.cingleSettingsImageView){
-
-        }
-
-    }
 
     private RecyclerView.OnScrollListener mOnScollListener = new RecyclerView.OnScrollListener(){
         private int lastVisibileItem;
@@ -291,6 +278,22 @@ public class BestCinglesFragment extends Fragment implements CinglesItemClickLis
             }
         }
     };
+
+    public void cleanUpListener(){
+        if (mChildEventListener != null){
+            bestCinglesQuery.removeEventListener(mChildEventListener);
+        }
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        cleanUpListener();
+    }
+
+
+
 
 
 

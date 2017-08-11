@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -31,7 +31,7 @@
             android:layout_alignParentEnd="true"
             android:layout_margin="10dp"
             android:layout_width="wrap_content"
-            android:layout_height="45sp"
+            android:layout_height="45dp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp" />
 
@@ -42,32 +42,31 @@
             android:layout_toRightOf="@+id/userProfileImageView"
             android:layout_toEndOf="@+id/userProfileImageView"
             android:layout_alignBottom="@+id/userProfileImageView"
-            android:layout_marginRight="80sp"
-            android:layout_centerVertical="true">
+            android:layout_marginRight="10dp"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/followButton"
+            android:layout_toStartOf="@+id/followButton">
 
             <TextView
-                android:text="First"
+                android:text="user comment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/firstNameTextView"
-                android:textStyle="normal|bold"
-                android:textColor="@android:color/black"
-                android:textSize="24sp"
-                android:layout_centerVertical="true" />
-
-            <TextView
-                android:text="Second"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
-                android:id="@+id/secondNameTextView"
-                android:layout_alignBaseline="@+id/firstNameTextView"
-                android:layout_alignBottom="@+id/firstNameTextView"
-                android:layout_toRightOf="@+id/firstNameTextView"
-                android:textStyle="normal|bold"
+                android:layout_below="@+id/accountUsernameTextView"
+                android:layout_alignLeft="@+id/accountUsernameTextView"
+                android:layout_alignStart="@+id/accountUsernameTextView"
+                android:id="@+id/commentTextView"
                 android:textColor="@android:color/black"
                 android:layout_centerVertical="true"
+                android:textSize="21sp" />
+
+            <TextView
+                android:text="username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/accountUsernameTextView"
+                android:textColor="@android:color/black"
+                android:textStyle="normal|bold"
+                android:layout_alignParentTop="true"
                 android:textSize="24sp" />
 
         </RelativeLayout>

@@ -19,7 +19,10 @@ import java.text.DecimalFormat;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.cinggl.cinggl.R.id.cingleTitleRelativeLayout;
 import static com.cinggl.cinggl.R.id.cingleToolsRelativeLayout;
+import static com.cinggl.cinggl.R.id.descriptionRelativeLayout;
+import static com.cinggl.cinggl.R.id.titleRelativeLayout;
 
 /**
  * Created by J.EL on 7/6/2017.
@@ -44,6 +47,8 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
     public RelativeLayout cingleToolsRelativeLayout;
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
+    private RelativeLayout titleRelativeLayout;
+    private RelativeLayout descriptionRelativeLayout;
 
     public BestCinglesViewHolder(View itemView) {
         super(itemView);
@@ -60,6 +65,8 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
         cingleSettingsImageView = (ImageView) mView.findViewById(R.id.cingleSettingsImageView);
         sensePointsTextView= (TextView) mView.findViewById(R.id.sensePointsTextView);
         cingleToolsRelativeLayout = (RelativeLayout) mView.findViewById(R.id.cingleToolsRelativeLayout);
+        titleRelativeLayout = (RelativeLayout) mView.findViewById(R.id.titleRelativeLayout);
+        descriptionRelativeLayout = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
 
 
     }
@@ -115,8 +122,18 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
                 });
 
 
-        cingleTitleTextView.setText((cingle.getTitle()));
-        cingleDescriptionTextView.setText(cingle.getDescription());
+        if (cingle.getTitle().equals("")){
+            titleRelativeLayout.setVisibility(View.GONE);
+
+        }else {
+            cingleTitleTextView.setText(cingle.getTitle());
+        }
+
+        if (cingle.getDescription().equals("")){
+            descriptionRelativeLayout.setVisibility(View.GONE);
+        }else {
+            cingleDescriptionTextView.setText(cingle.getDescription());
+        }
         datePostedTextView.setText(cingle.getDatePosted());
 
         //REMOVE SCIENTIFIC NOATATION

@@ -101,9 +101,10 @@ public class LikesActivity extends AppCompatActivity {
         firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Like, LikesViewHolder>
                 (Like.class, R.layout.likes_list_layout ,LikesViewHolder.class, likesRef) {
             @Override
-            protected void populateViewHolder(final LikesViewHolder viewHolder, Like model, int position) {
+            protected void populateViewHolder(final LikesViewHolder viewHolder,final Like model, int position) {
                 DatabaseReference userRef = getRef(position);
                 final String postKey = userRef.getKey();
+
                 if (likesRef.child(postKey) != null){
                     mEmptyRelativelayout.setVisibility(View.GONE);
                     viewHolder.bindLikes(model);
@@ -115,9 +116,8 @@ public class LikesActivity extends AppCompatActivity {
                 likesRef.child(postKey).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        final String uid = (String) dataSnapshot.child("uid").getValue();
-
-
+                        if (dataSnapshot.child("uid").exists()){
+                            final String uid = (String) dataSnapshot.child("uid").getValue();
                             usernameRef.child(uid).addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -125,7 +125,6 @@ public class LikesActivity extends AppCompatActivity {
                                     final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
 
                                     viewHolder.usernameTextView.setText(username);
-
 
                                     Picasso.with(LikesActivity.this)
                                             .load(profileImage)
@@ -159,51 +158,59 @@ public class LikesActivity extends AppCompatActivity {
                                 }
                             });
 
-                        viewHolder.profileImageView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                    Intent intent = new Intent(LikesActivity.this, PersonalProfileActivity.class);
-                                    startActivity(intent);
-                                }else {
-                                    Intent intent = new Intent(LikesActivity.this, FollowerProfileActivity.class);
-                                    intent.putExtra(LikesActivity.EXTRA_USER_UID, uid);
-                                    startActivity(intent);
-                                }
-                            }
-                        });
-
-                        if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                            viewHolder.followButton.setVisibility(View.GONE);
-
-                        }else {
-                            viewHolder.followButton.setVisibility(View.VISIBLE);
-                            viewHolder.followButton.setOnClickListener(new View.OnClickListener() {
+                            viewHolder.profileImageView.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    processFollow = true;
-                                    relationsRef.addValueEventListener(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                            if (processFollow){
-                                                if (dataSnapshot.child("following").child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
-                                                    relationsRef.child("following").child(postKey).child(firebaseAuth.getCurrentUser().getUid())
-                                                            .removeValue();
-                                                    processFollow = false;
-                                                    onFollow(false);
-                                                    //set the text on the button to follow if the user in not yet following;
+                                    if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                        Intent intent = new Intent(LikesActivity.this, PersonalProfileActivity.class);
+                                        startActivity(intent);
+                                    }else {
+                                        Intent intent = new Intent(LikesActivity.this, FollowerProfileActivity.class);
+                                        intent.putExtra(LikesActivity.EXTRA_USER_UID, uid);
+                                        startActivity(intent);
+                                    }
+                                }
+                            });
 
-                                                }else {
-                                                    try {
-                                                        relationsRef.child("following").child(postKey).child(firebaseAuth.getCurrentUser().getUid())
-                                                                .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
+                            if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                viewHolder.followButton.setVisibility(View.GONE);
+
+                            }else {
+                                viewHolder.followButton.setVisibility(View.VISIBLE);
+                                viewHolder.followButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        processFollow = true;
+                                        relationsRef.addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                if (processFollow){
+                                                    if (dataSnapshot.child("following").child(firebaseAuth.getCurrentUser().getUid()).hasChild(postKey)){
+                                                        relationsRef.child("following").child(firebaseAuth.getCurrentUser().getUid()).child(postKey)
+                                                                .removeValue();
+                                                        relationsRef.child("followers").child(postKey).child(firebaseAuth.getCurrentUser().getUid())
+                                                                .removeValue();
                                                         processFollow = false;
                                                         onFollow(false);
+                                                        //set the text on the button to follow if the user in not yet following;
 
-                                                        //set text on the button to following;
-                                                        viewHolder.followButton.setText("Following");
+                                                    }else {
+                                                        try {
+                                                            relationsRef.child("following").child(firebaseAuth.getCurrentUser().getUid())
+                                                                    .child(postKey)
+                                                                    .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
 
-                                                    }catch (Exception e){
+                                                            relationsRef.child("followers").child(postKey).child(firebaseAuth.getCurrentUser().getUid())
+                                                                    .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
+                                                            processFollow = false;
+                                                            onFollow(false);
+
+                                                            //set text on the button to following;
+                                                            viewHolder.followButton.setText("Following");
+
+                                                        }catch (Exception e){
+
+                                                        }
 
                                                     }
 
@@ -211,6 +218,25 @@ public class LikesActivity extends AppCompatActivity {
 
                                             }
 
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+
+                            relationsRef.child("following").child(firebaseAuth.getCurrentUser().getUid())
+                                    .addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                            if (dataSnapshot.hasChild(postKey)){
+                                                viewHolder.followButton.setText("Following");
+                                            }else {
+                                                viewHolder.followButton.setText("Follow");
+                                            }
                                         }
 
                                         @Override
@@ -218,27 +244,7 @@ public class LikesActivity extends AppCompatActivity {
 
                                         }
                                     });
-                                }
-                            });
                         }
-
-                        relationsRef.child("following").child(uid)
-                                .addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-
-                                        if (dataSnapshot.hasChild(firebaseAuth.getCurrentUser().getUid())){
-                                            viewHolder.followButton.setText("Following");
-                                        }else {
-                                            viewHolder.followButton.setText("Follow");
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-
-                                    }
-                                });
                     }
 
                     @Override
@@ -246,7 +252,6 @@ public class LikesActivity extends AppCompatActivity {
 
                     }
                 });
-
             }
         };
 
@@ -254,11 +259,9 @@ public class LikesActivity extends AppCompatActivity {
         mRecentLikesRecyclerView.setAdapter(firebaseRecyclerAdapter);
         mRecentLikesRecyclerView.setHasFixedSize(false);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setReverseLayout(true);
-        layoutManager.setStackFromEnd(true);
-        layoutManager.onSaveInstanceState();
         layoutManager.setAutoMeasureEnabled(true);
         mRecentLikesRecyclerView.setLayoutManager(layoutManager);
+
 
     }
 

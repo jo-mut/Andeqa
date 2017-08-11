@@ -24,6 +24,7 @@ import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.cinggl.cinggl.R.id.cingleToolsRelativeLayout;
+import static com.cinggl.cinggl.R.id.descriptionRelativeLayout;
 
 /**
  * Created by J.EL on 5/26/2017.
@@ -51,6 +52,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder implements View
     private DatabaseReference cinglesReference;
     private CinglesItemClickListener cinglesItemClickListener;
     public RelativeLayout cingleToolsRelativeLayout;
+    private RelativeLayout descriptionRelativeLayout;
 
     public CingleOutViewHolder(View itemView){
         super(itemView);
@@ -70,6 +72,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder implements View
         cingleTitleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
         sensePointsTextView = (TextView) mView.findViewById(R.id.sensePointsDescTextView);
         cingleToolsRelativeLayout = (RelativeLayout) mView.findViewById(R.id.cingleToolsRelativeLayout);
+        descriptionRelativeLayout  = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
 
 
         likesImageView.setOnClickListener(this);
@@ -110,7 +113,12 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder implements View
         }else {
             cingleTitleTextView.setText(cingle.getTitle());
         }
-        cingleDescriptionTextView.setText(cingle.getDescription());
+
+        if (cingle.getDescription().equals("")){
+            descriptionRelativeLayout.setVisibility(View.GONE);
+        }else {
+            cingleDescriptionTextView.setText(cingle.getDescription());
+        }
         sensePointsTextView.setText("SP" + " " + (cingle.getSensepoint()));
         timeTextView.setText(DateUtils.getRelativeTimeSpanString((long) cingle.getTimeStamp()));
     }

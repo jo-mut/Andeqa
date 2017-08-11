@@ -64,9 +64,8 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
     private static final String TAG = BestCinglesFragment.class.getSimpleName();
     private List<Cingle> bestCingles = new ArrayList<>();
 
-    public BestCinglesAdapter(Context mContext, CinglesItemClickListener cinglesItemClickListener) {
+    public BestCinglesAdapter(Context mContext) {
         this.mContext = mContext;
-        this.cinglesItemClickListener = cinglesItemClickListener;
 
     }
 
