@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/action_ifair"
+            android:title="@string/ifair" />
+        <item
+            android:id="@+id/action_about"
+            android:title="@string/about" />
+
+        <item
+            android:id="@+id/action_help"
+            android:title="@string/help" />
+
+        <item
+            android:id="@+id/action_preferences"
+            android:title="@string/preferences" />
+
+        <item
+            android:id="@+id/action_feedback"
+            android:title="@string/feedback" />
+
+        <item
+            android:id="@+id/action_terms"
+            android:title="@string/terms_of_service" />
+
+    </group>
+
+    <item android:title="@string/extras">
+        <menu>
+            <item
+                android:id="@+id/action_intro_slides"
+                android:title="@string/intro_tutorial" />
+        </menu>
+    </item>
+
+</menu>

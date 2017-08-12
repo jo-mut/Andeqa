@@ -1,16 +1,11 @@
 package com.cinggl.cinggl.profile;
 
 
-import android.app.Activity;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,26 +13,18 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.adapters.CingleOutAdapter;
 import com.cinggl.cinggl.adapters.ProfileCinglesViewHolder;
-import com.cinggl.cinggl.home.CingleSettingsDialog;
 import com.cinggl.cinggl.home.CommentsActivity;
 import com.cinggl.cinggl.home.HomeActivity;
 import com.cinggl.cinggl.home.LikesActivity;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.models.Cingulan;
-import com.cinggl.cinggl.relations.FollowerProfileActivity;
 import com.cinggl.cinggl.relations.PeopleActivity;
-import com.cinggl.cinggl.services.ConnectivityReceiver;
-import com.cinggl.cinggl.ui.MainActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -56,15 +43,10 @@ import com.squareup.picasso.Picasso;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static com.cinggl.cinggl.R.id.cingleSettingsImageView;
-import static com.cinggl.cinggl.R.id.likesCountTextView;
 
 /**
  * A simple {@link Fragment} subclass.

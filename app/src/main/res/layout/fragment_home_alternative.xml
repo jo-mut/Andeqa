@@ -42,7 +42,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="40sp"
+        android:layout_marginBottom="70dp"
         android:layout_marginRight="16dp"
         android:layout_height="wrap_content"
         app:elevation="0dp" />
@@ -52,7 +52,8 @@
         android:layout_width="match_parent"
         android:fitsSystemWindows="true"
         android:layout_height="?attr/actionBarSize"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:theme="@style/AppTheme.AppBarOverlay"
+        android:background="@color/colorPrimary">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -60,7 +61,7 @@
             app:titleTextAppearance="@style/toolbarTextSize"
             android:titleTextColor="@android:color/white"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@color/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
@@ -69,15 +70,17 @@
     </android.support.design.widget.AppBarLayout>
 
 
-    <!--<android.support.design.widget.BottomNavigationView-->
-    <!--android:id="@+id/bottomNavigationView"-->
-    <!--app:menu="@menu/bottom_navigation_menu"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="50dp"-->
-    <!--android:layout_gravity="bottom"-->
-    <!--app:itemTextColor="@android:color/white"-->
-    <!--app:itemIconTint="@color/colorIcons"-->
-    <!--app:itemBackground="@color/colorPrimary"/>-->
+    <android.support.design.widget.BottomNavigationView
+        android:background="@color/bottomNavBackground"
+        android:id="@+id/bottomNavigationView"
+        app:menu="@menu/bottom_navigation_menu"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_navigation_height"
+        android:layout_gravity="bottom"
+        app:itemTextColor="@android:color/white"
+        app:itemIconTint="@color/colorIcons"
+        android:alpha="0.9"
+        app:itemBackground="@color/bottomNavBackground"/>
 
 
 </android.support.design.widget.CoordinatorLayout>

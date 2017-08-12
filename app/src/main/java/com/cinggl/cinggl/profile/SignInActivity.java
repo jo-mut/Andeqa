@@ -15,7 +15,7 @@ import android.widget.Toast;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.home.HomeActivity;
-import com.cinggl.cinggl.ui.MainActivity;
+import com.cinggl.cinggl.home.NavigationDrawerActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -29,8 +29,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-
-import static android.os.Build.VERSION_CODES.M;
 
 public class SignInActivity extends AppCompatActivity implements
         View.OnClickListener{
@@ -87,7 +85,7 @@ public class SignInActivity extends AppCompatActivity implements
                                 startActivity(intent);
                                 finish();
                             }else {
-                                Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
+                                Intent intent = new Intent(SignInActivity.this, NavigationDrawerActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);
                                 finish();

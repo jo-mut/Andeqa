@@ -136,7 +136,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/sensePointsDescTextView"
                     android:textStyle="normal|bold"
-                    android:background="@drawable/text_boarder"
+                    android:background="@drawable/text_border_default"
                     android:textSize="24sp"
                     android:paddingTop="3dp"
                     android:paddingBottom="3dp"

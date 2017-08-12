@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
@@ -36,7 +38,7 @@ import butterknife.ButterKnife;
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener{
 
     @Bind(R.id.fab)FloatingActionButton mFloatingActionButton;
-//    @Bind(R.id.bottomNavigationView)BottomNavigationView mBottomNavigationView;
+    @Bind(R.id.bottomNavigationView)BottomNavigationView mBottomNavigationView;
 
     final FragmentManager fragmentManager = getSupportFragmentManager();
     final Fragment timelineFragment = new TimelineFragment();
@@ -86,7 +88,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         mFloatingActionButton.setOnClickListener(this);
-
+//
 //        mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
 //            @Override
 //            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -96,7 +98,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 //                return true;
 //            }
 //        });
-
+//
 //        MenuItem selectedItem;
 //        selectedItem = mBottomNavigationView.getMenu().getItem(0);
 //        selectFragment(selectedItem);
@@ -115,7 +117,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
+//
 //    @Override
 //    public void onBackPressed() {
 //        MenuItem defaulItem = mBottomNavigationView.getMenu().getItem(0);
@@ -125,7 +127,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 //            super.onBackPressed();
 //        }
 //    }
-
+//
 //    private void selectFragment(MenuItem item){
 //        //initialize each corresponding fragment
 //        switch (item.getItemId()){

@@ -209,7 +209,6 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
     public static int neededRotation(File ff) {
         try
         {
-
             ExifInterface exif = new ExifInterface(ff.getAbsolutePath());
             int orientation = exif.getAttributeInt(
                     ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);

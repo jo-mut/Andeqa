@@ -32,4 +32,24 @@
     <string name="credits">SP</string>
     <string name="views">Views</string>
     <string name="title_activity_people">PeopleActivity</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    //Navigation drawer
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="title_activity_navigation_drawer">NavigationDrawerActivity</string>
+    <string name="feedback">Send Feedback</string>
+    <string name="ifair">Ifair</string>
+    <string name="help">Help</string>
+    <string name="terms_of_service">Terms of service</string>
+    <string name="about">About</string>
+    <string name="intro_tutorial">Introduction</string>
+    <string name="extras">Extras</string>
+    <string name="preferences">Preferences</string>
+
+
+    //bottom navigation
+    <string name="bottomnav_home">Home</string>
+    <string name="bottomnav_timeline">Timeline</string>
+    <string name="bottomnav_profile">Profile</string>
 </resources>
