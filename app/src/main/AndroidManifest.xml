@@ -53,11 +53,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".ui.SettingsActivity"
-            android:label="Settings"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
             android:name=".profile.UpdateProfileActivity"
             android:label="Update your profile"
             android:screenOrientation="portrait"
@@ -123,12 +118,10 @@
             android:name=".profile.SetupPorifleInfo"
             android:screenOrientation="portrait" />
         <activity
-            android:screenOrientation="portrait"
             android:name=".home.NavigationDrawerActivity"
             android:label="Cinggl"
-            android:theme="@style/AppTheme">
-
-        </activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

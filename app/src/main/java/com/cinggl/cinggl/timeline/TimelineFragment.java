@@ -1,7 +1,6 @@
 package com.cinggl.cinggl.timeline;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -15,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.ui.SettingsActivity;
 
 /**
  * A simple {@link Fragment} subclass.

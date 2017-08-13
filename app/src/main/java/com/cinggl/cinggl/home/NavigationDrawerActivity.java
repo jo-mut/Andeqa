@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.ContentFrameLayout;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,17 +23,33 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
+import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.camera.CreateCingleActivity;
 import com.cinggl.cinggl.profile.ProfileFragment;
 import com.cinggl.cinggl.timeline.TimelineFragment;
 import com.cinggl.cinggl.utils.BottomNavigationViewHelper;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
+
+import static android.R.id.toggle;
+import static java.security.AccessController.getContext;
 
 public class NavigationDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
@@ -40,6 +57,9 @@ public class NavigationDrawerActivity extends AppCompatActivity
     @Bind(R.id.fab)FloatingActionButton mFloatingActionButton;
     @Bind(R.id.bottomNavigationView)BottomNavigationView mBottomNavigationView;
 
+
+    private static final int MAX_WIDTH = 300;
+    private static final int MAX_HEIGHT = 300;
     final FragmentManager fragmentManager = getSupportFragmentManager();
     final Fragment timelineFragment = new TimelineFragment();
     final Fragment profileFragment = new ProfileFragment();
@@ -48,6 +68,12 @@ public class NavigationDrawerActivity extends AppCompatActivity
     private int orientation;
     private ContentFrameLayout mContent;
     private ProgressDialog mProgressDialog;
+    private DatabaseReference usersRef;
+    private FirebaseAuth firebaseAuth;
+    private ImageView mProfileCover;
+    private CircleImageView mProfileImageView;
+    private TextView mFirstNameTextView;
+    private TextView mSecondNameTextView;
 
 
     @Override
@@ -58,6 +84,8 @@ public class NavigationDrawerActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
 
+        firebaseAuth = FirebaseAuth.getInstance();
+
         mFloatingActionButton.setOnClickListener(this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -66,8 +94,17 @@ public class NavigationDrawerActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View header = navigationView.getHeaderView(0);
+        mProfileCover = (ImageView) header.findViewById(R.id.header_cover_image);
+        mProfileImageView = (CircleImageView) header.findViewById(R.id.profileImageView);
+        mFirstNameTextView = (TextView) header.findViewById(R.id.firstNameTextView);
+        mSecondNameTextView = (TextView) header.findViewById(R.id.secondNameTextView);
+
 
         if (savedInstanceState == null){
             launchHomeFragment();
@@ -75,14 +112,14 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
         }
 
-        BottomNavigationViewHelper.disableShiftMode(mBottomNavigationView);
+        fetchData();
 
+        //bottom navigation
+        BottomNavigationViewHelper.disableShiftMode(mBottomNavigationView);
         mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
                 selectFragment(item);
-
                 return true;
             }
         });
@@ -90,7 +127,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
         MenuItem selectedItem;
         selectedItem = mBottomNavigationView.getMenu().getItem(0);
         selectFragment(selectedItem);
-
 
     }
 
@@ -150,7 +186,82 @@ public class NavigationDrawerActivity extends AppCompatActivity
         ft.commit();
     }
 
+    private void fetchData(){
+        //database references
+        usersRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
+        usersRef.keepSynced(true);
+        usersRef.child(firebaseAuth.getCurrentUser().getUid())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()){
+                            String firstName = (String) dataSnapshot.child("firstName").getValue();
+                            String secondName = (String) dataSnapshot.child("secondName").getValue();
+                            final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+                            final String profileCover = (String) dataSnapshot.child("profileCover").getValue();
 
+
+                            mFirstNameTextView.setText(firstName);
+                            mSecondNameTextView.setText(secondName);
+
+                            Picasso.with(NavigationDrawerActivity.this)
+                                    .load(profileImage)
+                                    .resize(MAX_WIDTH, MAX_HEIGHT)
+                                    .onlyScaleDown()
+                                    .centerCrop()
+                                    .placeholder(R.drawable.profle_image_background)
+                                    .networkPolicy(NetworkPolicy.OFFLINE)
+                                    .into(mProfileImageView, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+
+                                        }
+
+                                        @Override
+                                        public void onError() {
+                                            Picasso.with(NavigationDrawerActivity.this)
+                                                    .load(profileImage)
+                                                    .resize(MAX_WIDTH, MAX_HEIGHT)
+                                                    .onlyScaleDown()
+                                                    .centerCrop()
+                                                    .placeholder(R.drawable.profle_image_background)
+                                                    .into(mProfileImageView);
+
+                                        }
+                                    });
+
+                            Picasso.with(NavigationDrawerActivity.this)
+                                    .load(profileCover)
+                                    .fit()
+                                    .centerCrop()
+                                    .networkPolicy(NetworkPolicy.OFFLINE)
+                                    .into(mProfileCover, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+
+                                        }
+
+                                        @Override
+                                        public void onError() {
+                                            Picasso.with(NavigationDrawerActivity.this)
+                                                    .load(profileCover)
+                                                    .fit()
+                                                    .centerCrop()
+                                                    .into(mProfileCover);
+
+
+                                        }
+                                    });
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+    }
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
 //        // Inflate the menu; this adds items to the action bar if it is present.
@@ -201,7 +312,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
     @Override
     public void onClick(View v){
         if(v == mFloatingActionButton){
-//            showNewPostFragment();
             Intent intent = new Intent(NavigationDrawerActivity.this, CreateCingleActivity.class);
             startActivity(intent);
 
