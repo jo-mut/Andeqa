@@ -52,7 +52,7 @@ public class TimelineFragment extends Fragment {
         tabLayout = (TabLayout)view.findViewById(R.id.tabs);
         viewPager = (ViewPager)view.findViewById(R.id.container);
         viewPager.setAdapter(timelinePagerAdapter);
-//        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setupWithViewPager(viewPager);
         return view;
     }
 

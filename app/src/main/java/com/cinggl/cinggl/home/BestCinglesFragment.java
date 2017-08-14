@@ -61,13 +61,9 @@ public class BestCinglesFragment extends Fragment {
     private ChildEventListener mChildEventListener;
     private static final int TOTAL_ITEM_EACH_LOAD = 10;
 
-
-
     @Bind(R.id.bestCinglesRecyclerView)RecyclerView bestCinglesRecyclerView;
     @Bind(R.id.bestCinglesProgressbar)ProgressBar progressBar;
     @Bind(R.id.currentDateTextView)TextView mCurrentDateTextView;
-
-
 
     public BestCinglesFragment() {
         // Required empty public constructor
@@ -207,6 +203,7 @@ public class BestCinglesFragment extends Fragment {
                     //remove data from the list
                     cinglesIds.remove(cingle_index);
                     bestCingles.remove(cingle_key);
+                    bestCinglesAdapter.removeAt(cingle_index);
                     bestCinglesAdapter.notifyItemRemoved(cingle_index);
                     bestCinglesAdapter.getItemCount();
                 }else {

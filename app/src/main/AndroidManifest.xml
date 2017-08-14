@@ -122,6 +122,50 @@
             android:label="Cinggl"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".home.CingleDetailActivity"
+            android:label="Cingle" />
+        <activity
+            android:name=".ifair.IfairMainActivity"
+            android:label="Ifair" />
+        <activity
+            android:name=".ifair.CingleBackingActivity" />
+        <activity
+            android:name=".ifair.CingleSellingActivity" />
+        <activity
+            android:name=".ifair.CingleLacingActivity" />
+        <activity
+            android:name=".ifair.CingleLeasingActivity" />
+        <activity
+            android:name=".ifair.AssetTradingActivity" />
+        <activity
+            android:name=".ifair.MainMarketActivity" />
+        <activity
+            android:name=".preferences.SettingsActivity" />
+        <activity
+            android:label="Cingle Backing"
+            android:theme="@style/AppTheme"
+            android:name=".backing.BackingActivity" />
+        <activity
+            android:theme="@style/AppTheme"
+            android:label="Cingle Lacing"
+            android:name=".lacing.LacingActivity" />
+        <activity
+            android:label="Cingle Leasing"
+            android:theme="@style/AppTheme"
+            android:name=".leasing.LeasingActivity" />
+        <activity
+            android:label="Main Market"
+            android:theme="@style/AppTheme"
+            android:name=".market.MarketActivity" />
+        <activity
+            android:label="Cingle Sale"
+            android:theme="@style/AppTheme"
+            android:name=".selling.SellingActivity" />
+        <activity
+            android:label="Asset Trading"
+            android:theme="@style/AppTheme"
+            android:name=".trading.TradingActivity"/>
     </application>
 
 </manifest>

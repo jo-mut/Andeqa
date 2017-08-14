@@ -225,6 +225,7 @@ public class CingleOutFragment extends Fragment{
                     //remove data from the list
                     cinglesIds.remove(cingle_index);
                     cingles.remove(cingle_key);
+                    cingleOutAdapter.removeAt(cingle_index);
                     cingleOutAdapter.notifyItemRemoved(cingle_index);
 
                 }else {

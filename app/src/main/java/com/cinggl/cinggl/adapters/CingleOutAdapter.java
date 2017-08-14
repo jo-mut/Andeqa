@@ -18,6 +18,7 @@ import android.view.animation.AnimationUtils;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.home.CingleDetailActivity;
 import com.cinggl.cinggl.home.CingleSettingsDialog;
 import com.cinggl.cinggl.home.CommentsActivity;
 import com.cinggl.cinggl.home.LikesActivity;
@@ -57,7 +58,6 @@ import java.util.TimeZone;
 public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> {
     private static final String TAG =  CingleOutAdapter.class.getSimpleName();
     private List<Cingle> cingles = new ArrayList<>();
-    private CinglesItemClickListener cinglesItemClickListener;
     private Context mContext;
     private static final String EXTRA_POST_KEY = "post key";
     private static final String EXTRA_USER_UID = "uid";
@@ -78,6 +78,10 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
     public void setCingles(List<Cingle> cingles) {
         this.cingles = cingles;
         notifyDataSetChanged();
+    }
+
+    public void removeAt(int position){
+        cingles.remove(cingles.get(position));
     }
 
 
@@ -153,6 +157,16 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
                         mContext.startActivity(intent);
                     }
                 });
+
+                holder.cingleImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(mContext, CingleDetailActivity.class);
+                        intent.putExtra(CingleOutAdapter.EXTRA_POST_KEY, postKey);
+                        mContext.startActivity(intent);
+                    }
+                });
+
 
 
                 //SHOW CINGLE SETTINGS TO THE CINGLE CREATOR ONLY
@@ -421,12 +435,7 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
                             });
 
 
-                        }else {
-                            holder.cingleToolsRelativeLayout.setVisibility(View.GONE);
-                            holder.likesCountTextView.setVisibility(View.GONE);
-                            holder.profileImageView.setVisibility(View.GONE);
                         }
-
                     }
 
                     @Override

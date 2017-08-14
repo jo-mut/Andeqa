@@ -17,6 +17,8 @@ import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.cinggl.cinggl.R.id.descriptionRelativeLayout;
+
 
 /**
  * Created by J.EL on 6/8/2017.
@@ -38,6 +40,7 @@ public class ProfileCinglesViewHolder extends RecyclerView.ViewHolder implements
     public TextView timeTextView;
     public ImageView cingleSettingsImageView;
     public RelativeLayout cingleTitleRelativeLayout;
+    private RelativeLayout descriptionRelativeLayout;
 
 
     public ProfileCinglesViewHolder(View itemView){
@@ -57,6 +60,8 @@ public class ProfileCinglesViewHolder extends RecyclerView.ViewHolder implements
         cingleSettingsImageView = (ImageView) itemView.findViewById(R.id.cingleSettingsImageView);
         cingleTitleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
         sensePointsTextView = (TextView) mView.findViewById(R.id.sensePointsDescTextView);
+        descriptionRelativeLayout  = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
+
 
         likesImageView.setOnClickListener(this);
         commentsImageView.setOnClickListener(this);
@@ -98,7 +103,13 @@ public class ProfileCinglesViewHolder extends RecyclerView.ViewHolder implements
         }else {
             cingleTitleTextView.setText(cingle.getTitle());
         }
-        cingleDescriptionTextView.setText(cingle.getDescription());
+
+        if (cingle.getDescription().equals("")){
+            descriptionRelativeLayout.setVisibility(View.GONE);
+        }else {
+            cingleDescriptionTextView.setText(cingle.getDescription() + "..." + "more" + " " + "|" + " " + "@Cingle Backing" );
+        }
+
         sensePointsTextView.setText("SP" + " " + (cingle.getSensepoint()));
         timeTextView.setText(DateUtils.getRelativeTimeSpanString((long) cingle.getTimeStamp()));
 

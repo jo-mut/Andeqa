@@ -31,6 +31,8 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.camera.CreateCingleActivity;
+import com.cinggl.cinggl.ifair.IfairMainActivity;
+import com.cinggl.cinggl.preferences.SettingsActivity;
 import com.cinggl.cinggl.profile.ProfileFragment;
 import com.cinggl.cinggl.timeline.TimelineFragment;
 import com.cinggl.cinggl.utils.BottomNavigationViewHelper;
@@ -304,6 +306,18 @@ public class NavigationDrawerActivity extends AppCompatActivity
 //
 //        }
 
+        if (id == R.id.action_ifair){
+            Intent intent = new Intent(NavigationDrawerActivity.this, IfairMainActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.action_preferences) {
+            // launch settings activity
+            startActivity(new Intent(NavigationDrawerActivity.this, SettingsActivity.class));
+            return true;
+        }
+
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -314,7 +328,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
         if(v == mFloatingActionButton){
             Intent intent = new Intent(NavigationDrawerActivity.this, CreateCingleActivity.class);
             startActivity(intent);
-
         }
     }
 

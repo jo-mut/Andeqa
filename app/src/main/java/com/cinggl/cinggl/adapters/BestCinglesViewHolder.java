@@ -19,6 +19,8 @@ import java.text.DecimalFormat;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.cinggl.cinggl.R.id.cingleImageView;
+import static com.cinggl.cinggl.R.id.cingleSettingsImageView;
 import static com.cinggl.cinggl.R.id.cingleTitleRelativeLayout;
 import static com.cinggl.cinggl.R.id.cingleToolsRelativeLayout;
 import static com.cinggl.cinggl.R.id.descriptionRelativeLayout;
@@ -44,6 +46,8 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
     public TextView commentsCountTextView;
     public ImageView cingleSettingsImageView;
     public TextView sensePointsTextView;
+    public TextView cingleSenseCreditsTextView;
+    public ProportionalImageView cingleImageView;
     public RelativeLayout cingleToolsRelativeLayout;
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
@@ -67,6 +71,8 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
         cingleToolsRelativeLayout = (RelativeLayout) mView.findViewById(R.id.cingleToolsRelativeLayout);
         titleRelativeLayout = (RelativeLayout) mView.findViewById(R.id.titleRelativeLayout);
         descriptionRelativeLayout = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
+        cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
+        cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsTextView);
 
 
     }

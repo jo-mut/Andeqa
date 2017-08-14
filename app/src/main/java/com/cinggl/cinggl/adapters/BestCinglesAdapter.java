@@ -13,6 +13,7 @@ import android.view.animation.AnimationUtils;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.home.BestCinglesFragment;
+import com.cinggl.cinggl.home.CingleDetailActivity;
 import com.cinggl.cinggl.home.CommentsActivity;
 import com.cinggl.cinggl.home.LikesActivity;
 import com.cinggl.cinggl.models.Cingle;
@@ -46,8 +47,6 @@ import java.util.List;
 //CURRENTLY NOT IN USE
 
 public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHolder>{
-
-    private CinglesItemClickListener cinglesItemClickListener;
     private Context mContext;
     private static final String EXTRA_POST_KEY = "post key";
     private static final String EXTRA_USER_UID = "uid";
@@ -74,7 +73,9 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
         notifyDataSetChanged();
     }
 
-
+    public void removeAt(int position){
+        bestCingles.remove(bestCingles.get(position));
+    }
 
 
     public void animate(BestCinglesViewHolder viewHolder){
@@ -149,12 +150,16 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                 });
 
 
-                holder.cingleSettingsImageView.setOnClickListener(new View.OnClickListener() {
+                holder.cingleImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
+                        Intent intent = new Intent(mContext, CingleDetailActivity.class);
+                        intent.putExtra(BestCinglesAdapter.EXTRA_POST_KEY, postKey);
+                        mContext.startActivity(intent);
                     }
                 });
+
+
 
                 //SHOW CINGLE SETTINGS TO THE CINGLE CREATOR ONLY
                 if (firebaseAuth.getCurrentUser().getUid().equals(uid)){

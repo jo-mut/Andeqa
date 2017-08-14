@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.preferences.SettingsActivity;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.profile.UpdateProfileActivity;
 import com.cinggl.cinggl.services.ConnectivityReceiver;
@@ -115,6 +116,7 @@ public class HomeFragment extends Fragment{
             startActivity(intent);
 
         }
+
 
         return super.onOptionsItemSelected(item);
     }

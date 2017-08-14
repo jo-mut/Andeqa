@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_ifair_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.cinggl.cinggl.ifair.IfairMainActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:titleTextColor="@android:color/white"
+        app:layout_scrollFlags="scroll|enterAlways"
+        app:titleTextAppearance="@style/toolbarTextSize"
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+        android:background="@color/colorPrimary" />
+
+    <ScrollView
+        android:fillViewport="true"
+        android:scrollbars="none"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:id="@+id/categoryOne"
+                android:layout_width="match_parent"
+                android:layout_height="190dp">
+
+                <android.support.v7.widget.CardView
+                    android:layout_marginBottom="0.1dp"
+                    android:layout_toLeftOf="@+id/categoriesDividerOne"
+                    android:layout_toStartOf="@+id/categoriesDividerOne"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:cardBackgroundColor="?attr/colorPrimary">
+
+                    <ImageView
+                        android:layout_height="100dp"
+                        app:srcCompat="@drawable/test"
+                        android:id="@+id/cingleBackingImageView"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:background="@drawable/gradient_color"
+                        android:scaleType="centerCrop"
+                        android:layout_width="192dp" />
+
+                    <TextView
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="110dp"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:text="Cingle Backing"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:textColor="@android:color/white" />
+
+                    <TextView
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="130dp"
+                        android:textSize="12sp"
+                        android:text="Backed Cingles"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:textColor="@android:color/white"
+                        android:textAllCaps="false" />
+
+                    <TextView
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="150dp"
+                        android:textSize="12sp"
+                        android:text="Launch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:textColor="@android:color/white"
+                        android:textAllCaps="true"
+                        android:id="@+id/launchBackingActivity"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp" />
+
+
+                </android.support.v7.widget.CardView>
+
+                <View
+                    android:id="@+id/categoriesDividerOne"
+                    android:layout_width="0.1dp"
+                    android:layout_height="0.1dp"
+                    android:layout_gravity="center"
+                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true" />
+
+                <android.support.v7.widget.CardView
+                    android:layout_marginBottom="0.1dp"
+                    android:layout_toRightOf="@+id/categoriesDividerOne"
+                    android:layout_toEndOf="@+id/categoriesDividerOne"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:cardBackgroundColor="?attr/colorPrimary">
+
+                    <ImageView
+                        app:srcCompat="@drawable/test"
+                        android:layout_width="192dp"
+                        android:layout_height="100dp"
+                        android:id="@+id/cingleSellingImageView"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="false"
+                        android:layout_alignParentStart="false"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:background="@drawable/gradient_color"
+                        android:scaleType="centerCrop" />
+
+                    <TextView
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="110dp"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:text="Cingle Selling"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/white" />
+
+                    <TextView
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="130dp"
+                        android:textSize="12sp"
+                        android:text="Sold Cingles"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:textColor="@android:color/white" />
+
+                    <TextView
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="150dp"
+                        android:textSize="12sp"
+                        android:text="Launch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:textColor="@android:color/white"
+                        android:textAllCaps="true"
+                        android:id="@+id/launchSellingActivity"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp" />
+
+
+                </android.support.v7.widget.CardView>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/categoryTwo"
+                android:layout_width="match_parent"
+                android:layout_height="190dp">
+
+                <android.support.v7.widget.CardView
+                    android:layout_marginBottom="0.1dp"
+                    android:layout_toLeftOf="@+id/categoriesDividerTwo"
+                    android:layout_toStartOf="@+id/categoriesDividerTwo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:cardBackgroundColor="?attr/colorPrimary">
+
+
+                    <ImageView
+                        android:layout_width="192dp"
+                        android:layout_height="100dp"
+                        app:srcCompat="@drawable/test"
+                        android:id="@+id/cingleLacingImageView"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:background="@drawable/gradient_color"
+                        android:scaleType="centerCrop" />
+
+                    <TextView
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="110dp"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:text="Cingle Lacing"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:textColor="@android:color/white" />
+
+                    <TextView
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="130dp"
+                        android:textSize="12sp"
+                        android:text="Laced Cingles"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:textColor="@android:color/white" />
+
+                    <TextView
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="150dp"
+                        android:textSize="12sp"
+                        android:text="Launch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:textColor="@android:color/white"
+                        android:textAllCaps="true"
+                        android:id="@+id/launchLacingActivity"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp" />
+
+
+
+                </android.support.v7.widget.CardView>
+
+                <View
+                    android:id="@+id/categoriesDividerTwo"
+                    android:layout_width="0.1dp"
+                    android:layout_height="0.1dp"
+                    android:layout_gravity="center"
+                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true" />
+
+                <android.support.v7.widget.CardView
+                    android:layout_marginBottom="0.1dp"
+                    android:layout_toRightOf="@+id/categoriesDividerTwo"
+                    android:layout_toEndOf="@+id/categoriesDividerTwo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:cardBackgroundColor="?attr/colorPrimary">
+
+                    <ImageView
+                        android:layout_width="192dp"
+                        android:layout_height="100dp"
+                        app:srcCompat="@drawable/test"
+                        android:id="@+id/cingleLeasingImageView"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="false"
+                        android:layout_alignParentStart="false"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:background="@drawable/gradient_color"
+                        android:scaleType="centerCrop" />
+
+                    <TextView
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="110dp"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:text="Cingle Leasing"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/white" />
+
+                    <TextView
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="130dp"
+                        android:textSize="12sp"
+                        android:text="Leased Cingles"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:textColor="@android:color/white" />
+
+                    <TextView
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="150dp"
+                        android:textSize="12sp"
+                        android:text="Launch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:textColor="@android:color/white"
+                        android:textAllCaps="true"
+                        android:id="@+id/launchLeasingActivity"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp" />
+
+
+
+                </android.support.v7.widget.CardView>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_marginBottom="0.2dp"
+                android:id="@+id/categoryThree"
+                android:layout_width="match_parent"
+                android:layout_height="190dp">
+
+               <android.support.v7.widget.CardView
+                   android:layout_toLeftOf="@+id/categoriesDividerThree"
+                   android:layout_toStartOf="@+id/categoriesDividerThree"
+                   android:layout_width="wrap_content"
+                   android:layout_height="match_parent"
+                   app:cardBackgroundColor="?attr/colorPrimary">
+
+                   <ImageView
+                       android:layout_width="192dp"
+                       android:layout_height="100dp"
+                       app:srcCompat="@drawable/test"
+                       android:id="@+id/assetTradingImageView"
+                       android:layout_alignParentTop="true"
+                       android:layout_alignParentLeft="true"
+                       android:layout_alignParentStart="true"
+                       android:background="@drawable/gradient_color"
+                       android:scaleType="centerCrop" />
+
+                   <TextView
+                       android:layout_marginLeft="16dp"
+                       android:layout_marginTop="110dp"
+                       android:textStyle="bold"
+                       android:textSize="18sp"
+                       android:text="Asset Trading"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_alignParentLeft="true"
+                       android:textColor="@android:color/white" />
+
+                   <TextView
+                       android:layout_marginLeft="16dp"
+                       android:layout_marginTop="130dp"
+                       android:textSize="12sp"
+                       android:text="Traded Assets"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_alignParentLeft="true"
+                       android:textColor="@android:color/white" />
+
+                   <TextView
+                       android:layout_marginLeft="16dp"
+                       android:layout_marginTop="150dp"
+                       android:textSize="12sp"
+                       android:text="Launch"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_alignParentLeft="true"
+                       android:textColor="@android:color/white"
+                       android:textAllCaps="true"
+                       android:id="@+id/launchTradingActivity"
+                       android:paddingTop="10dp"
+                       android:paddingBottom="10dp" />
+
+
+
+               </android.support.v7.widget.CardView>
+
+                <View
+                    android:id="@+id/categoriesDividerThree"
+                    android:layout_width="0.1dp"
+                    android:layout_height="0.1dp"
+                    android:layout_gravity="center"
+                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true" />
+
+               <android.support.v7.widget.CardView
+                   android:layout_toRightOf="@+id/categoriesDividerThree"
+                   android:layout_toEndOf="@+id/categoriesDividerThree"
+                   android:layout_width="wrap_content"
+                   android:layout_height="match_parent"
+                   app:cardBackgroundColor="@color/colorPrimary">
+
+                   <ImageView
+                       android:layout_width="192dp"
+                       android:layout_height="100dp"
+                       app:srcCompat="@drawable/test"
+                       android:id="@+id/mainMarketImageView"
+                       android:layout_alignParentTop="true"
+                       android:layout_alignParentLeft="false"
+                       android:layout_alignParentStart="false"
+                       android:layout_alignParentRight="true"
+                       android:layout_alignParentEnd="true"
+                       android:background="@drawable/gradient_color"
+                       android:scaleType="centerCrop" />
+
+                   <TextView
+                       android:layout_marginLeft="16dp"
+                       android:layout_marginTop="110dp"
+                       android:textStyle="bold"
+                       android:textSize="18sp"
+                       android:text="Main Market"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:textColor="@android:color/white" />
+
+                   <TextView
+                       android:layout_marginLeft="16dp"
+                       android:layout_marginTop="130dp"
+                       android:textSize="12sp"
+                       android:text="Items"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_alignParentLeft="true"
+                       android:textColor="@android:color/white" />
+
+                   <TextView
+                       android:layout_marginLeft="16dp"
+                       android:layout_marginTop="150dp"
+                       android:textSize="12sp"
+                       android:text="Launch"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_alignParentLeft="true"
+                       android:textColor="@android:color/white"
+                       android:textAllCaps="true"
+                       android:id="@+id/launchMarketActivity"
+                       android:paddingTop="10dp"
+                       android:paddingBottom="10dp" />
+
+
+
+               </android.support.v7.widget.CardView>
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

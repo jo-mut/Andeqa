@@ -23,6 +23,7 @@ import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.cinggl.cinggl.R.id.cingleImageView;
 import static com.cinggl.cinggl.R.id.cingleToolsRelativeLayout;
 import static com.cinggl.cinggl.R.id.descriptionRelativeLayout;
 
@@ -45,13 +46,14 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder implements View
     public TextView commentsCountTextView;
     public TextView sensePointsTextView;
     public TextView timeTextView;
+    public TextView cingleSenseCreditsTextView;
     public ImageView cingleSettingsImageView;
     public RelativeLayout cingleTitleRelativeLayout;
+    public ProportionalImageView cingleImageView;
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
     private DatabaseReference cinglesReference;
     private CinglesItemClickListener cinglesItemClickListener;
-    public RelativeLayout cingleToolsRelativeLayout;
     private RelativeLayout descriptionRelativeLayout;
 
     public CingleOutViewHolder(View itemView){
@@ -71,10 +73,10 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder implements View
         cingleSettingsImageView = (ImageView) itemView.findViewById(R.id.cingleSettingsImageView);
         cingleTitleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
         sensePointsTextView = (TextView) mView.findViewById(R.id.sensePointsDescTextView);
-        cingleToolsRelativeLayout = (RelativeLayout) mView.findViewById(R.id.cingleToolsRelativeLayout);
         descriptionRelativeLayout  = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
-
-
+        cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
+        cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsTextView);
+        
         likesImageView.setOnClickListener(this);
         commentsImageView.setOnClickListener(this);
         likesCountTextView.setOnClickListener(this);
@@ -87,7 +89,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder implements View
         TextView cingleDescriptionTextView = (TextView) mView.findViewById(R.id.cingleDescriptionTextView);
         TextView sensePointsTextView = (TextView) mView.findViewById(R.id.sensePointsDescTextView);
         TextView timeTextView = (TextView) mView.findViewById(R.id.timeTextView);
-        RelativeLayout cingleTitleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
+        RelativeLayout cingleTitleRelativeLayout = (RelativeLayout) mView.findViewById(R.id.cingleTitleRelativeLayout);
 
         Picasso.with(mContext)
                 .load(cingle.getCingleImageUrl())
@@ -117,8 +119,9 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder implements View
         if (cingle.getDescription().equals("")){
             descriptionRelativeLayout.setVisibility(View.GONE);
         }else {
-            cingleDescriptionTextView.setText(cingle.getDescription());
+            cingleDescriptionTextView.setText(cingle.getDescription() + "..." + "more" + " " + "|" + " " + "@Cingle Backing" );
         }
+
         sensePointsTextView.setText("SP" + " " + (cingle.getSensepoint()));
         timeTextView.setText(DateUtils.getRelativeTimeSpanString((long) cingle.getTimeStamp()));
     }

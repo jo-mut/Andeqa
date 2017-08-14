@@ -53,14 +53,27 @@
                     android:layout_marginTop="10dp" />
 
                 <TextView
+                    android:text="CSCs"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/accountUsernameTextView"
+                    android:id="@+id/CingleSenseCreditsTextView"
+                    android:textStyle="normal|bold"
+                    android:textColor="@android:color/black"
+                    android:layout_alignTop="@+id/userProfileImageView"
                     android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:id="@+id/timeTextView"
-                    android:layout_marginRight="10dp" />
+                    android:layout_marginRight="5dp"
+                    android:padding="5dp" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/timeTextView"
+                    android:text="8h"
+                    android:layout_alignParentEnd="false"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="10dp"
+                    android:layout_below="@+id/accountUsernameTextView"
+                    android:textSize="12sp" />
             </RelativeLayout>
 
 
@@ -122,7 +135,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_delete_black_24dp"
+                    app:srcCompat="@drawable/ic_more_vert_black_24dp"
                     android:id="@+id/cingleSettingsImageView"
                     android:padding="5dp"
                     android:layout_alignParentTop="true"
@@ -142,9 +155,10 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:layout_alignParentTop="true"
-                    android:layout_marginTop="8dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginRight="40dp" />
+                    android:layout_marginTop="6dp"
+                    android:layout_toRightOf="@+id/commentsCountTextView"
+                    android:layout_toEndOf="@+id/commentsCountTextView"
+                    android:layout_marginLeft="10dp" />
 
                 <ImageView
                     android:layout_width="wrap_content"

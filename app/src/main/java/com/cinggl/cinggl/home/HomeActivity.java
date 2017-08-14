@@ -78,8 +78,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 //                        }
 //                    }).setIcon(android.R.drawable.ic_dialog_alert).show();
         }
-//
-//        launchHomeFragment();
 
         if (savedInstanceState == null){
             launchHomeFragment();

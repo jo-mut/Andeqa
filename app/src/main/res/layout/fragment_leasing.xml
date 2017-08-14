@@ -1,0 +1,78 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.cinggl.cinggl.leasing.LeasingFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.design.widget.TabLayout
+            app:tabTextAppearance="@style/MyCustomTextAppearance"
+            android:background="@color/colorPrimary"
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabGravity="fill"
+            app:tabIndicatorColor="@android:color/white"
+            app:tabMode="fixed"
+            app:tabSelectedTextColor="@android:color/white"
+            app:tabTextColor="@android:color/white" />
+
+
+    </RelativeLayout>
+
+    //network connection status
+    <!--<RelativeLayout-->
+    <!--android:id="@+id/networkRelativeLayout"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:background="@android:color/holo_blue_light"-->
+    <!--android:paddingTop="5dp"-->
+    <!--android:paddingBottom="5dp">-->
+
+    <!--&lt;!&ndash;<ProgressBar&ndash;&gt;-->
+    <!--&lt;!&ndash;android:id="@+id/progressBar"&ndash;&gt;-->
+    <!--&lt;!&ndash;style="@style/Widget.AppCompat.ProgressBar"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:indeterminate="true"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_gravity="center"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_centerVertical="true"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_centerHorizontal="true"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_width="15dp"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_height="15dp" />&ndash;&gt;-->
+
+    <!--<TextView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginRight="107dp"-->
+    <!--android:layout_marginEnd="107dp"-->
+    <!--android:id="@+id/connectionEstablished"-->
+    <!--android:textColor="@android:color/white"-->
+    <!--android:layout_alignParentTop="false"-->
+    <!--android:layout_alignParentRight="false"-->
+    <!--android:layout_alignParentEnd="false"-->
+    <!--android:layout_centerVertical="true"-->
+    <!--android:layout_centerInParent="false"-->
+    <!--android:layout_centerHorizontal="true" />-->
+
+    <!--</RelativeLayout>-->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </android.support.v4.view.ViewPager>
+
+    </RelativeLayout>
+
+
+
+</FrameLayout>
