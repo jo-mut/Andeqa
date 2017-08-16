@@ -25,7 +25,7 @@ public class IfairMainActivity extends AppCompatActivity implements View.OnClick
     @Bind(R.id.launchBackingActivity)TextView mLaunchBackingAActivity;
     @Bind(R.id.launchLacingActivity)TextView mLaunchLacingActivity;
     @Bind(R.id.launchLeasingActivity)TextView mLaunchLeasingActivity;
-    @Bind(R.id.launchMarketActivity)TextView mLaunchMarketActivity;
+//    @Bind(R.id.launchMarketActivity)TextView mLaunchMarketActivity;
     @Bind(R.id.launchSellingActivity)TextView mLaunchSellingActivity;
     @Bind(R.id.launchTradingActivity)TextView mLaunchTradingActivity;
 
@@ -39,7 +39,7 @@ public class IfairMainActivity extends AppCompatActivity implements View.OnClick
         mLaunchBackingAActivity.setOnClickListener(this);
         mLaunchLacingActivity.setOnClickListener(this);
         mLaunchLeasingActivity.setOnClickListener(this);
-        mLaunchMarketActivity.setOnClickListener(this);
+//        mLaunchMarketActivity.setOnClickListener(this);
         mLaunchTradingActivity.setOnClickListener(this);
         mLaunchSellingActivity.setOnClickListener(this);
 
@@ -88,10 +88,10 @@ public class IfairMainActivity extends AppCompatActivity implements View.OnClick
             startActivity(intent);
         }
 
-        if (v == mLaunchMarketActivity){
-            //LAUNCH MAIN MARKET ACTIVITY
-            Intent intent = new Intent(IfairMainActivity.this, MarketActivity.class);
-            startActivity(intent);
-        }
+//        if (v == mLaunchMarketActivity){
+//            //LAUNCH MAIN MARKET ACTIVITY
+//            Intent intent = new Intent(IfairMainActivity.this, MarketActivity.class);
+//            startActivity(intent);
+//        }
     }
 }

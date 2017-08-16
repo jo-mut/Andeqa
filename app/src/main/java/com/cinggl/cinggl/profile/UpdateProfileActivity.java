@@ -240,7 +240,6 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     public void updateProfilePhoto(){
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String uid = user.getUid();
-        final String profileImage = (imageUri.toString());
 
         if (imageUri != null){
             StorageReference storageReference = FirebaseStorage

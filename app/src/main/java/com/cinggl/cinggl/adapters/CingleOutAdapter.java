@@ -2,13 +2,7 @@ package com.cinggl.cinggl.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateFormat;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,18 +12,15 @@ import android.view.animation.AnimationUtils;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.backing.BakingDetailActivity;
 import com.cinggl.cinggl.home.CingleDetailActivity;
-import com.cinggl.cinggl.home.CingleSettingsDialog;
 import com.cinggl.cinggl.home.CommentsActivity;
 import com.cinggl.cinggl.home.LikesActivity;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.models.Cingulan;
-import com.cinggl.cinggl.profile.ProfileFragment;
 import com.cinggl.cinggl.relations.FollowerProfileActivity;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
-import com.cinggl.cinggl.utils.CinglesItemClickListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -44,12 +35,8 @@ import com.squareup.picasso.Picasso;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * Created by J.EL on 7/19/2017.
@@ -167,7 +154,14 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
                     }
                 });
 
-
+                holder.cingleTradeMethodTextView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent =  new Intent(mContext, BakingDetailActivity.class);
+//                        intent.putExtra(CingleOutAdapter.EXTRA_POST_KEY, postKey);
+                        mContext.startActivity(intent);
+                    }
+                });
 
                 //SHOW CINGLE SETTINGS TO THE CINGLE CREATOR ONLY
                 if (firebaseAuth.getCurrentUser().getUid().equals(uid)){
@@ -278,7 +272,7 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
                               Cingle cingle = dataSnapshot.getValue(Cingle.class);
 
                               DecimalFormat formatter =  new DecimalFormat("0.00000000");
-                              holder.sensePointsTextView.setText("SP" + " " + formatter.format(cingle.getSensepoint()));
+                              holder.cingleSenseCreditsTextView.setText("CSC" + " " + formatter.format(cingle.getSensepoint()));
 
 
                           }
@@ -341,7 +335,7 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
                                     Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "likesCount");
 
                                 }
-                                holder.likesCountTextView.setText(dataSnapshot.getChildrenCount() + " " + "Likes");
+                                holder.likesCountTextView.setText("+" + dataSnapshot.getChildrenCount() +" " + "Likes");
                             }
 
                         @Override

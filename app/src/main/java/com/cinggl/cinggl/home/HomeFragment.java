@@ -104,20 +104,6 @@ public class HomeFragment extends Fragment{
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if(id == R.id.action_profile){
-            Intent intent = new Intent(getActivity(), PersonalProfileActivity.class);
-            intent.putExtra(HomeFragment.EXTRA_USER_UID, mUid);
-            startActivity(intent);
-
-        }
-
-        if (id == R.id.action_account_settings){
-            Intent intent = new Intent(getActivity(), UpdateProfileActivity.class);
-            startActivity(intent);
-
-        }
-
-
         return super.onOptionsItemSelected(item);
     }
 

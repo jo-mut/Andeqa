@@ -164,21 +164,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_account_settings) {
-//            launchSettings();
-            Intent intent = new Intent(getActivity(), UpdateProfileActivity.class);
-            startActivity(intent);
-            return true;
-        }
-
-        if (id == R.id.action_home){
-            Intent intent = new Intent(getActivity(), HomeActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
     /**method to launch settings activity*/
@@ -199,13 +184,14 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "cingles Count");
 
-                    if (dataSnapshot.hasChildren()){
-                        mCinglesCountTextView.setText(dataSnapshot.getChildrenCount()+ "");
-                    }else {
-                        mCinglesCountTextView.setText("0");
-                    }
-
                 }
+
+                if (dataSnapshot.hasChildren()){
+                    mCinglesCountTextView.setText(dataSnapshot.getChildrenCount()+ "");
+                }else {
+                    mCinglesCountTextView.setText("0");
+                }
+
 
             }
 
@@ -458,7 +444,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
 
                                         DecimalFormat formatter =  new DecimalFormat("0.00000000");
 
-                                        viewHolder.sensePointsTextView.setText("SP" + " " + formatter.format(cingle.getSensepoint()));
+                                        viewHolder.sensePointsTextView.setText("CSC" + " " + formatter.format(cingle.getSensepoint()));
 
                                     }
 
@@ -521,7 +507,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
                                            Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "likesCount");
 
                                        }
-                                       viewHolder.likesCountTextView.setText(dataSnapshot.getChildrenCount() + " " + "Likes");
+                                       viewHolder.likesCountTextView.setText("+" + dataSnapshot.getChildrenCount());
 
                                    }
                                 }

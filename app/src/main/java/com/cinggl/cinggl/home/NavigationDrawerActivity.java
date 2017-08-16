@@ -3,6 +3,7 @@ package com.cinggl.cinggl.home;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -51,6 +52,7 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.R.id.toggle;
+import static android.os.Build.VERSION_CODES.N;
 import static java.security.AccessController.getContext;
 
 public class NavigationDrawerActivity extends AppCompatActivity
@@ -311,10 +313,25 @@ public class NavigationDrawerActivity extends AppCompatActivity
             startActivity(intent);
         }
 
+        if (id == R.id.action_about){
+            Intent intent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://www.androidhive.info/privacy-policy"));
+            startActivity(intent);
+        }
+
         if (id == R.id.action_preferences) {
-            // launch settings activity
             startActivity(new Intent(NavigationDrawerActivity.this, SettingsActivity.class));
             return true;
+        }
+
+        if (id == R.id.action_terms){
+            Intent intent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://www.androidhive.info/privacy-policy"));
+            startActivity(intent);
+        }
+
+        if (id == R.id.action_intro_slides){
+
         }
 
 

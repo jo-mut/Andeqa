@@ -45,7 +45,7 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
     public TextView usernameTextView;
     public TextView commentsCountTextView;
     public ImageView cingleSettingsImageView;
-    public TextView sensePointsTextView;
+    public TextView cingleTradeMethodTextView;
     public TextView cingleSenseCreditsTextView;
     public ProportionalImageView cingleImageView;
     public RelativeLayout cingleToolsRelativeLayout;
@@ -67,12 +67,14 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
         usernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
         cingleSettingsImageView = (ImageView) mView.findViewById(R.id.cingleSettingsImageView);
-        sensePointsTextView= (TextView) mView.findViewById(R.id.sensePointsTextView);
         cingleToolsRelativeLayout = (RelativeLayout) mView.findViewById(R.id.cingleToolsRelativeLayout);
         titleRelativeLayout = (RelativeLayout) mView.findViewById(R.id.titleRelativeLayout);
         descriptionRelativeLayout = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
         cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
-        cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsTextView);
+        cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsCountTextView);
+        cingleTradeMethodTextView = (TextView) mView.findViewById(R.id.cingleTradeMethodTextView);
+
+
 
 
     }
@@ -82,7 +84,7 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
         final CircleImageView profileImageView = (CircleImageView) mView.findViewById(R.id.userProfileImageView);
         TextView cingleTitleTextView = (TextView) mView.findViewById(R.id.cingleTitleTextView);
         TextView cingleDescriptionTextView = (TextView) mView.findViewById(R.id.cingleDescriptionTextView);
-        TextView sensePointsTextView = (TextView) mView.findViewById(R.id.sensePointsTextView);
+        TextView cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsCountTextView);
         TextView datePostedTextView = (TextView) mView.findViewById(R.id.datePostedTextView);
 
         Picasso.with(mContext)
@@ -140,11 +142,13 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
         }else {
             cingleDescriptionTextView.setText(cingle.getDescription());
         }
+
         datePostedTextView.setText(cingle.getDatePosted());
 
         //REMOVE SCIENTIFIC NOATATION
         DecimalFormat formatter =  new DecimalFormat("0.00000000");
-        sensePointsTextView.setText("SP" + " " + formatter.format(cingle.getSensepoint()));
+        cingleSenseCreditsTextView.setText("SP" + " " + formatter.format(cingle.getSensepoint()));
+        cingleTradeMethodTextView.setText("@CingleBacking");
 
     }
 }

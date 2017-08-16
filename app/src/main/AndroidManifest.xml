@@ -128,44 +128,38 @@
         <activity
             android:name=".ifair.IfairMainActivity"
             android:label="Ifair" />
+        <activity android:name=".ifair.CingleBackingActivity" />
+        <activity android:name=".ifair.CingleSellingActivity" />
+        <activity android:name=".ifair.CingleLacingActivity" />
+        <activity android:name=".ifair.CingleLeasingActivity" />
+        <activity android:name=".ifair.AssetTradingActivity" />
+        <activity android:name=".ifair.MainMarketActivity" />
+        <activity android:name=".preferences.SettingsActivity" />
         <activity
-            android:name=".ifair.CingleBackingActivity" />
-        <activity
-            android:name=".ifair.CingleSellingActivity" />
-        <activity
-            android:name=".ifair.CingleLacingActivity" />
-        <activity
-            android:name=".ifair.CingleLeasingActivity" />
-        <activity
-            android:name=".ifair.AssetTradingActivity" />
-        <activity
-            android:name=".ifair.MainMarketActivity" />
-        <activity
-            android:name=".preferences.SettingsActivity" />
-        <activity
+            android:name=".backing.BackingActivity"
             android:label="Cingle Backing"
-            android:theme="@style/AppTheme"
-            android:name=".backing.BackingActivity" />
+            android:theme="@style/AppTheme" />
         <activity
-            android:theme="@style/AppTheme"
+            android:name=".lacing.LacingActivity"
             android:label="Cingle Lacing"
-            android:name=".lacing.LacingActivity" />
+            android:theme="@style/AppTheme" />
         <activity
+            android:name=".leasing.LeasingActivity"
             android:label="Cingle Leasing"
-            android:theme="@style/AppTheme"
-            android:name=".leasing.LeasingActivity" />
+            android:theme="@style/AppTheme" />
         <activity
+            android:name=".market.MarketActivity"
             android:label="Main Market"
-            android:theme="@style/AppTheme"
-            android:name=".market.MarketActivity" />
+            android:theme="@style/AppTheme" />
         <activity
+            android:name=".selling.SellingActivity"
             android:label="Cingle Sale"
-            android:theme="@style/AppTheme"
-            android:name=".selling.SellingActivity" />
+            android:theme="@style/AppTheme" />
         <activity
+            android:name=".trading.TradingActivity"
             android:label="Asset Trading"
-            android:theme="@style/AppTheme"
-            android:name=".trading.TradingActivity"/>
+            android:theme="@style/AppTheme" />
+        <activity android:name=".backing.BakingDetailActivity"></activity>
     </application>
 
 </manifest>

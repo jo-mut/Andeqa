@@ -18,9 +18,7 @@ import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.CingleOutAdapter;
 import com.cinggl.cinggl.models.Cingle;
-import com.cinggl.cinggl.utils.CinglesItemClickListener;
 import com.cinggl.cinggl.Trace;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -28,7 +26,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +70,6 @@ public class CingleOutFragment extends Fragment{
     private static final int TOTAL_ITEM_EACH_LOAD = 10;
     private static final String KEY_LAYOUT_POSITION = "layout pooition";
     private int cingleOutRecyclerViewPosition = 0;
-    private CinglesItemClickListener cinglesItemClickListener;
 
 
 

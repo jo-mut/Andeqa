@@ -227,12 +227,13 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
                         for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                             Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "cingles Count");
 
-                            if (dataSnapshot.hasChildren()){
-                                mCinglesCountTextView.setText(dataSnapshot.getChildrenCount()+ "");
-                            }else {
-                                mCinglesCountTextView.setText("0");
-                            }
 
+                        }
+
+                        if (dataSnapshot.hasChildren()){
+                            mCinglesCountTextView.setText(dataSnapshot.getChildrenCount()+ "");
+                        }else {
+                            mCinglesCountTextView.setText("0");
                         }
 
                     }
@@ -393,7 +394,7 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
 
                                     DecimalFormat formatter =  new DecimalFormat("0.00000000");
                                     try {
-                                        viewHolder.sensePointsTextView.setText("SP" + " " + formatter.format(cingle.getSensepoint()));
+                                        viewHolder.sensePointsTextView.setText("CSC" + " " + formatter.format(cingle.getSensepoint()));
                                     }catch (Exception e){
                                         e.printStackTrace();
                                     }
@@ -448,7 +449,7 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
                                         Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "likesCount");
 
                                     }
-                                    viewHolder.likesCountTextView.setText(dataSnapshot.getChildrenCount() + " " + "Likes");
+                                    viewHolder.likesCountTextView.setText("+" + dataSnapshot.getChildrenCount());
 
                                 }
 

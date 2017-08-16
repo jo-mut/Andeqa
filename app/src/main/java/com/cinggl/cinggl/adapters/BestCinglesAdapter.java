@@ -12,6 +12,7 @@ import android.view.animation.AnimationUtils;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.backing.BakingDetailActivity;
 import com.cinggl.cinggl.home.BestCinglesFragment;
 import com.cinggl.cinggl.home.CingleDetailActivity;
 import com.cinggl.cinggl.home.CommentsActivity;
@@ -20,7 +21,6 @@ import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.models.Cingulan;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.relations.FollowerProfileActivity;
-import com.cinggl.cinggl.utils.CinglesItemClickListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -159,7 +159,14 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                     }
                 });
 
-
+                holder.cingleTradeMethodTextView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent =  new Intent(mContext, BakingDetailActivity.class);
+//                        intent.putExtra(CingleOutAdapter.EXTRA_POST_KEY, postKey);
+                        mContext.startActivity(intent);
+                    }
+                });
 
                 //SHOW CINGLE SETTINGS TO THE CINGLE CREATOR ONLY
                 if (firebaseAuth.getCurrentUser().getUid().equals(uid)){
@@ -271,7 +278,7 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
 
                                 DecimalFormat formatter =  new DecimalFormat("0.00000000");
 
-                                holder.sensePointsTextView.setText("SP" + " " + formatter.format(cingle.getSensepoint()));
+                                holder.cingleSenseCreditsTextView.setText("CSC" + " " + formatter.format(cingle.getSensepoint()));
 
                             }
 
@@ -316,7 +323,7 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                                 Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "likesCount");
 
                             }
-                            holder.likesCountTextView.setText(dataSnapshot.getChildrenCount() + " " + "Likes");
+                            holder.likesCountTextView.setText("+" + dataSnapshot.getChildrenCount() + " " + "Likes");
 
 
                         }

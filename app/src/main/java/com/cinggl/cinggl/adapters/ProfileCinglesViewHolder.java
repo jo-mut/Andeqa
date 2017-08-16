@@ -17,8 +17,6 @@ import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static com.cinggl.cinggl.R.id.descriptionRelativeLayout;
-
 
 /**
  * Created by J.EL on 6/8/2017.
@@ -55,11 +53,11 @@ public class ProfileCinglesViewHolder extends RecyclerView.ViewHolder implements
         accountUsernameTextView = (TextView) itemView.findViewById(R.id.accountUsernameTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.userProfileImageView);
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
-        sensePointsTextView = (TextView) itemView.findViewById(R.id.sensePointsDescTextView);
+        sensePointsTextView = (TextView) itemView.findViewById(R.id.cingleSenseCreditsTextView);
         timeTextView = (TextView) itemView.findViewById(R.id.timeTextView);
         cingleSettingsImageView = (ImageView) itemView.findViewById(R.id.cingleSettingsImageView);
         cingleTitleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
-        sensePointsTextView = (TextView) mView.findViewById(R.id.sensePointsDescTextView);
+        sensePointsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsTextView);
         descriptionRelativeLayout  = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
 
 
@@ -74,7 +72,7 @@ public class ProfileCinglesViewHolder extends RecyclerView.ViewHolder implements
         final ProportionalImageView cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
         TextView cingleTitleTextView = (TextView) mView.findViewById(R.id.cingleTitleTextView);
         TextView cingleDescriptionTextView = (TextView) mView.findViewById(R.id.cingleDescriptionTextView);
-        TextView sensePointsTextView = (TextView) mView.findViewById(R.id.sensePointsDescTextView);
+        TextView sensePointsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsTextView);
         TextView timeTextView = (TextView) mView.findViewById(R.id.timeTextView);
         RelativeLayout cingleTitleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
 
@@ -107,7 +105,7 @@ public class ProfileCinglesViewHolder extends RecyclerView.ViewHolder implements
         if (cingle.getDescription().equals("")){
             descriptionRelativeLayout.setVisibility(View.GONE);
         }else {
-            cingleDescriptionTextView.setText(cingle.getDescription() + "..." + "more" + " " + "|" + " " + "@Cingle Backing" );
+            cingleDescriptionTextView.setText(cingle.getDescription() + "..." + "more");
         }
 
         sensePointsTextView.setText("SP" + " " + (cingle.getSensepoint()));

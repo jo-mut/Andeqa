@@ -22,7 +22,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="titleHashtag">#</string>
+    <string name="titleHashtag">Cingle Backing</string>
     <string name="menu_search">Search</string>
     <string name="title_activity_app_activities">AppActivities</string>
     <string name="title_activity_test">TestActivity</string>

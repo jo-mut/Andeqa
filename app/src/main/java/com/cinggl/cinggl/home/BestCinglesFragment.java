@@ -18,7 +18,6 @@ import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.BestCinglesAdapter;
 import com.cinggl.cinggl.models.Cingle;
-import com.cinggl.cinggl.utils.CinglesItemClickListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -53,7 +52,6 @@ public class BestCinglesFragment extends Fragment {
     private List<String> cinglesIds = new ArrayList<>();
     private BestCinglesAdapter bestCinglesAdapter;
     private LinearLayoutManager layoutManager;
-    private CinglesItemClickListener cinglesItemClickListener;
     private int currentPage = 0;
     private Query bestCinglesQuery;
     private FirebaseUser firebaseUser;

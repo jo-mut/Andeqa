@@ -1,7 +1,6 @@
 package com.cinggl.cinggl.adapters;
 
 import android.content.Context;
-import android.icu.math.BigDecimal;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.View;
@@ -10,28 +9,21 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cingle;
-import com.cinggl.cinggl.utils.CinglesItemClickListener;
 import com.cinggl.cinggl.ProportionalImageView;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static com.cinggl.cinggl.R.id.cingleImageView;
-import static com.cinggl.cinggl.R.id.cingleToolsRelativeLayout;
-import static com.cinggl.cinggl.R.id.descriptionRelativeLayout;
-
 /**
  * Created by J.EL on 5/26/2017.
  */
 
-public class CingleOutViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+public class CingleOutViewHolder extends RecyclerView.ViewHolder{
 
     View mView;
     Context mContext;
@@ -44,16 +36,15 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder implements View
     public TextView accountUsernameTextView;
     public CircleImageView profileImageView;
     public TextView commentsCountTextView;
-    public TextView sensePointsTextView;
     public TextView timeTextView;
     public TextView cingleSenseCreditsTextView;
+    public TextView cingleTradeMethodTextView;
     public ImageView cingleSettingsImageView;
     public RelativeLayout cingleTitleRelativeLayout;
     public ProportionalImageView cingleImageView;
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
     private DatabaseReference cinglesReference;
-    private CinglesItemClickListener cinglesItemClickListener;
     private RelativeLayout descriptionRelativeLayout;
 
     public CingleOutViewHolder(View itemView){
@@ -68,18 +59,14 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder implements View
         accountUsernameTextView = (TextView) itemView.findViewById(R.id.accountUsernameTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.userProfileImageView);
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
-        sensePointsTextView = (TextView) itemView.findViewById(R.id.sensePointsDescTextView);
         timeTextView = (TextView) itemView.findViewById(R.id.timeTextView);
         cingleSettingsImageView = (ImageView) itemView.findViewById(R.id.cingleSettingsImageView);
         cingleTitleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
-        sensePointsTextView = (TextView) mView.findViewById(R.id.sensePointsDescTextView);
         descriptionRelativeLayout  = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
         cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
         cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsTextView);
-        
-        likesImageView.setOnClickListener(this);
-        commentsImageView.setOnClickListener(this);
-        likesCountTextView.setOnClickListener(this);
+        cingleTradeMethodTextView = (TextView) mView.findViewById(R.id.cingleTradeMethodTextView);
+
 
     }
 
@@ -87,9 +74,10 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder implements View
         final ProportionalImageView cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
         TextView cingleTitleTextView = (TextView) mView.findViewById(R.id.cingleTitleTextView);
         TextView cingleDescriptionTextView = (TextView) mView.findViewById(R.id.cingleDescriptionTextView);
-        TextView sensePointsTextView = (TextView) mView.findViewById(R.id.sensePointsDescTextView);
+        TextView cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsTextView);
         TextView timeTextView = (TextView) mView.findViewById(R.id.timeTextView);
         RelativeLayout cingleTitleRelativeLayout = (RelativeLayout) mView.findViewById(R.id.cingleTitleRelativeLayout);
+        TextView cingleTradeMethodTextView = (TextView) mView.findViewById(R.id.cingleTradeMethodTextView);
 
         Picasso.with(mContext)
                 .load(cingle.getCingleImageUrl())
@@ -119,17 +107,13 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder implements View
         if (cingle.getDescription().equals("")){
             descriptionRelativeLayout.setVisibility(View.GONE);
         }else {
-            cingleDescriptionTextView.setText(cingle.getDescription() + "..." + "more" + " " + "|" + " " + "@Cingle Backing" );
+            cingleDescriptionTextView.setText(cingle.getDescription() + "..." + "more");
         }
 
-        sensePointsTextView.setText("SP" + " " + (cingle.getSensepoint()));
+        cingleSenseCreditsTextView.setText("CSC" + " " + (cingle.getSensepoint()));
         timeTextView.setText(DateUtils.getRelativeTimeSpanString((long) cingle.getTimeStamp()));
+        cingleTradeMethodTextView.setText("@CingleBacking");
     }
-//
-    @Override
-    public void onClick(View view){
-        cinglesItemClickListener.clickPosition(getAdapterPosition(), view.getId());
 
-    }
 
 }
