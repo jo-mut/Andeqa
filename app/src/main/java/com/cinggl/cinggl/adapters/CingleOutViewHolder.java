@@ -17,7 +17,12 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.cinggl.cinggl.R.string.likes;
 
 /**
  * Created by J.EL on 5/26/2017.
@@ -46,6 +51,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder{
     public static final int MAX_HEIGHT = 400;
     private DatabaseReference cinglesReference;
     private RelativeLayout descriptionRelativeLayout;
+    public RecyclerView usersWhoLikedCountRecyclerView;
 
     public CingleOutViewHolder(View itemView){
         super(itemView);
@@ -66,6 +72,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder{
         cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
         cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsTextView);
         cingleTradeMethodTextView = (TextView) mView.findViewById(R.id.cingleTradeMethodTextView);
+        usersWhoLikedCountRecyclerView = (RecyclerView) mView.findViewById(R.id.usersWhoLikedCountRecyclerView);
 
 
     }
@@ -110,7 +117,12 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder{
             cingleDescriptionTextView.setText(cingle.getDescription() + "..." + "more");
         }
 
-        cingleSenseCreditsTextView.setText("CSC" + " " + (cingle.getSensepoint()));
+//        NumberFormat nf = NumberFormat.getCurrencyInstance();
+//        String pattern = ((DecimalFormat) nf).toPattern();
+//        String newPattern = pattern.replace("\u00A4", "CSC").trim();
+//        NumberFormat newFormat = new DecimalFormat(newPattern);
+//        cingleSenseCreditsTextView.setText("" + newFormat.format(cingle.getSensepoint()));
+
         timeTextView.setText(DateUtils.getRelativeTimeSpanString((long) cingle.getTimeStamp()));
         cingleTradeMethodTextView.setText("@CingleBacking");
     }

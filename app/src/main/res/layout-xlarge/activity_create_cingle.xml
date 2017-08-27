@@ -6,7 +6,7 @@
     android:id="@+id/activity_cingle_creation"
     android:layout_width="match_parent"
     android:orientation="vertical"
-    tools:context="com.cinggl.cinggl.camera.CreateCingleActivity"
+    tools:context="com.cinggl.cinggl.creation.CreateCingleActivity"
     android:layout_height="match_parent"
     android:weightSum="1">
 

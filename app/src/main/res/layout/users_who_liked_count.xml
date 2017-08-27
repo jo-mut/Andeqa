@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <TextView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/usersWhoLikedProfileImageView"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="false"
@@ -23,8 +23,7 @@
             android:layout_toEndOf="@+id/usersWhoLikedCountRecyclerView"
             android:layout_marginLeft="1dp"
             android:textSize="9sp"
-            android:text="+9"
-            android:padding="4dp" />
+            android:text="+9" />
 
 
 

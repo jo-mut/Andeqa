@@ -18,6 +18,7 @@ import android.widget.ViewAnimator;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.home.HomeActivity;
+import com.cinggl.cinggl.home.NavigationDrawerActivity;
 import com.cinggl.cinggl.models.Cingulan;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -220,7 +221,7 @@ public class SetupPorifleInfo extends AppCompatActivity implements View.OnClickL
 
             Toast.makeText(SetupPorifleInfo.this, "Your profile info has been saved", Toast.LENGTH_SHORT).show();
 
-            Intent intent = new Intent(SetupPorifleInfo.this, HomeActivity.class);
+            Intent intent = new Intent(SetupPorifleInfo.this, NavigationDrawerActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();

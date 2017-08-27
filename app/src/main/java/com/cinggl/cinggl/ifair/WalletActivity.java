@@ -7,12 +7,13 @@ import android.view.View;
 
 import com.cinggl.cinggl.R;
 
-public class CingleBackingActivity extends AppCompatActivity {
+public class WalletActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cingle_backing);
+        setContentView(R.layout.activity_wallet);
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -25,6 +26,5 @@ public class CingleBackingActivity extends AppCompatActivity {
                 finish();
             }
         });
-
     }
 }

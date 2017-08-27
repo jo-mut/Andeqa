@@ -19,12 +19,7 @@ import java.text.DecimalFormat;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static com.cinggl.cinggl.R.id.cingleImageView;
-import static com.cinggl.cinggl.R.id.cingleSettingsImageView;
-import static com.cinggl.cinggl.R.id.cingleTitleRelativeLayout;
-import static com.cinggl.cinggl.R.id.cingleToolsRelativeLayout;
-import static com.cinggl.cinggl.R.id.descriptionRelativeLayout;
-import static com.cinggl.cinggl.R.id.titleRelativeLayout;
+import static com.cinggl.cinggl.R.id.usersWhoLikedCountRecyclerView;
 
 /**
  * Created by J.EL on 7/6/2017.
@@ -53,6 +48,9 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
     public static final int MAX_HEIGHT = 400;
     private RelativeLayout titleRelativeLayout;
     private RelativeLayout descriptionRelativeLayout;
+    public TextView cingleMomentTextView;
+    public RelativeLayout cingleMomentRelativeLayout;
+    public RecyclerView usersWhoLikedCountRecyclerView;
 
     public BestCinglesViewHolder(View itemView) {
         super(itemView);
@@ -73,9 +71,9 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
         cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
         cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsCountTextView);
         cingleTradeMethodTextView = (TextView) mView.findViewById(R.id.cingleTradeMethodTextView);
-
-
-
+        cingleMomentTextView = (TextView) mView.findViewById(R.id.cingleMomentTextView);
+        cingleMomentRelativeLayout = (RelativeLayout) mView.findViewById(R.id.cingleMomentRelativeLayout);
+        usersWhoLikedCountRecyclerView = (RecyclerView) mView.findViewById(R.id.usersWhoLikedCountRecyclerView);
 
     }
 

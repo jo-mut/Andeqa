@@ -2,17 +2,13 @@ package com.cinggl.cinggl.home;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
 import android.support.v4.app.Fragment;
@@ -22,14 +18,10 @@ import android.support.v7.widget.ContentFrameLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
-import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.camera.CreateCingleActivity;
+import com.cinggl.cinggl.creation.CreateCingleActivity;
 import com.cinggl.cinggl.profile.ProfileFragment;
-import com.cinggl.cinggl.services.ConnectivityReceiver;
 import com.cinggl.cinggl.timeline.TimelineFragment;
 
 import butterknife.Bind;

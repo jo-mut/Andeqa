@@ -1,29 +1,49 @@
 package com.cinggl.cinggl.profile;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.adapters.CingleOutAdapter;
 import com.cinggl.cinggl.adapters.ProfileCinglesViewHolder;
+import com.cinggl.cinggl.home.CingleSettingsDialog;
 import com.cinggl.cinggl.home.CommentsActivity;
 import com.cinggl.cinggl.home.HomeActivity;
+import com.cinggl.cinggl.home.HomeFragment;
 import com.cinggl.cinggl.home.LikesActivity;
+import com.cinggl.cinggl.ifair.WalletActivity;
+import com.cinggl.cinggl.lacing.LacingFragment;
+import com.cinggl.cinggl.lacing.LacingPagerAdapter;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.models.Cingulan;
+import com.cinggl.cinggl.preferences.SettingsActivity;
 import com.cinggl.cinggl.relations.PeopleActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,6 +68,10 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static android.R.attr.fragment;
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
+import static android.os.Build.VERSION_CODES.M;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -61,7 +85,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
     @Bind(R.id.followingCountTextView)TextView mFollowingCountTextView;
     @Bind(R.id.cinglesCountTextView)TextView mCinglesCountTextView;
     @Bind(R.id.header_cover_image)ImageView mProfileCover;
-
+    @Bind(R.id.editProfileImageView)ImageView mEditProfileImageView;
 
 
     private DatabaseReference databaseReference;
@@ -78,18 +102,15 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
     private DatabaseReference commentReference;
     private FragmentManager fragmentManager;
     private boolean processLikes = false;
-
     private static final String TAG = "ProfileFragment";
     private  static final int MAX_WIDTH = 300;
     private static final int MAX_HEIGHT = 300;
     private static final double GOLDEN_RATIO = 1.618;
     private static final double DEFAULT_PRICE = 1.5;
     private static final String EXTRA_POST_KEY = "post key";
-    private String mUid;
     private static final String EXTRA_USER_UID = "uid";
     private static final int TOTAL_ITEM_EACH_LOAD = 10;
     private int currentPage = 0;
-
 
 
     public ProfileFragment() {
@@ -105,7 +126,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 
-        mUid = firebaseUser.getUid();
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
         profileInfoQuery = databaseReference.orderByChild("uid").equalTo(firebaseAuth.getCurrentUser().getUid());
         relationsRef = FirebaseDatabase.getInstance().getReference(Constants.RELATIONS);
@@ -114,8 +134,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
         commentReference = FirebaseDatabase.getInstance().getReference(Constants.COMMENTS);
         likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
         profileCinglesQuery = databaseReference.orderByChild("uid").equalTo(firebaseAuth.getCurrentUser().getUid());
-
-
 
         fragmentManager = getChildFragmentManager();
 
@@ -126,8 +144,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
         commentReference.keepSynced(true);
         relationsRef.keepSynced(true);
 
-
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -141,6 +159,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
 
         mFollowingCountTextView.setOnClickListener(this);
         mFollowersCountTextView.setOnClickListener(this);
+        mEditProfileImageView.setOnClickListener(this);
 
         profileCinglesQuery.keepSynced(true);
         databaseReference.keepSynced(true);
@@ -150,12 +169,14 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
         return view;
     }
 
-//    @Override
-//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        super.onCreateOptionsMenu(menu, inflater);
-//        inflater.inflate(R.menu.profile_menu, menu);
-//    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.profile_menu, menu);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -164,22 +185,25 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if (id == R.id.action_account_settings) {
+            Intent intent = new Intent(getActivity(), SettingsActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.action_wallet){
+            Intent intent = new Intent(getActivity(), WalletActivity.class);
+            startActivity(intent);
+        }
+
+
         return super.onOptionsItemSelected(item);
     }
-    /**method to launch settings activity*/
-//    public void launchSettings(){
-//        Intent intentSettings = new Intent(getActivity(), SettingsActivity.class);
-//        startActivity(intentSettings);
-//    }
-
-
 
     private void fetchData(){
 
         profileCinglesQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
 
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "cingles Count");
@@ -191,7 +215,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
                 }else {
                     mCinglesCountTextView.setText("0");
                 }
-
 
             }
 
@@ -352,40 +375,17 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
                             }
                         });
 
-
-                        //SHOW CINGLE SETTINGS TO THE CINGLE CREATOR ONLY
-                        if (firebaseAuth.getCurrentUser().getUid().equals(uid)){
-                            viewHolder.cingleSettingsImageView.setVisibility(View.VISIBLE);
-
-                            viewHolder.cingleSettingsImageView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    databaseReference.addValueEventListener(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                            if (dataSnapshot.hasChild(postKey)){
-                                                databaseReference.child(postKey).removeValue();
-//                                                bestCingles.remove(bestCingles.get(position));
-                                            }
-
-                                            notifyItemRemoved(position);
-                                            notifyItemRangeChanged(position, getItemCount() - position);
-
-                                        }
-
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
-
-                                        }
-                                    });
-
-                                }
-                            });
-
-
-                        }else {
-                            viewHolder.cingleSettingsImageView.setVisibility(View.GONE);
-                        }
+                        viewHolder.cingleSettingsImageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Bundle bundle = new Bundle();
+                                bundle.putString(ProfileFragment.EXTRA_POST_KEY, postKey);
+                                FragmentManager fragmenManager = getChildFragmentManager();
+                                CingleSettingsDialog cingleSettingsDialog = CingleSettingsDialog.newInstance("cingle settings");
+                                cingleSettingsDialog.setArguments(bundle);
+                                cingleSettingsDialog.show(fragmenManager, "cingle settings fragment");
+                            }
+                        });
 
 
                         //RETRIEVE USER INFO IF AND CATCH EXCEPTION IF CINGLES IS NOT DELETED;
@@ -537,23 +537,13 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
                                                 processLikes = false;
 
                                             }else {
-                                                if(processLikes){
-                                                    if (dataSnapshot.child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
-                                                        likesRef.child(postKey)
-                                                                .removeValue();
-                                                        processLikes = false;
-                                                        onLikeCounter(false);
-                                                    }else {
-                                                        likesRef.child(postKey).child(firebaseAuth.getCurrentUser().getUid())
-                                                                .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
-                                                        processLikes = false;
-                                                        onLikeCounter(false);
-                                                    }
-                                                }
+                                                likesRef.child(postKey).child(firebaseAuth.getCurrentUser().getUid())
+                                                        .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
+                                                processLikes = false;
+                                                onLikeCounter(false);
                                             }
 
                                         }
-
 
                                         String likesCount = dataSnapshot.child(postKey).getChildrenCount() + "";
                                         Log.d(likesCount, "all the likes in one cingle");
@@ -628,7 +618,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
         if (v == mFollowersCountTextView){
             Intent intent = new Intent(getActivity(), PeopleActivity.class);
             startActivity(intent);
+        }
 
+        if (v == mEditProfileImageView){
+            Intent intent = new Intent(getActivity(), UpdateProfileActivity.class);
+            startActivity(intent);
         }
 
     }
@@ -644,11 +638,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
         super.onStop();
     }
 
-    @Override
-    public void onDestroy(){
-        super.onDestroy();
-        firebaseRecyclerAdapter.cleanup();
-    }
 
     private void onLikeCounter(final boolean increament){
         likesRef.runTransaction(new Transaction.Handler() {

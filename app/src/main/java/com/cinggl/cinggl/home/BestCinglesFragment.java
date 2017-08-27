@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.BestCinglesAdapter;
+import com.cinggl.cinggl.adapters.SimpleSectionedRecyclerViewAdapter;
 import com.cinggl.cinggl.models.Cingle;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -61,7 +62,7 @@ public class BestCinglesFragment extends Fragment {
 
     @Bind(R.id.bestCinglesRecyclerView)RecyclerView bestCinglesRecyclerView;
     @Bind(R.id.bestCinglesProgressbar)ProgressBar progressBar;
-    @Bind(R.id.currentDateTextView)TextView mCurrentDateTextView;
+//    @Bind(R.id.currentDateTextView)TextView mCurrentDateTextView;
 
     public BestCinglesFragment() {
         // Required empty public constructor
@@ -121,6 +122,7 @@ public class BestCinglesFragment extends Fragment {
         bestCinglesRecyclerView.setHasFixedSize(true);
         bestCinglesAdapter = new BestCinglesAdapter(getContext());
         bestCinglesRecyclerView.setAdapter(bestCinglesAdapter);
+
     }
 
     private void setCurrentDate(){
@@ -137,7 +139,7 @@ public class BestCinglesFragment extends Fragment {
             simpleDateFormat = new SimpleDateFormat("d'th' MMM yyyy");
         String currentDate = simpleDateFormat.format(new Date());
 
-        mCurrentDateTextView.setText(currentDate);
+//        mCurrentDateTextView.setText(currentDate);
     }
 
     public void setBestCingles(int start){
@@ -229,6 +231,8 @@ public class BestCinglesFragment extends Fragment {
         bestCinglesQuery.addChildEventListener(childEventListener);
         mChildEventListener = childEventListener;
     }
+
+
 
 
 

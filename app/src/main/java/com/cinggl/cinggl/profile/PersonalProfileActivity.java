@@ -18,7 +18,9 @@ import android.widget.Toast;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.ProfileCinglesViewHolder;
+import com.cinggl.cinggl.ifair.WalletActivity;
 import com.cinggl.cinggl.models.Cingle;
+import com.cinggl.cinggl.preferences.SettingsActivity;
 import com.cinggl.cinggl.relations.PeopleActivity;
 import com.cinggl.cinggl.services.ConnectivityReceiver;
 import com.cinggl.cinggl.App;
@@ -61,11 +63,6 @@ public class PersonalProfileActivity extends AppCompatActivity {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         mUid = firebaseUser.getUid();
 
-//        mUid = getIntent().getStringExtra(EXTRA_USER_UID);
-//        if(mUid == null){
-//            throw new IllegalArgumentException("pass an EXTRA_USER_UID");
-//        }
-//
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -82,7 +79,7 @@ public class PersonalProfileActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.profile_menu, menu);
+        getMenuInflater().inflate(R.menu.menu_layout, menu);
         return true;
     }
 
@@ -93,10 +90,6 @@ public class PersonalProfileActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_account_settings) {
-
-        }
 
         return super.onOptionsItemSelected(item);
     }

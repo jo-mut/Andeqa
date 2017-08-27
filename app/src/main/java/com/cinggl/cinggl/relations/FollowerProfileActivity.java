@@ -476,19 +476,10 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
                                                 processLikes = false;
 
                                             }else {
-                                                if(processLikes){
-                                                    if (dataSnapshot.child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
-                                                        likesRef.child(postKey)
-                                                                .removeValue();
-                                                        processLikes = false;
-                                                        onLikeCounter(false);
-                                                    }else {
-                                                        likesRef.child(postKey).child(firebaseAuth.getCurrentUser().getUid())
-                                                                .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
-                                                        processLikes = false;
-                                                        onLikeCounter(false);
-                                                    }
-                                                }
+                                                likesRef.child(postKey).child(firebaseAuth.getCurrentUser().getUid())
+                                                        .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
+                                                processLikes = false;
+                                                onLikeCounter(false);
                                             }
 
                                         }

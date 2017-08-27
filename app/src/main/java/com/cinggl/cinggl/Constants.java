@@ -20,7 +20,10 @@ public final class Constants {
     public static final String USER_PROFILE = "user profile";
     public static final String USERNAME = "username";
     public static final String USER_PROFILE_IMAGE = "profileImage";
+    public static final String IFAIR = "Ifair";
     public static final String UID = "uid";
+    public static final String WALLET = "wallet";
+    public static final String CINGLE_WALLET = "cingle wallets";
 
 
 }

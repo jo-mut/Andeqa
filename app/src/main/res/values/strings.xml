@@ -24,9 +24,6 @@
     </string>
     <string name="titleHashtag">Cingle Backing</string>
     <string name="menu_search">Search</string>
-    <string name="title_activity_app_activities">AppActivities</string>
-    <string name="title_activity_test">TestActivity</string>
-    <string name="title_activity_main2">Main2Activity</string>
     <string name="likes">Likes</string>
     <string name="followers">Followers</string>
     <string name="credits">SP</string>
@@ -41,7 +38,6 @@
     <string name="feedback">Send Feedback</string>
     <string name="ifair">Ifair</string>
     <string name="help">Help</string>
-    <string name="terms_of_service">Terms of service</string>
     <string name="about">About</string>
     <string name="intro_tutorial">Introduction</string>
     <string name="extras">Extras</string>
@@ -59,8 +55,9 @@
     <string name="summary_upload_video_quality">Specify video quality for uploads</string>
     <string name="pref_title_notifications">Notifications</string>
     <string name="summary_choose_ringtone">Choose notification sound</string>
-    <string name="pref_header_about">About</string>
-    <string name="summary_about">Cinggl is a social networking place where you can connect with you family members, friends acquaintances and get to meet new people.To know more about Cinggl, Check here!</string>
+    <string name="pref_header_about">Help</string>
+    <string name="summary_app_info">Cinggl</string>
+    <string name="title_app_info">App Info</string>
     <string name="app_version">1.2.0.1</string>
     <string name="summary_support">Got any queries? We are happy to help!</string>
     <string name="title_send_feedback">Send Feedback</string>
@@ -90,4 +87,18 @@
     <string name="cingle_lacing_method">Cingle Lacing</string>
     <string name="cingle_selling_method">Cingle Selling</string>
     <string name="cingle_leasing_method">Cingle Leasing</string>
+
+    <!--create cingle-->
+    <string name="choose_cingle_backing">Allow pontetial Cinngulans to invest in your Cingle in
+        Cingle Sense Credits. You cannot choose any other method of trade with Cingle Backing
+        activated</string>
+    <string name="choose_cingle_lacing">Merge Cingle with another Cingle while earning profit from
+        the success of the higher perfoming Cingle. You can only sell your Cingle once you merge
+        with another</string>
+    <string name="choose_cingle_leasing">Lease your Cingle to interested Cingulans and earn 10% of
+        all the CSC earned by the Cingle. You will be able to sell your Cingle during the lease
+        period and proceed with any other necessary way of trade after the lease period</string>
+    <string name="choose_cingle_selling">Sell your Cingle to interested buyers in Cingle Sense
+        Credits. Once Cingle is sold you lose all the rights of the Cingle Ownership</string>
+    <string name="title_activity_laced_cingles">LacedCinglesActivity</string>
 </resources>

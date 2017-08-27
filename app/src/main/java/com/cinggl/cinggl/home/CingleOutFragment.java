@@ -5,6 +5,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,8 +19,11 @@ import android.widget.Toast;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.CingleOutAdapter;
+import com.cinggl.cinggl.adapters.LikesViewHolder;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.Trace;
+import com.cinggl.cinggl.models.Like;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -33,6 +38,9 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
+import static com.cinggl.cinggl.R.id.cingleSettingsImageView;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,24 +52,14 @@ public class CingleOutFragment extends Fragment{
     private DatabaseReference databaseReference;
     private Query cinglesQuery;
     private ChildEventListener mChildEventListener;
-    private Trace trace;
-    private Context mContext;
-    private boolean processLikes = false;
     private DatabaseReference usernameRef;
     private DatabaseReference likesRef;
-    private CingleOutAdapter cingleOutAdapter;
     private FirebaseAuth firebaseAuth;
-    private static final double GOLDEN_RATIO = 1.618;
-    private static final double MILLE = 1000.0;
+    private CingleOutAdapter cingleOutAdapter;
     private DatabaseReference sensepointRef;
     private DatabaseReference commentReference;
     private static final String TAG = "CingleOutFragment";
-    private static final String EXTRA_POST_KEY = "post key";
-    private ArrayList<String> mDataSet = new ArrayList<>();
     private LinearLayoutManager layoutManager;
-    private static final double DEFAULT_PRICE = 1.5;
-    private RecyclerView.Adapter mAdapter;
-    private static final String EXTRA_USER_UID = "uid";
 
     private List<Cingle> cingles = new ArrayList<>();
     private List<String> cinglesIds = new ArrayList<>();
@@ -70,8 +68,6 @@ public class CingleOutFragment extends Fragment{
     private static final int TOTAL_ITEM_EACH_LOAD = 10;
     private static final String KEY_LAYOUT_POSITION = "layout pooition";
     private int cingleOutRecyclerViewPosition = 0;
-
-
 
 
     public CingleOutFragment() {
@@ -84,16 +80,13 @@ public class CingleOutFragment extends Fragment{
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_cingle_out, container, false);
         ButterKnife.bind(this, view);
-
         likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
         sensepointRef = FirebaseDatabase.getInstance().getReference("Sense points");
         usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
         commentReference = FirebaseDatabase.getInstance()
                 .getReference(Constants.COMMENTS);
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
-//        cinglesQuery = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES)
-//                .startAt(currentPage)
-//                .orderByChild("randomNumber");
+
 
         firebaseAuth = FirebaseAuth.getInstance();
         likesRef.keepSynced(true);
@@ -205,6 +198,7 @@ public class CingleOutFragment extends Fragment{
                     Log.w(TAG, "onChildChanged:unknown_child" + cingle_key);
                 }
 
+
             }
 
             @Override
@@ -256,8 +250,6 @@ public class CingleOutFragment extends Fragment{
         }
     }
 
-
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         //save currently selected layout manager;
@@ -283,6 +275,5 @@ public class CingleOutFragment extends Fragment{
         super.onDestroy();
         cleanUpListener();
     }
-
 
 }

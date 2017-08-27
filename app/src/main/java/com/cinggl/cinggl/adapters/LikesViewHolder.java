@@ -38,35 +38,35 @@ public class LikesViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindLikes(final Like like){
-        TextView usernameTextView =(TextView) mView.findViewById(R.id.accountUsernameTextView);
+//        TextView usernameTextView =(TextView) mView.findViewById(R.id.accountUsernameTextView);
         final CircleImageView profileImageView = (CircleImageView) mView.findViewById(R.id.userProfileImageView);
 
-        usernameTextView.setText(like.getUsername());
+//        usernameTextView.setText(like.getUsername());
 
-        Picasso.with(mContext)
-                .load(like.getProfileImage())
-                .fit()
-                .centerCrop()
-                .placeholder(R.drawable.profle_image_background)
-                .networkPolicy(NetworkPolicy.OFFLINE)
-                .into(profileImageView, new Callback() {
-                    @Override
-                    public void onSuccess() {
-
-                    }
-
-                    @Override
-                    public void onError() {
-                        Picasso.with(mContext)
-                                .load(like.getProfileImage())
-                                .fit()
-                                .centerCrop()
-                                .placeholder(R.drawable.profle_image_background)
-                                .into(profileImageView);
-
-
-                    }
-                });
+//        Picasso.with(mContext)
+//                .load(like.getProfileImage())
+//                .fit()
+//                .centerCrop()
+//                .placeholder(R.drawable.profle_image_background)
+//                .networkPolicy(NetworkPolicy.OFFLINE)
+//                .into(profileImageView, new Callback() {
+//                    @Override
+//                    public void onSuccess() {
+//
+//                    }
+//
+//                    @Override
+//                    public void onError() {
+//                        Picasso.with(mContext)
+//                                .load(like.getProfileImage())
+//                                .fit()
+//                                .centerCrop()
+//                                .placeholder(R.drawable.profle_image_background)
+//                                .into(profileImageView);
+//
+//
+//                    }
+//                });
 
     }
 

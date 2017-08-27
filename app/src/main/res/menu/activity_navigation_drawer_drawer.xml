@@ -14,17 +14,17 @@
             android:title="@string/preferences" />
 
         <item
-            android:id="@+id/action_terms"
-            android:title="@string/terms_of_service" />
+            android:id="@+id/action_help"
+            android:title="@string/help" />
 
     </group>
 
-    <item android:title="@string/extras">
-        <menu>
-            <item
-                android:id="@+id/action_intro_slides"
-                android:title="@string/intro_tutorial" />
-        </menu>
-    </item>
+    <!--<item android:title="@string/extras">-->
+        <!--<menu>-->
+            <!--<item-->
+                <!--android:id="@+id/action_intro_slides"-->
+                <!--android:title="@string/intro_tutorial" />-->
+        <!--</menu>-->
+    <!--</item>-->
 
 </menu>

@@ -45,7 +45,7 @@
             android:name=".profile.SignUpActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".camera.CreateCingleActivity"
+            android:name=".creation.CreateCingleActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".home.HomeActivity"
@@ -128,12 +128,6 @@
         <activity
             android:name=".ifair.IfairMainActivity"
             android:label="Ifair" />
-        <activity android:name=".ifair.CingleBackingActivity" />
-        <activity android:name=".ifair.CingleSellingActivity" />
-        <activity android:name=".ifair.CingleLacingActivity" />
-        <activity android:name=".ifair.CingleLeasingActivity" />
-        <activity android:name=".ifair.AssetTradingActivity" />
-        <activity android:name=".ifair.MainMarketActivity" />
         <activity android:name=".preferences.SettingsActivity" />
         <activity
             android:name=".backing.BackingActivity"
@@ -159,7 +153,11 @@
             android:name=".trading.TradingActivity"
             android:label="Asset Trading"
             android:theme="@style/AppTheme" />
-        <activity android:name=".backing.BakingDetailActivity"></activity>
+        <activity android:name=".backing.BakingDetailActivity" />
+        <activity android:name=".ifair.ChooseTradeMethodActivity" />
+        <activity android:name=".AboutActivity" />
+        <activity android:name=".ifair.SendCreditsActivity" />
+        <activity android:name=".ifair.WalletActivity"></activity>
     </application>
 
 </manifest>

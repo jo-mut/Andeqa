@@ -9,9 +9,7 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.camera.CreateCingleActivity;
-import com.cinggl.cinggl.home.HomeActivity;
+import com.cinggl.cinggl.creation.CreateCingleActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 

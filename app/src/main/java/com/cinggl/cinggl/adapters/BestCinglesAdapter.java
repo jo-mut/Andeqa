@@ -1,7 +1,12 @@
 package com.cinggl.cinggl.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,12 +20,16 @@ import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.backing.BakingDetailActivity;
 import com.cinggl.cinggl.home.BestCinglesFragment;
 import com.cinggl.cinggl.home.CingleDetailActivity;
+import com.cinggl.cinggl.home.CingleSettingsDialog;
 import com.cinggl.cinggl.home.CommentsActivity;
+import com.cinggl.cinggl.home.DeleteAccountDialog;
 import com.cinggl.cinggl.home.LikesActivity;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.models.Cingulan;
+import com.cinggl.cinggl.models.Like;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.relations.FollowerProfileActivity;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -55,6 +64,9 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
     private DatabaseReference usersRef;
     private  DatabaseReference likesRef;
     private FirebaseAuth firebaseAuth;
+    private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
+    private Query likesQuery;
+    private Query likesQueryCount;
     private boolean processLikes = false;
     private static final double DEFAULT_PRICE = 1.5;
     private static final double GOLDEN_RATIO = 1.618;
@@ -114,10 +126,23 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
         //CALL THE METHOD TO ANIMATE RECYCLER_VIEW
         firebaseAuth = FirebaseAuth.getInstance();
 
+        if (position == bestCingles.size() - 1){
+            holder.cingleMomentTextView.setText("The Cingle Of The Moment");
+        }else if (position == bestCingles.size() - 2){
+            holder.cingleMomentTextView.setText("1st Runners Up Cingle Of The Moment");
+        }else if (position == bestCingles.size() - 3){
+            holder.cingleMomentTextView.setText("2nd Runners Up Cingle Of The Moment");
+        }else {
+            holder.cingleMomentRelativeLayout.setVisibility(View.GONE);
+        }
+
+
         //DATABASE REFERENCE PATH;
         commentReference = FirebaseDatabase.getInstance().getReference(Constants.COMMENTS);
         usersRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
         likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
+        likesQuery = likesRef.child(postKey).limitToFirst(5);
+        likesQueryCount = likesRef.child(postKey).startAt(6);
         databaseReference = FirebaseDatabase.getInstance()
                 .getReference(Constants.FIREBASE_CINGLES);
         usersRef.keepSynced(true);
@@ -169,44 +194,19 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                 });
 
                 //SHOW CINGLE SETTINGS TO THE CINGLE CREATOR ONLY
-                if (firebaseAuth.getCurrentUser().getUid().equals(uid)){
-                    holder.cingleSettingsImageView.setVisibility(View.VISIBLE);
 
                     holder.cingleSettingsImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-
-                            databaseReference.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.child(postKey).exists()){
-                                        if (dataSnapshot.hasChild(postKey)){
-                                            databaseReference.child(postKey).removeValue();
-                                            bestCingles.remove(bestCingles.get(position));
-
-                                        }
-
-                                        notifyItemRemoved(position);
-                                        notifyItemRangeChanged(position, bestCingles.size());
-                                    }else {
-                                        Log.d("data is deleted", postKey);
-
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-
-                                }
-                            });
-
+                            Bundle bundle = new Bundle();
+                            bundle.putString(BestCinglesAdapter.EXTRA_POST_KEY, postKey);
+                            FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
+                            CingleSettingsDialog cingleSettingsDialog = CingleSettingsDialog.newInstance("cingle settings");
+                            cingleSettingsDialog.setArguments(bundle);
+                            cingleSettingsDialog.show(fragmenManager, "cingle settings fragment");
                         }
                     });
 
-
-                }else {
-                    holder.cingleSettingsImageView.setVisibility(View.GONE);
-                }
 
                 holder.profileImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -313,28 +313,97 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                     });
 
 
+                //RETRIEVE THE FIRST FIVE USERS WHO LIKED
+                likesRef.child(postKey).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
 
-                //RETRIEVE LIKES COUNT AND CATCH EXCEPTION IF CINGLE IS DELETED;
-                    likesRef.child(postKey).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.getChildrenCount()>0){
+                            holder.usersWhoLikedCountRecyclerView.setVisibility(View.VISIBLE);
+                            //SETUP USERS WHO LIKED THE CINGLE
+                            firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Like, UsersWhoLiked>
+                                    (Like.class, R.layout.users_who_liked_count, UsersWhoLiked.class, likesQuery) {
+                                @Override
+                                protected void populateViewHolder(final UsersWhoLiked viewHolder, final Like model, final int position) {
+//                                    viewHolder.bindUsersWhoLiked(model);
+                                    DatabaseReference userRef = getRef(position);
+                                    final String likesPostKey = userRef.getKey();
+                                    Log.d(TAG, "likes post key" + likesPostKey);
 
-                            for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                                Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "likesCount");
+                                    likesRef.child(postKey).child(likesPostKey).addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            if (dataSnapshot.child("uid").exists()){
+                                                Log.d(TAG, "uid in likes post" + uid);
+                                                final String uid = (String) dataSnapshot.child("uid").getValue();
 
-                            }
-                            holder.likesCountTextView.setText("+" + dataSnapshot.getChildrenCount() + " " + "Likes");
+                                                usersRef.child(uid).addValueEventListener(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                        final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+
+                                                        Picasso.with(mContext)
+                                                                .load(profileImage)
+                                                                .fit()
+                                                                .centerCrop()
+                                                                .placeholder(R.drawable.profle_image_background)
+                                                                .networkPolicy(NetworkPolicy.OFFLINE)
+                                                                .into(viewHolder.usersWhoLikedProfileImageView, new Callback() {
+                                                                    @Override
+                                                                    public void onSuccess() {
+
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onError() {
+                                                                        Picasso.with(mContext)
+                                                                                .load(profileImage)
+                                                                                .fit()
+                                                                                .centerCrop()
+                                                                                .placeholder(R.drawable.profle_image_background)
+                                                                                .into(viewHolder.usersWhoLikedProfileImageView);
 
 
+                                                                    }
+                                                                });
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(DatabaseError databaseError) {
+
+                                                    }
+                                                });
+
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
+
+                                }
+                            };
+
+                            holder.usersWhoLikedCountRecyclerView.setAdapter(firebaseRecyclerAdapter);
+                            holder.usersWhoLikedCountRecyclerView.setHasFixedSize(false);
+                            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, true);
+                            layoutManager.setAutoMeasureEnabled(true);
+                            holder.usersWhoLikedCountRecyclerView.setNestedScrollingEnabled(false);
+                            holder.usersWhoLikedCountRecyclerView.setLayoutManager(layoutManager);
+
+                        }else {
+                            holder.usersWhoLikedCountRecyclerView.setVisibility(View.GONE);
                         }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                    }
 
-                        }
-                    });
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-
+                    }
+                });
 
                 databaseReference.addValueEventListener(new ValueEventListener() {
                     @Override
@@ -358,19 +427,10 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                                                     processLikes = false;
 
                                                 }else {
-                                                    if(processLikes){
-                                                        if (dataSnapshot.child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
-                                                            likesRef.child(postKey)
-                                                                    .removeValue();
-                                                            processLikes = false;
-                                                            onLikeCounter(false);
-                                                        }else {
-                                                            likesRef.child(postKey).child(firebaseAuth.getCurrentUser().getUid())
-                                                                    .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
-                                                            processLikes = false;
-                                                            onLikeCounter(false);
-                                                        }
-                                                    }
+                                                    likesRef.child(postKey).child(firebaseAuth.getCurrentUser().getUid())
+                                                            .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
+                                                    processLikes = false;
+                                                    onLikeCounter(false);
                                                 }
                                             }
 
@@ -396,8 +456,7 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                                                 //get the new worth of Cingle price in Sen
                                                 final double cingleWorth = perfectionValue * likesPerMille * currentPrice;
                                                 //round of the worth of the cingle to 4 decimal number
-//                                        double finalPoints = Math.round( cingleWorth * 10000.0)/10000.0;
-
+//
                                                 double finalPoints = round( cingleWorth, 10);
 
                                                 databaseReference.child(postKey).child("sensepoint").setValue(finalPoints);

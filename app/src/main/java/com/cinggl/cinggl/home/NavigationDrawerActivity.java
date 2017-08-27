@@ -1,6 +1,5 @@
 package com.cinggl.cinggl.home;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -8,13 +7,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.ContentFrameLayout;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,22 +19,20 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
-import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.camera.CreateCingleActivity;
+import com.cinggl.cinggl.creation.CreateCingleActivity;
 import com.cinggl.cinggl.ifair.IfairMainActivity;
 import com.cinggl.cinggl.preferences.SettingsActivity;
 import com.cinggl.cinggl.profile.ProfileFragment;
 import com.cinggl.cinggl.timeline.TimelineFragment;
 import com.cinggl.cinggl.utils.BottomNavigationViewHelper;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -50,10 +45,6 @@ import com.squareup.picasso.Picasso;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static android.R.id.toggle;
-import static android.os.Build.VERSION_CODES.N;
-import static java.security.AccessController.getContext;
 
 public class NavigationDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
@@ -78,6 +69,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
     private CircleImageView mProfileImageView;
     private TextView mFirstNameTextView;
     private TextView mSecondNameTextView;
+    private TextView mEmailTextView;
 
 
     @Override
@@ -108,6 +100,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
         mProfileImageView = (CircleImageView) header.findViewById(R.id.profileImageView);
         mFirstNameTextView = (TextView) header.findViewById(R.id.firstNameTextView);
         mSecondNameTextView = (TextView) header.findViewById(R.id.secondNameTextView);
+        mEmailTextView = (TextView) header.findViewById(R.id.emailTextView);
 
 
         if (savedInstanceState == null){
@@ -117,6 +110,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
         }
 
         fetchData();
+        fetchUserEmail();
 
         //bottom navigation
         BottomNavigationViewHelper.disableShiftMode(mBottomNavigationView);
@@ -190,6 +184,13 @@ public class NavigationDrawerActivity extends AppCompatActivity
         ft.commit();
     }
 
+    private void fetchUserEmail(){
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        String uid = firebaseUser.getUid();
+
+        mEmailTextView.setText(firebaseUser.getEmail());
+    }
+
     private void fetchData(){
         //database references
         usersRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
@@ -203,7 +204,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
                             String secondName = (String) dataSnapshot.child("secondName").getValue();
                             final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
                             final String profileCover = (String) dataSnapshot.child("profileCover").getValue();
-
 
                             mFirstNameTextView.setText(firstName);
                             mSecondNameTextView.setText(secondName);
@@ -324,14 +324,10 @@ public class NavigationDrawerActivity extends AppCompatActivity
             return true;
         }
 
-        if (id == R.id.action_terms){
+        if (id == R.id.action_help){
             Intent intent = new Intent(Intent.ACTION_VIEW,
                     Uri.parse("https://www.androidhive.info/privacy-policy"));
             startActivity(intent);
-        }
-
-        if (id == R.id.action_intro_slides){
-
         }
 
 
