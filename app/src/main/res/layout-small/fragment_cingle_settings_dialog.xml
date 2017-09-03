@@ -75,12 +75,12 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/blockCingleRelativeLayout"
+            android:id="@+id/reportCingleRelativeLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <TextView
-                android:text="Block this Cingle"
+                android:text="Report Cingle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
@@ -89,7 +89,7 @@
                 android:layout_alignParentTop="false"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="false"
-                android:id="@+id/blockCingleCingleTextView"
+                android:id="@+id/reportCingleTextView"
                 android:layout_centerInParent="true"
                 android:paddingLeft="5dp"
                 android:paddingTop="5dp"
@@ -97,7 +97,7 @@
 
 
             <View
-                android:layout_below="@+id/blockCingleCingleTextView"
+                android:layout_below="@+id/reportCingleTextView"
                 android:layout_width="match_parent"
                 android:layout_height="0.1dp"
                 android:background="@color/colorDivider"/>
@@ -110,7 +110,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:text="Redeem CSC"
+                android:text="Redeem Cingle Sense Credits"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
@@ -121,7 +121,7 @@
                 android:layout_alignParentStart="false"
                 android:id="@+id/redeemCreditsCingleTextView"
                 android:layout_centerInParent="true"
-                android:paddingLeft="10dp"
+                android:paddingLeft="5dp"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp" />
 
@@ -141,7 +141,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:text="Trade your Cingle"
+                android:text="Place your Cingle on sale"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"

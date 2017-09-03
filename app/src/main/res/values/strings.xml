@@ -36,11 +36,13 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_navigation_drawer">NavigationDrawerActivity</string>
     <string name="feedback">Send Feedback</string>
+    <string name="home">Home</string>
+    <string name="profile">Profile</string>
     <string name="ifair">Ifair</string>
-    <string name="help">Help</string>
+    <string name="sendfeedback">Send Feedback</string>
     <string name="about">About</string>
     <string name="intro_tutorial">Introduction</string>
-    <string name="extras">Extras</string>
+    <string name="extras">Help</string>
     <string name="preferences">Preferences</string>
 
     <!-- Strings related to Settings -->

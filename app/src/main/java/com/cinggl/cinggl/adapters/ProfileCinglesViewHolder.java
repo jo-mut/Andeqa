@@ -34,11 +34,14 @@ public class ProfileCinglesViewHolder extends RecyclerView.ViewHolder implements
     public TextView accountUsernameTextView;
     public CircleImageView profileImageView;
     public TextView commentsCountTextView;
-    public TextView sensePointsTextView;
     public TextView timeTextView;
     public ImageView cingleSettingsImageView;
     public RelativeLayout cingleTitleRelativeLayout;
     private RelativeLayout descriptionRelativeLayout;
+    public ProportionalImageView cingleImageView;
+    public TextView cingleTradeMethodTextView;
+    public RecyclerView usersWhoLikedCountRecyclerView;
+    public TextView cingleSenseCreditsTextView;
 
 
     public ProfileCinglesViewHolder(View itemView){
@@ -51,14 +54,16 @@ public class ProfileCinglesViewHolder extends RecyclerView.ViewHolder implements
         cingleDescriptionTextView = (TextView) itemView.findViewById(R.id.cingleDescriptionTextView);
         cingleTitleTextView = (TextView) itemView.findViewById(R.id.cingleTitleTextView);
         accountUsernameTextView = (TextView) itemView.findViewById(R.id.accountUsernameTextView);
-        profileImageView = (CircleImageView) itemView.findViewById(R.id.userProfileImageView);
+        profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
-        sensePointsTextView = (TextView) itemView.findViewById(R.id.cingleSenseCreditsTextView);
         timeTextView = (TextView) itemView.findViewById(R.id.timeTextView);
         cingleSettingsImageView = (ImageView) itemView.findViewById(R.id.cingleSettingsImageView);
         cingleTitleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
-        sensePointsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsTextView);
         descriptionRelativeLayout  = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
+        cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
+        cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsTextView);
+        cingleTradeMethodTextView = (TextView) mView.findViewById(R.id.cingleTradeMethodTextView);
+        usersWhoLikedCountRecyclerView = (RecyclerView) mView.findViewById(R.id.likesRecyclerView);
 
 
         likesImageView.setOnClickListener(this);
@@ -72,7 +77,7 @@ public class ProfileCinglesViewHolder extends RecyclerView.ViewHolder implements
         final ProportionalImageView cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
         TextView cingleTitleTextView = (TextView) mView.findViewById(R.id.cingleTitleTextView);
         TextView cingleDescriptionTextView = (TextView) mView.findViewById(R.id.cingleDescriptionTextView);
-        TextView sensePointsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsTextView);
+        TextView cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsTextView);
         TextView timeTextView = (TextView) mView.findViewById(R.id.timeTextView);
         RelativeLayout cingleTitleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
 
@@ -108,7 +113,7 @@ public class ProfileCinglesViewHolder extends RecyclerView.ViewHolder implements
             cingleDescriptionTextView.setText(cingle.getDescription() + "..." + "more");
         }
 
-        sensePointsTextView.setText("SP" + " " + (cingle.getSensepoint()));
+        cingleSenseCreditsTextView.setText("SP" + " " + (cingle.getSensepoint()));
         timeTextView.setText(DateUtils.getRelativeTimeSpanString((long) cingle.getTimeStamp()));
 
     }

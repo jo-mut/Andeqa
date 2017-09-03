@@ -38,7 +38,7 @@
                     android:src="@drawable/gradient_color" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/userProfileImageView"
+                    android:id="@+id/profileImageView"
                     android:layout_height="120dp"
                     android:background="@drawable/profile_circular_border_imageview"
                     android:padding="10dp"
@@ -220,7 +220,7 @@
             android:layout_below="@+id/header_cover_image"
             android:elevation="4dp"
             android:padding="15dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="15dp"
             android:background="@android:color/white">
 
                 <TextView
@@ -270,15 +270,22 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true" />
 
+                <TextView
+                    android:text="Update your personal profile info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:id="@+id/textView4" />
 
 
             </RelativeLayout>
 
             <android.support.v7.widget.RecyclerView
-                android:fitsSystemWindows="true"
-                android:numColumns="auto_fit"
                 android:id="@+id/profileCinglesRecyclerView"
                 android:overScrollMode="never"
+                android:scrollbars="none"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 

@@ -13,6 +13,7 @@ import java.util.Map;
  */
 @Parcel
 public class Cingle {
+
     String title;
     String accountUserName;
     String cingleImageUrl;
@@ -20,39 +21,38 @@ public class Cingle {
     String description;
     String moreDescription;
     String pushId;
-    long timeStamp;
-    long number;
     String cingleIndex;
-    double randomNumber;
     String uid;
     String datePosted;
+    long timeStamp;
+    long number;
+    double randomNumber;
     double sensepoint;
+
 
     public Cingle(){
 
     }
 
-    public Cingle(double sensepoint, String datePosted,
-                  String uid, String pushId,
-                  String description, String profileImageUrl,
-                  String cingleImageUrl, String accountUserName,
-                  String title) {
-        this.sensepoint = sensepoint;
-        this.datePosted = datePosted;
-        this.uid = uid;
-        this.pushId = pushId;
-        this.description = description;
-        this.profileImageUrl = profileImageUrl;
-        this.cingleImageUrl = cingleImageUrl;
-        this.accountUserName = accountUserName;
+    public Cingle(String title, String accountUserName, String cingleImageUrl,
+                  String profileImageUrl, String description,
+                  String moreDescription, String pushId,
+                  String cingleIndex, String uid,
+                  String datePosted, long timeStamp, long number,
+                  double randomNumber, double sensepoint) {
         this.title = title;
-    }
-
-    public double getSensepoint() {
-        return sensepoint;
-    }
-
-    public void setSensepoint(double sensepoint) {
+        this.accountUserName = accountUserName;
+        this.cingleImageUrl = cingleImageUrl;
+        this.profileImageUrl = profileImageUrl;
+        this.description = description;
+        this.moreDescription = moreDescription;
+        this.pushId = pushId;
+        this.cingleIndex = cingleIndex;
+        this.uid = uid;
+        this.datePosted = datePosted;
+        this.timeStamp = timeStamp;
+        this.number = number;
+        this.randomNumber = randomNumber;
         this.sensepoint = sensepoint;
     }
 
@@ -96,6 +96,14 @@ public class Cingle {
         this.description = description;
     }
 
+    public String getMoreDescription() {
+        return moreDescription;
+    }
+
+    public void setMoreDescription(String moreDescription) {
+        this.moreDescription = moreDescription;
+    }
+
     public String getPushId() {
         return pushId;
     }
@@ -104,12 +112,13 @@ public class Cingle {
         this.pushId = pushId;
     }
 
-    public long getTimeStamp() {
-        return timeStamp;
+
+    public String getCingleIndex() {
+        return cingleIndex;
     }
 
-    public void setTimeStamp(long timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setCingleIndex(String cingleIndex) {
+        this.cingleIndex = cingleIndex;
     }
 
     public String getUid() {
@@ -128,6 +137,14 @@ public class Cingle {
         this.datePosted = datePosted;
     }
 
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
     public long getNumber() {
         return number;
     }
@@ -136,19 +153,19 @@ public class Cingle {
         this.number = number;
     }
 
-    public String getCingleIndex() {
-        return cingleIndex;
-    }
-
-    public void setCingleIndex(String cingleIndex) {
-        this.cingleIndex = cingleIndex;
-    }
-
     public double getRandomNumber() {
         return randomNumber;
     }
 
     public void setRandomNumber(double randomNumber) {
         this.randomNumber = randomNumber;
+    }
+
+    public double getSensepoint() {
+        return sensepoint;
+    }
+
+    public void setSensepoint(double sensepoint) {
+        this.sensepoint = sensepoint;
     }
 }

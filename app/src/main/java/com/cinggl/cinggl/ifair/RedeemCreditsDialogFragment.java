@@ -54,6 +54,7 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
     private static final String EXTRA_POST_KEY = "post key";
     private FirebaseAuth firebaseAuth;
     private DatabaseReference cinglesReference;
+    private DatabaseReference cingleWalletReference;
     private DatabaseReference walletReference;
     private boolean redeemCSC = false;
 
@@ -76,6 +77,7 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
 
         cinglesReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
         walletReference = FirebaseDatabase.getInstance().getReference(Constants.WALLET);
+        cingleWalletReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_WALLET);
     }
 
     @Override
@@ -119,7 +121,7 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
             if (mAmountEnteredEditText != null) {
                 final String amountInString = mAmountEnteredEditText.getText().toString();
 //                            final double amountInInt = Integer.valueOf(amountInString).intValue();
-                final double amountEntered = Double.parseDouble(amountInString);
+                final double amountTransferred = Double.parseDouble(amountInString);
 
                 cinglesReference.child(mPostKey).addValueEventListener(new ValueEventListener() {
                     @Override
@@ -131,11 +133,13 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
 
                             if (mAmountEnteredEditText.getText().equals("")) {
                                 mAmountEnteredEditText.setError("Amount cannot be empty");
-                            } else if (amountEntered > sensepoint) {
-                                mAmountEnteredEditText.setError("Your balance is insufficient");
-                            } else {
+                            } else if (amountTransferred > sensepoint) {
+                                mAmountEnteredEditText.setError("Your Cingle has insufficient CSC balance");
+                            }else if (amountTransferred < 0){
+                                mAmountEnteredEditText.setError("Amount cannot be zero");
+                            } else{
                                 //RECORD BALANCE AMOUNT AFTER REDEMPTION
-                                final double sensecredits = sensepoint - amountEntered;
+                                final double sensecredits = sensepoint - amountTransferred;
 
                                 Log.d("amount of sensecredits", sensecredits + "");
 
@@ -143,32 +147,63 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
 
                                 //RECORD TRANSACTION HISTORY OF ALL CSC REDEEMED
                                 TransactionDetails transactionDetails = new TransactionDetails();
-                                transactionDetails.setAmount(amountEntered);
+                                transactionDetails.setAmount(amountTransferred);
                                 transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
-                                walletReference.child("Redeeming csc history")
+                                walletReference.child("Redeeming history")
                                         .child(firebaseAuth.getCurrentUser().getUid())
                                         .push().setValue(transactionDetails);
+                                cingleWalletReference.child(mPostKey).child("amount redeemed")
+                                        .setValue(amountTransferred);
+                                redeemCSC = false;
+
+                                //INCREAMENT THE AMOUNT TRANSFERED AFTER NEW TRANSFERS
+                                cingleWalletReference.child(mPostKey).child("amount redeemed")
+                                        .addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+//                                                TransactionDetails td = dataSnapshot.getValue(TransactionDetails.class);
+                                                if (dataSnapshot.exists()){
+                                                    final Double currentAmount = (Double)dataSnapshot.getValue();
+                                                    final double newAmount = currentAmount + amountTransferred;
+                                                    Log.d("new amount", newAmount + "");
+                                                    cingleWalletReference.child(mPostKey).child("amount redeemed")
+                                                            .setValue(newAmount);
+                                                    redeemCSC = false;
+                                                }else {
+                                                    cingleWalletReference.child(mPostKey).child("amout redeemed")
+                                                            .setValue(amountTransferred);
+                                                    redeemCSC = false;
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+
+                                            }
+                                        });
+
 
                                 final Balance balance = new Balance();
-                                balance.setTotalBalance(amountEntered);
-                                walletReference.child("current balance").child(firebaseAuth.getCurrentUser()
+                                balance.setTotalBalance(amountTransferred);
+                                walletReference.child("balance").child(firebaseAuth.getCurrentUser()
                                         .getUid()).child("total balance").setValue(balance)
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    walletReference.child("current balance").child(firebaseAuth.getCurrentUser().getUid())
+                                                if (task.isComplete()) {
+                                                    walletReference.child("balance").child(firebaseAuth.getCurrentUser().getUid())
                                                             .child("total balance").addValueEventListener(new ValueEventListener() {
                                                         @Override
                                                         public void onDataChange(DataSnapshot dataSnapshot) {
                                                             try {
                                                                 Balance b = dataSnapshot.getValue(Balance.class);
                                                                 final double currentBalance = b.getTotalBalance();
-                                                                final double newBalance = currentBalance + amountEntered;
+                                                                final double newBalance = currentBalance + amountTransferred;
 
                                                                 Log.d("new balance", newBalance + "");
-                                                                walletReference.child("current balance").child(firebaseAuth.getCurrentUser()
+                                                                walletReference.child("balance").child(firebaseAuth.getCurrentUser()
                                                                         .getUid()).child("total balance").setValue(newBalance);
+                                                                redeemCSC = false;
                                                             } catch (Exception e) {
                                                                 e.printStackTrace();
                                                             }

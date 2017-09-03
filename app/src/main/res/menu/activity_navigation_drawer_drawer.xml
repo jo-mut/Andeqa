@@ -2,29 +2,43 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/action_ifair"
-            android:title="@string/ifair" />
-        <item
-            android:id="@+id/action_about"
-            android:title="@string/about" />
 
         <item
+            android:icon="@drawable/ic_home_white_24dp"
+            android:id="@+id/action_home"
+            android:title="@string/home" />
+
+        <item
+            android:icon="@drawable/ic_person_black_24dp"
+            android:id="@+id/action_profile"
+            android:title="@string/profile" />
+
+        <!--<item-->
+            <!--android:icon="@drawable/ic_business_black_24dp"-->
+            <!--android:id="@+id/action_ifair"-->
+            <!--android:title="@string/ifair" />-->
+
+        <item
+            android:icon="@drawable/ic_settings_black_24dp"
             android:id="@+id/action_preferences"
             android:title="@string/preferences" />
 
         <item
-            android:id="@+id/action_help"
-            android:title="@string/help" />
+            android:icon="@drawable/ic_feedback_black_24dp"
+            android:id="@+id/action_send_feedback"
+            android:title="@string/sendfeedback" />
 
     </group>
 
-    <!--<item android:title="@string/extras">-->
-        <!--<menu>-->
-            <!--<item-->
-                <!--android:id="@+id/action_intro_slides"-->
-                <!--android:title="@string/intro_tutorial" />-->
-        <!--</menu>-->
-    <!--</item>-->
+    <item android:title="@string/extras">
+        <menu>
+
+            <item
+                android:icon="@drawable/ic_info_black_24dp"
+                android:id="@+id/action_about"
+                android:title="@string/about" />
+
+        </menu>
+    </item>
 
 </menu>

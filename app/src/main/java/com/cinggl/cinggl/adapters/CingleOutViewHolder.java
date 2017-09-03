@@ -17,12 +17,7 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static com.cinggl.cinggl.R.string.likes;
 
 /**
  * Created by J.EL on 5/26/2017.
@@ -51,7 +46,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder{
     public static final int MAX_HEIGHT = 400;
     private DatabaseReference cinglesReference;
     private RelativeLayout descriptionRelativeLayout;
-    public RecyclerView usersWhoLikedCountRecyclerView;
+    public RecyclerView likesRecyclerView;
 
     public CingleOutViewHolder(View itemView){
         super(itemView);
@@ -63,7 +58,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder{
         cingleDescriptionTextView = (TextView) itemView.findViewById(R.id.cingleDescriptionTextView);
         cingleTitleTextView = (TextView) itemView.findViewById(R.id.cingleTitleTextView);
         accountUsernameTextView = (TextView) itemView.findViewById(R.id.accountUsernameTextView);
-        profileImageView = (CircleImageView) itemView.findViewById(R.id.userProfileImageView);
+        profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
         timeTextView = (TextView) itemView.findViewById(R.id.timeTextView);
         cingleSettingsImageView = (ImageView) itemView.findViewById(R.id.cingleSettingsImageView);
@@ -72,7 +67,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder{
         cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
         cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsTextView);
         cingleTradeMethodTextView = (TextView) mView.findViewById(R.id.cingleTradeMethodTextView);
-        usersWhoLikedCountRecyclerView = (RecyclerView) mView.findViewById(R.id.usersWhoLikedCountRecyclerView);
+        likesRecyclerView = (RecyclerView) mView.findViewById(R.id.likesRecyclerView);
 
 
     }

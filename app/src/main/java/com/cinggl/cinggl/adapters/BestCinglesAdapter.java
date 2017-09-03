@@ -1,6 +1,5 @@
 package com.cinggl.cinggl.adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,12 +16,11 @@ import android.view.animation.AnimationUtils;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.backing.BakingDetailActivity;
+import com.cinggl.cinggl.ifair.TradeDetailActivity;
 import com.cinggl.cinggl.home.BestCinglesFragment;
 import com.cinggl.cinggl.home.CingleDetailActivity;
 import com.cinggl.cinggl.home.CingleSettingsDialog;
 import com.cinggl.cinggl.home.CommentsActivity;
-import com.cinggl.cinggl.home.DeleteAccountDialog;
 import com.cinggl.cinggl.home.LikesActivity;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.models.Cingulan;
@@ -63,6 +61,7 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
     private DatabaseReference commentReference;
     private DatabaseReference usersRef;
     private  DatabaseReference likesRef;
+    private DatabaseReference ifairReference;
     private FirebaseAuth firebaseAuth;
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     private Query likesQuery;
@@ -112,7 +111,8 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
 
     @Override
     public BestCinglesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.best_cingles_list, parent, false );
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.best_cingles_list, parent, false );
 
         return new BestCinglesViewHolder(view);
     }
@@ -145,6 +145,7 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
         likesQueryCount = likesRef.child(postKey).startAt(6);
         databaseReference = FirebaseDatabase.getInstance()
                 .getReference(Constants.FIREBASE_CINGLES);
+        ifairReference = FirebaseDatabase.getInstance().getReference(Constants.IFAIR);
         usersRef.keepSynced(true);
         databaseReference.keepSynced(true);
         likesRef.keepSynced(true);
@@ -174,7 +175,6 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                     }
                 });
 
-
                 holder.cingleImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -187,26 +187,26 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                 holder.cingleTradeMethodTextView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent =  new Intent(mContext, BakingDetailActivity.class);
-//                        intent.putExtra(CingleOutAdapter.EXTRA_POST_KEY, postKey);
+                        Intent intent =  new Intent(mContext, TradeDetailActivity.class);
+                        intent.putExtra(BestCinglesAdapter.EXTRA_POST_KEY, postKey);
                         mContext.startActivity(intent);
                     }
                 });
 
                 //SHOW CINGLE SETTINGS TO THE CINGLE CREATOR ONLY
-
-                    holder.cingleSettingsImageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Bundle bundle = new Bundle();
-                            bundle.putString(BestCinglesAdapter.EXTRA_POST_KEY, postKey);
-                            FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
-                            CingleSettingsDialog cingleSettingsDialog = CingleSettingsDialog.newInstance("cingle settings");
-                            cingleSettingsDialog.setArguments(bundle);
-                            cingleSettingsDialog.show(fragmenManager, "cingle settings fragment");
-                        }
-                    });
-
+                holder.cingleSettingsImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Bundle bundle = new Bundle();
+                        bundle.putString(BestCinglesAdapter.EXTRA_POST_KEY, postKey);
+                        FragmentManager fragmenManager = ((AppCompatActivity)mContext)
+                                .getSupportFragmentManager();
+                        CingleSettingsDialog cingleSettingsDialog = CingleSettingsDialog
+                                .newInstance("cingle settings");
+                        cingleSettingsDialog.setArguments(bundle);
+                        cingleSettingsDialog.show(fragmenManager, "cingle settings fragment");
+                    }
+                });
 
                 holder.profileImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -221,6 +221,46 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                             intent.putExtra(BestCinglesAdapter.EXTRA_USER_UID, uid);
                             mContext.startActivity(intent);
                         }
+                    }
+                });
+
+
+                //SET THE TRADE METHOD TEXT ACCORDING TO THE TRADE METHOD OF THE CINGLE
+                ifairReference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        final String uid = dataSnapshot.child("Cingle Selling")
+                                .child(postKey).child("uid").getValue(String.class);
+
+//                        //SET CINGLE TRADE METHOD WHEN THERE ARE ALL TRADE METHODS
+//                        if (dataSnapshot.child("Cingle Lacing").hasChild(postKey)){
+//                            holder.cingleTradeMethodTextView.setText("@CingleLacing");
+//                        }else if (dataSnapshot.child("Cingle Leasing").hasChild(postKey)){
+//                            holder.cingleTradeMethodTextView.setText("@CingleLeasing");
+//
+//                        }else if (dataSnapshot.child("Cingle Selling").hasChild(postKey)){
+//                            holder.cingleTradeMethodTextView.setText("@CingleSelling");
+//                        }else if ( dataSnapshot.child("Cingle Backing").hasChild(postKey)){
+//                            holder.cingleTradeMethodTextView.setText("@CingleBacking");
+//                        }else {
+//                            holder.cingleTradeMethodTextView.setText("@NotForTrade");
+//                        }
+
+                        //SET CINGLE ON SALE
+                        if (dataSnapshot.child("Cingle Selling").hasChild(postKey)){
+                            holder.cingleTradeMethodTextView.setText("@CingleSelling");
+                        }
+
+                        //HIDE TRADING LAYOUT IF CINGLE IS NOT ON IFAIR
+                        if (!dataSnapshot.child("Cingle Selling").hasChild(postKey)){
+                            holder.cingleTradingRelativeLayout.setVisibility(View.GONE);
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
                     }
                 });
 
@@ -278,7 +318,8 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
 
                                 DecimalFormat formatter =  new DecimalFormat("0.00000000");
 
-                                holder.cingleSenseCreditsTextView.setText("CSC" + " " + formatter.format(cingle.getSensepoint()));
+                                holder.cingleSenseCreditsTextView.setText("CSC" + " " + formatter
+                                        .format(cingle.getSensepoint()));
 
                             }
 
@@ -292,25 +333,38 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
 
 
                 //RETRIVE COMMENTS COUNTS AND CATCH EXCEPTION IF CINGLE IS DELETED
-
-                    commentReference.child(postKey).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists()){
-                                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                                    Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "commentsCount");
-                                }
-
-                                holder.commentsCountTextView.setText(dataSnapshot.getChildrenCount() + "");
+                commentReference.child(postKey).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()){
+                            for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                                Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "commentsCount");
                             }
 
+                            holder.commentsCountTextView.setText(dataSnapshot.getChildrenCount() + "");
                         }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                    }
 
-                        }
-                    });
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+                //RETRIEVE LIKES COUNT AND CATCH EXCEPTIONS IF CINGLE DELETED
+                likesQueryCount.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        holder.likesCountTextView.setText("+" + dataSnapshot.getChildrenCount() +" " + "Likes");
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
 
 
                 //RETRIEVE THE FIRST FIVE USERS WHO LIKED
@@ -319,7 +373,7 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
                         if (dataSnapshot.getChildrenCount()>0){
-                            holder.usersWhoLikedCountRecyclerView.setVisibility(View.VISIBLE);
+                            holder.likesRecyclerView.setVisibility(View.VISIBLE);
                             //SETUP USERS WHO LIKED THE CINGLE
                             firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Like, UsersWhoLiked>
                                     (Like.class, R.layout.users_who_liked_count, UsersWhoLiked.class, likesQuery) {
@@ -386,15 +440,15 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                                 }
                             };
 
-                            holder.usersWhoLikedCountRecyclerView.setAdapter(firebaseRecyclerAdapter);
-                            holder.usersWhoLikedCountRecyclerView.setHasFixedSize(false);
+                            holder.likesRecyclerView.setAdapter(firebaseRecyclerAdapter);
+                            holder.likesRecyclerView.setHasFixedSize(false);
                             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, true);
                             layoutManager.setAutoMeasureEnabled(true);
-                            holder.usersWhoLikedCountRecyclerView.setNestedScrollingEnabled(false);
-                            holder.usersWhoLikedCountRecyclerView.setLayoutManager(layoutManager);
+                            holder.likesRecyclerView.setNestedScrollingEnabled(false);
+                            holder.likesRecyclerView.setLayoutManager(layoutManager);
 
                         }else {
-                            holder.usersWhoLikedCountRecyclerView.setVisibility(View.GONE);
+                            holder.likesRecyclerView.setVisibility(View.GONE);
                         }
 
                     }
@@ -422,7 +476,6 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                                                     likesRef.child(postKey).child(firebaseAuth.getCurrentUser()
                                                             .getUid())
                                                             .removeValue();
-
                                                     onLikeCounter(false);
                                                     processLikes = false;
 
@@ -433,7 +486,6 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                                                     onLikeCounter(false);
                                                 }
                                             }
-
 
                                             String likesCount = dataSnapshot.child(postKey).getChildrenCount() + "";
                                             Log.d(likesCount, "all the likes in one cingle");

@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,12 +17,14 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.home.DeleteAccountDialog;
+import com.cinggl.cinggl.home.NavigationDrawerActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,6 +44,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.cinggl.cinggl.R.string.profile;
+
 
 public class UpdateProfileActivity extends AppCompatActivity implements
         View.OnClickListener {
@@ -53,7 +58,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     @Bind(R.id.animator)ViewAnimator viewAnimator;
     @Bind(R.id.profileCoverImageView)ImageView mProfileCoverImageView;
     @Bind(R.id.updateProfilePictureImageButton)ImageButton mUpdateProfilePictureImageButton;
-    @Bind(R.id.updateProfileCoverImageButton)ImageView mUpdateProfileCoverImageView;
+    @Bind(R.id.updateCoverTextView)TextView mUpdateCoverTextView;
 
     private static  final int GALLERY_PROFILE_PHOTO_REQUEST = 111;
     private static final int GALLERY_PROFILE_COVER_PHOTO = 222;
@@ -70,9 +75,6 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     private static final int MAX_COVER_WIDTH = 400;
     private static final int MAX_COVER_HEIGHT = 400;
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,8 +85,8 @@ public class UpdateProfileActivity extends AppCompatActivity implements
         setSupportActionBar(toolbar);
 
         mDeleteAccountRelativeLayout.setOnClickListener(this);
-        mUpdateProfileCoverImageView.setOnClickListener(this);
         mUpdateProfilePictureImageButton.setOnClickListener(this);
+        mUpdateCoverTextView.setOnClickListener(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -136,19 +138,18 @@ public class UpdateProfileActivity extends AppCompatActivity implements
             startActivityForResult(intent, GALLERY_PROFILE_PHOTO_REQUEST);
         }
 
-        if (v == mUpdateProfileCoverImageView){
-            Intent intent = new Intent();
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            intent.setType("image/*");
-            startActivityForResult(intent, GALLERY_PROFILE_COVER_PHOTO);
-        }
-
         if (v == mDeleteAccountRelativeLayout){
             //delete your account permanently
             FragmentManager fragmenManager = getSupportFragmentManager();
             DeleteAccountDialog deleteAccountDialog = DeleteAccountDialog.newInstance("create your cingle");
             deleteAccountDialog.show(fragmenManager, "new post fragment");
+        }
 
+        if (v == mUpdateCoverTextView){
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            intent.setType("image/*");
+            startActivityForResult(intent, GALLERY_PROFILE_COVER_PHOTO);
         }
     }
 
@@ -161,34 +162,25 @@ public class UpdateProfileActivity extends AppCompatActivity implements
             if (requestCode == GALLERY_PROFILE_COVER_PHOTO){
                 imageUri = data.getData();
 
-                Picasso.with(this)
-                        .load(imageUri)
-                        .resize(MAX_COVER_WIDTH, MAX_COVER_HEIGHT)
-                        .onlyScaleDown()
-                        .centerCrop()
-                        .placeholder(R.drawable.profle_image_background)
+                Picasso.with(this).load(imageUri).resize(MAX_COVER_WIDTH, MAX_COVER_HEIGHT)
+                        .onlyScaleDown().centerCrop().placeholder(R.drawable.gradient_color)
                         .networkPolicy(NetworkPolicy.OFFLINE)
                         .into(mProfileCoverImageView, new Callback() {
                             @Override
                             public void onSuccess() {
 
                             }
-
                             @Override
                             public void onError() {
-                                Picasso.with(UpdateProfileActivity.this)
-                                        .load(imageUri)
+                                Picasso.with(UpdateProfileActivity.this).load(imageUri)
                                         .resize(MAX_COVER_WIDTH, MAX_COVER_HEIGHT)
-                                        .onlyScaleDown()
-                                        .centerCrop()
+                                        .onlyScaleDown().centerCrop()
                                         .placeholder(R.drawable.profle_image_background)
                                         .into(mProfileCoverImageView);
 
                             }
                         });
                 updateCoverPhoto();
-                Toast.makeText(UpdateProfileActivity.this, "Successfully updated", Toast.LENGTH_SHORT).show();
-
             }
 
             //update the profile photo
@@ -197,11 +189,8 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 //                mProfilePictureImageView.setImageURI(imageUri);
 
                 Picasso.with(this)
-                        .load(profileUri)
-                        .resize(MAX_WIDTH, MAX_HEIGHT)
-                        .onlyScaleDown()
-                        .centerCrop()
-                        .placeholder(R.drawable.profle_image_background)
+                        .load(profileUri).resize(MAX_WIDTH, MAX_HEIGHT).onlyScaleDown()
+                        .centerCrop().placeholder(R.drawable.profle_image_background)
                         .networkPolicy(NetworkPolicy.OFFLINE)
                         .into(mProfilePictureImageView, new Callback() {
                             @Override
@@ -212,48 +201,44 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                             @Override
                             public void onError() {
                                 Picasso.with(UpdateProfileActivity.this)
-                                        .load(profileUri)
-                                        .resize(MAX_WIDTH, MAX_HEIGHT)
-                                        .onlyScaleDown()
-                                        .centerCrop()
-                                        .placeholder(R.drawable.profle_image_background)
+                                        .load(profileUri).resize(MAX_WIDTH, MAX_HEIGHT)
+                                        .onlyScaleDown().centerCrop().placeholder(R.drawable.profle_image_background)
                                         .into(mProfilePictureImageView);
 
                             }
                         });
                 updateProfilePhoto();
-                Toast.makeText(UpdateProfileActivity.this, "Successfully updated", Toast.LENGTH_SHORT).show();
-
             }
-
-
 
         }
     }
 
     public void updateProfileProgessDialog(){
         progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Updating your profile ...");
+        progressDialog.setMessage("Updating your profile...");
         progressDialog.setCancelable(true);
+        progressDialog.getWindow().setLayout(100, 150);
     }
 
     public void updateProfilePhoto(){
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String uid = user.getUid();
+        progressDialog.show();
 
-        if (imageUri != null){
+        if (profileUri != null){
             StorageReference storageReference = FirebaseStorage
                     .getInstance().getReference()
                     .child("profile images")
                     .child(uid);
 
-            StorageReference filePath = storageReference.child(imageUri.getLastPathSegment());
-            filePath.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            StorageReference filePath = storageReference.child(profileUri.getLastPathSegment());
+            filePath.putFile(profileUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     String downloadUrl = taskSnapshot.getDownloadUrl().toString();
 
                     final String profileImage = (downloadUrl.toString());
+                    Log.d("profile image", profileImage);
 
                     usersRef.child("profileImage").setValue(profileImage);
                     mProfilePictureImageView.setImageBitmap(null);
@@ -265,6 +250,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+                            Log.d("profile image", profileImage);
 
                             Picasso.with(UpdateProfileActivity.this)
                                     .load(profileImage)
@@ -291,6 +277,9 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 
                                         }
                                     });
+                            progressDialog.dismiss();
+                            Intent intent = new Intent(UpdateProfileActivity.this, NavigationDrawerActivity.class);
+                            startActivity(intent);
                         }
 
                         @Override
@@ -298,7 +287,6 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 
                         }
                     });
-
 
                 }
             });
@@ -310,6 +298,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     public void updateCoverPhoto(){
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String uid = user.getUid();
+        progressDialog.show();
 
         if (imageUri != null){
             StorageReference storageReference = FirebaseStorage
@@ -323,9 +312,9 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     String downloadUrl = taskSnapshot.getDownloadUrl().toString();
 
-                    final String profileCover = (downloadUrl.toString());
+                    final String profileCoverPhoto = (downloadUrl.toString());
 
-                    usersRef.child("profileCover").setValue(profileCover);
+                    usersRef.child("profileCover").setValue(profileCoverPhoto);
                     mProfileCoverImageView.setImageBitmap(null);
 
                     //progress dialog to show the retrieval of the update profile picture
@@ -334,14 +323,12 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                     usersRef.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            final String profileImage = (String) dataSnapshot.child("profileCover").getValue();
+                            final String profileCover = (String) dataSnapshot.child("profileCover").getValue();
+                            Log.d("profile cover", profileCover);
 
                             Picasso.with(UpdateProfileActivity.this)
-                                    .load(profileImage)
-                                    .resize(MAX_WIDTH, MAX_HEIGHT)
-                                    .onlyScaleDown()
-                                    .centerCrop()
-                                    .placeholder(R.drawable.gradient_color)
+                                    .load(profileCover).resize(MAX_WIDTH, MAX_HEIGHT)
+                                    .onlyScaleDown().centerCrop().placeholder(R.drawable.gradient_color)
                                     .networkPolicy(NetworkPolicy.OFFLINE)
                                     .into(mProfileCoverImageView, new Callback() {
                                         @Override
@@ -352,15 +339,16 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                                         @Override
                                         public void onError() {
                                             Picasso.with(UpdateProfileActivity.this)
-                                                    .load(profileImage)
-                                                    .resize(MAX_WIDTH, MAX_HEIGHT)
-                                                    .onlyScaleDown()
-                                                    .centerCrop()
+                                                    .load(profileCover).resize(MAX_WIDTH, MAX_HEIGHT)
+                                                    .onlyScaleDown().centerCrop()
                                                     .placeholder(R.drawable.gradient_color)
                                                     .into(mProfileCoverImageView);
 
                                         }
                                     });
+                            progressDialog.dismiss();
+                            Intent intent = new Intent(UpdateProfileActivity.this, NavigationDrawerActivity.class);
+                            startActivity(intent);
                         }
 
                         @Override
@@ -402,8 +390,6 @@ public class UpdateProfileActivity extends AppCompatActivity implements
             usersRef.child("secondName").setValue(secondName);
             mSecondNameEditText.setText("");
         }
-
-
     }
 
 //

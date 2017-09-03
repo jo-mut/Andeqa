@@ -3,8 +3,6 @@ package com.cinggl.cinggl.adapters;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Like;
@@ -13,10 +11,6 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static com.cinggl.cinggl.R.id.followButton;
-import static com.cinggl.cinggl.R.id.profileImageView;
-import static com.cinggl.cinggl.R.id.usernameTextView;
 
 /**
  * Created by J.EL on 8/17/2017.

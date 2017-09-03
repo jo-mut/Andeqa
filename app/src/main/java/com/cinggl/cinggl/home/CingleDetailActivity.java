@@ -39,7 +39,7 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
     private String mPostKey;
     private DatabaseReference commentReference;
     private DatabaseReference cinglesReference;
-    public static final String EXTRA_POST_KEY = "post key";
+    private static final String EXTRA_POST_KEY = "post key";
     public boolean showOnClick = true;
 
 

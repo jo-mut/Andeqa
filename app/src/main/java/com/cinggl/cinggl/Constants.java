@@ -13,17 +13,10 @@ public final class Constants {
     public static final String CINGLE_DESCRIPTION = "description";
     public static final String LIKES= "Likes";
     public static final String RELATIONS = "Relations";
-    public static  final String EXTRA_KEY_CINGLES = "cingles";
-    public static final String EXTRA_KEY_POSITION = "position";
-    public static final String KEY_SOURCE = "source";
-    public static final String SOURCE_FIND = "find";
-    public static final String USER_PROFILE = "user profile";
-    public static final String USERNAME = "username";
-    public static final String USER_PROFILE_IMAGE = "profileImage";
     public static final String IFAIR = "Ifair";
     public static final String UID = "uid";
     public static final String WALLET = "wallet";
-    public static final String CINGLE_WALLET = "cingle wallets";
+    public static final String CINGLE_WALLET = "cingle wallet";
 
 
 }

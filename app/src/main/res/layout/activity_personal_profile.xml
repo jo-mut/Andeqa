@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_personal_profile"
@@ -18,9 +19,7 @@
         app:titleTextAppearance="@style/toolbarTextSize"
         app:popupTheme="@style/AppTheme.PopupOverlay"
         app:titleMargin="0dp"
-        app:theme="@style/ToolbarColored"
-
-        />
+        app:theme="@style/ToolbarColored" />
 
     <RelativeLayout
         android:id="@+id/profile_container"

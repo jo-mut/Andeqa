@@ -60,16 +60,17 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="12dp"
                         android:layout_marginStart="12dp"
+                        android:layout_marginTop="10dp"
                         android:id="@+id/accountUsernameTextView"
                         android:textSize="14sp"
                         android:textColor="@android:color/black"
                         android:textStyle="normal|bold"
                         android:layout_alignParentTop="true"
-                        android:layout_toRightOf="@+id/userProfileImageView"
-                        android:layout_toEndOf="@+id/userProfileImageView" />
+                        android:layout_toRightOf="@+id/profileImageView"
+                        android:layout_toEndOf="@+id/profileImageView" />
 
                     <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/userProfileImageView"
+                        android:id="@+id/profileImageView"
                         android:layout_width="55dp"
                         android:layout_height="55dp"
                         android:background="@drawable/profle_image_background"
@@ -77,27 +78,26 @@
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true" />
 
-                    <RelativeLayout
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:id="@+id/cingleTitleRelativeLayout">
+
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingTop="5dp"
-                        android:paddingBottom="5dp"
-                        android:id="@+id/cingleTitleRelativeLayout">
-
-                        <TextView
-                            android:text="TheCityOfLight"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true"
-                            android:id="@+id/cingleTitleTextView"
-                            android:textStyle="normal|bold"
-                            android:textColor="@android:color/black"
-                            android:textSize="16sp"
-                            android:layout_marginLeft="3dp" />
-
-                    </RelativeLayout>
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:id="@+id/cingleTitleTextView"
+                        android:textStyle="normal|bold"
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp"
+                        android:layout_marginLeft="3dp" />
 
                 </RelativeLayout>
 

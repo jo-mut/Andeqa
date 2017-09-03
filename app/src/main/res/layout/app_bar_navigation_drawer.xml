@@ -71,15 +71,4 @@
 
     </android.support.design.widget.AppBarLayout>
 
-
-    <!--<android.support.design.widget.BottomNavigationView-->
-    <!--android:id="@+id/bottomNavigationView"-->
-    <!--app:menu="@menu/bottom_navigation_menu"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="@dimen/bottom_navigation_height"-->
-    <!--android:layout_gravity="bottom"-->
-    <!--app:itemTextColor="@android:color/white"-->
-    <!--app:itemIconTint="@color/colorIcons"-->
-    <!--app:itemBackground="@color/colorPrimary"/>-->
-
 </android.support.design.widget.CoordinatorLayout>

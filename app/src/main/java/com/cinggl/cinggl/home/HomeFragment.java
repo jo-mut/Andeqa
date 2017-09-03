@@ -148,14 +148,11 @@ public class HomeFragment extends Fragment{
 //
 //    }
 //
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//
-//        // register connection status listener
-//        App.getInstance().setConnectivityListener(this);
-//        checkConnection();
-//    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        viewPager.setAdapter(homePagerAdapter);
+    }
 //
 //    /**
 //     * Callback will be triggered when there is change in

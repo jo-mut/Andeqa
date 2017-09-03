@@ -48,11 +48,6 @@
             android:name=".creation.CreateCingleActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".home.HomeActivity"
-            android:label="Cinggl"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
             android:name=".profile.UpdateProfileActivity"
             android:label="Update your profile"
             android:screenOrientation="portrait"
@@ -128,36 +123,29 @@
         <activity
             android:name=".ifair.IfairMainActivity"
             android:label="Ifair" />
-        <activity android:name=".preferences.SettingsActivity" />
         <activity
-            android:name=".backing.BackingActivity"
-            android:label="Cingle Backing"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait"
+            android:label="Preferences"
+            android:name=".preferences.SettingsActivity" />
         <activity
-            android:name=".lacing.LacingActivity"
-            android:label="Cingle Lacing"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            android:label="Cingle"
+            android:name=".ifair.TradeDetailActivity" />
         <activity
-            android:name=".leasing.LeasingActivity"
-            android:label="Cingle Leasing"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait"
+            android:label="Trading methods"
+            android:name=".ifair.ChooseTradeMethodActivity" />
         <activity
-            android:name=".market.MarketActivity"
-            android:label="Main Market"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".selling.SellingActivity"
-            android:label="Cingle Sale"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".trading.TradingActivity"
-            android:label="Asset Trading"
-            android:theme="@style/AppTheme" />
-        <activity android:name=".backing.BakingDetailActivity" />
-        <activity android:name=".ifair.ChooseTradeMethodActivity" />
-        <activity android:name=".AboutActivity" />
-        <activity android:name=".ifair.SendCreditsActivity" />
-        <activity android:name=".ifair.WalletActivity"></activity>
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait"
+            android:label="About"
+            android:name=".AboutActivity" />
+        <activity   android:theme="@style/AppTheme"
+            android:screenOrientation="portrait"
+            android:label="Wallet"
+            android:name=".ifair.WalletActivity" />
     </application>
 
 </manifest>

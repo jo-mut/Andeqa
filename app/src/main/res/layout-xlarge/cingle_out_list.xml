@@ -9,7 +9,7 @@
     android:layout_height="wrap_content">
 
         <LinearLayout
-            android:padding="1dp"
+            android:padding="0.3dp"
             android:layout_marginBottom="15dp"
             android:background="@android:color/white"
             android:orientation="vertical"
@@ -24,7 +24,7 @@
                 android:padding="10dp">
 
                 <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/userProfileImageView"
+                    android:id="@+id/profileImageView"
                     android:layout_centerVertical="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
@@ -44,18 +44,18 @@
                     android:textColor="@android:color/black"
                     android:textStyle="normal|bold"
                     android:layout_alignParentTop="true"
-                    android:layout_toRightOf="@+id/userProfileImageView"
-                    android:layout_toEndOf="@+id/userProfileImageView"
+                    android:layout_toRightOf="@+id/profileImageView"
+                    android:layout_toEndOf="@+id/profileImageView"
                     android:layout_marginTop="10dp" />
 
                 <TextView
-                    android:text="Cingle Backing"
+                    android:text=""
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/cingleTradeMethodTextView"
                     android:textStyle="normal|bold"
                     android:textColor="@android:color/black"
-                    android:layout_alignTop="@+id/userProfileImageView"
+                    android:layout_alignTop="@+id/profileImageView"
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="5dp"
                     android:padding="5dp"
@@ -79,7 +79,7 @@
                     android:id="@+id/cingleViewCount"
                     android:textSize="24sp"
                     android:layout_below="@+id/accountUsernameTextView"
-                    android:layout_toRightOf="@+id/userProfileImageView"
+                    android:layout_toRightOf="@+id/profileImageView"
                     android:layout_marginLeft="12dp" />
 
 
@@ -212,8 +212,6 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_marginTop="10dp"
-                android:paddingRight="10dp"
                 android:layout_height="40dp"
                 android:paddingBottom="5dp">
 
@@ -222,7 +220,7 @@
                     android:layout_height="wrap_content">
 
                     <android.support.v7.widget.RecyclerView
-                        android:id="@+id/usersWhoLikedCountRecyclerView"
+                        android:id="@+id/likesRecyclerView"
                         android:overScrollMode="never"
                         android:nestedScrollingEnabled="true"
                         android:layout_width="wrap_content"
@@ -239,8 +237,8 @@
                         android:background="@drawable/text_border_default"
                         android:scaleType="centerCrop"
                         android:cropToPadding="false"
-                        android:layout_toRightOf="@+id/usersWhoLikedCountRecyclerView"
-                        android:layout_toEndOf="@+id/usersWhoLikedCountRecyclerView"
+                        android:layout_toRightOf="@+id/likesRecyclerView"
+                        android:layout_toEndOf="@+id/likesRecyclerView"
                         android:layout_marginLeft="5dp"
                         android:textSize="18sp"
                         android:text="+9"

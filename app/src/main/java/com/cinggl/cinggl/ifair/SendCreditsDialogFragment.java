@@ -101,38 +101,71 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
             if (mAmountEnteredEditText != null){
                 final String amountInString = mAmountEnteredEditText.getText().toString();
                 final double amountEntered = Double.parseDouble(amountInString);
+                Log.d("amount entered", amountEntered + "");
 
-                walletReference.child("current balance").child(firebaseAuth.getCurrentUser().getUid())
-                        .child("total balance").addValueEventListener(new ValueEventListener() {
+                walletReference.child("balance").child(firebaseAuth.getCurrentUser().getUid())
+                        .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()){
-                            try {
-                                Balance balance = dataSnapshot.getValue(Balance.class);
-                                final double currentBalance = balance.getTotalBalance();
+                            if (processPay){
+                                try {
+//                                    Balance balance = dataSnapshot.child("total balance").getValue(Balance.class);
+//                                    final double currentBalance = balance.getTotalBalance();
+//
+                                    final Double currentBalance = dataSnapshot.getValue(Double.class);
+                                    Log.d("current balance", currentBalance + "");
 
-                                if (amountEntered > currentBalance){
-                                    mAmountEnteredEditText.setError("Your balance is insufficient");
-                                }else if (mAmountEnteredEditText.equals("")){
-                                    mAmountEnteredEditText.setError("Amount cannot be empty");
-                                }else {
-                                    //CREATE THE CINGLE WALLET IF ITS NOT THERE
-                                    cingleWalletReference.child(mPostKey).child("cingle wallet")
-                                            .child("cingle csc balance").setValue(amountEntered)
-                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            try {
-                                                //RECORD THE NEW BALANCE IN THE CINGLE WALLET
-                                                cingleWalletReference.child(mPostKey).child("cingle wallet")
-                                                        .child("cingle csc balance")
-                                                        .addValueEventListener(new ValueEventListener() {
+                                    if (amountEntered > currentBalance){
+                                        mAmountEnteredEditText.setError("Your wallet has insufficient balance");
+                                    }else if (mAmountEnteredEditText.equals("")){
+                                        mAmountEnteredEditText.setError("Amount cannot be empty");
+
+                                    }else if(amountEntered < 0){
+                                        mAmountEnteredEditText.setError("Amount cannot be zero");
+                                    } else{
+
+                                        //RECORD THE NEW BALANCE IN THE CINGLE WALLET
+                                        cingleWalletReference.child(mPostKey)
+                                                .child("amount deposited")
+                                                .addValueEventListener(new ValueEventListener() {
                                                     @Override
                                                     public void onDataChange(DataSnapshot dataSnapshot) {
-                                                        Balance cingleBalance = new Balance();
-                                                        final double newCingleBalance = cingleBalance.getTotalBalance() + amountEntered;
-                                                        cingleWalletReference.child("cingle wallet").child("cingle csc wallet")
-                                                                .setValue(newCingleBalance);
+                                                        final Double cingleBalance = dataSnapshot.getValue(Double.class);
+                                                        Log.d("cingle balance", dataSnapshot.getValue() + "");
+                                                        final double newCingleBalance = cingleBalance + amountEntered;
+                                                        cingleWalletReference.child(mPostKey).child("cingle csc wallet")
+                                                                .setValue(newCingleBalance).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                if (task.isSuccessful()){
+                                                                    walletReference.child("balance").child(firebaseAuth.getCurrentUser().getUid())
+                                                                            .addValueEventListener(new ValueEventListener() {
+                                                                        @Override
+                                                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                            //SET THE NEW WALLET BALANCE AFTER THE MONEY HAS BEEN TRANSAFERED
+                                                                            try {
+                                                                                Balance b = dataSnapshot.getValue(Balance.class);
+                                                                                final double currentBalance = b.getTotalBalance();
+                                                                                final double newBalance = currentBalance + amountEntered;
+
+                                                                                Log.d("new balance", newBalance + "");
+                                                                                walletReference.child("balance").child(firebaseAuth.getCurrentUser()
+                                                                                        .getUid()).setValue(newBalance);
+                                                                            } catch (Exception e) {
+                                                                                e.printStackTrace();
+                                                                            }
+
+                                                                        }
+
+                                                                        @Override
+                                                                        public void onCancelled(DatabaseError databaseError) {
+
+                                                                        }
+                                                                    });
+                                                                }
+                                                            }
+                                                        });
                                                     }
 
                                                     @Override
@@ -141,24 +174,15 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
                                                     }
                                                 });
 
-                                                //SET THE NEW WALLET BALANCE AFTER THE MPONEY HAS BEEN TRANSAFERED
-                                                Balance walletBalance = new Balance();
-                                                final double newWalletBalance = walletBalance.getTotalBalance() - amountEntered;
-                                                walletReference.child("current balance").child(firebaseAuth.getCurrentUser().getUid())
-                                                        .child("total balance").setValue(newWalletBalance);
+                                        Toast.makeText(getContext(), "Transaction not successful. Please try again later",
+                                                Toast.LENGTH_LONG).show();
+                                    }
 
-                                            }catch (Exception e){
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    });
-
-                                    Toast.makeText(getContext(), "Transaction not successful. Please try again later",
-                                            Toast.LENGTH_LONG).show();
+                                }catch (Exception e){
+                                    e.printStackTrace();
                                 }
-
-                            }catch (Exception e){
-                                e.printStackTrace();
+                                //FINISH THE TRANSACTION PROCESS AND READY FOR A NEW ONE
+                                processPay = false;
                             }
                         }
                     }
@@ -168,10 +192,106 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
 
                     }
                 });
-
+                //RESET THE EDITTEXT
+                mAmountEnteredEditText.setText("");
             }
 
         }
+
     }
+
+
+//    @Override
+//    public void onClick(View v){
+//        if (v == mSendAmountButton){
+//            processPay = true;
+//            if (mAmountEnteredEditText != null){
+//                final String amountInString = mAmountEnteredEditText.getText().toString();
+//                final double amountEntered = Double.parseDouble(amountInString);
+//
+//                Log.d("amount entered", amountEntered + "");
+//                walletReference.child("current balance").child(firebaseAuth.getCurrentUser().getUid())
+//                        .child("total balance").addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(DataSnapshot dataSnapshot) {
+//                        if (dataSnapshot.exists()){
+//                            if (processPay){
+//                                try {
+//                                    Balance balance = dataSnapshot.getValue(Balance.class);
+//                                    final double currentBalance = balance.getTotalBalance();
+//
+//                                    Log.d("current balance", currentBalance + "");
+//
+//                                    if (amountEntered > currentBalance){
+//                                        mAmountEnteredEditText.setError("Your wallet has insufficient balance");
+//                                    }else if (mAmountEnteredEditText.equals("")){
+//                                        mAmountEnteredEditText.setError("Amount cannot be empty");
+//
+//                                    }else if(amountEntered < 0){
+//                                        mAmountEnteredEditText.setError("Amount cannot be zero");
+//                                    } else{
+//                                        //CREATE THE CINGLE WALLET IF ITS NOT THERE
+//                                        cingleWalletReference.child(mPostKey).child("cingle wallet")
+//                                                .child("cingle csc balance").setValue(amountEntered)
+//                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                                    @Override
+//                                                    public void onComplete(@NonNull Task<Void> task) {
+//                                                        try {
+//                                                            //RECORD THE NEW BALANCE IN THE CINGLE WALLET
+//                                                            cingleWalletReference.child(mPostKey).child("cingle wallet")
+//                                                                    .child("cingle csc balance")
+//                                                                    .addValueEventListener(new ValueEventListener() {
+//                                                                        @Override
+//                                                                        public void onDataChange(DataSnapshot dataSnapshot) {
+//                                                                            Balance cingleBalance = new Balance();
+//                                                                            Log.d("cingle balance", cingleBalance + "");
+//                                                                            final double newCingleBalance = cingleBalance.getTotalBalance() + amountEntered;
+//                                                                            cingleWalletReference.child("cingle wallet").child("cingle csc wallet")
+//                                                                                    .setValue(newCingleBalance);
+//                                                                        }
+//
+//                                                                        @Override
+//                                                                        public void onCancelled(DatabaseError databaseError) {
+//
+//                                                                        }
+//                                                                    });
+//
+//                                                            //SET THE NEW WALLET BALANCE AFTER THE MPONEY HAS BEEN TRANSAFERED
+//                                                            Balance walletBalance = new Balance();
+//                                                            final double newWalletBalance = walletBalance.getTotalBalance() - amountEntered;
+//                                                            Log.d(newWalletBalance + "", "new wallet balance");
+//                                                            walletReference.child("current balance").child(firebaseAuth.getCurrentUser().getUid())
+//                                                                    .child("total balance").setValue(newWalletBalance);
+//
+//                                                        }catch (Exception e){
+//                                                            e.printStackTrace();
+//                                                        }
+//                                                    }
+//                                                });
+//
+//                                        Toast.makeText(getContext(), "Transaction not successful. Please try again later",
+//                                                Toast.LENGTH_LONG).show();
+//                                    }
+//
+//                                }catch (Exception e){
+//                                    e.printStackTrace();
+//                                }
+//                                //FINISH THE TRANSACTION PROCESS AND READY FOR A NEW ONE
+//                                processPay = false;
+//                            }
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(DatabaseError databaseError) {
+//
+//                    }
+//                });
+//                //RESET THE EDITTEXT
+//                mAmountEnteredEditText.setText("");
+//            }
+//
+//        }
+//    }
 
 }

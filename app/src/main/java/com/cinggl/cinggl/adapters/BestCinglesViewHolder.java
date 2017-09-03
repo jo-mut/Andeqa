@@ -19,8 +19,6 @@ import java.text.DecimalFormat;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static com.cinggl.cinggl.R.id.usersWhoLikedCountRecyclerView;
-
 /**
  * Created by J.EL on 7/6/2017.
  */
@@ -50,7 +48,8 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
     private RelativeLayout descriptionRelativeLayout;
     public TextView cingleMomentTextView;
     public RelativeLayout cingleMomentRelativeLayout;
-    public RecyclerView usersWhoLikedCountRecyclerView;
+    public RecyclerView likesRecyclerView;
+    public RelativeLayout cingleTradingRelativeLayout;
 
     public BestCinglesViewHolder(View itemView) {
         super(itemView);
@@ -61,9 +60,9 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
         commentsImageView = (ImageView) itemView.findViewById(R.id.commentsImageView);
         cingleDescriptionTextView = (TextView) itemView.findViewById(R.id.cingleDescriptionTextView);
         cingleTitleTextView = (TextView) itemView.findViewById(R.id.cingleTitleTextView);
-        profileImageView = (CircleImageView) itemView.findViewById(R.id.userProfileImageView);
+        profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
-        usernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
+        usernameTextView = (TextView) itemView.findViewById(R.id.notificationTextView);
         cingleSettingsImageView = (ImageView) mView.findViewById(R.id.cingleSettingsImageView);
         cingleToolsRelativeLayout = (RelativeLayout) mView.findViewById(R.id.cingleToolsRelativeLayout);
         titleRelativeLayout = (RelativeLayout) mView.findViewById(R.id.titleRelativeLayout);
@@ -73,13 +72,14 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
         cingleTradeMethodTextView = (TextView) mView.findViewById(R.id.cingleTradeMethodTextView);
         cingleMomentTextView = (TextView) mView.findViewById(R.id.cingleMomentTextView);
         cingleMomentRelativeLayout = (RelativeLayout) mView.findViewById(R.id.cingleMomentRelativeLayout);
-        usersWhoLikedCountRecyclerView = (RecyclerView) mView.findViewById(R.id.usersWhoLikedCountRecyclerView);
+        likesRecyclerView = (RecyclerView) mView.findViewById(R.id.likesRecyclerView);
+        cingleTradingRelativeLayout = (RelativeLayout) mView.findViewById(R.id.cingleTradingRelativeLayout);
 
     }
 
     public void bindBestCingle(final Cingle cingle){
         final ProportionalImageView cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
-        final CircleImageView profileImageView = (CircleImageView) mView.findViewById(R.id.userProfileImageView);
+        final CircleImageView profileImageView = (CircleImageView) mView.findViewById(R.id.profileImageView);
         TextView cingleTitleTextView = (TextView) mView.findViewById(R.id.cingleTitleTextView);
         TextView cingleDescriptionTextView = (TextView) mView.findViewById(R.id.cingleDescriptionTextView);
         TextView cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsCountTextView);

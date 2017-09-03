@@ -2,10 +2,13 @@ package com.cinggl.cinggl.home;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -28,8 +31,9 @@ import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.creation.CreateCingleActivity;
 import com.cinggl.cinggl.ifair.IfairMainActivity;
 import com.cinggl.cinggl.preferences.SettingsActivity;
+import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.profile.ProfileFragment;
-import com.cinggl.cinggl.timeline.TimelineFragment;
+import com.cinggl.cinggl.utils.BottomNavigationViewBehavior;
 import com.cinggl.cinggl.utils.BottomNavigationViewHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -46,17 +50,18 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
+
 public class NavigationDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     @Bind(R.id.fab)FloatingActionButton mFloatingActionButton;
-    @Bind(R.id.bottomNavigationView)BottomNavigationView mBottomNavigationView;
+//    @Bind(R.id.bottomNavigationView)BottomNavigationView mBottomNavigationView;
 
 
     private static final int MAX_WIDTH = 300;
     private static final int MAX_HEIGHT = 300;
     final FragmentManager fragmentManager = getSupportFragmentManager();
-    final Fragment timelineFragment = new TimelineFragment();
     final Fragment profileFragment = new ProfileFragment();
     final Fragment homeFragment = new HomeFragment();
     private int mSelectedItem;
@@ -112,71 +117,76 @@ public class NavigationDrawerActivity extends AppCompatActivity
         fetchData();
         fetchUserEmail();
 
-        //bottom navigation
-        BottomNavigationViewHelper.disableShiftMode(mBottomNavigationView);
-        mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                selectFragment(item);
-                return true;
-            }
-        });
+//        //bottom navigation
+//        BottomNavigationViewHelper.disableShiftMode(mBottomNavigationView);
+//        mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView
+//                .OnNavigationItemSelectedListener() {
+//            @Override
+//            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+//                selectFragment(item);
+//                return true;
+//            }
+//        });
 
-        MenuItem selectedItem;
-        selectedItem = mBottomNavigationView.getMenu().getItem(0);
-        selectFragment(selectedItem);
+//        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams)
+//                mBottomNavigationView.getLayoutParams();
+//        layoutParams.setBehavior(new BottomNavigationViewBehavior());
+
+//        MenuItem selectedItem;
+//        selectedItem = mBottomNavigationView.getMenu().getItem(0);
+//        selectFragment(selectedItem);
 
     }
 
+//
+//    @Override
+//    public void onBackPressed() {
+//        MenuItem defaulItem = mBottomNavigationView.getMenu().getItem(0);
+//        if(mSelectedItem != defaulItem.getItemId()){
+//            selectFragment(defaulItem);
+//        }else {
+//            super.onBackPressed();
+//        }
+//    }
 
-    @Override
-    public void onBackPressed() {
-        MenuItem defaulItem = mBottomNavigationView.getMenu().getItem(0);
-        if(mSelectedItem != defaulItem.getItemId()){
-            selectFragment(defaulItem);
-        }else {
-            super.onBackPressed();
-        }
-    }
+//    private void updateToolbarText(CharSequence text){
+//        ActionBar actionBar = getSupportActionBar();
+//        if(actionBar != null){
+//            actionBar.setTitle(text);
+//        }
+//    }
 
-    private void updateToolbarText(CharSequence text){
-        ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null){
-            actionBar.setTitle(text);
-        }
-    }
-
-    private void selectFragment(MenuItem item){
-        //initialize each corresponding fragment
-        switch (item.getItemId()){
-            case R.id.action_home:
-                FragmentTransaction ft = fragmentManager.beginTransaction();
-                ft.replace(R.id.home_container, homeFragment);
-                ft.commit();
-                break;
-            case R.id.action_timeline:
-                FragmentTransaction timelineTransaction = fragmentManager.beginTransaction();
-                timelineTransaction.replace(R.id.home_container, timelineFragment).commit();
-                break;
-
-            case R.id.action_profile:
-                FragmentTransaction profileTransaction = fragmentManager.beginTransaction();
-                profileTransaction.replace(R.id.home_container, profileFragment).commit();
-                break;
-        }
-
-        //update selected item
-        mSelectedItem = item.getItemId();
-
-        updateToolbarText(item.getTitle());
-
-        //uncheck the other items
-        for(int i = 0; i < mBottomNavigationView.getMenu().size(); i++){
-            MenuItem menuItem = mBottomNavigationView.getMenu().getItem(i);
-            menuItem.setChecked(menuItem.getItemId() ==item.getItemId());
-        }
-    }
-
+//    private void selectFragment(MenuItem item){
+//        //initialize each corresponding fragment
+//        switch (item.getItemId()){
+//            case R.id.action_home:
+//                FragmentTransaction ft = fragmentManager.beginTransaction();
+//                ft.replace(R.id.home_container, homeFragment);
+//                ft.commit();
+//                break;
+//            case R.id.action_timeline:
+//                FragmentTransaction timelineTransaction = fragmentManager.beginTransaction();
+//                timelineTransaction.replace(R.id.home_container, timelineFragment).commit();
+//                break;
+//
+//            case R.id.action_profile:
+//                FragmentTransaction profileTransaction = fragmentManager.beginTransaction();
+//                profileTransaction.replace(R.id.home_container, profileFragment).commit();
+//                break;
+//        }
+//
+//        //update selected item
+//        mSelectedItem = item.getItemId();
+//
+//        updateToolbarText(item.getTitle());
+//
+//        //uncheck the other items
+//        for(int i = 0; i < mBottomNavigationView.getMenu().size(); i++){
+//            MenuItem menuItem = mBottomNavigationView.getMenu().getItem(i);
+//            menuItem.setChecked(menuItem.getItemId() ==item.getItemId());
+//        }
+//    }
+//
 
     private void launchHomeFragment(){
         FragmentTransaction ft = fragmentManager.beginTransaction();
@@ -293,25 +303,20 @@ public class NavigationDrawerActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-//
-//        if (id == R.id.nav_camera) {
-//            // Handle the camera action
-//        } else if (id == R.id.nav_gallery) {
-//
-//        } else if (id == R.id.nav_slideshow) {
-//
-//        } else if (id == R.id.nav_manage) {
-//
-//        } else if (id == R.id.nav_share) {
-//
-//        } else if (id == R.id.nav_send) {
-//
-//        }
 
-        if (id == R.id.action_ifair){
-            Intent intent = new Intent(NavigationDrawerActivity.this, IfairMainActivity.class);
+        if (id == R.id.action_home){
+            Intent intent = new Intent(NavigationDrawerActivity.this, NavigationDrawerActivity.class);
+        }
+
+        if (id == R.id.action_profile){
+            Intent intent = new Intent(NavigationDrawerActivity.this, PersonalProfileActivity.class);
             startActivity(intent);
         }
+//
+//        if (id == R.id.action_ifair){
+//            Intent intent = new Intent(NavigationDrawerActivity.this, IfairMainActivity.class);
+//            startActivity(intent);
+//        }
 
         if (id == R.id.action_about){
             Intent intent = new Intent(Intent.ACTION_VIEW,
@@ -324,10 +329,21 @@ public class NavigationDrawerActivity extends AppCompatActivity
             return true;
         }
 
-        if (id == R.id.action_help){
-            Intent intent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://www.androidhive.info/privacy-policy"));
-            startActivity(intent);
+        if (id == R.id.action_send_feedback){
+            String body = null;
+            try {
+                body = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;
+                body = "\n\n-----------------------------\nPlease don't remove this information\n Device OS: Android \n Device OS version: " +
+                        Build.VERSION.RELEASE + "\n App Version: " + body + "\n Device Brand: " + Build.BRAND +
+                        "\n Device Model: " + Build.MODEL + "\n Device Manufacturer: " + Build.MANUFACTURER;
+            } catch (PackageManager.NameNotFoundException e) {
+            }
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("message/rfc822");
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"contact@androidhive.info"});
+            intent.putExtra(Intent.EXTRA_SUBJECT, "Query from android app");
+            intent.putExtra(Intent.EXTRA_TEXT, body);
+            this.startActivity(Intent.createChooser(intent, this.getString(R.string.choose_email_client)));
         }
 
 

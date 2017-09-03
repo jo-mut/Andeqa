@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.home.HomeActivity;
+import com.cinggl.cinggl.home.NavigationDrawerActivity;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.ProportionalImageView;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -53,7 +53,7 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
     @Bind(R.id.postCingleImageView)ImageView mPostCingleImageView;
     @Bind(R.id.cameraImageView)ImageView mCameraImageView;
 //    @Bind(R.id.galleryImageView)ImageView mGalleryImageView;
-    @Bind(R.id.userProfileImageView)CircleImageView mProfileImageView;
+    @Bind(R.id.profileImageView)CircleImageView mProfileImageView;
     @Bind(R.id.accountUsernameTextView)TextView mAccountUsernameTextView;
     @Bind(R.id.img)ProportionalImageView mProportionalImageView;
 
@@ -402,7 +402,7 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
 
                                                 Toast.makeText(CreateCingleActivity.this, "Your Cingle has successfully been posted", Toast.LENGTH_LONG).show();
 
-                                                Intent intent = new Intent(CreateCingleActivity.this, HomeActivity.class);
+                                                Intent intent = new Intent(CreateCingleActivity.this, NavigationDrawerActivity.class);
                                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                                 startActivity(intent);
                                                 finish();

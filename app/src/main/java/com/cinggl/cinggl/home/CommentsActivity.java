@@ -39,15 +39,13 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static android.R.attr.description;
-
 public class CommentsActivity extends AppCompatActivity implements View.OnClickListener {
     @Bind(R.id.sendCommentImageView)ImageView mSendCommentImageView;
     @Bind(R.id.commentEditText)EditText mCommentEditText;
     @Bind(R.id.commentsRecyclerView)RecyclerView mCommentsRecyclerView;
     @Bind(R.id.cingleImageView)ProportionalImageView mCingleImageView;
     @Bind(R.id.accountUsernameTextView)TextView mAccountUsernameTextView;
-    @Bind(R.id.userProfileImageView)CircleImageView mUserProfileImageView;
+    @Bind(R.id.profileImageView)CircleImageView mUserProfileImageView;
     @Bind(R.id.saySomethingRelativeLayout)RelativeLayout mSaySomethingRelativeLayout;
     @Bind(R.id.cingleTitleTextView)TextView mCingleTitleTextView;
     @Bind(R.id.cingleTitleRelativeLayout)RelativeLayout mCingleTitleRelativeLayout;
@@ -59,7 +57,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     private DatabaseReference commentReference;
     private DatabaseReference relationsRef;
     private DatabaseReference cinglesReference;
-    public static final String EXTRA_POST_KEY = "post key";
+    private static final String EXTRA_POST_KEY = "post key";
     private static final String EXTRA_USER_UID = "uid";
     private static final String TAG = CommentsActivity.class.getSimpleName();
     private boolean processFollow = false;

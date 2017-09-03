@@ -9,9 +9,6 @@ import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Like;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -33,13 +30,13 @@ public class LikesViewHolder extends RecyclerView.ViewHolder {
         mView = itemView;
         mContext = itemView.getContext();
         usernameTextView = (TextView)itemView.findViewById(R.id.accountUsernameTextView);
-        profileImageView = (CircleImageView) itemView.findViewById(R.id.userProfileImageView);
+        profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         followButton = (Button) itemView.findViewById(R.id.followButton);
     }
 
     public void bindLikes(final Like like){
 //        TextView usernameTextView =(TextView) mView.findViewById(R.id.accountUsernameTextView);
-        final CircleImageView profileImageView = (CircleImageView) mView.findViewById(R.id.userProfileImageView);
+        final CircleImageView profileImageView = (CircleImageView) mView.findViewById(R.id.profileImageView);
 
 //        usernameTextView.setText(like.getUsername());
 

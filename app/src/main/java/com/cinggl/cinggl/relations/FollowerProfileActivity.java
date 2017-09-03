@@ -43,8 +43,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static java.security.AccessController.getContext;
-
 public class FollowerProfileActivity extends AppCompatActivity implements View.OnClickListener{
     private static final String TAG = FollowerProfileActivity.class.getSimpleName();
     private String mUid;
@@ -69,7 +67,7 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
     private boolean processLikes = false;
 
     @Bind(R.id.profileCinglesRecyclerView)RecyclerView mProfileCinglesRecyclerView;
-    @Bind(R.id.userProfileImageView)CircleImageView mProifleImageView;
+    @Bind(R.id.profileImageView)CircleImageView mProifleImageView;
     @Bind(R.id.firstNameTextView)TextView mFirstNameTextView;
     @Bind(R.id.secondNameTextView)TextView  mSecondNameTextView;
     @Bind(R.id.bioTextView)TextView mBioTextView;
@@ -394,7 +392,7 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
 
                                     DecimalFormat formatter =  new DecimalFormat("0.00000000");
                                     try {
-                                        viewHolder.sensePointsTextView.setText("CSC" + " " + formatter.format(cingle.getSensepoint()));
+                                        viewHolder.cingleSenseCreditsTextView.setText("CSC" + " " + formatter.format(cingle.getSensepoint()));
                                     }catch (Exception e){
                                         e.printStackTrace();
                                     }

@@ -1,12 +1,9 @@
 package com.cinggl.cinggl.home;
 
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -19,11 +16,7 @@ import android.widget.Toast;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.CingleOutAdapter;
-import com.cinggl.cinggl.adapters.LikesViewHolder;
 import com.cinggl.cinggl.models.Cingle;
-import com.cinggl.cinggl.Trace;
-import com.cinggl.cinggl.models.Like;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -37,9 +30,6 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
-import static com.cinggl.cinggl.R.id.cingleSettingsImageView;
 
 
 /**
@@ -68,6 +58,7 @@ public class CingleOutFragment extends Fragment{
     private static final int TOTAL_ITEM_EACH_LOAD = 10;
     private static final String KEY_LAYOUT_POSITION = "layout pooition";
     private int cingleOutRecyclerViewPosition = 0;
+
 
 
     public CingleOutFragment() {
@@ -125,6 +116,7 @@ public class CingleOutFragment extends Fragment{
         super.onStop();
     }
 
+
     private void initializeViewsAdapter(){
         layoutManager =  new LinearLayoutManager(getContext());
         cingleOutRecyclerView.setLayoutManager(layoutManager);
@@ -167,7 +159,6 @@ public class CingleOutFragment extends Fragment{
 //                progressBar.setVisibility(View.GONE);
 
                 Cingle cingle = dataSnapshot.getValue(Cingle.class);
-//                    cingle = snapshot.getValue(Cingle.class);
                 cinglesIds.add(dataSnapshot.getKey());
                 cingles.add(cingle);
 

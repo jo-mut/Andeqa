@@ -9,6 +9,7 @@
     android:layout_height="wrap_content">
 
         <LinearLayout
+            android:padding="0.3dp"
             android:layout_marginBottom="15dp"
             android:background="@android:color/white"
             android:orientation="vertical"
@@ -20,7 +21,7 @@
                 android:id="@+id/cingleMomentRelativeLayout"
                 android:background="@android:color/white"
                 android:layout_width="match_parent"
-                android:layout_height="50dp">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:text="Cingle Of The Moment"
@@ -31,28 +32,28 @@
                     android:textStyle="normal|bold"
                     android:layout_alignParentLeft="false"
                     android:layout_alignParentStart="false"
-                    android:layout_centerVertical="true"
-                    android:layout_centerInParent="true"
                     android:textColor="@color/colorPrimary"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_marginBottom="10dp"
+                    android:layout_centerInParent="true"
+                    android:layout_marginTop="10dp"
+                    android:layout_alignParentTop="false" />
 
-                <RelativeLayout
+                <View
                     android:layout_below="@+id/cingleMomentTextView"
+                    android:id="@+id/cingleMomentView"
                     android:background="#e4e4e4"
                     android:layout_width="match_parent"
-                    android:layout_height="15dp">
+                    android:layout_height="5dp">
 
-                </RelativeLayout>
+                </View>
 
             </RelativeLayout>
-
-
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="3dp"
-                android:paddingRight="3dp">
+                android:layout_marginTop="3dp">
 
                 <TextView
                     android:text="Cingle Creator:"
@@ -69,10 +70,11 @@
                     app:srcCompat="@drawable/profle_image_background"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
+                    android:layout_marginRight="5dp"
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
-                    android:id="@+id/userProfileImageView" />
+                    android:id="@+id/profileImageView" />
 
                 <TextView
                     android:text="username"
@@ -80,13 +82,49 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginStart="10dp"
-                    android:id="@+id/usernameTextView"
+                    android:id="@+id/notificationTextView"
                     android:layout_centerVertical="true"
                     android:layout_toRightOf="@+id/cingleCreatorTextView"
                     android:layout_toEndOf="@+id/cingleCreatorTextView"
                     android:textSize="12sp" />
 
             </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/cingleTradingRelativeLayout"
+                android:layout_marginTop="3dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp">
+
+                <TextView
+                    android:text="Listed on Ifair:"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="normal|bold"
+                    android:textSize="14sp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
+                    android:layout_alignParentTop="false"
+                    android:id="@+id/cingleListedOnIfairTextView" />
+
+
+                <TextView
+                    android:text=""
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cingleTradeMethodTextView"
+                    android:textStyle="normal|bold"
+                    android:textSize="14sp"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_alignParentLeft="false"
+                    android:layout_alignParentRight="true"
+                    android:padding="5dp" />
+
+
+            </RelativeLayout>
+
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -118,6 +156,36 @@
                     android:layout_toEndOf="@+id/cingleDateTextView"
                     android:textSize="12sp"
                     android:layout_centerVertical="true" />
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="Cingle Owner:"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cingleOwnerTitleTextView"
+                    android:textStyle="normal|bold"
+                    android:textSize="14sp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginLeft="3dp" />
+
+                <TextView
+                    android:text=""
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/cingleOwnerTitleTextView"
+                    android:layout_toEndOf="@+id/cingleOwnerTitleTextView"
+                    android:id="@+id/cingleOwnerTextView"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="14sp" />
+
 
             </RelativeLayout>
 
@@ -162,41 +230,6 @@
                 android:paddingBottom="5dp"
                 android:paddingTop="5dp"
                 android:paddingLeft="3dp"
-                android:paddingRight="3dp">
-
-                <TextView
-                    android:text="Cingle Views:"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/cingleViewsTextView"
-                    android:textSize="14sp"
-                    android:textStyle="normal|bold"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true" />
-
-                <TextView
-                    android:text="0"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/cingleViewsCountTextView"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_alignParentTop="true"
-                    android:layout_toRightOf="@+id/cingleViewsTextView"
-                    android:layout_toEndOf="@+id/cingleViewsTextView"
-                    android:textSize="12sp"
-                    android:layout_centerVertical="true" />
-
-            </RelativeLayout>
-
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="5dp"
-                android:paddingTop="5dp"
-                android:paddingLeft="3dp"
                 android:paddingRight="3dp"
                 android:id="@+id/titleRelativeLayout">
 
@@ -227,27 +260,11 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true" />
 
-                <TextView
-                    android:text="TextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginLeft="86dp"
-                    android:layout_marginStart="86dp"
-                    android:layout_marginTop="58dp"
-                    android:id="@+id/textView3" />
-
-
             </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingRight="3dp"
-                android:paddingLeft="3dp"
-                android:paddingBottom="15dp"
                 android:paddingTop="5dp"
                 android:id="@+id/cingleToolsRelativeLayout">
 
@@ -261,8 +278,7 @@
                     android:id="@+id/likesImageView"
                     tools:scaleType="centerCrop"
                     android:scaleType="centerCrop"
-                    android:padding="5dp"
-                    android:layout_marginLeft="5dp" />
+                    android:padding="5dp" />
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -287,25 +303,6 @@
                     android:layout_centerVertical="false"
                     android:layout_marginTop="10dp" />
 
-                <TextView
-                    android:text="Cingle Backing"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/cingleTradeMethodTextView"
-                    android:textStyle="normal|bold"
-                    android:textSize="14sp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:layout_alignParentTop="true"
-                    android:layout_toRightOf="@+id/commentsCountTextView"
-                    android:layout_toEndOf="@+id/commentsCountTextView"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginLeft="10dp"
-                    android:textColor="@android:color/black" />
-
-
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -326,14 +323,14 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:paddingLeft="10dp">
+                android:paddingLeft="5dp">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <android.support.v7.widget.RecyclerView
-                        android:id="@+id/usersWhoLikedCountRecyclerView"
+                        android:id="@+id/likesRecyclerView"
                         android:overScrollMode="never"
                         android:nestedScrollingEnabled="true"
                         android:layout_width="wrap_content"
@@ -352,8 +349,8 @@
                         android:cropToPadding="false"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_toRightOf="@+id/usersWhoLikedCountRecyclerView"
-                        android:layout_toEndOf="@+id/usersWhoLikedCountRecyclerView"
+                        android:layout_toRightOf="@+id/likesRecyclerView"
+                        android:layout_toEndOf="@+id/likesRecyclerView"
                         android:layout_marginLeft="5dp"
                         android:textSize="9sp"
                         android:text="+9"

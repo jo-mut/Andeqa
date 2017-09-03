@@ -8,30 +8,15 @@ import org.parceler.Parcel;
 
 @Parcel
 public class Ifair {
-    String image;
     String pushId;
-    String title;
-    String description;
-    String creator;
+    String uid;
 
     public Ifair() {
     }
 
-    public Ifair(String image, String pushId, String title,
-                 String description, String creator) {
-        this.image = image;
+    public Ifair(String pushId, String uid) {
         this.pushId = pushId;
-        this.title = title;
-        this.description = description;
-        this.creator = creator;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
+        this.uid = uid;
     }
 
     public String getPushId() {
@@ -42,27 +27,11 @@ public class Ifair {
         this.pushId = pushId;
     }
 
-    public String getTitle() {
-        return title;
+    public String getUid() {
+        return uid;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getCreator() {
-        return creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 }

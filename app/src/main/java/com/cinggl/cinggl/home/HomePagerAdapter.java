@@ -3,6 +3,7 @@ package com.cinggl.cinggl.home;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 /**
  * Created by J.EL on 5/29/2017.
@@ -14,7 +15,7 @@ import android.support.v4.app.FragmentPagerAdapter;
  * one of the sections/tabs/pages.
  */
 
-public class HomePagerAdapter extends FragmentPagerAdapter {
+public class HomePagerAdapter extends FragmentStatePagerAdapter {
     private static final String TAG = HomePagerAdapter.class.getSimpleName();
 
     public HomePagerAdapter(FragmentManager fm) {
@@ -36,7 +37,7 @@ public class HomePagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        // Show 2 total pages.
+        // Show 3 total pages.
         return 2;
     }
 
