@@ -16,15 +16,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.adapters.CingleOutAdapter;
-import com.cinggl.cinggl.adapters.ProfileCinglesAdapter;
 import com.cinggl.cinggl.adapters.ProfileCinglesViewHolder;
 import com.cinggl.cinggl.home.CingleSettingsDialog;
 import com.cinggl.cinggl.home.CommentsActivity;
@@ -32,13 +27,9 @@ import com.cinggl.cinggl.home.LikesActivity;
 import com.cinggl.cinggl.ifair.WalletActivity;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.models.Cingulan;
-import com.cinggl.cinggl.preferences.SettingsActivity;
 import com.cinggl.cinggl.relations.PeopleActivity;
-import com.cinggl.cinggl.services.ConnectivityReceiver;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -54,18 +45,10 @@ import com.squareup.picasso.Picasso;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static android.system.Os.remove;
-import static com.cinggl.cinggl.R.id.cingleOutRecyclerView;
-import static com.cinggl.cinggl.R.id.cingleTradeMethodTextView;
 
 /**
  * A simple {@link Fragment} subclass.

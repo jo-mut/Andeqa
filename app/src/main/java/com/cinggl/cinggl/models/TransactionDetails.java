@@ -6,14 +6,43 @@ package com.cinggl.cinggl.models;
 
 public class TransactionDetails {
     String uid;
+    String pushId;
+    String postId;
+    String datePosted;
     double amount;
+
 
     public TransactionDetails() {
     }
 
-    public TransactionDetails(String uid, double amount) {
+    public TransactionDetails(String uid, double balance,
+                              double amount) {
         this.uid = uid;
         this.amount = amount;
+    }
+
+    public String getDatePosted() {
+        return datePosted;
+    }
+
+    public void setDatePosted(String datePosted) {
+        this.datePosted = datePosted;
+    }
+
+    public String getPushId() {
+        return pushId;
+    }
+
+    public void setPushId(String pushId) {
+        this.pushId = pushId;
+    }
+
+    public String getPostId() {
+        return postId;
+    }
+
+    public void setPostId(String postId) {
+        this.postId = postId;
     }
 
     public String getUid() {

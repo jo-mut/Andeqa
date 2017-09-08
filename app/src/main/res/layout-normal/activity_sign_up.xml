@@ -25,18 +25,6 @@
                 android:layout_height="93dp">
 
 
-                <TextView
-                    android:text="Cinggl Sign Up"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/textView"
-                    android:textStyle="normal|bold"
-                    android:textSize="30sp"
-                    android:layout_alignParentBottom="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginBottom="18dp"
-                    android:textColor="@android:color/white" />
-
             </RelativeLayout>
 
             <LinearLayout

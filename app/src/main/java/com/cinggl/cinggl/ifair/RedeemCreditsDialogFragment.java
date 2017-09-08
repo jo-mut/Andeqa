@@ -36,6 +36,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -56,6 +58,7 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
     private DatabaseReference cinglesReference;
     private DatabaseReference cingleWalletReference;
     private DatabaseReference walletReference;
+    private DatabaseReference transactionReference;
     private boolean redeemCSC = false;
 
     public static RedeemCreditsDialogFragment newInstance(String title){
@@ -75,9 +78,7 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        cinglesReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
-        walletReference = FirebaseDatabase.getInstance().getReference(Constants.WALLET);
-        cingleWalletReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_WALLET);
+
     }
 
     @Override
@@ -88,6 +89,12 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
         ButterKnife.bind(this, view);
 
         firebaseAuth = FirebaseAuth.getInstance();
+
+        cinglesReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
+        walletReference = FirebaseDatabase.getInstance().getReference(Constants.WALLET);
+        cingleWalletReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_WALLET);
+        transactionReference = FirebaseDatabase.getInstance().getReference(Constants.TRANSACTION_HISTORY)
+                .child(firebaseAuth.getCurrentUser().getUid());
 
         Bundle bundle = getArguments();
         if (bundle != null){
@@ -117,113 +124,198 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
     @Override
     public void onClick(View v) {
         if (v == mRedeemAmountButton) {
-            redeemCSC = true;
             if (mAmountEnteredEditText != null) {
                 final String amountInString = mAmountEnteredEditText.getText().toString();
 //                            final double amountInInt = Integer.valueOf(amountInString).intValue();
                 final double amountTransferred = Double.parseDouble(amountInString);
 
-                cinglesReference.child(mPostKey).addValueEventListener(new ValueEventListener() {
+                cinglesReference.child(mPostKey).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (redeemCSC) {
-                            Cingle cingle = dataSnapshot.getValue(Cingle.class);
-                            final double sensepoint = cingle.getSensepoint();
-                            Log.d("amount of sensepoint", sensepoint + "");
+                         if (dataSnapshot.exists()){
+                             Cingle cingle = dataSnapshot.getValue(Cingle.class);
+                             final double sensepoint = cingle.getSensepoint();
+                             Log.d("amount of sensepoint", sensepoint + "");
 
-                            if (mAmountEnteredEditText.getText().equals("")) {
-                                mAmountEnteredEditText.setError("Amount cannot be empty");
-                            } else if (amountTransferred > sensepoint) {
-                                mAmountEnteredEditText.setError("Your Cingle has insufficient CSC balance");
-                            }else if (amountTransferred < 0){
-                                mAmountEnteredEditText.setError("Amount cannot be zero");
-                            } else{
-                                //RECORD BALANCE AMOUNT AFTER REDEMPTION
-                                final double sensecredits = sensepoint - amountTransferred;
+                             if (mAmountEnteredEditText.getText().equals("")) {
+                                 mAmountEnteredEditText.setError("Amount cannot be empty");
+                             } else if (amountTransferred > sensepoint) {
+                                 mAmountEnteredEditText.setError("Your Cingle has insufficient CSC balance");
+                             }else if (amountTransferred < 0){
+                                 mAmountEnteredEditText.setError("Amount cannot be zero");
+                             } else{
+                                 //RECORD BALANCE AMOUNT AFTER REDEMPTION
+                                 final double sensecredits = sensepoint - amountTransferred;
 
-                                Log.d("amount of sensecredits", sensecredits + "");
+                                 Log.d("amount of sensecredits", sensecredits + "");
 
-                                cinglesReference.child(mPostKey).child("sensepoint").setValue(sensecredits);
+                                 cinglesReference.child(mPostKey).child("sensepoint").setValue(sensecredits);
 
-                                //RECORD TRANSACTION HISTORY OF ALL CSC REDEEMED
-                                TransactionDetails transactionDetails = new TransactionDetails();
-                                transactionDetails.setAmount(amountTransferred);
-                                transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
-                                walletReference.child("Redeeming history")
-                                        .child(firebaseAuth.getCurrentUser().getUid())
-                                        .push().setValue(transactionDetails);
-                                cingleWalletReference.child(mPostKey).child("amount redeemed")
-                                        .setValue(amountTransferred);
-                                redeemCSC = false;
+                                 //get the current date
+                                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d");
+                                 String date = simpleDateFormat.format(new Date());
 
-                                //INCREAMENT THE AMOUNT TRANSFERED AFTER NEW TRANSFERS
-                                cingleWalletReference.child(mPostKey).child("amount redeemed")
-                                        .addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(DataSnapshot dataSnapshot) {
-//                                                TransactionDetails td = dataSnapshot.getValue(TransactionDetails.class);
-                                                if (dataSnapshot.exists()){
-                                                    final Double currentAmount = (Double)dataSnapshot.getValue();
-                                                    final double newAmount = currentAmount + amountTransferred;
-                                                    Log.d("new amount", newAmount + "");
-                                                    cingleWalletReference.child(mPostKey).child("amount redeemed")
-                                                            .setValue(newAmount);
-                                                    redeemCSC = false;
-                                                }else {
-                                                    cingleWalletReference.child(mPostKey).child("amout redeemed")
-                                                            .setValue(amountTransferred);
-                                                    redeemCSC = false;
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onCancelled(DatabaseError databaseError) {
-
-                                            }
-                                        });
+                                 if (date.endsWith("1") && !date.endsWith("11"))
+                                     simpleDateFormat = new SimpleDateFormat("d'st' MMM yyyy");
+                                 else if (date.endsWith("2") && !date.endsWith("12"))
+                                     simpleDateFormat = new SimpleDateFormat("d'nd' MMM yyyy");
+                                 else if (date.endsWith("3") && !date.endsWith("13"))
+                                     simpleDateFormat = new SimpleDateFormat("d'rd' MMM yyyy");
+                                 else
+                                     simpleDateFormat = new SimpleDateFormat("d'th' MMM yyyy");
+                                 String currentDate = simpleDateFormat.format(new Date());
 
 
-                                final Balance balance = new Balance();
-                                balance.setTotalBalance(amountTransferred);
-                                walletReference.child("balance").child(firebaseAuth.getCurrentUser()
-                                        .getUid()).child("total balance").setValue(balance)
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isComplete()) {
-                                                    walletReference.child("balance").child(firebaseAuth.getCurrentUser().getUid())
-                                                            .child("total balance").addValueEventListener(new ValueEventListener() {
-                                                        @Override
-                                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                                            try {
-                                                                Balance b = dataSnapshot.getValue(Balance.class);
-                                                                final double currentBalance = b.getTotalBalance();
-                                                                final double newBalance = currentBalance + amountTransferred;
+                                 //set transaction details
+                                 TransactionDetails transactionDetails = new TransactionDetails();
+                                 transactionDetails.setAmount(amountTransferred);
+                                 transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
+                                 transactionDetails.setPostId(mPostKey);
+                                 transactionDetails.setDatePosted(currentDate);
 
-                                                                Log.d("new balance", newBalance + "");
-                                                                walletReference.child("balance").child(firebaseAuth.getCurrentUser()
-                                                                        .getUid()).child("total balance").setValue(newBalance);
-                                                                redeemCSC = false;
-                                                            } catch (Exception e) {
-                                                                e.printStackTrace();
-                                                            }
-                                                        }
+                                 //get the push id
+                                 DatabaseReference ref = transactionReference.push();
+                                 String pushId = ref.getKey();
+                                 //set the push id
+                                 transactionDetails.setPushId(pushId);
+                                 ref.setValue(transactionDetails);
 
-                                                        @Override
-                                                        public void onCancelled(DatabaseError databaseError) {
+                                 //INCREAMENT THE AMOUNT TRANSFERED AFTER NEW TRANSFERS
+                                 cingleWalletReference.child(mPostKey).child("amount redeemed")
+                                         .addListenerForSingleValueEvent(new ValueEventListener() {
+                                             @Override
+                                             public void onDataChange(DataSnapshot dataSnapshot) {
+                                                     //IF TRANSACTIONS HAVE BEEN DONE BEFORE
+                                                     if (dataSnapshot.exists()){
+                                                         final Double currentAmount = (Double)dataSnapshot.getValue();
+                                                         Log.d("before redeemption", currentAmount + "");
+                                                         final double newAmount = currentAmount + amountTransferred;
+                                                         Log.d("after redeemed", newAmount + "");
+                                                         cingleWalletReference.child(mPostKey).child("amount redeemed")
+                                                                 .setValue(newAmount).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                             @Override
+                                                             public void onComplete(@NonNull Task<Void> task) {
+                                                                 if (task.isSuccessful()){
+                                                                     //RECORD THE REDEEMED AMOUNT TRANSFERRED TO THE USE WALLET
+                                                                     final Balance balance = new Balance();
+                                                                     balance.setTotalBalance(amountTransferred);
+                                                                     walletReference.child("balance").child(firebaseAuth.getCurrentUser().getUid())
+                                                                             .child("total balance").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                         @Override
+                                                                         public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                             if (dataSnapshot.exists()){
+                                                                                 final Double currentBalance = (Double) dataSnapshot.getValue();
+                                                                                 final double newBalance = currentBalance + amountTransferred;
+                                                                                 Log.d("new balance", newBalance + "");
+                                                                                 walletReference.child("balance").child(firebaseAuth.getCurrentUser()
+                                                                                         .getUid()).child("total balance").setValue(newBalance)
+                                                                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                             @Override
+                                                                                             public void onComplete(@NonNull Task<Void> task) {
+                                                                                                 if (task.isComplete()){
+                                                                                                     Toast.makeText(getContext(), "Transaction successful",
+                                                                                                             Toast.LENGTH_LONG).show();
+                                                                                                 }else {
+                                                                                                     Toast.makeText(getContext(), "Transaction not successful. " +
+                                                                                                             "Please try again later",
+                                                                                                             Toast.LENGTH_LONG).show();
+                                                                                                 }
+                                                                                             }
+                                                                                         });
+                                                                             }else {
+                                                                                 walletReference.child("balance").child(firebaseAuth.getCurrentUser()
+                                                                                         .getUid()).child("total balance").setValue(amountTransferred)
+                                                                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                             @Override
+                                                                                             public void onComplete(@NonNull Task<Void> task) {
+                                                                                                 if (task.isComplete()){
+                                                                                                     Toast.makeText(getContext(), "Transaction successful. " +
+                                                                                                             "Please try again later",
+                                                                                                             Toast.LENGTH_LONG).show();
+                                                                                                 }
+                                                                                             }
+                                                                                         });
+                                                                             }
+                                                                         }
 
-                                                        }
-                                                    });
-                                                } else {
-                                                    Toast.makeText(getContext(), "Transaction not successful. Please try again later",
-                                                            Toast.LENGTH_LONG).show();
-                                                }
-                                            }
-                                        });
-                            }
-                            //FINISH THE TRANSACTION PROCESS AND READY FOR A NEW ONE
-                            redeemCSC = false;
-                        }
+                                                                         @Override
+                                                                         public void onCancelled(DatabaseError databaseError) {
+
+                                                                         }
+                                                                     });
+                                                                 }
+                                                             }
+                                                         });
+                                                     }else {
+                                                         //IF THE TRANSACTIONS IS FOR THE FIRST TIME
+                                                         cingleWalletReference.child(mPostKey).child("amout redeemed")
+                                                                 .setValue(amountTransferred)
+                                                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                             @Override
+                                                             public void onComplete(@NonNull Task<Void> task) {
+                                                                 if (task.isSuccessful()){
+                                                                     //RECORD THE REDEEMED AMOUNT TRANSFERRED TO THE USE WALLET
+                                                                     final Balance balance = new Balance();
+                                                                     balance.setTotalBalance(amountTransferred);
+                                                                     walletReference.child("balance").child(firebaseAuth.getCurrentUser().getUid())
+                                                                             .child("total balance").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                         @Override
+                                                                         public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                             if (dataSnapshot.exists()){
+                                                                                 final Double currentBalance = (Double) dataSnapshot.getValue();
+                                                                                 final double newBalance = currentBalance + amountTransferred;
+                                                                                 Log.d("new balance", newBalance + "");
+                                                                                 walletReference.child("balance").child(firebaseAuth.getCurrentUser()
+                                                                                         .getUid()).child("total balance").setValue(newBalance)
+                                                                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                             @Override
+                                                                                             public void onComplete(@NonNull Task<Void> task) {
+                                                                                                 if (task.isComplete()){
+                                                                                                     Toast.makeText(getContext(), "Transaction successful",
+                                                                                                             Toast.LENGTH_LONG).show();
+                                                                                                 }else {
+                                                                                                     Toast.makeText(getContext(), "Transaction not successful. Please try again later",
+                                                                                                             Toast.LENGTH_LONG).show();
+                                                                                                 }
+                                                                                             }
+                                                                                         });
+                                                                             }else {
+                                                                                 walletReference.child("balance").child(firebaseAuth.getCurrentUser()
+                                                                                         .getUid()).child("total balance").setValue(amountTransferred)
+                                                                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                             @Override
+                                                                                             public void onComplete(@NonNull Task<Void> task) {
+                                                                                                 if (task.isComplete()){
+                                                                                                     Toast.makeText(getContext(), "Transaction not successful. Please try again later",
+                                                                                                             Toast.LENGTH_LONG).show();
+                                                                                                 }
+                                                                                             }
+                                                                                         });
+                                                                             }
+                                                                         }
+
+                                                                         @Override
+                                                                         public void onCancelled(DatabaseError databaseError) {
+
+                                                                         }
+                                                                     });
+                                                                 }
+                                                             }
+                                                         });
+                                                     }
+
+                                             }
+
+                                             @Override
+                                             public void onCancelled(DatabaseError databaseError) {
+
+                                             }
+                                         });
+
+
+                             }
+                         }
+
                     }
 
                     @Override

@@ -13,18 +13,16 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.cinggl.cinggl.AppCompatPreferenceActivity;
 import com.cinggl.cinggl.R;
 
-public class SettingsActivity extends AppCompatPreferenceActivity {
+public class PreferencesActivity extends AppCompatPreferenceActivity {
 
-    private static final String TAG = SettingsActivity.class.getSimpleName();
+    private static final String TAG = PreferencesActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

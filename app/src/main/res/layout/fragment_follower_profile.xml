@@ -98,6 +98,7 @@
 
 
                 <RelativeLayout
+                    android:id="@+id/countsLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
@@ -119,9 +120,9 @@
                         android:layout_alignParentEnd="false"
                         android:layout_toLeftOf="@+id/followersCountTextView"
                         android:layout_toStartOf="@+id/followersCountTextView"
-                        android:layout_marginRight="40dp"
+                        android:layout_marginRight="50dp"
                         android:layout_centerInParent="false"
-                        android:layout_marginLeft="40dp"
+                        android:layout_marginLeft="50dp"
                         android:layout_alignParentTop="true"
                         android:textColor="@android:color/white" />
 
@@ -139,7 +140,7 @@
                         android:layout_centerInParent="false"
                         android:layout_centerVertical="false"
                         android:layout_centerHorizontal="false"
-                        android:layout_marginRight="30dp"
+                        android:layout_marginRight="40dp"
                         android:layout_marginTop="10dp"
                         android:textColor="@android:color/white" />
 
@@ -186,8 +187,8 @@
                         android:layout_alignParentTop="true"
                         android:layout_alignParentLeft="false"
                         android:layout_alignParentStart="false"
-                        android:layout_marginLeft="40dp"
                         android:layout_centerInParent="false"
+                        android:layout_marginLeft="50dp"
                         android:textColor="@android:color/white" />
 
                     <TextView
@@ -202,11 +203,12 @@
                         android:layout_alignParentLeft="false"
                         android:layout_alignParentStart="false"
                         android:layout_centerInParent="false"
-                        android:layout_marginLeft="30dp"
+                        android:layout_marginLeft="40dp"
                         android:layout_marginTop="10dp"
                         android:textColor="@android:color/white" />
 
                 </RelativeLayout>
+
 
                 <Button
                     android:layout_width="wrap_content"

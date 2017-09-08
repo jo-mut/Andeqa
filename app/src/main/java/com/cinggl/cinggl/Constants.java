@@ -17,6 +17,5 @@ public final class Constants {
     public static final String UID = "uid";
     public static final String WALLET = "wallet";
     public static final String CINGLE_WALLET = "cingle wallet";
-
-
+    public static final String TRANSACTION_HISTORY = "transaction history";
 }

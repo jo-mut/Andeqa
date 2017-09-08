@@ -2,6 +2,7 @@ package com.cinggl.cinggl.ifair;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -15,8 +16,11 @@ import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.adapters.CingleOutAdapter;
+import com.cinggl.cinggl.home.CingleSettingsDialog;
 import com.cinggl.cinggl.home.CommentsActivity;
 import com.cinggl.cinggl.home.LikesActivity;
+import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.relations.FollowerProfileActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -39,6 +43,7 @@ import java.math.RoundingMode;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+import static com.cinggl.cinggl.R.id.likesCountTextView;
 import static java.lang.System.load;
 
 public class TradeDetailActivity extends AppCompatActivity implements View.OnClickListener{
@@ -52,7 +57,7 @@ public class TradeDetailActivity extends AppCompatActivity implements View.OnCli
     @Bind(R.id.cingleTradeMethodTextView)TextView mCingleTradeMethodTextView;
     @Bind(R.id.cingleOwnerTextView)TextView mCingleOwnerTextView;
     @Bind(R.id.likesImageView)ImageView mLikesImageView;
-    @Bind(R.id.likesCountTextView)TextView mLikesCountTextView;
+    @Bind(likesCountTextView)TextView mLikesCountTextView;
     @Bind(R.id.commentsImageView)ImageView mCommentImageView;
     @Bind(R.id.commentsCountTextView)TextView mCommentCountTextView;
     @Bind(R.id.likesRecyclerView)RecyclerView mLikesRecyclerView;
@@ -122,6 +127,8 @@ public class TradeDetailActivity extends AppCompatActivity implements View.OnCli
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
         ifairReference = FirebaseDatabase.getInstance().getReference(Constants.IFAIR);
         cingleWalletReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_WALLET);
+        likesQueryCount = likesRef;
+
 
 
         usersRef.keepSynced(true);
@@ -138,15 +145,32 @@ public class TradeDetailActivity extends AppCompatActivity implements View.OnCli
     }
 
     public void setCingleData(){
+        //RETRIEVE LIKES COUNT AND CATCH EXCEPTIONS IF CINGLE DELETED
+        likesRef.child(mPostKey).startAt(6)
+                .addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mLikesCountTextView.setText("+" + dataSnapshot.getChildrenCount() +" " + "Likes");
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        //CINGLE REFERENCE
         cinglesReference.child(mPostKey).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
-                    final String image = (String) dataSnapshot.child(Constants.CINGLE_IMAGE).getValue();
-                    final String uid = (String) dataSnapshot.child(Constants.UID).getValue();
-                    final String title = (String) dataSnapshot.child(Constants.CINGLE_TITLE).getValue();
-                    final String description = (String) dataSnapshot.child(Constants.CINGLE_DESCRIPTION).getValue();
-                    final Double sensecredits = (Double) dataSnapshot.child("sensepoint").getValue();
+                    Cingle cingle = dataSnapshot.getValue(Cingle.class);
+                    final String image = cingle.getCingleImageUrl();
+                    final String uid = cingle.getUid();
+                    final String title = cingle.getTitle();
+                    final String description = cingle.getDescription();
+                    final double sensecredits = cingle.getSensepoint();
 
                     usersRef.child(uid).addValueEventListener(new ValueEventListener() {
                         @Override
@@ -193,8 +217,6 @@ public class TradeDetailActivity extends AppCompatActivity implements View.OnCli
                                     }
                                 }
                             });
-
-
                         }
 
                         @Override
@@ -253,7 +275,7 @@ public class TradeDetailActivity extends AppCompatActivity implements View.OnCli
         ifairReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child("CingleSelling").hasChild(mPostKey)){
+                if (dataSnapshot.child("Cingle Selling").hasChild(mPostKey)){
                     mTradeCingleButton.setText("Buy");
                 }else {
                     mTradeCingleButton.setVisibility(View.GONE);
@@ -334,12 +356,23 @@ public class TradeDetailActivity extends AppCompatActivity implements View.OnCli
 
         if (v == mCommentImageView){
             Intent intent = new Intent(TradeDetailActivity.this, CommentsActivity.class);
+            intent.putExtra(TradeDetailActivity.EXTRA_POST_KEY, mPostKey);
             startActivity(intent);
         }
 
         if (v == mLikesCountTextView){
             Intent intent = new Intent(TradeDetailActivity.this, LikesActivity.class);
+            intent.putExtra(TradeDetailActivity.EXTRA_POST_KEY, mPostKey);
             startActivity(intent);
+        }
+
+        if (v == mTradeCingleButton){
+            Bundle bundle = new Bundle();
+            bundle.putString(TradeDetailActivity.EXTRA_POST_KEY, mPostKey);
+            FragmentManager fragmenManager = getSupportFragmentManager();
+            SendCreditsDialogFragment sendCreditsDialogFragment = SendCreditsDialogFragment.newInstance("sens credits");
+            sendCreditsDialogFragment.setArguments(bundle);
+            sendCreditsDialogFragment.show(fragmenManager, "send credits fragment");
         }
     }
 

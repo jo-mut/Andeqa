@@ -71,16 +71,6 @@
                     android:layout_below="@+id/accountUsernameTextView"
                     android:textSize="12sp" />
 
-                <TextView
-                    android:text="Views"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/cingleViewCount"
-                    android:textSize="12sp"
-                    android:layout_below="@+id/accountUsernameTextView"
-                    android:layout_toRightOf="@+id/profileImageView"
-                    android:layout_marginLeft="12dp" />
-
 
             </RelativeLayout>
 
@@ -151,7 +141,7 @@
                     android:layout_alignParentEnd="true" />
 
                 <TextView
-                    android:text="SP 0.00"
+                    android:text=""
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/cingleSenseCreditsTextView"
@@ -243,7 +233,7 @@
                         android:layout_toEndOf="@+id/likesRecyclerView"
                         android:layout_marginLeft="5dp"
                         android:textSize="9sp"
-                        android:text="+9"
+                        android:text=""
                         android:paddingLeft="5dp"
                         android:paddingRight="5dp" />
 

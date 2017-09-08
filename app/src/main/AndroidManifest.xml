@@ -31,6 +31,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="Cinggl"
         android:supportsRtl="true"
+        android:largeHeap="false"
         android:theme="@style/AppTheme">
         <activity
             android:name=".profile.SignInActivity"
@@ -121,22 +122,14 @@
             android:name=".home.CingleDetailActivity"
             android:label="Cingle" />
         <activity
-            android:name=".ifair.IfairMainActivity"
-            android:label="Ifair" />
-        <activity
             android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
             android:label="Preferences"
-            android:name=".preferences.SettingsActivity" />
+            android:name=".preferences.PreferencesActivity" />
         <activity
             android:theme="@style/AppTheme"
             android:label="Cingle"
             android:name=".ifair.TradeDetailActivity" />
-        <activity
-            android:theme="@style/AppTheme"
-            android:screenOrientation="portrait"
-            android:label="Trading methods"
-            android:name=".ifair.ChooseTradeMethodActivity" />
         <activity
             android:theme="@style/AppTheme"
             android:screenOrientation="portrait"

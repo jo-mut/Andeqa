@@ -6,14 +6,10 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.ContentFrameLayout;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -29,12 +25,9 @@ import android.widget.TextView;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.creation.CreateCingleActivity;
-import com.cinggl.cinggl.ifair.IfairMainActivity;
-import com.cinggl.cinggl.preferences.SettingsActivity;
+import com.cinggl.cinggl.preferences.PreferencesActivity;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.profile.ProfileFragment;
-import com.cinggl.cinggl.utils.BottomNavigationViewBehavior;
-import com.cinggl.cinggl.utils.BottomNavigationViewHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -49,8 +42,6 @@ import com.squareup.picasso.Picasso;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 
 public class NavigationDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
@@ -325,7 +316,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
         }
 
         if (id == R.id.action_preferences) {
-            startActivity(new Intent(NavigationDrawerActivity.this, SettingsActivity.class));
+            startActivity(new Intent(NavigationDrawerActivity.this, PreferencesActivity.class));
             return true;
         }
 

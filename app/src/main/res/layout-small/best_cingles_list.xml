@@ -320,49 +320,42 @@
 
             </RelativeLayout>
 
-            <LinearLayout
+            <RelativeLayout
+                android:layout_marginBottom="5dp"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
                 android:paddingLeft="5dp">
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/likesRecyclerView"
+                    android:overScrollMode="never"
+                    android:nestedScrollingEnabled="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true">
 
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/likesRecyclerView"
-                        android:overScrollMode="never"
-                        android:nestedScrollingEnabled="true"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true">
+                </android.support.v7.widget.RecyclerView>
 
-                    </android.support.v7.widget.RecyclerView>
+                <TextView
+                    android:id="@+id/likesCountTextView"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="false"
+                    android:layout_alignParentStart="false"
+                    android:background="@drawable/text_border_default"
+                    android:scaleType="centerCrop"
+                    android:cropToPadding="false"
+                    android:layout_toRightOf="@+id/likesRecyclerView"
+                    android:layout_toEndOf="@+id/likesRecyclerView"
+                    android:layout_marginLeft="5dp"
+                    android:textSize="6sp"
+                    android:text="+9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="5dp"
+                    android:paddingLeft="5dp" />
 
-                    <TextView
-                        android:id="@+id/likesCountTextView"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentLeft="false"
-                        android:layout_alignParentStart="false"
-                        android:background="@drawable/text_border_default"
-                        android:scaleType="centerCrop"
-                        android:cropToPadding="false"
-                        android:layout_toRightOf="@+id/likesRecyclerView"
-                        android:layout_toEndOf="@+id/likesRecyclerView"
-                        android:layout_marginLeft="5dp"
-                        android:textSize="6sp"
-                        android:text="+9"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingRight="5dp"
-                        android:paddingLeft="5dp" />
-
-
-
-                </RelativeLayout>
-
-            </LinearLayout>
+            </RelativeLayout>
 
 
             <RelativeLayout

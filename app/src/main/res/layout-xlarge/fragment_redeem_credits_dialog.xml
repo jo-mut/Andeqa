@@ -1,0 +1,109 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context="com.cinggl.cinggl.ifair.RedeemCreditsDialogFragment"
+    android:background="@android:color/white">
+
+    <!-- TODO: Update blank fragment layout -->
+    <!-- TODO: Update blank fragment layout -->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingRight="50dp"
+        android:paddingLeft="50dp"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:ems="10"
+            android:id="@+id/enterAmountDescriptionTextView"
+            android:text="Enter the amount of CSC you want to redeem"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="28sp" />
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingRight="50dp"
+        android:paddingLeft="50dp"
+        android:layout_marginTop="10dp">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal|number"
+            android:ems="10"
+            android:id="@+id/amountEnteredEditText"
+            android:background="@drawable/input_background"
+            android:padding="10dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:hint="Enter amount"
+            android:textSize="28sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingRight="50dp"
+        android:paddingLeft="50dp"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:paddingTop="10dp"
+            android:paddingBottom="5dp"
+            android:id="@+id/currenctAmountDescriptionTextView"
+            android:text="Current balance:"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="28sp" />
+
+        <TextView
+            android:ems="10"
+            android:paddingTop="10dp"
+            android:paddingBottom="5dp"
+            android:id="@+id/currenctAmountTextView"
+            android:text="CSC 200"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/currenctAmountDescriptionTextView"
+            android:layout_toEndOf="@+id/currenctAmountDescriptionTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="28sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp">
+
+        <Button
+            android:text="Redeem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:id="@+id/redeemAmountButton"
+            android:background="@drawable/colour_btn_background"
+            android:layout_marginTop="10dp"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:layout_marginBottom="10dp"
+            android:textSize="28sp"
+            android:minHeight="54dp"
+            android:minWidth="120dip" />
+    </RelativeLayout>
+
+</LinearLayout>

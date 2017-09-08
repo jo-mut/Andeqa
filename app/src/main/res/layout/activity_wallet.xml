@@ -11,71 +11,192 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
+        android:layout_gravity="top"
         app:titleTextAppearance="@style/toolbarTextSize"
-        android:titleTextColor="@android:color/white"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/colorPrimary"
         app:layout_scrollFlags="scroll|enterAlways"
-        app:popupTheme="@style/AppTheme.PopupOverlay"/>
-
-   <LinearLayout
-       android:orientation="vertical"
-       android:paddingLeft="1dp"
-       android:layout_width="match_parent"
-       android:layout_height="match_parent">
-
-       <RelativeLayout
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content">
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+        app:titleTextColor="@android:color/white"/>
 
 
-           <TextView
-               android:text="Current Balance:"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:id="@+id/currentBalanceTitleTextview"
-               android:textColor="@android:color/black"
-               android:textStyle="normal|bold"
-               android:paddingLeft="10dp"
-               android:paddingBottom="20dp"
-               android:paddingTop="20dp" />
+    <ScrollView
+        android:scrollbars="none"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-           <TextView
-               android:text="CSC 200"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_toEndOf="@id/currentBalanceTitleTextview"
-               android:layout_toRightOf="@id/currentBalanceTitleTextview"
-               android:id="@+id/currentBalanceTextview"
-               android:textColor="@android:color/black"
-               android:textStyle="normal|bold"
-               android:layout_marginLeft="10dp"
-               android:paddingLeft="10dp"
-               android:paddingBottom="20dp"
-               android:paddingTop="20dp" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-       </RelativeLayout>
 
-       <RelativeLayout
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content">
+            <LinearLayout
+                android:orientation="vertical"
+                android:paddingLeft="1dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-           <Button
-               android:text="Redeem more CSC"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:id="@+id/redeemMoreCscTextView"
-               android:layout_alignParentTop="true"
-               android:layout_alignParentLeft="true"
-               android:layout_alignParentStart="true"
-               android:background="@drawable/colour_btn_background"
-               android:textColor="@android:color/white"
-               android:paddingLeft="10dp"
-               android:paddingRight="10dp"
-               android:textSize="16sp"
-               android:textAllCaps="false" />
-       </RelativeLayout>
+                <RelativeLayout
+                    android:paddingTop="10dp"
+                    android:paddingBottom="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-   </LinearLayout>
+                    <TextView
+                        android:text="Wallet balance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/walletBalanceTextView"
+                        android:textStyle="normal|bold"
+                        android:layout_marginLeft="5dp"
+                        android:layout_centerVertical="true"
+                        android:textAllCaps="true"
+                        android:layout_centerInParent="true" />
+
+                </RelativeLayout>
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:text="Current Balance:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/balanceTitleTextview"/>
+
+                    <TextView
+                        android:text="CSC 200"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/balanceTitleTextview"
+                        android:layout_toRightOf="@id/balanceTitleTextview"
+                        android:id="@+id/currentWalletBalanceTextview"
+                        android:layout_marginLeft="10dp" />
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="Transaction history"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/transactionHistoryTitleTextView"
+                            android:layout_marginLeft="5dp"
+                            android:layout_centerInParent="false"
+                            android:layout_centerVertical="true"
+                            android:textAllCaps="true"
+                            android:textStyle="normal|bold"
+                            android:layout_centerHorizontal="true" />
+
+                        <ImageView
+                            android:text="Redeem"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/expandTransactionRecyclerViewImageView"
+                            android:src="@drawable/ic_expand_more_black_24dp"
+                            android:textColor="@android:color/white"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:textSize="14sp"
+                            android:textAllCaps="false"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginRight="10dp"
+                            android:minHeight="26dp"
+                            android:layout_centerVertical="true" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/emptyRelativeLayout"
+                        android:background="#e4e4e4">
+
+
+                        <TextView
+                            android:text="You have not transaction history"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="false"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="18dp"
+                            android:id="@+id/emptyTextView"
+                            android:textSize="10sp"
+                            android:layout_centerVertical="true" />
+                    </RelativeLayout>
+
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/transactionHistoryRecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    </android.support.v7.widget.RecyclerView>
+
+                </LinearLayout>
+
+                <!--<LinearLayout-->
+                    <!--android:orientation="vertical"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content">-->
+
+                   <!--<RelativeLayout-->
+                       <!--android:layout_marginBottom="5dp"-->
+                       <!--android:layout_width="match_parent"-->
+                       <!--android:layout_height="wrap_content">-->
+
+                       <!--<TextView-->
+                           <!--android:layout_width="wrap_content"-->
+                           <!--android:layout_height="wrap_content"-->
+                           <!--android:id="@+id/redeemCreditsTextView"-->
+                           <!--android:layout_marginLeft="5dp"-->
+                           <!--android:layout_centerVertical="true"-->
+                           <!--android:textStyle="normal|bold"-->
+                           <!--android:text="Read more"-->
+                           <!--android:textAllCaps="true" />-->
+
+                       <!--<ImageView-->
+                           <!--android:text="Redeem"-->
+                           <!--android:layout_width="wrap_content"-->
+                           <!--android:layout_height="wrap_content"-->
+                           <!--android:id="@+id/expandCinglesRecyclerViewImageView"-->
+                           <!--android:src="@drawable/ic_expand_more_black_24dp"-->
+                           <!--android:textColor="@android:color/white"-->
+                           <!--android:paddingLeft="10dp"-->
+                           <!--android:paddingRight="10dp"-->
+                           <!--android:textSize="14sp"-->
+                           <!--android:textAllCaps="false"-->
+                           <!--android:layout_alignParentRight="true"-->
+                           <!--android:layout_marginRight="10dp"-->
+                           <!--android:minHeight="26dp"-->
+                           <!--android:layout_centerVertical="true" />-->
+
+                   <!--</RelativeLayout>-->
+
+                    <!--<android.support.v7.widget.RecyclerView-->
+                        <!--android:id="@+id/walletCinglesRecyclerView"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content">-->
+
+                    <!--</android.support.v7.widget.RecyclerView>-->
+                <!--</LinearLayout>-->
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

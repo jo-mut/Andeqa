@@ -447,41 +447,33 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
                     }
                 });
 
-
-                holder.likesImageView.setOnClickListener(new View.OnClickListener() {
+                databaseReference.addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onClick(View view) {
-                        processLikes = true;
-                        processCredits = true;
-                        databaseReference.child(postKey).addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                Cingle c = dataSnapshot.getValue(Cingle.class);
-                                final double points = c.getSensepoint();
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.child(postKey).exists()){
+                            holder.likesImageView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    processLikes = true;
+                                    likesRef.addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(final DataSnapshot dataSnapshot) {
+                                            if(processLikes){
+                                                if(dataSnapshot.child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
+                                                    likesRef.child(postKey).child(firebaseAuth.getCurrentUser()
+                                                            .getUid())
+                                                            .removeValue();
+                                                    onLikeCounter(false);
+                                                    processLikes = false;
 
-                                Log.d("point", points + "");
-
-                                likesRef.addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(final DataSnapshot dataSnapshot) {
-                                        if(processLikes){
-                                            if(dataSnapshot.child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
-                                                likesRef.child(postKey).child(firebaseAuth.getCurrentUser()
-                                                        .getUid())
-                                                        .removeValue();
-
-                                                onLikeCounter(false);
-                                                processLikes = false;
-
-                                            }else {
-                                                likesRef.child(postKey).child(firebaseAuth.getCurrentUser().getUid())
-                                                        .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
-                                                processLikes = false;
-                                                onLikeCounter(false);
+                                                }else {
+                                                    likesRef.child(postKey).child(firebaseAuth.getCurrentUser().getUid())
+                                                            .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
+                                                    processLikes = false;
+                                                    onLikeCounter(false);
+                                                }
                                             }
-                                        }
 
-                                        if (processCredits){
                                             String likesCount = dataSnapshot.child(postKey).getChildrenCount() + "";
                                             Log.d(likesCount, "all the likes in one cingle");
                                             //convert children count which is a string to integer
@@ -506,57 +498,110 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
 //
                                                 final double finalPoints = round( cingleWorth, 10);
 
-//                                                //SET THE NEW CINGLE SENSE CREDITS AFTER NEW LIKES
-//                                                cingleWalletReference.child(postKey).child("amount redeemed")
-//                                                        .addValueEventListener(new ValueEventListener() {
-//                                                            @Override
-//                                                            public void onDataChange(DataSnapshot dataSnapshot) {
-//                                                                if (dataSnapshot.exists()){
-//                                                                    final Double amount = (Double)dataSnapshot.getValue();
-//                                                                    Log.d(amount + "", "amount");
-//                                                                    final double cingleSenseCredits = finalPoints - amount;
-//                                                                    databaseReference.child(postKey).child("sensepoint").setValue(cingleSenseCredits);
-//                                                                    processCredits = false;
-//                                                                }else {
-//                                                                    databaseReference.child(postKey).child("sensepoint").setValue(finalPoints);
-//                                                                    processCredits = false;
-//                                                                }
-//                                                            }
-//
-//                                                            @Override
-//                                                            public void onCancelled(DatabaseError databaseError) {
-//
-//                                                            }
-//                                                        });
+                                                Log.d("final points", finalPoints + "");
 
-                                            }
-                                            else {
-                                                double sensepoint = 0.00;
+//                                                databaseReference.child(postKey).child("sensepoint").setValue(finalPoints);
+                                                cingleWalletReference.child(postKey).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                        if (dataSnapshot.child("amount redeemed").exists() && dataSnapshot.child("amount deposited").exists()){
+                                                            Double amountRedeemed = dataSnapshot.child("amount redeemed").getValue(Double.class);
+                                                            Log.d(amountRedeemed + "", "amount redeemed");
+                                                            Double amountDeposited = dataSnapshot.child("amount deposited").getValue(Double.class);
+                                                            Log.d(amountDeposited + "", "amount deposited");
+                                                            final double senseCredits = amountDeposited + finalPoints;
+                                                            Log.d("sense credits", senseCredits + "");
+                                                            final double totalSenseCredits = senseCredits - amountRedeemed;
+                                                            Log.d("total sense credits", totalSenseCredits + "");
+                                                            databaseReference.child(postKey).child("sensepoint").setValue(totalSenseCredits);
+                                                        }else if (!dataSnapshot.child("amount deposited").exists() && dataSnapshot.child("amount redeemed").exists()){
+                                                            Double amountRedeemed = dataSnapshot.child("amount redeemed").getValue(Double.class);
+                                                            Log.d(amountRedeemed + "", "amount redeemed");
+                                                            final double senseCredits = finalPoints - amountRedeemed;
+                                                            Log.d("sense credits", senseCredits + "");
+                                                            final double totalSenseCredits = senseCredits;
+                                                            Log.d("total sense credits", totalSenseCredits + "");
+                                                            databaseReference.child(postKey).child("sensepoint").setValue(totalSenseCredits);
+                                                        }else if (!dataSnapshot.child("amount redeemed").exists()&& dataSnapshot.child("amount deposited").exists()){
+                                                            Double amountDeposited = dataSnapshot.child("amount deposited").getValue(Double.class);
+                                                            Log.d(amountDeposited + "", "amount deposited");
+                                                            final double senseCredits = amountDeposited + finalPoints;
+                                                            Log.d("sense credits", senseCredits + "");
+                                                            final double totalSenseCredits = senseCredits;
+                                                            Log.d("total sense credits", totalSenseCredits + "");
+                                                            databaseReference.child(postKey).child("sensepoint").setValue(totalSenseCredits);
+                                                        }else if (!dataSnapshot.exists()){
+                                                            databaseReference.child(postKey).child("sensepoint").setValue(finalPoints);
+                                                        }
+                                                    }
 
-                                                databaseReference.child(postKey).child("sensepoint").setValue(sensepoint);
-                                                processCredits = false;
+                                                    @Override
+                                                    public void onCancelled(DatabaseError databaseError) {
+
+                                                    }
+                                                });
+
+                                            }else{
+                                                final double finalPoints = 0.00;
+                                                Log.d("final points", finalPoints + "");
+                                                cingleWalletReference.child(postKey).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                        if (dataSnapshot.child("amount redeemed").exists() && dataSnapshot.child("amount deposited").exists()){
+                                                            Double amountRedeemed = dataSnapshot.child("amount redeemed").getValue(Double.class);
+                                                            Log.d(amountRedeemed + "", "amount redeemed");
+                                                            Double amountDeposited = dataSnapshot.child("amount deposited").getValue(Double.class);
+                                                            Log.d(amountDeposited + "", "amount deposited");
+                                                            final double senseCredits = amountDeposited + finalPoints;
+                                                            Log.d("sense credits", senseCredits + "");
+                                                            final double totalSenseCredits = senseCredits - amountRedeemed;
+                                                            Log.d("total sense credits", totalSenseCredits + "");
+                                                            databaseReference.child(postKey).child("sensepoint").setValue(totalSenseCredits);
+                                                        }else if (!dataSnapshot.child("amount deposited").exists() && dataSnapshot.child("amount redeemed").exists()){
+                                                            Double amountRedeemed = dataSnapshot.child("amount redeemed").getValue(Double.class);
+                                                            Log.d(amountRedeemed + "", "amount redeemed");
+                                                            final double senseCredits = finalPoints;
+                                                            Log.d("sense credits", senseCredits + "");
+                                                            final double totalSenseCredits = senseCredits;
+                                                            Log.d("total sense credits", totalSenseCredits + "");
+                                                            databaseReference.child(postKey).child("sensepoint").setValue(totalSenseCredits);
+                                                        }else if (!dataSnapshot.child("amount redeemed").exists()&& dataSnapshot.child("amount deposited").exists()){
+                                                            Double amountDeposited = dataSnapshot.child("amount deposited").getValue(Double.class);
+                                                            Log.d(amountDeposited + "", "amount deposited");
+                                                            final double senseCredits = amountDeposited + finalPoints;
+                                                            Log.d("sense credits", senseCredits + "");
+                                                            final double totalSenseCredits = senseCredits;
+                                                            Log.d("total sense credits", totalSenseCredits + "");
+                                                            databaseReference.child(postKey).child("sensepoint").setValue(totalSenseCredits);
+                                                        }else {
+                                                            databaseReference.child(postKey).child("sensepoint").setValue(finalPoints);
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(DatabaseError databaseError) {
+
+                                                    }
+                                                });
                                             }
+
                                         }
-                                    }
 
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
 
-                                    }
-                                });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    }
 
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
                     }
                 });
-
             }
 
             @Override

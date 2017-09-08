@@ -1,7 +1,6 @@
 package com.cinggl.cinggl.home;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -18,9 +17,7 @@ import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.ifair.ChooseTradeMethodActivity;
 import com.cinggl.cinggl.ifair.RedeemCreditsDialogFragment;
-import com.cinggl.cinggl.models.Ifair;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,7 +34,7 @@ import butterknife.ButterKnife;
  */
 public class CingleSettingsDialog extends DialogFragment implements View.OnClickListener{
     @Bind(R.id.deleteCingleRelativeLayout)RelativeLayout mDeleteCingleRelativeLayout;
-    @Bind(R.id.editCingleRelativeLayout)RelativeLayout mEditCingleRelativeLayout;
+//    @Bind(R.id.editCingleRelativeLayout)RelativeLayout mEditCingleRelativeLayout;
     @Bind(R.id.tradeCingleRelativeLayout)RelativeLayout mTradeCingleRelativeLayout;
     @Bind(R.id.reportCingleRelativeLayout)RelativeLayout mReportCingleRelativeLayoout;
     @Bind(R.id.redeemCreditsRelativeLayout)RelativeLayout mRedeemCreditsRelativeLayout;
@@ -79,7 +76,7 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
 
         mDeleteCingleRelativeLayout.setOnClickListener(this);
         mReportCingleRelativeLayoout.setOnClickListener(this);
-        mEditCingleRelativeLayout.setOnClickListener(this);
+//        mEditCingleRelativeLayout.setOnClickListener(this);
         mTradeCingleRelativeLayout.setOnClickListener(this);
         mRedeemCreditsRelativeLayout.setOnClickListener(this);
 
@@ -129,9 +126,9 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
 
         }
 
-        if (v == mEditCingleRelativeLayout){
-            editCingle();
-        }
+//        if (v == mEditCingleRelativeLayout){
+//            editCingle();
+//        }
 
         if (v == mTradeCingleRelativeLayout){
 //            //LAUNCH ACTIVITY TO CHOOSE TRADE METHOS
@@ -183,31 +180,6 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
         dismiss();
     }
 
-    public void editCingle(){
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child(mPostKey).exists()){
-                    final String uid = dataSnapshot.child(mPostKey).child("uid").getValue(String.class);
-
-                    if ((firebaseAuth.getCurrentUser().getUid().equals(uid))){
-                        //SHOW THE REDEEM LAYOUT
-                        mEditCingleRelativeLayout.setVisibility(View.VISIBLE);
-                    }else {
-                        //HIDE THE REDEEM LAYOUT
-                        mEditCingleRelativeLayout.setVisibility(View.GONE);
-                    }
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
     public void redeemCredits(){
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -245,12 +217,12 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
                         //SHOW THE DELETE LAYOUT
                         mDeleteCingleRelativeLayout.setVisibility(View.VISIBLE);
                         mTradeCingleRelativeLayout.setVisibility(View.VISIBLE);
-                        mEditCingleRelativeLayout.setVisibility(View.VISIBLE);
+//                        mEditCingleRelativeLayout.setVisibility(View.VISIBLE);
                     }else {
                         //HIDE THE DELETE LAYOUT
                         mDeleteCingleRelativeLayout.setVisibility(View.GONE);
                         mTradeCingleRelativeLayout.setVisibility(View.GONE);
-                        mEditCingleRelativeLayout.setVisibility(View.GONE);
+//                        mEditCingleRelativeLayout.setVisibility(View.GONE);
                     }
                 }
             }
