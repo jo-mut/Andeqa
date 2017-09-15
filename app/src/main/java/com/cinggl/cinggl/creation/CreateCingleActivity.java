@@ -54,7 +54,7 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
     @Bind(R.id.cameraImageView)ImageView mCameraImageView;
 //    @Bind(R.id.galleryImageView)ImageView mGalleryImageView;
     @Bind(R.id.profileImageView)CircleImageView mProfileImageView;
-    @Bind(R.id.accountUsernameTextView)TextView mAccountUsernameTextView;
+    @Bind(R.id.usernameTextView)TextView mAccountUsernameTextView;
     @Bind(R.id.img)ProportionalImageView mProportionalImageView;
 
     private String ImageFileLocation = "";
@@ -88,54 +88,20 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
         setContentView(R.layout.activity_create_cingle);
         ButterKnife.bind(this);
 
-        createImageGallery();
-
-
         mCameraImageView.setOnClickListener(this);
         mPostCingleImageView.setOnClickListener(this);
-        uploadingToFirebaseDialog();
 
         firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
-        usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
-        databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
 
-        usernameRef.child(firebaseAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
-                String username = (String) dataSnapshot.child("username").getValue();
+        if (firebaseAuth.getCurrentUser() != null){
+            usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
+            databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
 
-                mAccountUsernameTextView.setText(username);
+            fetchUserData();
+            uploadingToFirebaseDialog();
+            createImageGallery();
+        }
 
-                Picasso.with(CreateCingleActivity.this)
-                        .load(profileImage)
-                        .fit()
-                        .centerCrop()
-                        .networkPolicy(NetworkPolicy.OFFLINE)
-                        .into(mProfileImageView, new Callback() {
-                            @Override
-                            public void onSuccess() {
-
-                            }
-
-                            @Override
-                            public void onError() {
-                                Picasso.with(CreateCingleActivity.this)
-                                        .load(profileImage)
-                                        .fit()
-                                        .centerCrop()
-                                        .into(mProfileImageView);
-                            }
-                        });
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
     }
 
 
@@ -224,6 +190,44 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
         return 0;
     }
 
+    public void fetchUserData(){
+        usernameRef.child(firebaseAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+                String username = (String) dataSnapshot.child("username").getValue();
+
+                mAccountUsernameTextView.setText(username);
+
+                Picasso.with(CreateCingleActivity.this)
+                        .load(profileImage)
+                        .fit()
+                        .centerCrop()
+                        .networkPolicy(NetworkPolicy.OFFLINE)
+                        .into(mProfileImageView, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError() {
+                                Picasso.with(CreateCingleActivity.this)
+                                        .load(profileImage)
+                                        .fit()
+                                        .centerCrop()
+                                        .into(mProfileImageView);
+                            }
+                        });
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     @Override
     public void onClick(View v){

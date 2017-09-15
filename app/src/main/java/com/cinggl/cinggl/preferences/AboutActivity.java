@@ -1,7 +1,9 @@
-package com.cinggl.cinggl;
+package com.cinggl.cinggl.preferences;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.cinggl.cinggl.R;
 
 public class AboutActivity extends AppCompatActivity {
 

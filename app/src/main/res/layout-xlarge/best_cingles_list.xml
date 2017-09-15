@@ -51,7 +51,8 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:layout_marginTop="8dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="3dp">
@@ -83,7 +84,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginStart="10dp"
-                    android:id="@+id/notificationTextView"
+                    android:id="@+id/usernameTextView"
                     android:layout_centerVertical="true"
                     android:layout_toRightOf="@+id/cingleCreatorTextView"
                     android:layout_toEndOf="@+id/cingleCreatorTextView"
@@ -97,6 +98,8 @@
                 android:layout_marginTop="3dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:paddingLeft="3dp"
                 android:paddingRight="3dp">
 
@@ -120,16 +123,17 @@
                     android:textStyle="normal|bold"
                     android:textSize="28sp"
                     android:textColor="@color/colorPrimary"
-                    android:layout_alignParentLeft="false"
-                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_toRightOf="@+id/cingleListedOnIfairTextView"
                     android:padding="5dp" />
 
             </RelativeLayout>
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="5dp"
                 android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:paddingLeft="3dp"
                 android:paddingRight="3dp">
 
@@ -159,6 +163,8 @@
             </RelativeLayout>
 
             <RelativeLayout
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -169,9 +175,9 @@
                     android:id="@+id/cingleOwnerTitleTextView"
                     android:textStyle="normal|bold"
                     android:textSize="28sp"
-                    android:layout_marginTop="5dp"
                     android:layout_marginRight="3dp"
-                    android:layout_marginLeft="3dp" />
+                    android:layout_marginLeft="3dp"
+                    android:layout_centerVertical="true" />
 
                 <TextView
                     android:text=""
@@ -180,17 +186,27 @@
                     android:layout_toRightOf="@+id/cingleOwnerTitleTextView"
                     android:layout_toEndOf="@+id/cingleOwnerTitleTextView"
                     android:id="@+id/cingleOwnerTextView"
-                    android:layout_marginTop="5dp"
                     android:layout_marginLeft="10dp"
                     android:textSize="28sp" />
+
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    app:srcCompat="@drawable/profle_image_background"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:id="@+id/ownerImageView"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp" />
 
             </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="5dp"
                 android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:paddingLeft="3dp"
                 android:paddingRight="3dp">
 
@@ -345,7 +361,6 @@
                     android:layout_toEndOf="@+id/likesRecyclerView"
                     android:layout_marginLeft="5dp"
                     android:textSize="18sp"
-                    android:text="+9"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingRight="5dp"

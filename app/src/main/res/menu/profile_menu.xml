@@ -2,13 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/action_account_settings"
-        android:icon="@drawable/ic_more_vert_white_24dp"
-        app:showAsAction="never"
-        android:title="Account Settings">
+    <!--<item-->
+        <!--android:id="@+id/action_account_settings"-->
+        <!--android:icon="@drawable/ic_more_vert_white_24dp"-->
+        <!--app:showAsAction="never"-->
+        <!--android:title="Preferences">-->
 
-    </item>
+    <!--</item>-->
 
     <item
         android:id="@+id/action_wallet"
@@ -19,19 +19,19 @@
     </item>
 
     <item
-        android:id="@+id/action_flagged"
+        android:id="@+id/action_signout"
         android:icon="@drawable/ic_more_vert_white_24dp"
         app:showAsAction="never"
-        android:title="Flagged Cingles">
+        android:title="Sign Out">
 
     </item>
 
-    <item
-        android:id="@+id/action_blocked"
-        android:icon="@drawable/ic_more_vert_white_24dp"
-        app:showAsAction="never"
-        android:title="Blocked Cingulans">
+    <!--<item-->
+        <!--android:id="@+id/action_blocked"-->
+        <!--android:icon="@drawable/ic_more_vert_white_24dp"-->
+        <!--app:showAsAction="never"-->
+        <!--android:title="Blocked Cingulans">-->
 
-    </item>
+    <!--</item>-->
 
 </menu>

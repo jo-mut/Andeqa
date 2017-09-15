@@ -9,12 +9,17 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.home.NavigationDrawerActivity;
+import com.cinggl.cinggl.models.Cingulan;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,6 +27,9 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -35,6 +43,9 @@ public class SignUpActivity extends AppCompatActivity implements
     @Bind(R.id.passwordEditText) EditText mPasswordEditText;
     @Bind(R.id.confirmPasswordEditText) EditText mConfirmPasswordEditText;
     @Bind(R.id.loginTextView) TextView mLoginTextView;
+    @Bind(R.id.fisrtNameEditText)EditText mFirstNameEditText;
+    @Bind(R.id.secondNameEditText)EditText mSecondNameEditText;
+    @Bind(R.id.usernameEditText) EditText mUsernameEditText;
 
 
     private FirebaseAuth mAuth;
@@ -121,6 +132,7 @@ public class SignUpActivity extends AppCompatActivity implements
                         }else {
                             //sign up successful
                             Log.d(TAG, "Authentication successful");
+                            createProfile();
                         }
 
                     }
@@ -143,6 +155,69 @@ public class SignUpActivity extends AppCompatActivity implements
         };
 
     }
+
+    //get user input and submit info
+    public void createProfile(){
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final String uid = user.getUid();
+
+        usersRef= FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS)
+                .child(uid);
+
+        final String username = mUsernameEditText.getText().toString().toLowerCase().trim();
+        final String firstName = mFirstNameEditText.getText().toString().trim();
+        final String secondName = mSecondNameEditText.getText().toString().trim();
+
+        boolean validName = isValidName(mUsernameEditText.getText().toString());
+        boolean validFirstName = isValidFirstName(mFirstNameEditText.getText().toString());
+        boolean validSecondName = isValidSecondName(mSecondNameEditText.getText().toString());
+
+        if (!validName|| !validFirstName || !validSecondName) return;
+
+        Cingulan cingulan = new Cingulan();
+        cingulan.setFirstName(firstName);
+        cingulan.setSecondName(secondName);
+        cingulan.setUsername(username);
+        cingulan.setUid(uid);
+
+        DatabaseReference pushRef = usersRef;
+        String pushId = pushRef.getKey();
+        pushRef.setValue(cingulan).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()){
+                    Log.d("user profile created", "firstime");
+                }
+
+            }
+        });
+
+    }
+
+    private boolean isValidName(String name) {
+        if (name.equals("")) {
+            mUsernameEditText.setError("Please enter a valid name!");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isValidFirstName(String firstName) {
+        if (firstName.equals("")) {
+            mFirstNameEditText.setError("Please enter a valid name!");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isValidSecondName(String secondName) {
+        if (secondName.equals("")) {
+            mSecondNameEditText.setError("Please enter a valid name!");
+            return false;
+        }
+        return true;
+    }
+
 
 
     private void sendVerificationEmail(){

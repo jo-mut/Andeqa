@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
@@ -20,50 +19,25 @@ public class LikesViewHolder extends RecyclerView.ViewHolder {
 
     View mView;
     Context mContext;
-    private ImageView userProfileImageView;
     public TextView usernameTextView;
     public CircleImageView profileImageView;
     public Button followButton;
+    public TextView firstNameTextView;
+    public TextView secondNameTextView;
 
     public LikesViewHolder(View itemView) {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
-        usernameTextView = (TextView)itemView.findViewById(R.id.accountUsernameTextView);
+        usernameTextView = (TextView)itemView.findViewById(R.id.usernameTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         followButton = (Button) itemView.findViewById(R.id.followButton);
+        firstNameTextView = (TextView) itemView.findViewById(R.id.firstNameTextView);
+        secondNameTextView = (TextView) itemView.findViewById(R.id.secondNameTextView);
     }
 
     public void bindLikes(final Like like){
-//        TextView usernameTextView =(TextView) mView.findViewById(R.id.accountUsernameTextView);
         final CircleImageView profileImageView = (CircleImageView) mView.findViewById(R.id.profileImageView);
-
-//        usernameTextView.setText(like.getUsername());
-
-//        Picasso.with(mContext)
-//                .load(like.getProfileImage())
-//                .fit()
-//                .centerCrop()
-//                .placeholder(R.drawable.profle_image_background)
-//                .networkPolicy(NetworkPolicy.OFFLINE)
-//                .into(profileImageView, new Callback() {
-//                    @Override
-//                    public void onSuccess() {
-//
-//                    }
-//
-//                    @Override
-//                    public void onError() {
-//                        Picasso.with(mContext)
-//                                .load(like.getProfileImage())
-//                                .fit()
-//                                .centerCrop()
-//                                .placeholder(R.drawable.profle_image_background)
-//                                .into(profileImageView);
-//
-//
-//                    }
-//                });
 
     }
 

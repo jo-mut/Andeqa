@@ -10,6 +10,7 @@ public class TransactionDetails {
     String postId;
     String datePosted;
     double amount;
+    double walletBalance;
 
 
     public TransactionDetails() {
@@ -61,4 +62,11 @@ public class TransactionDetails {
         this.amount = amount;
     }
 
+    public double getWalletBalance() {
+        return walletBalance;
+    }
+
+    public void setWalletBalance(double walletBalance) {
+        this.walletBalance = walletBalance;
+    }
 }

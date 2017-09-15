@@ -30,8 +30,8 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="Cinggl"
-        android:supportsRtl="true"
         android:largeHeap="false"
+        android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
             android:name=".profile.SignInActivity"
@@ -111,9 +111,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".profile.SetupPorifleInfo"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".home.NavigationDrawerActivity"
             android:label="Cinggl"
             android:screenOrientation="portrait"
@@ -122,23 +119,36 @@
             android:name=".home.CingleDetailActivity"
             android:label="Cingle" />
         <activity
-            android:theme="@style/AppTheme"
-            android:screenOrientation="portrait"
+            android:name=".preferences.PreferencesActivity"
             android:label="Preferences"
-            android:name=".preferences.PreferencesActivity" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
         <activity
-            android:theme="@style/AppTheme"
+            android:name=".ifair.TradeDetailActivity"
             android:label="Cingle"
-            android:name=".ifair.TradeDetailActivity" />
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".preferences.AboutActivity"
+            android:label="About"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".ifair.WalletActivity"
+            android:label="Wallet"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".ifair.SetCinglePriceActivity"
+            android:label="Set sale price"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".preferences.TermsOfServiceActivity"/>
         <activity
             android:theme="@style/AppTheme"
+            android:label="Ifair"
             android:screenOrientation="portrait"
-            android:label="About"
-            android:name=".AboutActivity" />
-        <activity   android:theme="@style/AppTheme"
-            android:screenOrientation="portrait"
-            android:label="Wallet"
-            android:name=".ifair.WalletActivity" />
+            android:name=".ifair.IfairCinglesActivity"/>
     </application>
 
 </manifest>

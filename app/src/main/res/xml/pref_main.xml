@@ -77,10 +77,9 @@
                 android:data="@string/url_privacy" />
         </Preference>
 
-        <Preference android:title="@string/title_terms">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="@string/url_terms" />
+        <Preference
+            android:key="terms"
+            android:title="@string/title_terms">
         </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

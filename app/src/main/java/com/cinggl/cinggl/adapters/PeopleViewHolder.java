@@ -25,6 +25,7 @@ public class PeopleViewHolder extends RecyclerView.ViewHolder {
     public TextView secondNameTextView;
     public CircleImageView profileImageView;
     public Button followButton;
+    public TextView usernameTextView;
 
     public PeopleViewHolder(View itemView) {
         super(itemView);
@@ -34,6 +35,7 @@ public class PeopleViewHolder extends RecyclerView.ViewHolder {
         secondNameTextView = (TextView) itemView.findViewById(R.id.secondNameTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         followButton = (Button) itemView.findViewById(R.id.followButton);
+        usernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
     }
 
     public void bindPeople(final Cingulan cingulan){

@@ -106,51 +106,48 @@ public class TradeDetailActivity extends AppCompatActivity implements View.OnCli
 
         firebaseAuth = FirebaseAuth.getInstance();
 
-        mPostKey = getIntent().getStringExtra(EXTRA_POST_KEY);
-        if(mPostKey == null){
-            throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
+        if (firebaseAuth.getCurrentUser()!= null){
+            mPostKey = getIntent().getStringExtra(EXTRA_POST_KEY);
+            if(mPostKey == null){
+                throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
+            }
+
+            //INITIALIASE CLICK LISTENER
+            mLikesImageView.setOnClickListener(this);
+            mLikesRecyclerView.setOnClickListener(this);
+            mCommentImageView.setOnClickListener(this);
+            mLikesCountTextView.setOnClickListener(this);
+            mTradeCingleButton.setOnClickListener(this);
+
+            //DATABASE REFERENCE PATH;
+            commentReference = FirebaseDatabase.getInstance().getReference(Constants.COMMENTS);
+            cinglesReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
+            usersRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
+            likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
+            databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
+            ifairReference = FirebaseDatabase.getInstance().getReference(Constants.IFAIR);
+            cingleWalletReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_WALLET);
+            likesQueryCount = likesRef;
+
+            usersRef.keepSynced(true);
+            databaseReference.keepSynced(true);
+            likesRef.keepSynced(true);
+            commentReference.keepSynced(true);
+            cingleWalletReference.keepSynced(true);
+            ifairReference.keepSynced(true);
+            cinglesReference.keepSynced(true);
+
+            //RETRIEVE DATA FROM FIREBASE
+            setCingleData();
+            setTextOnButton();
         }
-
-        //INITIALIASE CLICK LISTENER
-        mLikesImageView.setOnClickListener(this);
-        mLikesRecyclerView.setOnClickListener(this);
-        mCommentImageView.setOnClickListener(this);
-        mLikesCountTextView.setOnClickListener(this);
-        mTradeCingleButton.setOnClickListener(this);
-
-
-        //DATABASE REFERENCE PATH;
-        commentReference = FirebaseDatabase.getInstance().getReference(Constants.COMMENTS);
-        cinglesReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
-        usersRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
-        likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
-        databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
-        ifairReference = FirebaseDatabase.getInstance().getReference(Constants.IFAIR);
-        cingleWalletReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_WALLET);
-        likesQueryCount = likesRef;
-
-
-
-        usersRef.keepSynced(true);
-        databaseReference.keepSynced(true);
-        likesRef.keepSynced(true);
-        commentReference.keepSynced(true);
-        cingleWalletReference.keepSynced(true);
-        ifairReference.keepSynced(true);
-        cinglesReference.keepSynced(true);
-
-        //RETRIEVE DATA FROM FIREBASE
-        setCingleData();
-        setTextOnButton();
     }
 
     public void setCingleData(){
-        //RETRIEVE LIKES COUNT AND CATCH EXCEPTIONS IF CINGLE DELETED
-        likesRef.child(mPostKey).startAt(6)
-                .addValueEventListener(new ValueEventListener() {
+        likesRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                mLikesCountTextView.setText("+" + dataSnapshot.getChildrenCount() +" " + "Likes");
+                mLikesCountTextView.setText(dataSnapshot.getChildrenCount() +" " + "Likes");
 
             }
 
@@ -224,8 +221,7 @@ public class TradeDetailActivity extends AppCompatActivity implements View.OnCli
 
                         }
                     });
-//
-//
+
 //                    set the title of the cingle
                     if (title.equals("")){
                         mCingleTitleRelativeLayout.setVisibility(View.GONE);

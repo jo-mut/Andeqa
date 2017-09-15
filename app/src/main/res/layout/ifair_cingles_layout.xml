@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:layout_marginBottom="15dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/cingleImageView"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_margin="10dp"
+            android:layout_height="100dp"
+            android:layout_width="100dp"
+            android:scaleType="centerCrop" />
+
+        <LinearLayout
+            android:layout_toRightOf="@+id/cingleImageView"
+            android:layout_toEndOf="@+id/cingleImageView"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="3dp">
+
+                <TextView
+                    android:text="Cingle Creator:"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cingleCreatorTextView"
+                    android:textSize="14sp"
+                    android:textStyle="normal|bold"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    app:srcCompat="@drawable/profle_image_background"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:id="@+id/profileImageView" />
+
+                <TextView
+                    android:text="username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:id="@+id/usernameTextView"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/cingleCreatorTextView"
+                    android:layout_toEndOf="@+id/cingleCreatorTextView"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/cingleTradingRelativeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp">
+
+                <TextView
+                    android:text="Listed on Ifair:"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="normal|bold"
+                    android:textSize="14sp"
+                    android:layout_alignParentTop="false"
+                    android:id="@+id/cingleListedOnIfairTextView"
+                    android:layout_centerVertical="true" />
+
+
+                <TextView
+                    android:text=""
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cingleTradeMethodTextView"
+                    android:textStyle="normal|bold"
+                    android:textSize="14sp"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_toRightOf="@+id/cingleListedOnIfairTextView" />
+
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp">
+
+                <TextView
+                    android:text="Cingle Date:"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cingleDateTextView"
+                    android:textSize="14sp"
+                    android:textStyle="normal|bold"
+                    android:layout_centerVertical="true" />
+
+                <TextView
+                    android:text="10th Sep, 2016"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:id="@+id/datePostedTextView"
+                    android:layout_alignBaseline="@+id/cingleDateTextView"
+                    android:layout_alignBottom="@+id/cingleDateTextView"
+                    android:layout_toRightOf="@+id/cingleDateTextView"
+                    android:layout_toEndOf="@+id/cingleDateTextView"
+                    android:textSize="14sp"
+                    android:layout_centerVertical="true" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp">
+
+                <TextView
+                    android:text="Cingle Sense Credits:"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cingleSenseCreditsTextView"
+                    android:textSize="14sp"
+                    android:textStyle="normal|bold"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true" />
+
+                <TextView
+                    android:text="CSCs 0.00"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cingleSenseCreditsCountTextView"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/cingleSenseCreditsTextView"
+                    android:layout_toEndOf="@+id/cingleSenseCreditsTextView"
+                    android:textSize="14sp"
+                    android:layout_centerVertical="true" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="Cingle Owner:"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cingleOwnerTitleTextView"
+                    android:textStyle="normal|bold"
+                    android:textSize="14sp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginLeft="3dp"
+                    android:layout_centerVertical="true" />
+
+                <TextView
+                    android:text=""
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/cingleOwnerTitleTextView"
+                    android:layout_toEndOf="@+id/cingleOwnerTitleTextView"
+                    android:id="@+id/cingleOwnerTextView"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="14sp"
+                    android:layout_centerVertical="true" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    app:srcCompat="@drawable/profle_image_background"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:id="@+id/ownerImageView" />
+
+            </RelativeLayout>
+
+
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>

@@ -17,8 +17,8 @@
             android:layout_alignParentStart="true"
             android:background="@drawable/profle_image_background"
             android:layout_margin="10dp"
-            android:layout_width="40sp"
-            android:layout_height="40sp" />
+            android:layout_width="80dp"
+            android:layout_height="80dp" />
 
         <Button
             android:id="@+id/followButton"
@@ -31,26 +31,37 @@
             android:layout_alignParentEnd="true"
             android:layout_margin="10dp"
             android:layout_width="wrap_content"
-            android:layout_height="22sp" />
+            android:layout_height="45sp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp" />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
+            android:layout_toStartOf="@+id/followButton"
+            android:layout_toLeftOf="@+id/followButton"
             android:layout_toRightOf="@+id/profileImageView"
             android:layout_toEndOf="@+id/profileImageView"
             android:layout_alignBottom="@+id/profileImageView"
-            android:layout_marginRight="80sp"
             android:layout_centerVertical="true">
+
+            <TextView
+                android:text="username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/usernameTextView"
+                android:textColor="@android:color/black"
+                android:textStyle="normal|bold"
+                android:textSize="24sp"
+                android:layout_alignParentTop="false" />
 
             <TextView
                 android:text="First"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/firstNameTextView"
-                android:textStyle="normal|bold"
-                android:textColor="@android:color/black"
-                android:textSize="12sp"
+                android:textSize="21sp"
+                android:layout_below="@+id/usernameTextView"
                 android:layout_centerVertical="true" />
 
             <TextView
@@ -60,13 +71,13 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginStart="5dp"
                 android:id="@+id/secondNameTextView"
+                android:layout_below="@+id/usernameTextView"
                 android:layout_alignBaseline="@+id/firstNameTextView"
                 android:layout_alignBottom="@+id/firstNameTextView"
                 android:layout_toRightOf="@+id/firstNameTextView"
-                android:textStyle="normal|bold"
-                android:textColor="@android:color/black"
                 android:layout_centerVertical="true"
-                android:textSize="12sp" />
+                android:textSize="21sp" />
+
 
         </RelativeLayout>
 

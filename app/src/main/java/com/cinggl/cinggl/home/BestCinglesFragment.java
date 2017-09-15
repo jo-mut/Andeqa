@@ -71,16 +71,18 @@ public class BestCinglesFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
-        usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
-        likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
-        commentsRef = FirebaseDatabase.getInstance().getReference(Constants.COMMENTS);
 
-        usernameRef.keepSynced(true);
-        likesRef.keepSynced(true);
-        commentsRef.keepSynced(true);
-        databaseReference.keepSynced(true);
+        if (firebaseAuth.getCurrentUser() != null){
+            databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
+            usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
+            likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
+            commentsRef = FirebaseDatabase.getInstance().getReference(Constants.COMMENTS);
+
+            usernameRef.keepSynced(true);
+            likesRef.keepSynced(true);
+            commentsRef.keepSynced(true);
+            databaseReference.keepSynced(true);
+        }
 
     }
 

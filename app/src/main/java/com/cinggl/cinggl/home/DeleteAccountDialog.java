@@ -37,6 +37,7 @@ public class DeleteAccountDialog extends DialogFragment implements View.OnClickL
     @Bind(R.id.confirmDeleteRelativeLayout)RelativeLayout mConfirmRelativeLayout;
     private static final String TAG = DeleteAccountDialog.class.getSimpleName();
     private ProgressDialog progressDialog;
+    private FirebaseAuth firebaseAuth;
 
     public DeleteAccountDialog() {
         // Required empty public constructor
@@ -58,9 +59,15 @@ public class DeleteAccountDialog extends DialogFragment implements View.OnClickL
         View view = inflater.inflate(R.layout.fragment_delete_account_dialog, container, false);
         ButterKnife.bind(this, view);
 
-        deleteAccountProgressDialog();
+        firebaseAuth = FirebaseAuth.getInstance();
 
-        mConfirmRelativeLayout.setOnClickListener(this);
+        if (firebaseAuth.getCurrentUser()!= null){
+            deleteAccountProgressDialog();
+
+            mConfirmRelativeLayout.setOnClickListener(this);
+
+        }
+
 
         return view;
     }

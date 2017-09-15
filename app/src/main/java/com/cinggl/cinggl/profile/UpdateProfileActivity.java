@@ -84,16 +84,19 @@ public class UpdateProfileActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mDeleteAccountRelativeLayout.setOnClickListener(this);
-        mUpdateProfilePictureImageButton.setOnClickListener(this);
-        mUpdateCoverTextView.setOnClickListener(this);
-
         firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        usersRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS)
-                .child(firebaseAuth.getCurrentUser().getUid());
 
-        updateProfileProgessDialog();
+        if (firebaseAuth.getCurrentUser() != null){
+            usersRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS)
+                    .child(firebaseAuth.getCurrentUser().getUid());
+
+            updateProfileProgessDialog();
+
+            mDeleteAccountRelativeLayout.setOnClickListener(this);
+            mUpdateProfilePictureImageButton.setOnClickListener(this);
+            mUpdateCoverTextView.setOnClickListener(this);
+        }
+
 
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {

@@ -1,6 +1,7 @@
 package com.cinggl.cinggl.home;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
@@ -15,11 +16,15 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.preferences.PreferencesActivity;
+import com.cinggl.cinggl.profile.UpdateProfileActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import static android.os.Build.VERSION_CODES.N;
 
-public class HomeFragment extends Fragment{
+
+public class HomeFragment extends Fragment {
     private static final String TAG = HomeFragment.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String  EXTRA_USER_UID = "uid";
@@ -88,6 +93,17 @@ public class HomeFragment extends Fragment{
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
+        if (id == R.id.action_preferences) {
+            startActivity(new Intent(getActivity(), PreferencesActivity.class));
+            return true;
+        }
+
+        if (id == R.id.action_account_settings){
+            startActivity(new Intent(getActivity(), UpdateProfileActivity.class));
+            return true;
+        }
+
 
         return super.onOptionsItemSelected(item);
     }

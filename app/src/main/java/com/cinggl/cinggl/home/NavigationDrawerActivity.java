@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.ContentFrameLayout;
+import android.view.Menu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,10 +25,13 @@ import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.adapters.IfairCingleAdapter;
 import com.cinggl.cinggl.creation.CreateCingleActivity;
+import com.cinggl.cinggl.ifair.IfairCinglesActivity;
 import com.cinggl.cinggl.preferences.PreferencesActivity;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.profile.ProfileFragment;
+import com.cinggl.cinggl.profile.UpdateProfileActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -67,6 +71,9 @@ public class NavigationDrawerActivity extends AppCompatActivity
     private TextView mSecondNameTextView;
     private TextView mEmailTextView;
 
+    private Fragment savedState = null;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,15 +105,17 @@ public class NavigationDrawerActivity extends AppCompatActivity
         mSecondNameTextView = (TextView) header.findViewById(R.id.secondNameTextView);
         mEmailTextView = (TextView) header.findViewById(R.id.emailTextView);
 
-
-        if (savedInstanceState == null){
-            launchHomeFragment();
-        }else {
-
+        if (firebaseAuth.getCurrentUser() != null){
+            fetchData();
+            fetchUserEmail();
         }
 
-        fetchData();
-        fetchUserEmail();
+        if (savedInstanceState != null){
+//            savedState = getSupportFragmentManager().getFragment(savedInstanceState, HomeFragment.class.getName());
+        }else {
+            launchHomeFragment();
+        }
+
 
 //        //bottom navigation
 //        BottomNavigationViewHelper.disableShiftMode(mBottomNavigationView);
@@ -192,6 +201,12 @@ public class NavigationDrawerActivity extends AppCompatActivity
         mEmailTextView.setText(firebaseUser.getEmail());
     }
 
+//    public void onSaveInstanceState(Bundle outState){
+//
+//        //Save the fragment's instance
+//        getSupportFragmentManager().putFragment(outState, HomeFragment.class.getName(), savedState);
+//    }
+
     private void fetchData(){
         //database references
         usersRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
@@ -267,27 +282,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
                     }
                 });
     }
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.navigation_drawer, menu);
-//        return true;
-//    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -303,11 +297,11 @@ public class NavigationDrawerActivity extends AppCompatActivity
             Intent intent = new Intent(NavigationDrawerActivity.this, PersonalProfileActivity.class);
             startActivity(intent);
         }
-//
-//        if (id == R.id.action_ifair){
-//            Intent intent = new Intent(NavigationDrawerActivity.this, IfairMainActivity.class);
-//            startActivity(intent);
-//        }
+
+        if (id == R.id.action_ifair){
+            Intent intent = new Intent(NavigationDrawerActivity.this, IfairCinglesActivity.class);
+            startActivity(intent);
+        }
 
         if (id == R.id.action_about){
             Intent intent = new Intent(Intent.ACTION_VIEW,
@@ -315,10 +309,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
             startActivity(intent);
         }
 
-        if (id == R.id.action_preferences) {
-            startActivity(new Intent(NavigationDrawerActivity.this, PreferencesActivity.class));
-            return true;
-        }
 
         if (id == R.id.action_send_feedback){
             String body = null;
@@ -331,7 +321,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
             }
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("message/rfc822");
-            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"contact@androidhive.info"});
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"johnngei2@gmail.com"});
             intent.putExtra(Intent.EXTRA_SUBJECT, "Query from android app");
             intent.putExtra(Intent.EXTRA_TEXT, body);
             this.startActivity(Intent.createChooser(intent, this.getString(R.string.choose_email_client)));

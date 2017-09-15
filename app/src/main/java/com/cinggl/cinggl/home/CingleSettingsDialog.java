@@ -1,6 +1,7 @@
 package com.cinggl.cinggl.home;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.ifair.RedeemCreditsDialogFragment;
+import com.cinggl.cinggl.ifair.SetCinglePriceActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,6 +46,7 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
     private DatabaseReference databaseReference;
     private DatabaseReference ifairReference;
     private DatabaseReference cinglesReference;
+    private DatabaseReference cingleOwnerReference;
     private Query mKeyQuery;
     private static final String TAG = CingleSettingsDialog.class.getSimpleName();
 
@@ -74,35 +77,38 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
         View view = inflater.inflate(R.layout.fragment_cingle_settings_dialog, container, false);
         ButterKnife.bind(this, view);
 
-        mDeleteCingleRelativeLayout.setOnClickListener(this);
-        mReportCingleRelativeLayoout.setOnClickListener(this);
-//        mEditCingleRelativeLayout.setOnClickListener(this);
-        mTradeCingleRelativeLayout.setOnClickListener(this);
-        mRedeemCreditsRelativeLayout.setOnClickListener(this);
-
         firebaseAuth = FirebaseAuth.getInstance();
 
+        if (firebaseAuth.getCurrentUser() != null){
+            mDeleteCingleRelativeLayout.setOnClickListener(this);
+            mReportCingleRelativeLayoout.setOnClickListener(this);
+//        mEditCingleRelativeLayout.setOnClickListener(this);
+            mTradeCingleRelativeLayout.setOnClickListener(this);
+            mRedeemCreditsRelativeLayout.setOnClickListener(this);
 
-        Bundle bundle = getArguments();
-        if (bundle != null){
-            mPostKey = bundle.getString(CingleSettingsDialog.EXTRA_POST_KEY);
+            Bundle bundle = getArguments();
+            if (bundle != null){
+                mPostKey = bundle.getString(CingleSettingsDialog.EXTRA_POST_KEY);
 
-            Log.d("the passed poskey", mPostKey);
+                Log.d("the passed poskey", mPostKey);
 
-        }else {
-            throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
+            }else {
+                throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
+            }
+
+            databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
+            ifairReference = FirebaseDatabase.getInstance().getReference(Constants.IFAIR);
+            cinglesReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
+            mKeyQuery = databaseReference;
+            cingleOwnerReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_ONWERS);
+
+            ifairReference.keepSynced(true);
+            cingleOwnerReference.keepSynced(true);
+            databaseReference.keepSynced(true);
+
+            hideLayouts();
+            redeemCredits();
         }
-
-        databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
-        ifairReference = FirebaseDatabase.getInstance().getReference(Constants.IFAIR);
-        cinglesReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
-        mKeyQuery = databaseReference;
-
-        ifairReference.keepSynced(true);
-        databaseReference.keepSynced(true);
-
-        hideLayouts();
-        redeemCredits();
 
         return view;
     }
@@ -131,26 +137,21 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
 //        }
 
         if (v == mTradeCingleRelativeLayout){
-//            //LAUNCH ACTIVITY TO CHOOSE TRADE METHOS
-//            Intent intent = new Intent(getActivity(), ChooseTradeMethodActivity.class);
-//            intent.putExtra(CingleSettingsDialog.EXTRA_POST_KEY, mPostKey);
-//            startActivity(intent);
-
-            //SET CINGLE ON SALE IN IFAIR
-            ifairReference.addValueEventListener(new ValueEventListener() {
+            ifairReference.child("Cingle Selling").addValueEventListener
+                    (new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (!dataSnapshot.child("Cingle Selling").hasChild(mPostKey)){
-
-                        Ifair ifair =  new Ifair();
-                        ifair.setUid(firebaseAuth.getCurrentUser().getUid());
-                        ifair.setPushId(mPostKey);
-                        ifairReference.child("Cingle Selling").child(mPostKey).setValue(ifair);
-                        Toast.makeText(getContext(), "Your cingle has been listed on Ifair",
-                                Toast.LENGTH_LONG).show();
+                    if (dataSnapshot.hasChild(mPostKey)){
+                       try {
+                           Toast.makeText(getContext(), "Sorry! This Cingle is already on sale",
+                                   Toast.LENGTH_SHORT).show();
+                       }catch (Exception e){
+                           e.printStackTrace();
+                       }
                     }else {
-                        Toast.makeText(getContext(), "Sorry! This Cingle is already on sale",
-                                Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(getActivity(), SetCinglePriceActivity.class);
+                        intent.putExtra(CingleSettingsDialog.EXTRA_POST_KEY, mPostKey);
+                        startActivity(intent);
                     }
                 }
 
@@ -187,6 +188,38 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
                 if (dataSnapshot.child(mPostKey).exists()){
                     final String uid = dataSnapshot.child(mPostKey).child("uid").getValue(String.class);
 
+                    cingleOwnerReference.child(mPostKey).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                           if (dataSnapshot.exists()){
+                               //if owner exist then its only him that can delete the cingle
+                               final String ownerUid = dataSnapshot.child("owner").getValue(String.class);
+                               if ((firebaseAuth.getCurrentUser().getUid().equals(ownerUid))){
+                                   //SHOW THE REDEEM LAYOUT
+                                   mRedeemCreditsRelativeLayout.setVisibility(View.VISIBLE);
+
+                               }else {
+                                   //HIDE THE REDEEM LAYOUT
+                                   mRedeemCreditsRelativeLayout.setVisibility(View.GONE);
+                               }
+                           }else {
+                               if ((firebaseAuth.getCurrentUser().getUid().equals(uid))){
+                                   //SHOW THE REDEEM LAYOUT
+                                   mRedeemCreditsRelativeLayout.setVisibility(View.VISIBLE);
+
+                               }else {
+                                   //HIDE THE REDEEM LAYOUT
+                                   mRedeemCreditsRelativeLayout.setVisibility(View.GONE);
+                               }
+                           }
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
                     if ((firebaseAuth.getCurrentUser().getUid().equals(uid))){
                         //SHOW THE REDEEM LAYOUT
                         mRedeemCreditsRelativeLayout.setVisibility(View.VISIBLE);
@@ -234,13 +267,13 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
         });
     }
 
-
     public void deleteCingle(){
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.child(mPostKey).exists()){
                     final String uid = dataSnapshot.child(mPostKey).child("uid").getValue(String.class);
+
 
                     Log.d("post uid", uid);
 

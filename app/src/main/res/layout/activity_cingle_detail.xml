@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_cingle_detail"
@@ -20,119 +21,137 @@
         android:background="#000000" />
 
 
-    <RelativeLayout
+    <ScrollView
+        android:scrollbars="none"
+        android:fillViewport="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.cinggl.cinggl.ProportionalImageView
-            android:id="@+id/cingleImageView"
+
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_alignParentTop="false"
-            android:layout_centerHorizontal="true"
-            android:adjustViewBounds="false"
-            android:layout_height="match_parent"
-            android:layout_centerVertical="true"
-            android:layout_centerInParent="true" />
-
-    </RelativeLayout>
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/cingleToolLinearLayout"
-        android:layout_marginTop="-75dp">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="5dp"
-            android:id="@+id/cingleToolsRelativeLayout">
+            android:layout_height="match_parent">
 
 
-            <TextView
-                android:text="SP 0.00"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.cinggl.cinggl.ProportionalImageView
+                    android:id="@+id/cingleImageView"
+                    android:layout_width="match_parent"
+                    android:layout_alignParentTop="false"
+                    android:layout_centerHorizontal="true"
+                    android:adjustViewBounds="false"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_centerInParent="true" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/cingleSenseCreditsTextView"
-                android:textStyle="normal|bold"
-                android:background="@drawable/text_border_default"
-                android:textSize="12sp"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:layout_alignParentTop="true"
-                android:layout_marginTop="8dp"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="10dp"
-                android:textColor="@android:color/white" />
+                android:id="@+id/cingleToolLinearLayout"
+                android:layout_marginTop="-75dp">
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_chat_bubble_black_24dp"
-                android:id="@+id/commentsImageView"
-                android:tint="@color/colorIcons"
-                android:padding="5dp"
-                android:layout_marginLeft="14dp"
-                android:layout_marginStart="14dp"
-                android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/likesImageView"
-                android:layout_toEndOf="@+id/likesImageView" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_favorite_black_24dp"
-                android:id="@+id/likesImageView"
-                android:padding="5dp"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:tint="@color/colorIcons" />
-
-            <TextView
-                android:text="0"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/commentsCountTextView"
-                android:textSize="12sp"
-                android:paddingTop="2dp"
-                android:paddingBottom="2dp"
-                android:layout_alignTop="@+id/cingleSenseCreditsTextView"
-                android:layout_toRightOf="@+id/commentsImageView"
-                android:layout_toEndOf="@+id/commentsImageView"
-                android:textStyle="normal|bold"
-                android:textColor="@android:color/white" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="5dp"
+                    android:id="@+id/cingleToolsRelativeLayout">
 
 
-        </RelativeLayout>
+                    <TextView
+                        android:text="SP 0.00"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/cingleSenseCreditsTextView"
+                        android:textStyle="normal|bold"
+                        android:background="@drawable/text_border_default"
+                        android:textSize="12sp"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="8dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="10dp"
+                        android:textColor="@android:color/white" />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentBottom="true">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_chat_bubble_black_24dp"
+                        android:id="@+id/commentsImageView"
+                        android:tint="@color/colorIcons"
+                        android:padding="5dp"
+                        android:layout_marginLeft="14dp"
+                        android:layout_marginStart="14dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_toRightOf="@+id/likesImageView"
+                        android:layout_toEndOf="@+id/likesImageView" />
 
-            <TextView
-                android:text="0 Likes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/likesCountTextView"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:textSize="12sp"
-                android:textStyle="normal|bold"
-                android:textColor="@android:color/white"
-                android:layout_marginTop="10dp"
-                android:paddingLeft="10dp" />
-        </RelativeLayout>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_favorite_black_24dp"
+                        android:id="@+id/likesImageView"
+                        android:padding="5dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:tint="@color/colorIcons" />
+
+                    <TextView
+                        android:text="0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/commentsCountTextView"
+                        android:textSize="12sp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
+                        android:layout_alignTop="@+id/cingleSenseCreditsTextView"
+                        android:layout_toRightOf="@+id/commentsImageView"
+                        android:layout_toEndOf="@+id/commentsImageView"
+                        android:textStyle="normal|bold"
+                        android:textColor="@android:color/white" />
 
 
-    </LinearLayout>
+                </RelativeLayout>
 
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentBottom="true">
+
+                    <TextView
+                        android:text="0 Likes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/likesCountTextView"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:textSize="12sp"
+                        android:textStyle="normal|bold"
+                        android:textColor="@android:color/white"
+                        android:layout_marginTop="10dp"
+                        android:paddingLeft="10dp" />
+                </RelativeLayout>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
+    </ScrollView>
 
 </LinearLayout>

@@ -71,24 +71,26 @@ public class CingleOutFragment extends Fragment{
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_cingle_out, container, false);
         ButterKnife.bind(this, view);
-        likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
-        sensepointRef = FirebaseDatabase.getInstance().getReference("Sense points");
-        usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
-        commentReference = FirebaseDatabase.getInstance()
-                .getReference(Constants.COMMENTS);
-        databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
-
 
         firebaseAuth = FirebaseAuth.getInstance();
-        likesRef.keepSynced(true);
-        usernameRef.keepSynced(true);
-        commentReference.keepSynced(true);
+
+        if (firebaseAuth.getCurrentUser() != null){
+            likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
+            sensepointRef = FirebaseDatabase.getInstance().getReference("Sense points");
+            usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
+            commentReference = FirebaseDatabase.getInstance()
+                    .getReference(Constants.COMMENTS);
+            databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
+
+            likesRef.keepSynced(true);
+            usernameRef.keepSynced(true);
+            commentReference.keepSynced(true);
 
 
-        initializeViewsAdapter();
-        cingleOutRecyclerView.addOnScrollListener(mOnScollListener);
-        setAllCingles(currentPage);
-
+            initializeViewsAdapter();
+            cingleOutRecyclerView.addOnScrollListener(mOnScollListener);
+            setAllCingles(currentPage);
+        }
 
         return view;
     }

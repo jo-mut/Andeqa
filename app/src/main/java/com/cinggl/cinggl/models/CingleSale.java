@@ -1,0 +1,75 @@
+package com.cinggl.cinggl.models;
+
+/**
+ * Created by J.EL on 9/8/2017.
+ */
+
+public class CingleSale {
+    String pushId;
+    String uid;
+    String datePosted;
+    long timeStamp;
+    double randomNumber;
+    double salePrice;
+
+    public CingleSale() {
+    }
+
+    public CingleSale(String pushId,
+                      String uid, String datePosted,
+                      long timeStamp, String salePrice, double randomNumber) {
+        this.pushId = pushId;
+        this.uid = uid;
+        this.datePosted = datePosted;
+        this.timeStamp = timeStamp;
+        this.randomNumber = randomNumber;
+    }
+
+    public String getPushId() {
+        return pushId;
+    }
+
+    public void setPushId(String pushId) {
+        this.pushId = pushId;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public String getDatePosted() {
+        return datePosted;
+    }
+
+    public void setDatePosted(String datePosted) {
+        this.datePosted = datePosted;
+    }
+
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    public double getRandomNumber() {
+        return randomNumber;
+    }
+
+    public void setRandomNumber(double randomNumber) {
+        this.randomNumber = randomNumber;
+    }
+
+    public double getSalePrice() {
+        return salePrice;
+    }
+
+    public void setSalePrice(double salePrice) {
+        this.salePrice = salePrice;
+    }
+}

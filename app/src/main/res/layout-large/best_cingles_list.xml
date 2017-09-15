@@ -52,10 +52,11 @@
             </RelativeLayout>
 
             <RelativeLayout
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="3dp"
-                android:layout_marginTop="5dp">
+                android:paddingLeft="3dp">
 
                 <TextView
                     android:text="Cingle Creator:"
@@ -84,17 +85,18 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginStart="10dp"
-                    android:id="@+id/notificationTextView"
+                    android:id="@+id/usernameTextView"
                     android:layout_centerVertical="true"
                     android:layout_toRightOf="@+id/cingleCreatorTextView"
                     android:layout_toEndOf="@+id/cingleCreatorTextView"
-                    android:textSize="18sp" />
+                    android:textSize="21sp" />
 
             </RelativeLayout>
 
             <RelativeLayout
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:id="@+id/cingleTradingRelativeLayout"
-                android:layout_marginTop="3dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="3dp"
@@ -109,7 +111,8 @@
                     android:paddingTop="3dp"
                     android:paddingBottom="3dp"
                     android:layout_alignParentTop="false"
-                    android:id="@+id/cingleListedOnIfairTextView" />
+                    android:id="@+id/cingleListedOnIfairTextView"
+                    android:layout_centerVertical="true" />
 
 
                 <TextView
@@ -120,8 +123,9 @@
                     android:textStyle="normal|bold"
                     android:textSize="21sp"
                     android:textColor="@color/colorPrimary"
-                    android:layout_alignParentLeft="false"
-                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_toRightOf="@+id/cingleListedOnIfairTextView"
                     android:padding="5dp" />
 
             </RelativeLayout>
@@ -154,13 +158,15 @@
                     android:layout_alignBottom="@+id/cingleDateTextView"
                     android:layout_toRightOf="@+id/cingleDateTextView"
                     android:layout_toEndOf="@+id/cingleDateTextView"
-                    android:textSize="18sp"
+                    android:textSize="21sp"
                     android:layout_centerVertical="true" />
 
             </RelativeLayout>
 
 
             <RelativeLayout
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -173,7 +179,8 @@
                     android:textSize="21sp"
                     android:layout_marginTop="5dp"
                     android:layout_marginRight="3dp"
-                    android:layout_marginLeft="3dp" />
+                    android:layout_marginLeft="3dp"
+                    android:layout_centerVertical="true" />
 
                 <TextView
                     android:text=""
@@ -184,8 +191,18 @@
                     android:id="@+id/cingleOwnerTextView"
                     android:layout_marginTop="5dp"
                     android:layout_marginLeft="10dp"
-                    android:textSize="21sp" />
+                    android:textSize="21sp"
+                    android:layout_centerVertical="true" />
 
+                <de.hdodenhof.circleimageview.CircleImageView
+                    app:srcCompat="@drawable/profle_image_background"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:id="@+id/ownerImageView"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp" />
 
             </RelativeLayout>
 
@@ -218,7 +235,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_toRightOf="@+id/cingleSenseCreditsTextView"
                     android:layout_toEndOf="@+id/cingleSenseCreditsTextView"
-                    android:textSize="18sp"
+                    android:textSize="21sp"
                     android:layout_centerVertical="true" />
 
             </RelativeLayout>
@@ -349,7 +366,6 @@
                     android:layout_toEndOf="@+id/likesRecyclerView"
                     android:layout_marginLeft="5dp"
                     android:textSize="16sp"
-                    android:text="+9"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingRight="5dp"/>

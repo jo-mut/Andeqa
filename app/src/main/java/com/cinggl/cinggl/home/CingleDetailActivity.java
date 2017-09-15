@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -12,6 +13,10 @@ import android.widget.TextView;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.ProportionalImageView;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.ifair.TradeDetailActivity;
+import com.cinggl.cinggl.models.Cingle;
+import com.cinggl.cinggl.profile.PersonalProfileActivity;
+import com.cinggl.cinggl.relations.FollowerProfileActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,11 +30,13 @@ import com.squareup.picasso.Picasso;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+import static com.cinggl.cinggl.R.id.commentsCountTextView;
+
 public class CingleDetailActivity extends AppCompatActivity implements View.OnClickListener{
     private static final String TAG = CingleDetailActivity.class.getSimpleName();
     @Bind(R.id.cingleImageView)ProportionalImageView mCingleImageView;
     @Bind(R.id.commentsImageView)ImageView mCommentsImageView;
-    @Bind(R.id.commentsCountTextView)TextView mCommentsCountTextView;
+    @Bind(commentsCountTextView)TextView mCommentsCountTextView;
     @Bind(R.id.likesImageView)ImageView mLikesImageView;
     @Bind(R.id.likesCountTextView)TextView mLikesCountTextView;
     @Bind(R.id.cingleToolLinearLayout)LinearLayout mCingleToolsLinearLayout;
@@ -39,6 +46,7 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
     private String mPostKey;
     private DatabaseReference commentReference;
     private DatabaseReference cinglesReference;
+    private DatabaseReference likesReference;
     private static final String EXTRA_POST_KEY = "post key";
     public boolean showOnClick = true;
 
@@ -62,26 +70,68 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
 
         firebaseAuth = FirebaseAuth.getInstance();
 
-        mCingleImageView.setOnClickListener(this);
-        mLikesImageView.setOnClickListener(this);
-        mCommentsImageView.setOnClickListener(this);
-        mLikesCountTextView.setOnClickListener(this);
+        if (firebaseAuth.getCurrentUser()!=null){
+            mCingleImageView.setOnClickListener(this);
+            mLikesImageView.setOnClickListener(this);
+            mCommentsImageView.setOnClickListener(this);
+            mLikesCountTextView.setOnClickListener(this);
 
-        mPostKey = getIntent().getStringExtra(EXTRA_POST_KEY);
-        if(mPostKey == null){
-            throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
+            mPostKey = getIntent().getStringExtra(EXTRA_POST_KEY);
+            if(mPostKey == null){
+                throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
+            }
+
+            cinglesReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES)
+                    .child(mPostKey);
+            commentReference = FirebaseDatabase.getInstance().getReference(Constants.COMMENTS)
+                    .child(mPostKey);
+            likesReference = FirebaseDatabase.getInstance().getReference(Constants.LIKES)
+                    .child(mPostKey);
+
+            cinglesReference.keepSynced(true);
+            commentReference.keepSynced(true);
+
+            setUpCingleDetails();
+            setCingleData();
         }
+    }
 
-        cinglesReference = FirebaseDatabase.getInstance()
-                .getReference(Constants.FIREBASE_CINGLES).child(mPostKey);
+    public void setCingleData(){
+        likesReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mLikesCountTextView.setText(dataSnapshot.getChildrenCount() +" " + "Likes");
 
-        commentReference = FirebaseDatabase.getInstance()
-                .getReference(Constants.COMMENTS).child(mPostKey);
+            }
 
-        cinglesReference.keepSynced(true);
-        commentReference.keepSynced(true);
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-        setUpCingleDetails();
+            }
+        });
+
+
+        //RETRIVE COMMENTS COUNTS
+        commentReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                        Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "commentsCount");
+                    }
+
+                    mCommentsCountTextView.setText(dataSnapshot.getChildrenCount() + "");
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
     public void setUpCingleDetails(){

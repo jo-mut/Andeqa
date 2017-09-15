@@ -39,7 +39,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="12dp"
                     android:layout_marginStart="12dp"
-                    android:id="@+id/accountUsernameTextView"
+                    android:id="@+id/usernameTextView"
                     android:textSize="14sp"
                     android:textColor="@android:color/black"
                     android:textStyle="normal|bold"
@@ -68,7 +68,7 @@
                     android:layout_alignParentEnd="false"
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="10dp"
-                    android:layout_below="@+id/accountUsernameTextView"
+                    android:layout_below="@+id/usernameTextView"
                     android:textSize="12sp" />
 
 

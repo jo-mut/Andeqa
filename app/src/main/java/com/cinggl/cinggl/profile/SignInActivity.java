@@ -46,7 +46,6 @@ public class SignInActivity extends AppCompatActivity implements
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private ProgressDialog mAuthProgressDialog;
-    private DatabaseReference usersRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +60,6 @@ public class SignInActivity extends AppCompatActivity implements
 
         mAuth = FirebaseAuth.getInstance();
         createAuthProgressDialog();
-        usersRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -69,34 +67,11 @@ public class SignInActivity extends AppCompatActivity implements
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     //check if the user has created personal profile
-//                    Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
-//                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                    startActivity(intent);
-//                    finish();
+                    Intent intent = new Intent(SignInActivity.this, NavigationDrawerActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
 
-                    usersRef.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (!dataSnapshot.hasChild(firebaseAuth.getCurrentUser().getUid())){
-                                //LAUCNH SETUP PROFIFLE ACTIVITY IF NO
-                                Intent intent = new Intent(SignInActivity.this, SetupPorifleInfo.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                finish();
-                            }else {
-                                Intent intent = new Intent(SignInActivity.this, NavigationDrawerActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                finish();
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-
-                    });
                 }
             }
 
@@ -158,7 +133,7 @@ public class SignInActivity extends AppCompatActivity implements
             Toast.makeText(SignInActivity.this, "You have Successfully signed in",
                     Toast.LENGTH_SHORT).show();
 
-            Intent intent = new Intent(SignInActivity.this, SetupPorifleInfo.class);
+            Intent intent = new Intent(SignInActivity.this, NavigationDrawerActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();

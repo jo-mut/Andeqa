@@ -12,6 +12,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -19,6 +20,12 @@ import android.view.MenuItem;
 
 import com.cinggl.cinggl.AppCompatPreferenceActivity;
 import com.cinggl.cinggl.R;
+
+import java.util.prefs.Preferences;
+
+import static android.os.Build.VERSION_CODES.M;
+import static android.view.View.Y;
+
 
 public class PreferencesActivity extends AppCompatPreferenceActivity {
 
@@ -28,7 +35,6 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
 
         // load settings fragment
         getFragmentManager().beginTransaction().replace(android.R.id.content, new MainPreferenceFragment()).commit();
@@ -54,6 +60,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
                     return true;
                 }
             });
+
         }
     }
 
@@ -63,6 +70,20 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void launchTerms(){
+
+        // terms preference click listener
+        Preference preference = findPreference("terms");
+        preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(getApplicationContext(), TermsOfServiceActivity.class);
+                startActivity(intent);
+                return true;
+            }
+        });
+
     }
 
     private static void bindPreferenceSummaryToValue(Preference preference) {
@@ -145,7 +166,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
         }
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("message/rfc822");
-        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"cinggl@gmail.com"});
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"johnngei2@gmail.com"});
         intent.putExtra(Intent.EXTRA_SUBJECT, "Query from android app");
         intent.putExtra(Intent.EXTRA_TEXT, body);
         context.startActivity(Intent.createChooser(intent, context.getString(R.string.choose_email_client)));

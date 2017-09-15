@@ -23,15 +23,19 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
     public TextView usernameTextView;
     public CircleImageView profileImageView;
     public Button followButton;
+    public TextView firstNameTextView;
+    public TextView secondNameTextView;
 
     public CommentViewHolder(View itemView) {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
-        usernameTextView = (TextView)itemView.findViewById(R.id.accountUsernameTextView);
+        usernameTextView = (TextView)itemView.findViewById(R.id.usernameTextView);
         commentCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         followButton = (Button) itemView.findViewById(R.id.followButton);
+        firstNameTextView = (TextView) itemView.findViewById(R.id.firstNameTextView);
+        secondNameTextView = (TextView) itemView.findViewById(R.id.secondNameTextView);
     }
 
     public void bindComment(final Comment comment){

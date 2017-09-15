@@ -10,17 +10,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profileImageView"
+        <ImageView
+            android:id="@+id/cingleImageView"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_width="55dp"
             android:layout_height="55dp"
-            android:background="@drawable/profle_image_background"
             android:layout_margin="10dp" />
 
         <Button
+            android:text="Follow"
             android:id="@+id/followButton"
             android:textSize="12sp"
             android:textColor="@android:color/white"
@@ -36,41 +36,26 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
-            android:layout_toRightOf="@+id/profileImageView"
-            android:layout_toEndOf="@+id/profileImageView"
-            android:layout_alignBottom="@+id/profileImageView"
-            android:layout_marginRight="80sp"
-            android:layout_centerVertical="true">
+            android:layout_toRightOf="@+id/cingleImageView"
+            android:layout_toEndOf="@+id/cingleImageView"
+            android:layout_alignBottom="@+id/cingleImageView"
+            android:layout_centerVertical="false"
+            android:layout_toLeftOf="@+id/followButton"
+            android:layout_toStartOf="@+id/followButton"
+            android:layout_alignParentTop="true"
+            android:paddingTop="10dp">
 
             <TextView
-                android:text="First"
+                android:text="username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/firstNameTextView"
-                android:textStyle="normal|bold"
+                android:id="@+id/usernameTextView"
                 android:textColor="@android:color/black"
+                android:textStyle="normal|bold"
                 android:textSize="16sp"
-                android:layout_centerVertical="true" />
-
-            <TextView
-                android:text="Second"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
-                android:id="@+id/secondNameTextView"
-                android:layout_alignBaseline="@+id/firstNameTextView"
-                android:layout_alignBottom="@+id/firstNameTextView"
-                android:layout_toRightOf="@+id/firstNameTextView"
-                android:textStyle="normal|bold"
-                android:textColor="@android:color/black"
-                android:layout_centerVertical="true"
-                android:textSize="16sp" />
+                android:layout_alignParentTop="true" />
 
         </RelativeLayout>
 
     </RelativeLayout>
-
-
 </LinearLayout>

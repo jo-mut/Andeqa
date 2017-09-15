@@ -32,14 +32,14 @@
         android:layout_width="match_parent"
         android:id="@+id/emptyLikesRelativeLayout"
         android:background="#e4e4e4"
-        android:layout_height="match_parent">
+        android:layout_height="100dp">
 
 
         <TextView
             android:text="Be the first to like this Cingle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="t"
+            android:layout_alignParentTop="false"
             android:layout_centerHorizontal="true"
             android:id="@+id/emptLikesTextView"
             android:textSize="28sp"

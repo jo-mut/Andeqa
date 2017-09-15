@@ -8,24 +8,6 @@
     android:orientation="vertical"
     tools:context="com.cinggl.cinggl.home.LikesActivity">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:id="@+id/emptyLikesRelativeLayout"
-        android:background="#e4e4e4"
-        android:layout_height="match_parent">
-
-
-        <TextView
-            android:text="Be the first to like this Cingle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="false"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="18dp"
-            android:id="@+id/emptLikesTextView"
-            android:textSize="21sp"
-            android:layout_centerVertical="true" />
-    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -44,6 +26,24 @@
 
         </android.support.v7.widget.Toolbar>
 
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:id="@+id/emptyLikesRelativeLayout"
+        android:background="#e4e4e4"
+        android:layout_height="75dp">
+
+        <TextView
+            android:text="Be the first to like this Cingle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="false"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="18dp"
+            android:id="@+id/emptLikesTextView"
+            android:textSize="21sp"
+            android:layout_centerVertical="true" />
     </RelativeLayout>
 
 

@@ -14,7 +14,9 @@ import android.widget.RelativeLayout;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.LikesViewHolder;
+import com.cinggl.cinggl.adapters.TransactionHistoryViewHolder;
 import com.cinggl.cinggl.models.Like;
+import com.cinggl.cinggl.models.TransactionDetails;
 import com.cinggl.cinggl.relations.FollowerProfileActivity;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -70,16 +72,19 @@ public class LikesActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
 
-        mPostKey = getIntent().getStringExtra(EXTRA_POST_KEY);
-        if(mPostKey == null){
-            throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
+        if (firebaseAuth.getCurrentUser() != null){
+            mPostKey = getIntent().getStringExtra(EXTRA_POST_KEY);
+            if(mPostKey == null){
+                throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
+            }
+            likesRef = FirebaseDatabase.getInstance()
+                    .getReference(Constants.LIKES).child(mPostKey);
+            usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
+            relationsRef = FirebaseDatabase.getInstance().getReference(Constants.RELATIONS);
+
+            likesRef.keepSynced(true);
+            setUpFirebaseLikes();
         }
-        likesRef = FirebaseDatabase.getInstance()
-                .getReference(Constants.LIKES).child(mPostKey);
-        usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
-        relationsRef = FirebaseDatabase.getInstance().getReference(Constants.RELATIONS);
-        likesRef.keepSynced(true);
-        setUpFirebaseLikes();
 
     }
 
@@ -116,15 +121,21 @@ public class LikesActivity extends AppCompatActivity {
                 likesRef.child(postKey).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.child("uid").exists()){
+                        if (dataSnapshot.exists()){
                             final String uid = (String) dataSnapshot.child("uid").getValue();
+
                             usernameRef.child(uid).addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    String username = (String) dataSnapshot.child("username").getValue();
+                                    final String username = (String) dataSnapshot.child("username").getValue();
                                     final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+                                    final String firstName = (String) dataSnapshot.child("firstName").getValue();
+                                    final String secondName = (String) dataSnapshot.child("secondName").getValue();
+
 
                                     viewHolder.usernameTextView.setText(username);
+                                    viewHolder.firstNameTextView.setText(firstName);
+                                    viewHolder.secondNameTextView.setText(secondName);
 
                                     Picasso.with(LikesActivity.this)
                                             .load(profileImage)
@@ -255,14 +266,11 @@ public class LikesActivity extends AppCompatActivity {
             }
         };
 
-
         mRecentLikesRecyclerView.setAdapter(firebaseRecyclerAdapter);
         mRecentLikesRecyclerView.setHasFixedSize(false);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setAutoMeasureEnabled(true);
         mRecentLikesRecyclerView.setLayoutManager(layoutManager);
-
-
     }
 
     private void onFollow(final boolean increament){

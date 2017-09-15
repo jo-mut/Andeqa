@@ -1,12 +1,7 @@
 package com.cinggl.cinggl.models;
 
 
-import com.google.firebase.database.Exclude;
-
 import org.parceler.Parcel;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by J.EL on 4/8/2017.
@@ -15,7 +10,7 @@ import java.util.Map;
 public class Cingle {
 
     String title;
-    String accountUserName;
+    String creator;
     String cingleImageUrl;
     String profileImageUrl;
     String description;
@@ -34,14 +29,14 @@ public class Cingle {
 
     }
 
-    public Cingle(String title, String accountUserName, String cingleImageUrl,
+    public Cingle(String title, String creator, String cingleImageUrl,
                   String profileImageUrl, String description,
                   String moreDescription, String pushId,
                   String cingleIndex, String uid,
                   String datePosted, long timeStamp, long number,
                   double randomNumber, double sensepoint) {
         this.title = title;
-        this.accountUserName = accountUserName;
+        this.creator = creator;
         this.cingleImageUrl = cingleImageUrl;
         this.profileImageUrl = profileImageUrl;
         this.description = description;
@@ -64,12 +59,12 @@ public class Cingle {
         this.title = title;
     }
 
-    public String getAccountUserName() {
-        return accountUserName;
+    public String getCreator() {
+        return creator;
     }
 
-    public void setAccountUserName(String accountUserName) {
-        this.accountUserName = accountUserName;
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
     public String getCingleImageUrl() {

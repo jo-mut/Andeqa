@@ -50,6 +50,8 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
     public RelativeLayout cingleMomentRelativeLayout;
     public RecyclerView likesRecyclerView;
     public RelativeLayout cingleTradingRelativeLayout;
+    public TextView cingleOwnerTextView;
+    public CircleImageView ownerImageView;
 
     public BestCinglesViewHolder(View itemView) {
         super(itemView);
@@ -62,7 +64,7 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
         cingleTitleTextView = (TextView) itemView.findViewById(R.id.cingleTitleTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
-        usernameTextView = (TextView) itemView.findViewById(R.id.notificationTextView);
+        usernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
         cingleSettingsImageView = (ImageView) mView.findViewById(R.id.cingleSettingsImageView);
         cingleToolsRelativeLayout = (RelativeLayout) mView.findViewById(R.id.cingleToolsRelativeLayout);
         titleRelativeLayout = (RelativeLayout) mView.findViewById(R.id.titleRelativeLayout);
@@ -74,6 +76,8 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
         cingleMomentRelativeLayout = (RelativeLayout) mView.findViewById(R.id.cingleMomentRelativeLayout);
         likesRecyclerView = (RecyclerView) mView.findViewById(R.id.likesRecyclerView);
         cingleTradingRelativeLayout = (RelativeLayout) mView.findViewById(R.id.cingleTradingRelativeLayout);
+        cingleOwnerTextView = (TextView) mView.findViewById(R.id.cingleOwnerTextView);
+        ownerImageView = (CircleImageView) mView.findViewById(R.id.ownerImageView);
 
     }
 
@@ -130,7 +134,6 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
 
         if (cingle.getTitle().equals("")){
             titleRelativeLayout.setVisibility(View.GONE);
-
         }else {
             cingleTitleTextView.setText(cingle.getTitle());
         }
