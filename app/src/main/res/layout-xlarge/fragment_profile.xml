@@ -68,7 +68,7 @@
                         android:layout_toLeftOf="@+id/nameDivider"
                         android:layout_centerInParent="false"
                         android:layout_centerVertical="true"
-                        android:layout_marginRight="4dp" />
+                        android:layout_marginRight="2dp" />
 
                     <View
                         android:id="@+id/nameDivider"
@@ -90,7 +90,7 @@
                         android:layout_alignParentTop="false"
                         android:layout_toRightOf="@+id/nameDivider"
                         android:layout_toEndOf="@+id/nameDivider"
-                        android:layout_marginLeft="4dp"
+                        android:layout_marginLeft="2dp"
                         android:layout_centerHorizontal="false"
                         android:layout_centerVertical="true"
                         android:layout_centerInParent="true" />

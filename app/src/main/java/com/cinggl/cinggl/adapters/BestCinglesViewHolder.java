@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.ProportionalImageView;
+import com.cinggl.cinggl.utils.ExpandableTextView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -18,6 +19,9 @@ import com.squareup.picasso.Picasso;
 import java.text.DecimalFormat;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.cinggl.cinggl.R.id.cingleDescriptionTextView;
+import static com.cinggl.cinggl.R.id.cingleSalePriceTitleTextView;
 
 /**
  * Created by J.EL on 7/6/2017.
@@ -32,8 +36,7 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
     public ImageView commentsImageView;
     public TextView likesCountTextView;
     public TextView cingleTitleTextView;
-    public TextView cingleDescriptionTextView;
-    public TextView accountUsernameTextView;
+    public ExpandableTextView cingleDescriptionTextView;
     public CircleImageView profileImageView;
     public TextView usernameTextView;
     public TextView commentsCountTextView;
@@ -52,6 +55,8 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
     public RelativeLayout cingleTradingRelativeLayout;
     public TextView cingleOwnerTextView;
     public CircleImageView ownerImageView;
+    public TextView cingleSalePriceTextView;
+    public RelativeLayout cingleSalePriceTitleRelativeLayout;
 
     public BestCinglesViewHolder(View itemView) {
         super(itemView);
@@ -60,7 +65,7 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
         likesImageView = (ImageView) itemView.findViewById(R.id.likesImageView);
         likesCountTextView =(TextView)itemView.findViewById(R.id.likesCountTextView);
         commentsImageView = (ImageView) itemView.findViewById(R.id.commentsImageView);
-        cingleDescriptionTextView = (TextView) itemView.findViewById(R.id.cingleDescriptionTextView);
+        cingleDescriptionTextView = (ExpandableTextView) itemView.findViewById(R.id.cingleDescriptionTextView);
         cingleTitleTextView = (TextView) itemView.findViewById(R.id.cingleTitleTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
@@ -78,15 +83,16 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
         cingleTradingRelativeLayout = (RelativeLayout) mView.findViewById(R.id.cingleTradingRelativeLayout);
         cingleOwnerTextView = (TextView) mView.findViewById(R.id.cingleOwnerTextView);
         ownerImageView = (CircleImageView) mView.findViewById(R.id.ownerImageView);
+        cingleSalePriceTextView = (TextView) mView.findViewById(R.id.cingleSalePriceTextView);
+        cingleSalePriceTitleRelativeLayout = (RelativeLayout) mView.findViewById(R.id.cingleSalePriceTitleRelativeLayout);
 
     }
 
     public void bindBestCingle(final Cingle cingle){
         final ProportionalImageView cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
-        final CircleImageView profileImageView = (CircleImageView) mView.findViewById(R.id.profileImageView);
         TextView cingleTitleTextView = (TextView) mView.findViewById(R.id.cingleTitleTextView);
-        TextView cingleDescriptionTextView = (TextView) mView.findViewById(R.id.cingleDescriptionTextView);
-        TextView cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsCountTextView);
+        ExpandableTextView cingleDescriptionTextView = (ExpandableTextView) mView.findViewById(R.id.cingleDescriptionTextView);
+        TextView cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsTextView);
         TextView datePostedTextView = (TextView) mView.findViewById(R.id.datePostedTextView);
 
         Picasso.with(mContext)
@@ -108,29 +114,6 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
                     }
                 });
 
-        Picasso.with(mContext)
-                .load(cingle.getProfileImageUrl())
-                .fit()
-                .centerCrop()
-                .networkPolicy(NetworkPolicy.OFFLINE)
-                .into(profileImageView, new Callback() {
-                    @Override
-                    public void onSuccess() {
-
-                    }
-
-                    @Override
-                    public void onError() {
-                        Picasso.with(mContext)
-                                .load(cingle.getProfileImageUrl())
-                                .fit()
-                                .centerCrop()
-                                .placeholder(R.drawable.profle_image_background)
-                                .into(profileImageView);
-
-                    }
-                });
-
 
         if (cingle.getTitle().equals("")){
             titleRelativeLayout.setVisibility(View.GONE);
@@ -148,8 +131,13 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
 
         //REMOVE SCIENTIFIC NOATATION
         DecimalFormat formatter =  new DecimalFormat("0.00000000");
-        cingleSenseCreditsTextView.setText("SP" + " " + formatter.format(cingle.getSensepoint()));
+        if (cingle.getSensepoint() == 0.00){
+            cingleSenseCreditsTextView.setText("CSC" + " " + "0.00");
+        }else {
+            cingleSenseCreditsTextView.setText("CSC" + " " + formatter.format(cingle.getSensepoint()));
+        }
         cingleTradeMethodTextView.setText("@CingleBacking");
+
 
     }
 }

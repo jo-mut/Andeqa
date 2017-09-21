@@ -17,7 +17,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
@@ -25,7 +24,6 @@ import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Balance;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.models.TransactionDetails;
-import com.cinggl.cinggl.profile.UpdateProfileActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,21 +31,14 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
-import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-
-import static android.R.attr.filter;
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
-import static com.cinggl.cinggl.R.id.cingleSenseCreditsTextView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -131,6 +122,8 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
         String title = getArguments().getString("title", "redeem credits");
         getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
     }
 
     @Override
@@ -180,30 +173,36 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
                                  final String currentDate = simpleDateFormat.format(new Date());
 
                                  //INCREAMENT THE AMOUNT TRANSFERED AFTER NEW TRANSFERS
-                                 cingleWalletReference.child(mPostKey).child("amount redeemed")
+                                 cingleWalletReference.child(mPostKey)
                                          .addListenerForSingleValueEvent(new ValueEventListener() {
                                              @Override
                                              public void onDataChange(DataSnapshot dataSnapshot) {
                                                      //IF TRANSACTIONS HAVE BEEN DONE BEFORE
                                                      if (dataSnapshot.exists()){
-                                                         final Double currentAmount = (Double)dataSnapshot.getValue();
+                                                         final Balance cingleBalance = dataSnapshot.getValue(Balance.class);
+                                                         final double currentAmount = cingleBalance.getTotalBalance();
                                                          Log.d("before redeemption", currentAmount + "");
                                                          final double newAmount = currentAmount + amountTransferred;
                                                          Log.d("after redeemed", newAmount + "");
-                                                         cingleWalletReference.child(mPostKey).child("amount redeemed")
-                                                                 .setValue(newAmount).addOnCompleteListener(new OnCompleteListener<Void>() {
+
+                                                         final Balance balance = new Balance();
+                                                         balance.setTotalBalance(newAmount);
+
+                                                         cingleWalletReference.child(mPostKey)
+                                                                 .setValue(balance).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                              @Override
                                                              public void onComplete(@NonNull Task<Void> task) {
                                                                  if (task.isSuccessful()){
                                                                      //RECORD THE REDEEMED AMOUNT TRANSFERRED TO THE USE WALLET
                                                                      final Balance balance = new Balance();
-                                                                     balance.setTotalBalance(amountTransferred);
+                                                                     balance.setAmountRedeemed(amountTransferred);
                                                                      walletReference.child("balance").child(firebaseAuth.getCurrentUser().getUid())
-                                                                             .child("total balance").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                                                          @Override
                                                                          public void onDataChange(DataSnapshot dataSnapshot) {
                                                                              if (dataSnapshot.exists()){
-                                                                                 final Double currentBalance = (Double) dataSnapshot.getValue();
+                                                                                 Balance walletBalance = dataSnapshot.getValue(Balance.class);
+                                                                                 final double currentBalance = walletBalance.getTotalBalance();
                                                                                  final double newBalance = currentBalance + amountTransferred;
                                                                                  Log.d("new balance", newBalance + "");
 
@@ -212,7 +211,7 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
                                                                                  transactionDetails.setAmount(amountTransferred);
                                                                                  transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                                  transactionDetails.setPostId(mPostKey);
-                                                                                 transactionDetails.setDatePosted(currentDate);
+                                                                                 transactionDetails.setDate(currentDate);
                                                                                  transactionDetails.setWalletBalance(newBalance);
                                                                                  //get the push id
                                                                                  DatabaseReference ref = transactionReference.push();
@@ -222,8 +221,11 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
                                                                                  transactionDetails.setPushId(pushId);
                                                                                  ref.setValue(transactionDetails);
 
+                                                                                 Balance newWalletBalance = new Balance();
+                                                                                 newWalletBalance.setTotalBalance(newBalance);
+
                                                                                  walletReference.child("balance").child(firebaseAuth.getCurrentUser()
-                                                                                         .getUid()).child("total balance").setValue(newBalance)
+                                                                                         .getUid()).setValue(newWalletBalance)
                                                                                          .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                                              @Override
                                                                                              public void onComplete(@NonNull Task<Void> task) {
@@ -244,7 +246,7 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
                                                                                  transactionDetails.setAmount(amountTransferred);
                                                                                  transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                                  transactionDetails.setPostId(mPostKey);
-                                                                                 transactionDetails.setDatePosted(currentDate);
+                                                                                 transactionDetails.setDate(currentDate);
                                                                                  transactionDetails.setWalletBalance(amountTransferred);
                                                                                  //get the push id
                                                                                  DatabaseReference ref = transactionReference.push();
@@ -254,18 +256,9 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
                                                                                  transactionDetails.setPushId(pushId);
                                                                                  ref.setValue(transactionDetails);
 
-                                                                                 walletReference.child("balance").child(firebaseAuth.getCurrentUser()
-                                                                                         .getUid()).child("total balance").setValue(amountTransferred)
-                                                                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                                             @Override
-                                                                                             public void onComplete(@NonNull Task<Void> task) {
-                                                                                                 if (task.isComplete()){
-                                                                                                     Toast.makeText(getContext(), "Transaction successful. " +
-                                                                                                             "Please try again later",
-                                                                                                             Toast.LENGTH_LONG).show();
-                                                                                                 }
-                                                                                             }
-                                                                                         });
+                                                                                 Balance newWalletBalance = new Balance();
+                                                                                 newWalletBalance.setTotalBalance(amountTransferred);
+
 
                                                                              }
                                                                          }
@@ -279,31 +272,35 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
                                                              }
                                                          });
                                                      }else {
+                                                         final Balance balance = new Balance();
+                                                         balance.setAmountRedeemed(amountTransferred);
                                                          //IF THE TRANSACTIONS IS FOR THE FIRST TIME
-                                                         cingleWalletReference.child(mPostKey).child("amout redeemed")
-                                                                 .setValue(amountTransferred)
+                                                         cingleWalletReference.child(mPostKey)
+                                                                 .setValue(balance)
                                                                  .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                              @Override
                                                              public void onComplete(@NonNull Task<Void> task) {
                                                                  if (task.isSuccessful()){
-                                                                     //RECORD THE REDEEMED AMOUNT TRANSFERRED TO THE USE WALLET
-                                                                     final Balance balance = new Balance();
-                                                                     balance.setTotalBalance(amountTransferred);
+                                                                     //RECORD THE REDEEMED AMOUNT TRANSFERRED TO THE USER WALLET
                                                                      walletReference.child("balance").child(firebaseAuth.getCurrentUser().getUid())
-                                                                             .child("total balance").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                                                          @Override
                                                                          public void onDataChange(DataSnapshot dataSnapshot) {
                                                                              if (dataSnapshot.exists()){
-                                                                                 final Double currentBalance = (Double) dataSnapshot.getValue();
+                                                                                 Balance walletBalance = dataSnapshot.getValue(Balance.class);
+                                                                                 final double currentBalance = walletBalance.getTotalBalance();
                                                                                  final double newBalance = currentBalance + amountTransferred;
                                                                                  Log.d("new balance", newBalance + "");
+
+                                                                                 final Balance newWalletBalance = new Balance();
+                                                                                 newWalletBalance.setTotalBalance(newBalance);
 
                                                                                  //set transaction details
                                                                                  final TransactionDetails transactionDetails = new TransactionDetails();
                                                                                  transactionDetails.setAmount(amountTransferred);
                                                                                  transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                                  transactionDetails.setPostId(mPostKey);
-                                                                                 transactionDetails.setDatePosted(currentDate);
+                                                                                 transactionDetails.setDate(currentDate);
                                                                                  transactionDetails.setWalletBalance(newBalance);
                                                                                  //get the push id
                                                                                  DatabaseReference ref = transactionReference.push();
@@ -314,7 +311,7 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
                                                                                  ref.setValue(transactionDetails);
 
                                                                                  walletReference.child("balance").child(firebaseAuth.getCurrentUser()
-                                                                                         .getUid()).child("total balance").setValue(newBalance)
+                                                                                         .getUid()).setValue(newWalletBalance)
                                                                                          .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                                              @Override
                                                                                              public void onComplete(@NonNull Task<Void> task) {
@@ -333,7 +330,7 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
                                                                                  transactionDetails.setAmount(amountTransferred);
                                                                                  transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                                  transactionDetails.setPostId(mPostKey);
-                                                                                 transactionDetails.setDatePosted(currentDate);
+                                                                                 transactionDetails.setDate(currentDate);
                                                                                  transactionDetails.setWalletBalance(amountTransferred);
                                                                                  //get the push id
                                                                                  DatabaseReference ref = transactionReference.push();
@@ -343,8 +340,11 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
                                                                                  transactionDetails.setPushId(pushId);
                                                                                  ref.setValue(transactionDetails);
 
+                                                                                 final Balance newWalletBalance = new Balance();
+                                                                                 newWalletBalance.setTotalBalance(amountEntered);
+
                                                                                  walletReference.child("balance").child(firebaseAuth.getCurrentUser()
-                                                                                         .getUid()).child("total balance").setValue(amountTransferred)
+                                                                                         .getUid()).setValue(newWalletBalance)
                                                                                          .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                                              @Override
                                                                                              public void onComplete(@NonNull Task<Void> task) {

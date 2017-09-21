@@ -1,6 +1,7 @@
 package com.cinggl.cinggl.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,9 +11,14 @@ import android.view.ViewGroup;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.home.BestCinglesFragment;
+import com.cinggl.cinggl.home.CingleDetailActivity;
+import com.cinggl.cinggl.ifair.TradeDetailActivity;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.models.CingleSale;
 import com.cinggl.cinggl.models.Cingulan;
+import com.cinggl.cinggl.models.TransactionDetails;
+import com.cinggl.cinggl.profile.PersonalProfileActivity;
+import com.cinggl.cinggl.relations.FollowerProfileActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -25,6 +31,7 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,6 +112,71 @@ public class IfairCingleAdapter extends RecyclerView.Adapter<IfairCinglesViewHol
         cinglesReference.keepSynced(true);
         cingleOwnerReference.keepSynced(true);
 
+        cinglesReference.child(postKey).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    final String uid = (String)dataSnapshot.child("uid").getValue();
+
+                    holder.cingleTradeMethodTextView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent =  new Intent(mContext, TradeDetailActivity.class);
+                            intent.putExtra(IfairCingleAdapter.EXTRA_POST_KEY, postKey);
+                            mContext.startActivity(intent);
+                        }
+                    });
+
+                    holder.cingleImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(mContext, TradeDetailActivity.class);
+                            intent.putExtra(IfairCingleAdapter.EXTRA_POST_KEY, postKey);
+                            mContext.startActivity(intent);
+                        }
+                    });
+
+                    holder.ownerImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                Intent intent = new Intent(mContext, PersonalProfileActivity.class);
+                                intent.putExtra(IfairCingleAdapter.EXTRA_USER_UID, uid);
+                                mContext.startActivity(intent);
+
+                            }else {
+                                Intent intent = new Intent(mContext, FollowerProfileActivity.class);
+                                intent.putExtra(IfairCingleAdapter.EXTRA_USER_UID, uid);
+                                mContext.startActivity(intent);
+                            }
+                        }
+                    });
+
+                    holder.profileImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                Intent intent = new Intent(mContext, PersonalProfileActivity.class);
+                                intent.putExtra(IfairCingleAdapter.EXTRA_USER_UID, uid);
+                                mContext.startActivity(intent);
+
+                            }else {
+                                Intent intent = new Intent(mContext, FollowerProfileActivity.class);
+                                intent.putExtra(IfairCingleAdapter.EXTRA_USER_UID, uid);
+                                mContext.startActivity(intent);
+                            }
+                        }
+                    });
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         ifairReference.child("Cingle Selling").child(postKey).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -112,6 +184,10 @@ public class IfairCingleAdapter extends RecyclerView.Adapter<IfairCinglesViewHol
                     CingleSale sale = dataSnapshot.getValue(CingleSale.class);
                     final String uid = sale.getUid();
                     final String pushId = sale.getPushId();
+                    final double salePrice = sale.getSalePrice();
+
+                    DecimalFormat formatter =  new DecimalFormat("0.00000000");
+                    holder.cingleSalePriceTextView.setText("CSC" + "" + "" + formatter.format(sale.getSalePrice()));
 
                     //retrieve cingle info
                     cinglesReference.child(pushId).addValueEventListener(new ValueEventListener() {
@@ -138,7 +214,8 @@ public class IfairCingleAdapter extends RecyclerView.Adapter<IfairCinglesViewHol
 
                                             }
                                         });
-                                holder.cingleSenseCreditsTextView.setText(Double.toString(cingle.getSensepoint()));
+                                DecimalFormat formatter =  new DecimalFormat("0.00000000");
+                                holder.cingleSenseCreditsTextView.setText("CSC" + "" + "" + formatter.format(cingle.getSensepoint()));
                                 holder.datePostedTextView.setText(cingle.getDatePosted());
 
                             }
@@ -155,7 +232,7 @@ public class IfairCingleAdapter extends RecyclerView.Adapter<IfairCinglesViewHol
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()){
-                                final Cingulan cingulan = new Cingulan();
+                                final Cingulan cingulan = dataSnapshot.getValue(Cingulan.class);
 
                                 Picasso.with(mContext)
                                         .load(cingulan.getProfileImage())
@@ -231,11 +308,12 @@ public class IfairCingleAdapter extends RecyclerView.Adapter<IfairCinglesViewHol
 
 
         //SET THE OWNER OF THE CINGLE
-        cingleOwnerReference.child(postKey).addValueEventListener(new ValueEventListener() {
+        cingleOwnerReference.child(postKey).child("owner").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
-                    final String ownerUid = dataSnapshot.child("owner").getValue(String.class);
+                    TransactionDetails transactionDetails = dataSnapshot.getValue(TransactionDetails.class);
+                    final String ownerUid = transactionDetails.getUid();
                     usersRef.child(ownerUid).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -277,46 +355,48 @@ public class IfairCingleAdapter extends RecyclerView.Adapter<IfairCinglesViewHol
                     cinglesReference.child(postKey).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            final String creatorUid = dataSnapshot.child("uid").getValue(String.class);
-                            usersRef.child(creatorUid).addValueEventListener
-                                    (new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                            Cingulan cingulan = dataSnapshot.getValue(Cingulan.class);
-                                            final String username = cingulan.getUsername();
-                                            final String profileImage = cingulan.getProfileImage();
-                                            holder.cingleOwnerTextView.setText(username);
-                                            Picasso.with(mContext)
-                                                    .load(profileImage)
-                                                    .fit()
-                                                    .centerCrop()
-                                                    .placeholder(R.drawable.profle_image_background)
-                                                    .networkPolicy(NetworkPolicy.OFFLINE)
-                                                    .into(holder.ownerImageView, new Callback() {
-                                                        @Override
-                                                        public void onSuccess() {
+                            if (dataSnapshot.exists()){
+                                final String creatorUid = dataSnapshot.child("uid").getValue(String.class);
+                                usersRef.child(creatorUid).addValueEventListener
+                                        (new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                Cingulan cingulan = dataSnapshot.getValue(Cingulan.class);
+                                                final String username = cingulan.getUsername();
+                                                final String profileImage = cingulan.getProfileImage();
+                                                holder.cingleOwnerTextView.setText(username);
+                                                Picasso.with(mContext)
+                                                        .load(profileImage)
+                                                        .fit()
+                                                        .centerCrop()
+                                                        .placeholder(R.drawable.profle_image_background)
+                                                        .networkPolicy(NetworkPolicy.OFFLINE)
+                                                        .into(holder.ownerImageView, new Callback() {
+                                                            @Override
+                                                            public void onSuccess() {
 
-                                                        }
+                                                            }
 
-                                                        @Override
-                                                        public void onError() {
-                                                            Picasso.with(mContext)
-                                                                    .load(profileImage)
-                                                                    .fit()
-                                                                    .centerCrop()
-                                                                    .placeholder(R.drawable.profle_image_background)
-                                                                    .into(holder.ownerImageView);
-                                                        }
-                                                    });
+                                                            @Override
+                                                            public void onError() {
+                                                                Picasso.with(mContext)
+                                                                        .load(profileImage)
+                                                                        .fit()
+                                                                        .centerCrop()
+                                                                        .placeholder(R.drawable.profle_image_background)
+                                                                        .into(holder.ownerImageView);
+                                                            }
+                                                        });
 
-                                        }
+                                            }
 
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
 
-                                        }
-                                    });
+                                            }
+                                        });
 
+                            }
                         }
 
                         @Override

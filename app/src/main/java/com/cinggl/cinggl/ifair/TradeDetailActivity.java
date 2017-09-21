@@ -2,28 +2,41 @@ package com.cinggl.cinggl.ifair;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.InputFilter;
+import android.text.Spanned;
+import android.text.method.DigitsKeyListener;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.CingleOutAdapter;
+import com.cinggl.cinggl.adapters.IfairCingleAdapter;
+import com.cinggl.cinggl.home.CingleDetailActivity;
 import com.cinggl.cinggl.home.CingleSettingsDialog;
 import com.cinggl.cinggl.home.CommentsActivity;
 import com.cinggl.cinggl.home.LikesActivity;
 import com.cinggl.cinggl.models.Cingle;
+import com.cinggl.cinggl.models.CingleSale;
+import com.cinggl.cinggl.models.Cingulan;
+import com.cinggl.cinggl.models.TransactionDetails;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.relations.FollowerProfileActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -39,34 +52,55 @@ import com.squareup.picasso.Picasso;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
+import static com.cinggl.cinggl.R.id.cingleImageView;
+import static com.cinggl.cinggl.R.id.cingleOwnerTextView;
+import static com.cinggl.cinggl.R.id.cingleSalePriceTextView;
+import static com.cinggl.cinggl.R.id.cingleSenseCreditsTextView;
+import static com.cinggl.cinggl.R.id.cingleTradeMethodTextView;
+import static com.cinggl.cinggl.R.id.commentsCountTextView;
+import static com.cinggl.cinggl.R.id.datePostedTextView;
 import static com.cinggl.cinggl.R.id.likesCountTextView;
+import static com.cinggl.cinggl.R.id.ownerImageView;
 import static java.lang.System.load;
 
 public class TradeDetailActivity extends AppCompatActivity implements View.OnClickListener{
     @Bind(R.id.usernameTextView)TextView mUsernameTextView;
-    @Bind(R.id.cingleImageView)ImageView mCingleImageView;
+    @Bind(cingleImageView)ImageView mCingleImageView;
     @Bind(R.id.profileImageView)ImageView mProfileImageView;
     @Bind(R.id.cingleTitleTextView)TextView mCingleTitleTextView;
     @Bind(R.id.cingleTitleRelativeLayout)RelativeLayout mCingleTitleRelativeLayout;
     @Bind(R.id.cingleDescriptionRelativeLayout)RelativeLayout mCingleDescriptionRelatvieLayout;
     @Bind(R.id.cingleDescriptionTextView)TextView mCingleDescriptionTextView;
-    @Bind(R.id.cingleTradeMethodTextView)TextView mCingleTradeMethodTextView;
-    @Bind(R.id.cingleOwnerTextView)TextView mCingleOwnerTextView;
+    @Bind(cingleTradeMethodTextView)TextView mCingleTradeMethodTextView;
+    @Bind(cingleOwnerTextView)TextView mCingleOwnerTextView;
     @Bind(R.id.likesImageView)ImageView mLikesImageView;
     @Bind(likesCountTextView)TextView mLikesCountTextView;
     @Bind(R.id.commentsImageView)ImageView mCommentImageView;
-    @Bind(R.id.commentsCountTextView)TextView mCommentCountTextView;
+    @Bind(commentsCountTextView)TextView mCommentCountTextView;
     @Bind(R.id.likesRecyclerView)RecyclerView mLikesRecyclerView;
     @Bind(R.id.cingleOwnersRecyclerView)RecyclerView mCingleOnwersRecyclerView;
-    @Bind(R.id.cingleSenseCreditsTextView)TextView mCingleSenseCreditsTextView;
+    @Bind(cingleSenseCreditsTextView)TextView mCingleSenseCreditsTextView;
     @Bind(R.id.tradeCingleButton)Button mTradeCingleButton;
+    @Bind(cingleSalePriceTextView)TextView mCingleSalePriceTextView;
+    @Bind(R.id.datePostedTextView)TextView mDatePostedTextView;
+    @Bind(R.id.ownerImageView)CircleImageView mOwnerImageView;
+    @Bind(R.id.editSalePriceImageView)ImageView mEditSalePriceImageView;
+    @Bind(R.id.editSalePriceEditText)EditText mEditSalePriceEditText;
+    @Bind(R.id.doneEditingImageView)ImageView mDoneEditingImageView;
+    @Bind(R.id.salePriceProgressbar)ProgressBar mSalePriceProgressBar;
+    @Bind(R.id.cingleSalePriceTitleRelativeLayout)RelativeLayout mCingleSalePriceTitleRelativeLayout;
 
     private DatabaseReference databaseReference;
     private DatabaseReference commentReference;
+    private DatabaseReference cingleOwnerReference;
     private DatabaseReference usersRef;
     private  DatabaseReference likesRef;
     private DatabaseReference ifairReference;
@@ -118,6 +152,10 @@ public class TradeDetailActivity extends AppCompatActivity implements View.OnCli
             mCommentImageView.setOnClickListener(this);
             mLikesCountTextView.setOnClickListener(this);
             mTradeCingleButton.setOnClickListener(this);
+            mCingleImageView.setOnClickListener(this);
+            mEditSalePriceImageView.setOnClickListener(this);
+            mDoneEditingImageView.setOnClickListener(this);
+
 
             //DATABASE REFERENCE PATH;
             commentReference = FirebaseDatabase.getInstance().getReference(Constants.COMMENTS);
@@ -128,6 +166,7 @@ public class TradeDetailActivity extends AppCompatActivity implements View.OnCli
             ifairReference = FirebaseDatabase.getInstance().getReference(Constants.IFAIR);
             cingleWalletReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_WALLET);
             likesQueryCount = likesRef;
+            cingleOwnerReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_ONWERS);
 
             usersRef.keepSynced(true);
             databaseReference.keepSynced(true);
@@ -140,15 +179,71 @@ public class TradeDetailActivity extends AppCompatActivity implements View.OnCli
             //RETRIEVE DATA FROM FIREBASE
             setCingleData();
             setTextOnButton();
+            setSalePrice();
+            setEditTextFilter();
+            showEditSalePriceImageView();
+
         }
     }
 
-    public void setCingleData(){
-        likesRef.addValueEventListener(new ValueEventListener() {
+    private void showEditSalePriceImageView(){
+        ifairReference.child("Cingle Selling").child(mPostKey)
+                .addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                mLikesCountTextView.setText(dataSnapshot.getChildrenCount() +" " + "Likes");
+                if (dataSnapshot.exists()){
+                    CingleSale cingleSale = dataSnapshot.getValue(CingleSale.class);
+                    final String uid = cingleSale.getUid();
+                    if (firebaseAuth.getCurrentUser().getUid().equals(uid)){
+                        mEditSalePriceImageView.setVisibility(View.VISIBLE);
+                    }else {
+                        mEditSalePriceImageView.setVisibility(View.GONE);
+                    }
+                }else {
+                    mEditSalePriceImageView.setVisibility(View.GONE);
+                    mCingleSalePriceTitleRelativeLayout.setVisibility(View.GONE);
 
+                    mCingleTradeMethodTextView.setText("Listed not for sale");
+
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void setCingleData(){
+        commentReference.child(mPostKey).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                        Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "commentsCount");
+                    }
+
+                    mCommentCountTextView.setText(dataSnapshot.getChildrenCount() + "");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+        likesRef.child(mPostKey).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+               if (dataSnapshot.exists()){
+                   mLikesCountTextView.setText(dataSnapshot.getChildrenCount() +" " + "Likes");
+               }
             }
 
             @Override
@@ -235,7 +330,8 @@ public class TradeDetailActivity extends AppCompatActivity implements View.OnCli
                         mCingleDescriptionTextView.setText(description);
                     }
 
-                    mCingleSenseCreditsTextView.setText(Double.toString(sensecredits));
+                    mCingleSenseCreditsTextView.setText("CSC" + " " + " " + sensecredits);
+                    mDatePostedTextView.setText(cingle.getDatePosted());
 
                     //set the cingle image
                     Picasso.with(TradeDetailActivity.this)
@@ -277,6 +373,46 @@ public class TradeDetailActivity extends AppCompatActivity implements View.OnCli
                     mTradeCingleButton.setVisibility(View.GONE);
                 }
 
+                cingleOwnerReference.child(mPostKey).child("owner")
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                       if (dataSnapshot.exists()){
+                           TransactionDetails transactionDetails = dataSnapshot.getValue(TransactionDetails.class);
+                           final String uid = transactionDetails.getUid();
+
+                           if (firebaseAuth.getCurrentUser().getUid().equals(uid)){
+                               mTradeCingleButton.setVisibility(View.INVISIBLE);
+                           }else {
+                               mTradeCingleButton.setVisibility(View.VISIBLE);
+                           }
+                       }else {
+                           cinglesReference.child(mPostKey).addListenerForSingleValueEvent(new ValueEventListener() {
+                               @Override
+                               public void onDataChange(DataSnapshot dataSnapshot) {
+                                   Cingle cingle = dataSnapshot.getValue(Cingle.class);
+                                   final String uid = cingle.getUid();
+                                   if (firebaseAuth.getCurrentUser().getUid().equals(uid)){
+                                       mTradeCingleButton.setVisibility(View.INVISIBLE);
+                                   }else {
+                                       mTradeCingleButton.setVisibility(View.VISIBLE);
+                                   }
+                               }
+
+                               @Override
+                               public void onCancelled(DatabaseError databaseError) {
+
+                               }
+                           });
+                       }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
             }
 
             @Override
@@ -285,6 +421,276 @@ public class TradeDetailActivity extends AppCompatActivity implements View.OnCli
             }
         });
     }
+
+    private void setSalePrice(){
+
+        databaseReference.child(mPostKey).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    final String datePosted = dataSnapshot.child("datePosted").getValue(String.class);
+                    mDatePostedTextView.setText(datePosted);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        ifairReference.child("Cingle Selling").child(mPostKey).addValueEventListener
+                (new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+               if (dataSnapshot.exists()){
+                   Double salePrice = (Double)dataSnapshot.child("salePrice").getValue();
+                   DecimalFormat formatter =  new DecimalFormat("0.00000000");
+
+                   mCingleSalePriceTextView.setText("CSC" + " " + formatter.format(salePrice));
+               }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        //SET THE TRADE METHOD TEXT ACCORDING TO THE TRADE METHOD OF THE CINGLE
+        ifairReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final String uid = dataSnapshot.child("Cingle Selling")
+                        .child(mPostKey).child("uid").getValue(String.class);
+
+                //SET CINGLE TRADE METHOD WHEN THERE ARE ALL TRADE METHODS
+                if (dataSnapshot.child("Cingle Lacing").hasChild(mPostKey)){
+                    mCingleTradeMethodTextView.setText("@CingleLacing");
+                }else if (dataSnapshot.child("Cingle Leasing").hasChild(mPostKey)){
+                    mCingleTradeMethodTextView.setText("@CingleLeasing");
+
+                }else if (dataSnapshot.child("Cingle Selling").hasChild(mPostKey)){
+                    mCingleTradeMethodTextView.setText("@CingleSelling");
+                }else if ( dataSnapshot.child("Cingle Backing").hasChild(mPostKey)){
+                    mCingleTradeMethodTextView.setText("@CingleBacking");
+                }else {
+                    mCingleTradeMethodTextView.setText("@NotForTrade");
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        cinglesReference.child(mPostKey).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    final Cingle cingle = dataSnapshot.getValue(Cingle.class);
+
+                    Picasso.with(mContext)
+                            .load(cingle.getCingleImageUrl())
+                            .networkPolicy(NetworkPolicy.OFFLINE)
+                            .into(mCingleImageView, new Callback() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onError() {
+                                    Picasso.with(mContext)
+                                            .load(cingle.getCingleImageUrl())
+                                            .into(mCingleImageView);
+
+
+                                }
+                            });
+                    DecimalFormat formatter =  new DecimalFormat("0.00000000");
+                    mCingleSenseCreditsTextView.setText("CSC" + "" + "" + formatter.format(cingle.getSensepoint()));
+                    mDatePostedTextView.setText(cingle.getDatePosted());
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        ifairReference.child("Cingle Selling").child(mPostKey)
+                .addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    CingleSale sale = dataSnapshot.getValue(CingleSale.class);
+                    final String uid = sale.getUid();
+                    final String pushId = sale.getPushId();
+                    final double salePrice = sale.getSalePrice();
+
+                    DecimalFormat formatter =  new DecimalFormat("0.00000000");
+                    mCingleSalePriceTextView.setText("CSC" + " " + "" + formatter.format(sale.getSalePrice()));
+
+                    //retrieve user info
+                    usersRef.child(uid).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()){
+                                final Cingulan cingulan = dataSnapshot.getValue(Cingulan.class);
+
+                                Picasso.with(mContext)
+                                        .load(cingulan.getProfileImage())
+                                        .networkPolicy(NetworkPolicy.OFFLINE)
+                                        .into(mProfileImageView, new Callback() {
+                                            @Override
+                                            public void onSuccess() {
+
+                                            }
+
+                                            @Override
+                                            public void onError() {
+                                                Picasso.with(mContext)
+                                                        .load(cingulan.getProfileImage())
+                                                        .into(mProfileImageView);
+
+
+                                            }
+                                        });
+                                mUsernameTextView.setText(cingulan.getUsername());
+
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+        //SET THE OWNER OF THE CINGLE
+        cingleOwnerReference.child(mPostKey).child("owner").addValueEventListener
+                (new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    TransactionDetails transactionDetails = dataSnapshot.getValue(TransactionDetails.class);
+                    final String ownerUid = transactionDetails.getUid();
+                    usersRef.child(ownerUid).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Cingulan cingulan = dataSnapshot.getValue(Cingulan.class);
+                            final String username = cingulan.getUsername();
+                            final String profileImage = cingulan.getProfileImage();
+                            mCingleOwnerTextView.setText(username);
+                            Picasso.with(mContext)
+                                    .load(profileImage)
+                                    .fit()
+                                    .centerCrop()
+                                    .placeholder(R.drawable.profle_image_background)
+                                    .networkPolicy(NetworkPolicy.OFFLINE)
+                                    .into(mOwnerImageView, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+
+                                        }
+
+                                        @Override
+                                        public void onError() {
+                                            Picasso.with(mContext)
+                                                    .load(profileImage)
+                                                    .fit()
+                                                    .centerCrop()
+                                                    .placeholder(R.drawable.profle_image_background)
+                                                    .into(mOwnerImageView);
+                                        }
+                                    });
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }else {
+                    //RETRIEVE THE CREATOR PERSONAL PROFILE DETAIL FOR THE CINGLE
+                    cinglesReference.child(mPostKey).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                           if (dataSnapshot.exists()){
+                               final String creatorUid = dataSnapshot.child("uid").getValue(String.class);
+                               usersRef.child(creatorUid).addValueEventListener
+                                       (new ValueEventListener() {
+                                           @Override
+                                           public void onDataChange(DataSnapshot dataSnapshot) {
+                                               Cingulan cingulan = dataSnapshot.getValue(Cingulan.class);
+                                               final String username = cingulan.getUsername();
+                                               final String profileImage = cingulan.getProfileImage();
+                                               mCingleOwnerTextView.setText(username);
+                                               Picasso.with(mContext)
+                                                       .load(profileImage)
+                                                       .fit()
+                                                       .centerCrop()
+                                                       .placeholder(R.drawable.profle_image_background)
+                                                       .networkPolicy(NetworkPolicy.OFFLINE)
+                                                       .into(mOwnerImageView, new Callback() {
+                                                           @Override
+                                                           public void onSuccess() {
+
+                                                           }
+
+                                                           @Override
+                                                           public void onError() {
+                                                               Picasso.with(mContext)
+                                                                       .load(profileImage)
+                                                                       .fit()
+                                                                       .centerCrop()
+                                                                       .placeholder(R.drawable.profle_image_background)
+                                                                       .into(mOwnerImageView);
+                                                           }
+                                                       });
+
+                                           }
+
+                                           @Override
+                                           public void onCancelled(DatabaseError databaseError) {
+
+                                           }
+                                       });
+                           }
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
 
     @Override
     public void onClick(View v){
@@ -362,6 +768,12 @@ public class TradeDetailActivity extends AppCompatActivity implements View.OnCli
             startActivity(intent);
         }
 
+        if (v == mCingleImageView){
+            Intent intent = new Intent(TradeDetailActivity.this, CingleDetailActivity.class);
+            intent.putExtra(TradeDetailActivity.EXTRA_POST_KEY, mPostKey);
+            startActivity(intent);
+        }
+
         if (v == mTradeCingleButton){
             Bundle bundle = new Bundle();
             bundle.putString(TradeDetailActivity.EXTRA_POST_KEY, mPostKey);
@@ -370,6 +782,57 @@ public class TradeDetailActivity extends AppCompatActivity implements View.OnCli
             sendCreditsDialogFragment.setArguments(bundle);
             sendCreditsDialogFragment.show(fragmenManager, "send credits fragment");
         }
+
+        if (v == mDoneEditingImageView){
+           setNewPrice();
+        }
+
+        if (v == mEditSalePriceImageView){
+            mEditSalePriceEditText.setVisibility(View.VISIBLE);
+            mCingleSalePriceTextView.setVisibility(View.GONE);
+            mEditSalePriceImageView.setVisibility(View.GONE);
+            mDoneEditingImageView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void setNewPrice(){
+        final String stringSalePrice = mEditSalePriceEditText.getText().toString().trim();
+        final double intSalePrice = Double.parseDouble(stringSalePrice);
+        mSalePriceProgressBar.setVisibility(View.VISIBLE);
+        ifairReference.child("Cingle Selling").child(mPostKey)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()){
+                            CingleSale cingleSale = dataSnapshot.getValue(CingleSale.class);
+                            final String uid = cingleSale.getUid();
+
+                            ifairReference.child("Cingle Selling").child(mPostKey).child("salePrice")
+                                    .setValue(intSalePrice)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()){
+                                                mSalePriceProgressBar.setVisibility(View.GONE);
+                                                mCingleSalePriceTextView.setVisibility(View.VISIBLE);
+                                                mEditSalePriceEditText.setVisibility(View.GONE);
+                                                mDoneEditingImageView.setVisibility(View.GONE);
+                                                if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                                    mEditSalePriceImageView.setVisibility(View.VISIBLE);
+                                                }
+                                            }
+
+                                        }
+                                    });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+        mEditSalePriceEditText.setText("");
     }
 
     private void onLikeCounter(final boolean increament){
@@ -404,6 +867,41 @@ public class TradeDetailActivity extends AppCompatActivity implements View.OnCli
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
+    }
+
+    //cingle sense edittext filter
+    public void setEditTextFilter(){
+        mEditSalePriceEditText.setFilters(new InputFilter[] {
+                new DigitsKeyListener(Boolean.FALSE, Boolean.TRUE) {
+                    int beforeDecimal = 13, afterDecimal = 8;
+
+                    @Override
+                    public CharSequence filter(CharSequence source, int start, int end,
+                                               Spanned dest, int dstart, int dend) {
+                        String temp = mEditSalePriceEditText.getText() + source.toString();
+
+                        if (temp.equals(".")) {
+                            return "0.";
+                        }else if (temp.equals("0")){
+                            return "0.";//if number begins with 0 return decimal place right after
+                        }
+                        else if (temp.toString().indexOf(".") == -1) {
+                            // no decimal point placed yet
+                            if (temp.length() > beforeDecimal) {
+                                return "";
+                            }
+                        } else {
+                            temp = temp.substring(temp.indexOf(".") + 1);
+                            if (temp.length() > afterDecimal) {
+                                return "";
+                            }
+                        }
+
+                        return super.filter(source, start, end, dest, dstart, dend);
+                    }
+                }
+        });
+
     }
 
 }

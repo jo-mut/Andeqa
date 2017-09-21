@@ -3,11 +3,15 @@ package com.cinggl.cinggl.creation;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -47,6 +51,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static android.R.attr.editable;
+
 public class CreateCingleActivity extends AppCompatActivity implements View.OnClickListener{
     @Bind(R.id.cingleTitleEditText)EditText mCingleTitleEditText;
     @Bind(R.id.cingleDescriptionEditText)EditText mCingleDescriptionEditText;
@@ -56,6 +62,8 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
     @Bind(R.id.profileImageView)CircleImageView mProfileImageView;
     @Bind(R.id.usernameTextView)TextView mAccountUsernameTextView;
     @Bind(R.id.img)ProportionalImageView mProportionalImageView;
+    @Bind(R.id.descriptionCountTextView)TextView mDescriptionCountTextView;
+    @Bind(R.id.titleCountTextView)TextView mTitleCountTextView;
 
     private String ImageFileLocation = "";
     private String GALLERY_LOCATION = "Cingles";
@@ -74,13 +82,16 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
     private File file;
     private StorageReference storageReference;
     private DatabaseReference databaseReference;
+    private DatabaseReference profileCinglesReference;
     private ProgressDialog progressDialog;
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
     private DatabaseReference usernameRef;
     private List<Cingle> cingles = new ArrayList<>();
 
-
+    private static final int DEFAULT_TITLE_LENGTH_LIMIT = 100;
+    private static final int DEFAULT_DESCRIPTION_LENGTH_LIMIT = 500;
+//
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,16 +107,84 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
         if (firebaseAuth.getCurrentUser() != null){
             usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
+            profileCinglesReference = FirebaseDatabase.getInstance().getReference(Constants.PROFILE_CINGLES);
 
             fetchUserData();
             uploadingToFirebaseDialog();
             createImageGallery();
+            mCingleTitleEditText.setFilters(new InputFilter[]{new InputFilter
+                    .LengthFilter(DEFAULT_TITLE_LENGTH_LIMIT)});
+            mCingleDescriptionEditText.setFilters(new  InputFilter[]{new InputFilter
+                    .LengthFilter(DEFAULT_DESCRIPTION_LENGTH_LIMIT)});
+            textWatchers();
         }
 
     }
 
 
 
+    private void textWatchers(){
+        //TITLE TEXT WATCHER
+        mCingleTitleEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                int count = DEFAULT_TITLE_LENGTH_LIMIT - editable.length();
+                mTitleCountTextView.setText(Integer.toString(count));
+
+                if (count < 0){
+                }else if (count < 100){
+                    mTitleCountTextView.setTextColor(Color.GRAY);
+                }else {
+                    mTitleCountTextView.setTextColor(Color.BLACK);
+                }
+
+            }
+        });
+
+        //DESCRIPTION TEXT WATCHER
+        mCingleDescriptionEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                int count = DEFAULT_DESCRIPTION_LENGTH_LIMIT- editable.length();
+                mDescriptionCountTextView.setText(Integer.toString(count));
+
+                if (count < 0){
+                }else if (count < 100){
+                    mDescriptionCountTextView.setTextColor(Color.GRAY);
+                }else if (count < 200){
+                    mDescriptionCountTextView.setTextColor(Color.RED);
+                }else if (count < 300){
+                    mDescriptionCountTextView.setTextColor(Color.BLUE);
+                }else if (count < 400){
+                    mDescriptionCountTextView.setTextColor(Color.GREEN);
+                }else {
+                    mDescriptionCountTextView.setTextColor(Color.BLACK);
+                }
+
+            }
+        });
+
+    }
 
     @Override
     protected void onPause(){
@@ -373,7 +452,7 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
                                                 final long currentIdex = index + 1;
 
                                                 cingle.setCingleIndex("Cingle number" + " " + currentIdex);
-                                                cingle.setRandomNumber((int) new Random().nextInt());
+                                                cingle.setNumber(currentIdex);
                                                 cingle.setRandomNumber((double) new Random().nextDouble());
                                                 cingle.setTitle(mCingleTitleEditText.getText().toString());
                                                 cingle.setDescription(mCingleDescriptionEditText.getText().toString());
@@ -388,8 +467,6 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
                                                         .getInstance()
                                                         .getReference(Constants.FIREBASE_CINGLES);
 
-
-
                                                     /*Pushing the same cingle to a reference from where Cingles posted by the
                                                     user will be retrieved and displayed on their profile*/
                                                 DatabaseReference userRef = databaseReference.push();
@@ -397,6 +474,13 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
                                                 cingle.setPushId(pushId);
                                                 userRef.setValue(cingle);
 
+                                                Cingle profileCingle = new Cingle();
+                                                profileCingle.setPushId(pushId);
+                                                profileCingle.setNumber(currentIdex);
+
+                                                profileCinglesReference.child(firebaseAuth.getCurrentUser().getUid())
+                                                        .push()
+                                                        .setValue(profileCingle);
 
                                                 mCingleTitleEditText.setText("");
                                                 mCingleDescriptionEditText.setText("");

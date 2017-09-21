@@ -93,6 +93,17 @@
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true" />
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/titleCountTextView"
+                        android:textSize="18sp"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_below="@+id/cingleTitleEditText"/>
+
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -121,14 +132,25 @@
                         android:id="@+id/cingleDescriptionEditText"
                         android:hint="Description note"
                         android:textSize="24sp"
-                        android:paddingBottom="20dp"
-                        android:paddingTop="20dp"
+                        android:paddingBottom="10dp"
+                        android:paddingTop="15dp"
                         android:freezesText="true"
+                        android:layout_toStartOf="@+id/descriptionCountTextView"
+                        android:layout_toLeftOf="@+id/descriptionCountTextView"
                         android:layout_width="match_parent"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_margin="10dp" />
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/descriptionCountTextView"
+                        android:textSize="24sp"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_below="@+id/cingleDescriptionEditText"/>
 
                 </RelativeLayout>
 

@@ -22,6 +22,7 @@ import com.cinggl.cinggl.home.CingleDetailActivity;
 import com.cinggl.cinggl.home.CingleSettingsDialog;
 import com.cinggl.cinggl.home.CommentsActivity;
 import com.cinggl.cinggl.home.LikesActivity;
+import com.cinggl.cinggl.models.Balance;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.models.Cingulan;
 import com.cinggl.cinggl.models.Like;
@@ -121,6 +122,7 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
         final Cingle cingle = cingles.get(position);
         holder.bindCingle(cingle);
         final String postKey = cingles.get(position).getPushId();
+        Log.d("cingle postkey", postKey);
         //CALL THE METHOD TO ANIMATE RECYCLERVIEW
 //        animate(holder);
         firebaseAuth = FirebaseAuth.getInstance();
@@ -131,7 +133,6 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
             usersRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
             likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
             likesQuery = likesRef.child(postKey).limitToFirst(5);
-            likesQueryCount = likesRef;
             databaseReference = FirebaseDatabase.getInstance()
                     .getReference(Constants.FIREBASE_CINGLES);
             ifairReference = FirebaseDatabase.getInstance().getReference(Constants.IFAIR);
@@ -143,8 +144,6 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
             likesRef.keepSynced(true);
             commentReference.keepSynced(true);
         }
-
-
 
         //DATABASE REFERENCE TO READ THE UID OF THE USER IN THE CINGLE
         databaseReference.child(postKey).addValueEventListener(new ValueEventListener() {
@@ -220,8 +219,7 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
 
 
                    //SET THE CINGULAN CURRENT USERNAME AND PROFILE IMAGE
-                   if (dataSnapshot.exists()){
-                       usersRef.child(uid).addValueEventListener(new ValueEventListener() {
+                   usersRef.child(uid).addValueEventListener(new ValueEventListener() {
                            @Override
                            public void onDataChange(DataSnapshot dataSnapshot) {
                                if (dataSnapshot.exists()){
@@ -258,28 +256,6 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
 
                            }
                        });
-                   }
-
-                   //RETRIEVE SENSEPOINTS AND CATCH EXCEPTION IF CINGLE ISN'T DELETED
-                   databaseReference.child(postKey).addValueEventListener(new ValueEventListener() {
-                       @Override
-                       public void onDataChange(DataSnapshot dataSnapshot) {
-                           if (dataSnapshot.exists()){
-                               for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                                   Log.d(snapshot.getKey(), snapshot.getChildrenCount() + "sensepoint");
-                               }
-
-                               DecimalFormat formatter =  new DecimalFormat("0.00000000");
-                               holder.cingleSenseCreditsTextView.setText("CSC" + " " + formatter.format(cingle.getSensepoint()));
-
-                           }
-                       }
-
-                       @Override
-                       public void onCancelled(DatabaseError databaseError) {
-
-                       }
-                   });
 
                    //RETRIEVE COMMENTS COUNT AND CATCH EXCEPTIONS IF ANY
                    commentReference.child(postKey).addValueEventListener(new ValueEventListener() {
@@ -318,7 +294,7 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
 
 
                    //SET THE TRADE METHOD TEXT ACCORDING TO THE TRADE METHOD OF THE CINGLE
-                   ifairReference.addValueEventListener(new ValueEventListener() {
+                   ifairReference.addListenerForSingleValueEvent(new ValueEventListener() {
                        @Override
                        public void onDataChange(DataSnapshot dataSnapshot) {
                            final String uid = dataSnapshot.child("Cingle Selling")
@@ -350,86 +326,97 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
                    likesRef.child(postKey).addValueEventListener(new ValueEventListener() {
                        @Override
                        public void onDataChange(DataSnapshot dataSnapshot) {
+                           if (dataSnapshot.exists()){
+                               if (dataSnapshot.getChildrenCount()>0){
+                                   holder.likesRecyclerView.setVisibility(View.VISIBLE);
+                                   //SETUP USERS WHO LIKED THE CINGLE
+                                   firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Like, UsersWhoLiked>
+                                           (Like.class, R.layout.users_who_liked_count, UsersWhoLiked.class, likesQuery) {
+                                       @Override
+                                       public int getItemCount() {
+                                           return super.getItemCount();
 
-                           if (dataSnapshot.getChildrenCount()>0){
-                               holder.likesRecyclerView.setVisibility(View.VISIBLE);
-                               //SETUP USERS WHO LIKED THE CINGLE
-                               firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Like, UsersWhoLiked>
-                                       (Like.class, R.layout.users_who_liked_count, UsersWhoLiked.class, likesQuery) {
-                                   @Override
-                                   protected void populateViewHolder(final UsersWhoLiked viewHolder, final Like model, final int position) {
-//                                    viewHolder.bindUsersWhoLiked(model);
-                                       DatabaseReference userRef = getRef(position);
-                                       final String likesPostKey = userRef.getKey();
-                                       Log.d(TAG, "likes post key" + likesPostKey);
+                                       }
 
-                                       likesRef.child(postKey).child(likesPostKey).addValueEventListener(new ValueEventListener() {
-                                           @Override
-                                           public void onDataChange(DataSnapshot dataSnapshot) {
-                                               if (dataSnapshot.child("uid").exists()){
-                                                   Log.d(TAG, "uid in likes post" + uid);
-                                                   final String uid = (String) dataSnapshot.child("uid").getValue();
+                                       @Override
+                                       public long getItemId(int position) {
+                                           return super.getItemId(position);
+                                       }
 
-                                                   usersRef.child(uid).addValueEventListener(new ValueEventListener() {
-                                                       @Override
-                                                       public void onDataChange(DataSnapshot dataSnapshot) {
-                                                           final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
+                                       @Override
+                                       protected void populateViewHolder(final UsersWhoLiked viewHolder, final Like model, final int position) {
+                                           DatabaseReference userRef = getRef(position);
+                                           final String likesPostKey = userRef.getKey();
+                                           Log.d(TAG, "likes post key" + likesPostKey);
 
-                                                           Picasso.with(mContext)
-                                                                   .load(profileImage)
-                                                                   .fit()
-                                                                   .centerCrop()
-                                                                   .placeholder(R.drawable.profle_image_background)
-                                                                   .networkPolicy(NetworkPolicy.OFFLINE)
-                                                                   .into(viewHolder.usersWhoLikedProfileImageView, new Callback() {
-                                                                       @Override
-                                                                       public void onSuccess() {
+                                           likesRef.child(postKey).child(likesPostKey).addValueEventListener(new ValueEventListener() {
+                                               @Override
+                                               public void onDataChange(DataSnapshot dataSnapshot) {
+                                                   if (dataSnapshot.child("uid").exists()){
+                                                       Log.d(TAG, "uid in likes post" + uid);
+                                                       final String uid = (String) dataSnapshot.child("uid").getValue();
 
-                                                                       }
+                                                       usersRef.child(uid).addValueEventListener(new ValueEventListener() {
+                                                           @Override
+                                                           public void onDataChange(DataSnapshot dataSnapshot) {
+                                                               final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
 
-                                                                       @Override
-                                                                       public void onError() {
-                                                                           Picasso.with(mContext)
-                                                                                   .load(profileImage)
-                                                                                   .fit()
-                                                                                   .centerCrop()
-                                                                                   .placeholder(R.drawable.profle_image_background)
-                                                                                   .into(viewHolder.usersWhoLikedProfileImageView);
+                                                               Picasso.with(mContext)
+                                                                       .load(profileImage)
+                                                                       .fit()
+                                                                       .centerCrop()
+                                                                       .placeholder(R.drawable.profle_image_background)
+                                                                       .networkPolicy(NetworkPolicy.OFFLINE)
+                                                                       .into(viewHolder.usersWhoLikedProfileImageView, new Callback() {
+                                                                           @Override
+                                                                           public void onSuccess() {
+
+                                                                           }
+
+                                                                           @Override
+                                                                           public void onError() {
+                                                                               Picasso.with(mContext)
+                                                                                       .load(profileImage)
+                                                                                       .fit()
+                                                                                       .centerCrop()
+                                                                                       .placeholder(R.drawable.profle_image_background)
+                                                                                       .into(viewHolder.usersWhoLikedProfileImageView);
 
 
-                                                                       }
-                                                                   });
-                                                       }
+                                                                           }
+                                                                       });
+                                                           }
 
-                                                       @Override
-                                                       public void onCancelled(DatabaseError databaseError) {
+                                                           @Override
+                                                           public void onCancelled(DatabaseError databaseError) {
 
-                                                       }
-                                                   });
+                                                           }
+                                                       });
+
+                                                   }
+                                               }
+
+                                               @Override
+                                               public void onCancelled(DatabaseError databaseError) {
 
                                                }
-                                           }
+                                           });
 
-                                           @Override
-                                           public void onCancelled(DatabaseError databaseError) {
+                                       }
+                                   };
 
-                                           }
-                                       });
+                                   holder.likesRecyclerView.setAdapter(firebaseRecyclerAdapter);
+                                   holder.likesRecyclerView.setHasFixedSize(false);
+                                   RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, true);
+                                   layoutManager.setAutoMeasureEnabled(true);
+                                   holder.likesRecyclerView.setNestedScrollingEnabled(false);
+                                   holder.likesRecyclerView.setLayoutManager(layoutManager);
 
-                                   }
-                               };
+                               }else {
+                                   holder.likesRecyclerView.setVisibility(View.GONE);
+                               }
 
-                               holder.likesRecyclerView.setAdapter(firebaseRecyclerAdapter);
-                               holder.likesRecyclerView.setHasFixedSize(false);
-                               RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, true);
-                               layoutManager.setAutoMeasureEnabled(true);
-                               holder.likesRecyclerView.setNestedScrollingEnabled(false);
-                               holder.likesRecyclerView.setLayoutManager(layoutManager);
-
-                           }else {
-                               holder.likesRecyclerView.setVisibility(View.GONE);
                            }
-
                        }
 
                        @Override
@@ -485,83 +472,23 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
                                                    double perfectionValue = GOLDEN_RATIO/x;
                                                    //get the new worth of Cingle price in Sen
                                                    final double cingleWorth = perfectionValue * likesPerMille * currentPrice;
-                                                   //round of the worth of the cingle to 4 decimal number
-//
+                                                   //round of the worth of the cingle to 10 decimal number
                                                    final double finalPoints = round( cingleWorth, 10);
 
                                                    Log.d("final points", finalPoints + "");
 
-//                                                databaseReference.child(postKey).child("sensepoint").setValue(finalPoints);
                                                    cingleWalletReference.child(postKey).addListenerForSingleValueEvent(new ValueEventListener() {
                                                        @Override
                                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                                           if (dataSnapshot.child("amount redeemed").exists() && dataSnapshot.child("amount deposited").exists()){
-                                                               Double amountRedeemed = dataSnapshot.child("amount redeemed").getValue(Double.class);
+                                                           if (dataSnapshot.exists()) {
+                                                               final Balance balance = dataSnapshot.getValue(Balance.class);
+                                                               final double amountRedeemed = balance.getAmountRedeemed();
                                                                Log.d(amountRedeemed + "", "amount redeemed");
-                                                               Double amountDeposited = dataSnapshot.child("amount deposited").getValue(Double.class);
+                                                               final  double amountDeposited = balance.getAmountDeposited();
                                                                Log.d(amountDeposited + "", "amount deposited");
                                                                final double senseCredits = amountDeposited + finalPoints;
                                                                Log.d("sense credits", senseCredits + "");
                                                                final double totalSenseCredits = senseCredits - amountRedeemed;
-                                                               Log.d("total sense credits", totalSenseCredits + "");
-                                                               databaseReference.child(postKey).child("sensepoint").setValue(totalSenseCredits);
-                                                           }else if (!dataSnapshot.child("amount deposited").exists() && dataSnapshot.child("amount redeemed").exists()){
-                                                               Double amountRedeemed = dataSnapshot.child("amount redeemed").getValue(Double.class);
-                                                               Log.d(amountRedeemed + "", "amount redeemed");
-                                                               final double senseCredits = finalPoints - amountRedeemed;
-                                                               Log.d("sense credits", senseCredits + "");
-                                                               final double totalSenseCredits = senseCredits;
-                                                               Log.d("total sense credits", totalSenseCredits + "");
-                                                               databaseReference.child(postKey).child("sensepoint").setValue(totalSenseCredits);
-                                                           }else if (!dataSnapshot.child("amount redeemed").exists()&& dataSnapshot.child("amount deposited").exists()){
-                                                               Double amountDeposited = dataSnapshot.child("amount deposited").getValue(Double.class);
-                                                               Log.d(amountDeposited + "", "amount deposited");
-                                                               final double senseCredits = amountDeposited + finalPoints;
-                                                               Log.d("sense credits", senseCredits + "");
-                                                               final double totalSenseCredits = senseCredits;
-                                                               Log.d("total sense credits", totalSenseCredits + "");
-                                                               databaseReference.child(postKey).child("sensepoint").setValue(totalSenseCredits);
-                                                           }else if (!dataSnapshot.exists()){
-                                                               databaseReference.child(postKey).child("sensepoint").setValue(finalPoints);
-                                                           }
-                                                       }
-
-                                                       @Override
-                                                       public void onCancelled(DatabaseError databaseError) {
-
-                                                       }
-                                                   });
-
-                                               }else{
-                                                   final double finalPoints = 0.00;
-                                                   Log.d("final points", finalPoints + "");
-                                                   cingleWalletReference.child(postKey).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                       @Override
-                                                       public void onDataChange(DataSnapshot dataSnapshot) {
-                                                           if (dataSnapshot.child("amount redeemed").exists() && dataSnapshot.child("amount deposited").exists()){
-                                                               Double amountRedeemed = dataSnapshot.child("amount redeemed").getValue(Double.class);
-                                                               Log.d(amountRedeemed + "", "amount redeemed");
-                                                               Double amountDeposited = dataSnapshot.child("amount deposited").getValue(Double.class);
-                                                               Log.d(amountDeposited + "", "amount deposited");
-                                                               final double senseCredits = amountDeposited + finalPoints;
-                                                               Log.d("sense credits", senseCredits + "");
-                                                               final double totalSenseCredits = senseCredits - amountRedeemed;
-                                                               Log.d("total sense credits", totalSenseCredits + "");
-                                                               databaseReference.child(postKey).child("sensepoint").setValue(totalSenseCredits);
-                                                           }else if (!dataSnapshot.child("amount deposited").exists() && dataSnapshot.child("amount redeemed").exists()){
-                                                               Double amountRedeemed = dataSnapshot.child("amount redeemed").getValue(Double.class);
-                                                               Log.d(amountRedeemed + "", "amount redeemed");
-                                                               final double senseCredits = finalPoints;
-                                                               Log.d("sense credits", senseCredits + "");
-                                                               final double totalSenseCredits = senseCredits;
-                                                               Log.d("total sense credits", totalSenseCredits + "");
-                                                               databaseReference.child(postKey).child("sensepoint").setValue(totalSenseCredits);
-                                                           }else if (!dataSnapshot.child("amount redeemed").exists()&& dataSnapshot.child("amount deposited").exists()){
-                                                               Double amountDeposited = dataSnapshot.child("amount deposited").getValue(Double.class);
-                                                               Log.d(amountDeposited + "", "amount deposited");
-                                                               final double senseCredits = amountDeposited + finalPoints;
-                                                               Log.d("sense credits", senseCredits + "");
-                                                               final double totalSenseCredits = senseCredits;
                                                                Log.d("total sense credits", totalSenseCredits + "");
                                                                databaseReference.child(postKey).child("sensepoint").setValue(totalSenseCredits);
                                                            }else {
@@ -574,6 +501,35 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
 
                                                        }
                                                    });
+                                               }
+                                               else{
+                                                   final double finalPoints = 0.00;
+                                                   Log.d("final points", finalPoints + "");
+                                                   cingleWalletReference.child(postKey).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                       @Override
+                                                       public void onDataChange(DataSnapshot dataSnapshot) {
+                                                           if (dataSnapshot.exists()) {
+                                                               final Balance balance = dataSnapshot.getValue(Balance.class);
+                                                               final double amountRedeemed = balance.getAmountRedeemed();
+                                                               Log.d(amountRedeemed + "", "amount redeemed");
+                                                               final  double amountDeposited = balance.getAmountDeposited();
+                                                               Log.d(amountDeposited + "", "amount deposited");
+                                                               final double senseCredits = amountDeposited + finalPoints;
+                                                               Log.d("sense credits", senseCredits + "");
+                                                               final double totalSenseCredits = senseCredits - amountRedeemed;
+                                                               Log.d("total sense credits", totalSenseCredits + "");
+                                                               databaseReference.child(postKey).child("sensepoint").setValue(totalSenseCredits);
+                                                           }else {
+                                                               databaseReference.child(postKey).child("sensepoint").setValue(finalPoints);
+                                                           }
+                                                       }
+
+                                                       @Override
+                                                       public void onCancelled(DatabaseError databaseError) {
+
+                                                       }
+                                                   });
+
                                                }
 
                                            }

@@ -50,5 +50,8 @@
         <attr name="finalHeight" format="dimension"/>
     </declare-styleable>
 
+    <declare-styleable name="ExpandableTextView">
+        <attr name="trimLength" format="integer"/>
+    </declare-styleable>
 
 </resources>

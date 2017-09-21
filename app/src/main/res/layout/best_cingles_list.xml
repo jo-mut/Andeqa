@@ -92,6 +92,39 @@
             </RelativeLayout>
 
             <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp">
+
+                <TextView
+                    android:text="Date posted:"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cingleDateTextView"
+                    android:textSize="14sp"
+                    android:textStyle="normal|bold"
+                    android:layout_centerVertical="true" />
+
+                <TextView
+                    android:text=""
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:id="@+id/datePostedTextView"
+                    android:layout_alignBaseline="@+id/cingleDateTextView"
+                    android:layout_alignBottom="@+id/cingleDateTextView"
+                    android:layout_toRightOf="@+id/cingleDateTextView"
+                    android:layout_toEndOf="@+id/cingleDateTextView"
+                    android:textSize="14sp"
+                    android:layout_centerVertical="true" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
                 android:id="@+id/cingleTradingRelativeLayout"
@@ -126,11 +159,10 @@
                     android:layout_toRightOf="@+id/cingleListedOnIfairTextView"
                     android:padding="5dp" />
 
-
             </RelativeLayout>
 
-
             <RelativeLayout
+                android:id="@+id/cingleSalePriceTitleRelativeLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="5dp"
@@ -139,30 +171,30 @@
                 android:paddingRight="3dp">
 
                 <TextView
-                    android:text="Cingle Date:"
+                    android:text="Sale Price:"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/cingleDateTextView"
+                    android:id="@+id/cingleSalePriceTitleTextView"
                     android:textSize="14sp"
                     android:textStyle="normal|bold"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
                     android:layout_centerVertical="true" />
 
                 <TextView
-                    android:text="10th Sep, 2016"
+                    android:text=""
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:id="@+id/cingleSalePriceTextView"
                     android:layout_marginLeft="10dp"
                     android:layout_marginStart="10dp"
-                    android:id="@+id/datePostedTextView"
-                    android:layout_alignBaseline="@+id/cingleDateTextView"
-                    android:layout_alignBottom="@+id/cingleDateTextView"
-                    android:layout_toRightOf="@+id/cingleDateTextView"
-                    android:layout_toEndOf="@+id/cingleDateTextView"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/cingleSalePriceTitleTextView"
+                    android:layout_toEndOf="@+id/cingleSalePriceTitleTextView"
                     android:textSize="14sp"
                     android:layout_centerVertical="true" />
 
             </RelativeLayout>
-
 
             <RelativeLayout
                 android:paddingTop="5dp"
@@ -201,41 +233,6 @@
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
                     android:id="@+id/ownerImageView" />
-
-            </RelativeLayout>
-
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="5dp"
-                android:paddingTop="5dp"
-                android:paddingLeft="3dp"
-                android:paddingRight="3dp">
-
-                <TextView
-                    android:text="Cingle Sense Credits:"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/cingleSenseCreditsTextView"
-                    android:textSize="14sp"
-                    android:textStyle="normal|bold"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true" />
-
-                <TextView
-                    android:text="CSCs 0.00"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/cingleSenseCreditsCountTextView"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_alignParentTop="true"
-                    android:layout_toRightOf="@+id/cingleSenseCreditsTextView"
-                    android:layout_toEndOf="@+id/cingleSenseCreditsTextView"
-                    android:textSize="14sp"
-                    android:layout_centerVertical="true" />
 
             </RelativeLayout>
 
@@ -318,6 +315,24 @@
                     android:layout_centerVertical="false"
                     android:layout_marginTop="10dp" />
 
+                <TextView
+                    android:text=""
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cingleSenseCreditsTextView"
+                    android:textStyle="normal|bold"
+                    android:background="@drawable/text_border_default"
+                    android:textSize="12sp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="6dp"
+                    android:layout_toRightOf="@+id/commentsCountTextView"
+                    android:layout_toEndOf="@+id/commentsCountTextView"
+                    android:layout_marginLeft="10dp" />
+
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -380,13 +395,13 @@
                 android:paddingBottom="10dp"
                 android:id="@+id/descriptionRelativeLayout">
 
-                <TextView
-                    android:text="The future of tomorrow; the cities of lights"
+                <com.cinggl.cinggl.utils.ExpandableTextView
+                    android:text=""
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/cingleDescriptionTextView"
                     android:textSize="14sp"
-                    android:textColor="@color/common_google_signin_btn_text_light_pressed"
+                    android:textColor="@android:color/black"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true" />

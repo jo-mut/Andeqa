@@ -73,8 +73,7 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
+                    android:layout_height="wrap_content">
 
                     <EditText
                         android:layout_height="wrap_content"
@@ -83,15 +82,29 @@
                         android:background="@drawable/edit_text_background"
                         android:id="@+id/cingleTitleEditText"
                         android:hint="Title"
-                        android:textSize="16sp"
-                        android:paddingTop="15dp"
-                        android:paddingBottom="15dp"
+                        android:textSize="10sp"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp"
                         android:freezesText="true"
                         android:layout_width="match_parent"
                         android:textStyle="normal|bold"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true" />
+                        android:layout_alignParentTop="false"
+                        android:layout_alignParentLeft="false"
+                        android:layout_alignParentStart="false"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/titleCountTextView"
+                        android:textSize="9sp"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_below="@+id/cingleTitleEditText"/>
 
                 </RelativeLayout>
 
@@ -120,15 +133,26 @@
                         android:background="@drawable/edit_text_background"
                         android:id="@+id/cingleDescriptionEditText"
                         android:hint="Description note"
-                        android:textSize="16sp"
-                        android:paddingBottom="20dp"
-                        android:paddingTop="20dp"
+                        android:textSize="10sp"
+                        android:paddingBottom="10dp"
+                        android:paddingTop="15dp"
                         android:freezesText="true"
+                        android:layout_toStartOf="@+id/descriptionCountTextView"
+                        android:layout_toLeftOf="@+id/descriptionCountTextView"
                         android:layout_width="match_parent"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_margin="10dp" />
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/descriptionCountTextView"
+                        android:textSize="9sp"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_below="@+id/cingleDescriptionEditText"/>
 
                 </RelativeLayout>
 

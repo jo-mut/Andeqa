@@ -248,7 +248,7 @@
                 android:padding="3dp"
                 android:id="@+id/descriptionRelativeLayout">
 
-                <TextView
+                <com.cinggl.cinggl.utils.ExpandableTextView
                     android:text="The Cities of Tomorrow; the Cities of Light, with the evolution of technology"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

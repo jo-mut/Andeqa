@@ -86,8 +86,6 @@ public class CingleOutFragment extends Fragment{
             usernameRef.keepSynced(true);
             commentReference.keepSynced(true);
 
-
-            initializeViewsAdapter();
             cingleOutRecyclerView.addOnScrollListener(mOnScollListener);
             setAllCingles(currentPage);
         }
@@ -98,6 +96,8 @@ public class CingleOutFragment extends Fragment{
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        initializeViewsAdapter();
 
         if (savedInstanceState != null){
             //restore saved layout manager type
@@ -149,7 +149,7 @@ public class CingleOutFragment extends Fragment{
     };
 
     public void setAllCingles(int start){
-//        progressBar.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
         cinglesQuery = databaseReference.orderByChild("randomNumber").startAt(start)
                 .endAt(start + TOTAL_ITEM_EACH_LOAD);
         cinglesQuery.keepSynced(true);
@@ -158,7 +158,7 @@ public class CingleOutFragment extends Fragment{
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d("Snapshot", dataSnapshot.toString());
-//                progressBar.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
 
                 Cingle cingle = dataSnapshot.getValue(Cingle.class);
                 cinglesIds.add(dataSnapshot.getKey());
@@ -168,7 +168,7 @@ public class CingleOutFragment extends Fragment{
                 cingleOutAdapter.setCingles(cingles);
                 cingleOutAdapter.notifyItemInserted(cingles.size());
                 cingleOutAdapter.getItemCount();
-                Log.d("size of cingles list", cingles.size() + "");
+                Log.d("size of all cingles", cingles.size() + "");
 
             }
 
@@ -269,4 +269,13 @@ public class CingleOutFragment extends Fragment{
         cleanUpListener();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
 }

@@ -6,12 +6,10 @@ package com.cinggl.cinggl.models;
 
 public class Balance {
     double totalBalance;
+    double amountDeposited;
+    double amountRedeemed;
 
     public Balance() {
-    }
-
-    public Balance(double totalBalance) {
-        this.totalBalance = totalBalance;
     }
 
     public double getTotalBalance() {
@@ -20,5 +18,21 @@ public class Balance {
 
     public void setTotalBalance(double totalBalance) {
         this.totalBalance = totalBalance;
+    }
+
+    public double getAmountDeposited() {
+        return amountDeposited;
+    }
+
+    public void setAmountDeposited(double amountDeposited) {
+        this.amountDeposited = amountDeposited;
+    }
+
+    public double getAmountRedeemed() {
+        return amountRedeemed;
+    }
+
+    public void setAmountRedeemed(double amountRedeemed) {
+        this.amountRedeemed = amountRedeemed;
     }
 }

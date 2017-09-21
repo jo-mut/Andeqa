@@ -80,12 +80,12 @@ public class HomeFragment extends Fragment {
 
 
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_layout, menu);
-    }
+//    @Override
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        super.onCreateOptionsMenu(menu, inflater);
+//        inflater.inflate(R.menu.menu_layout, menu);
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -94,15 +94,15 @@ public class HomeFragment extends Fragment {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if (id == R.id.action_preferences) {
-            startActivity(new Intent(getActivity(), PreferencesActivity.class));
-            return true;
-        }
-
-        if (id == R.id.action_account_settings){
-            startActivity(new Intent(getActivity(), UpdateProfileActivity.class));
-            return true;
-        }
+//        if (id == R.id.action_preferences) {
+//            startActivity(new Intent(getActivity(), PreferencesActivity.class));
+//            return true;
+//        }
+//
+//        if (id == R.id.action_account_settings){
+//            startActivity(new Intent(getActivity(), UpdateProfileActivity.class));
+//            return true;
+//        }
 
 
         return super.onOptionsItemSelected(item);

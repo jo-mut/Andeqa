@@ -8,7 +8,7 @@ public class TransactionDetails {
     String uid;
     String pushId;
     String postId;
-    String datePosted;
+    String date;
     double amount;
     double walletBalance;
 
@@ -22,12 +22,12 @@ public class TransactionDetails {
         this.amount = amount;
     }
 
-    public String getDatePosted() {
-        return datePosted;
+    public String getDate() {
+        return date;
     }
 
-    public void setDatePosted(String datePosted) {
-        this.datePosted = datePosted;
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public String getPushId() {

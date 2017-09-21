@@ -6,6 +6,7 @@ package com.cinggl.cinggl;
 
 public final class Constants {
     public  static  final String FIREBASE_CINGLES = "Cingles";
+    public static final String PROFILE_CINGLES = "profile cingles";
     public static final String CINGLE_IMAGE = "cingleImageUrl";
     public  static  final String FIREBASE_USERS = "Cingulans";
     public static final String COMMENTS = "Comments";

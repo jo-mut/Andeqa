@@ -71,7 +71,6 @@ public class SetCinglePriceActivity extends AppCompatActivity implements View.On
     private DatabaseReference usernameRef;
     private DatabaseReference ifairReference;
 
-
     //REMOVE SCIENTIFIC NOATATION
     private DecimalFormat formatter =  new DecimalFormat("0.00000000");
 
@@ -267,7 +266,8 @@ public class SetCinglePriceActivity extends AppCompatActivity implements View.On
                                                            public void onDataChange(DataSnapshot dataSnapshot) {
                                                                if (dataSnapshot.exists()){
                                                                    final Double salePrice = (Double) dataSnapshot.child("salePrice").getValue();
-                                                                   mCingleSalePriceTextView.setText(Double.toString(salePrice));
+                                                                   DecimalFormat formatter =  new DecimalFormat("0.00000000");
+                                                                   mCingleSalePriceTextView.setText("CSC" + " " + "" + formatter.format(salePrice));
                                                                }
                                                            }
 
@@ -307,8 +307,8 @@ public class SetCinglePriceActivity extends AppCompatActivity implements View.On
                                                                     public void onCancelled(DatabaseError databaseError) {
 
                                                                     }
-                                                                }); final Double salePrice = (Double) dataSnapshot.child("salePrice").getValue();
-                                                        mCingleSalePriceTextView.setText(Double.toString(salePrice));
+                                                                });
+
                                                     }
                                                 }
                                             });

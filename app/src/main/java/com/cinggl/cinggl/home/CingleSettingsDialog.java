@@ -1,6 +1,7 @@
 package com.cinggl.cinggl.home;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -20,6 +22,7 @@ import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.ifair.RedeemCreditsDialogFragment;
 import com.cinggl.cinggl.ifair.SetCinglePriceActivity;
+import com.cinggl.cinggl.models.TransactionDetails;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -77,6 +80,8 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
         View view = inflater.inflate(R.layout.fragment_cingle_settings_dialog, container, false);
         ButterKnife.bind(this, view);
 
+
+
         firebaseAuth = FirebaseAuth.getInstance();
 
         if (firebaseAuth.getCurrentUser() != null){
@@ -117,9 +122,12 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
+
         String title = getArguments().getString("title", "cingle settings");
         getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
     @Override
@@ -188,12 +196,13 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
                 if (dataSnapshot.child(mPostKey).exists()){
                     final String uid = dataSnapshot.child(mPostKey).child("uid").getValue(String.class);
 
-                    cingleOwnerReference.child(mPostKey).addValueEventListener(new ValueEventListener() {
+                    cingleOwnerReference.child(mPostKey).child("owner").addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                            if (dataSnapshot.exists()){
                                //if owner exist then its only him that can delete the cingle
-                               final String ownerUid = dataSnapshot.child("owner").getValue(String.class);
+                               TransactionDetails transactionDetails = dataSnapshot.getValue(TransactionDetails.class);
+                               final String ownerUid = transactionDetails.getUid();
                                if ((firebaseAuth.getCurrentUser().getUid().equals(ownerUid))){
                                    //SHOW THE REDEEM LAYOUT
                                    mRedeemCreditsRelativeLayout.setVisibility(View.VISIBLE);

@@ -21,7 +21,9 @@ import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.models.Balance;
 import com.cinggl.cinggl.models.CingleSale;
+import com.cinggl.cinggl.models.TransactionDetails;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,9 +34,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -109,6 +115,8 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
         String title = getArguments().getString("title", "send credits");
         getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
     }
 
     @Override
@@ -116,9 +124,23 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
         if (v == mSendAmountButton){
             if (mAmountEnteredEditText != null){
                 final String amountInString = mAmountEnteredEditText.getText().toString();
-                final double amountEntered = Double.parseDouble(amountInString);
-                Log.d("amount entered", amountEntered + "");
-                final String formattedString = formatter.format(amountEntered);
+                final double amountTransferred = Double.parseDouble(amountInString);
+                Log.d("amount entered", amountTransferred + "");
+                final String formattedString = formatter.format(amountTransferred);
+
+                //get the current date
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d");
+                String date = simpleDateFormat.format(new Date());
+
+                if (date.endsWith("1") && !date.endsWith("11"))
+                    simpleDateFormat = new SimpleDateFormat("d'st' MMM yyyy");
+                else if (date.endsWith("2") && !date.endsWith("12"))
+                    simpleDateFormat = new SimpleDateFormat("d'nd' MMM yyyy");
+                else if (date.endsWith("3") && !date.endsWith("13"))
+                    simpleDateFormat = new SimpleDateFormat("d'rd' MMM yyyy");
+                else
+                    simpleDateFormat = new SimpleDateFormat("d'th' MMM yyyy");
+                final String currentDate = simpleDateFormat.format(new Date());
 
                 ifairReference.child("Cingle Selling").child(mPostKey).addListenerForSingleValueEvent
                         (new ValueEventListener() {
@@ -129,24 +151,31 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
                            final double salePrice = cingleSale.getSalePrice();
                            Log.d("cingle sale price", salePrice + "");
 
-                           if (amountEntered > salePrice){
+                           if (amountTransferred < salePrice){
                                mAmountEnteredEditText.setError("Your wallet has insufficient balance");
                            }else if (mAmountEnteredEditText.equals("")){
                                mAmountEnteredEditText.setError("Amount cannot be empty");
-                           }else{
+                           }else  if (amountTransferred > salePrice){
+                               mAmountEnteredEditText.setError("Amount is more than sale price");
+                           } else{
                                walletReference.child("balance").child(firebaseAuth.getCurrentUser().getUid())
-                                       .child("total balance")
                                        .addListenerForSingleValueEvent(new ValueEventListener() {
                                            @Override
                                            public void onDataChange(DataSnapshot dataSnapshot) {
                                                if (dataSnapshot.exists()){
-                                                   final Double currentBalance = dataSnapshot.getValue(Double.class);
+                                                   Balance walletBalance = dataSnapshot.getValue(Balance.class);
+                                                   final double currentBalance = walletBalance.getTotalBalance();
                                                    Log.d("old wallet balance", currentBalance + "");
 
-                                                   final double newWalletBalance = currentBalance - amountEntered;
+                                                   final double newWalletBalance = currentBalance - amountTransferred;
                                                    Log.d("new wallet balance", newWalletBalance + "");
+
+                                                   //record new wallet balance
+                                                   final Balance balance = new Balance();
+                                                   balance.setTotalBalance(newWalletBalance);
+
                                                    walletReference.child("balance").child(firebaseAuth.getCurrentUser()
-                                                           .getUid()).child("total balance").setValue(newWalletBalance)
+                                                           .getUid()).setValue(balance)
                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                @Override
                                                                public void onComplete(@NonNull Task<Void> task) {
@@ -156,13 +185,17 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
                                                                                    @Override
                                                                                    public void onDataChange(DataSnapshot dataSnapshot) {
                                                                                        if (dataSnapshot.exists()){
-                                                                                           final Double cingleBalance = dataSnapshot.getValue(Double.class);
-                                                                                           Log.d("old cingle balance", dataSnapshot.getValue() + "");
-                                                                                           final double newCingleBalance = cingleBalance + amountEntered;
+                                                                                           Balance cingleWalletBalance = (Balance)dataSnapshot.getValue();
+                                                                                           final double currentBalance = cingleWalletBalance.getTotalBalance();
+                                                                                           Log.d("old cingle balance", currentBalance + "");
+                                                                                           final double newCingleBalance = currentBalance + amountTransferred;
                                                                                            Log.d("new cingle balance", newCingleBalance + "");
 
+                                                                                           //record new cingle wallet balance
+                                                                                           balance.setAmountDeposited(newCingleBalance);
+
                                                                                            cingleWalletReference.child(mPostKey).child("amount deposited")
-                                                                                                   .setValue(newCingleBalance).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                                   .setValue(balance).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                                                @Override
                                                                                                public void onComplete(@NonNull Task<Void> task) {
                                                                                                    if (task.isSuccessful()){
@@ -172,15 +205,26 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
                                                                                                }
                                                                                            });
 
-                                                                                           cingleOwnersReference.child(mPostKey).child("owner").setValue(firebaseAuth.getCurrentUser()
-                                                                                                   .getUid());
+                                                                                           TransactionDetails transactionDetails = new TransactionDetails();
+                                                                                           transactionDetails.setPushId(mPostKey);
+                                                                                           transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                                           transactionDetails.setAmount(amountTransferred);
+                                                                                           transactionDetails.setWalletBalance(newWalletBalance);
+                                                                                           transactionDetails.setDate(currentDate);
 
+                                                                                           //save the cingle owner
+                                                                                           cingleOwnersReference.child(mPostKey).child("owner").setValue(transactionDetails);
+                                                                                           //save the cingle ownership history
+                                                                                           cingleOwnersReference.child(mPostKey).child("onwership history").setValue(transactionDetails);
+                                                                                           //once cingle has been bought remove it from cingle selling
+                                                                                           ifairReference.child("Cingle Selling").child(mPostKey).removeValue();
 
                                                                                        }else {
-                                                                                           final double newCingleBalance = amountEntered;
+                                                                                           final double newCingleBalance = amountTransferred;
                                                                                            Log.d("new cingle balance", newCingleBalance + "");
+                                                                                           balance.setAmountDeposited(amountTransferred);
                                                                                            cingleWalletReference.child(mPostKey).child("amount deposited")
-                                                                                                   .setValue(newCingleBalance).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                                   .setValue(balance).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                                                @Override
                                                                                                public void onComplete(@NonNull Task<Void> task) {
                                                                                                    if (task.isSuccessful()){
@@ -191,9 +235,19 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
                                                                                                }
                                                                                            });
 
-                                                                                           cingleOwnersReference.child(mPostKey).child("owner").setValue(firebaseAuth.getCurrentUser()
-                                                                                                   .getUid());
+                                                                                           TransactionDetails transactionDetails = new TransactionDetails();
+                                                                                           transactionDetails.setPushId(mPostKey);
+                                                                                           transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                                           transactionDetails.setAmount(amountTransferred);
+                                                                                           transactionDetails.setWalletBalance(newWalletBalance);
+                                                                                           transactionDetails.setDate(currentDate);
 
+                                                                                           //save the cingle owner
+                                                                                           cingleOwnersReference.child(mPostKey).child("owner").setValue(transactionDetails);
+                                                                                           //save the cingle ownership history
+                                                                                           cingleOwnersReference.child(mPostKey).child("onwership history").setValue(transactionDetails);
+                                                                                           //once cingle has been bought remove it from cingle selling
+                                                                                           ifairReference.child("Cingle Selling").child(mPostKey).removeValue();
                                                                                        }
                                                                                    }
 
@@ -222,7 +276,6 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
 
                     }
                 });
-
 
                 //RESET THE EDITTEXT
                 mAmountEnteredEditText.setText("");

@@ -455,7 +455,7 @@ public class FollowerProfileActivity extends AppCompatActivity implements View.O
                                         Log.e(snapshot.getKey(), snapshot.getChildrenCount() + "likesCount");
 
                                     }
-                                    viewHolder.likesCountTextView.setText("+" + dataSnapshot.getChildrenCount());
+                                    viewHolder.likesCountTextView.setText(dataSnapshot.getChildrenCount() + " " + "Likes");
 
                                 }
 

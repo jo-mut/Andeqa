@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -86,9 +88,9 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
             }
         });
 
+        firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
             mSendCommentImageView.setOnClickListener(this);
-            firebaseAuth = FirebaseAuth.getInstance();
             firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
             mPostKey = getIntent().getStringExtra(EXTRA_POST_KEY);
@@ -111,7 +113,6 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
             setData();
             setUpFirebaseComments();
-
 
         }
     }

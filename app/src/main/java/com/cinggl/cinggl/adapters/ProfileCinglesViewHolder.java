@@ -15,7 +15,11 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.text.DecimalFormat;
+
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.cinggl.cinggl.R.id.descriptionRelativeLayout;
 
 
 /**
@@ -37,11 +41,11 @@ public class ProfileCinglesViewHolder extends RecyclerView.ViewHolder implements
     public TextView timeTextView;
     public ImageView cingleSettingsImageView;
     public RelativeLayout cingleTitleRelativeLayout;
-    private RelativeLayout descriptionRelativeLayout;
+    public RelativeLayout descriptionRelativeLayout;
     public ProportionalImageView cingleImageView;
     public TextView cingleTradeMethodTextView;
-    public RecyclerView usersWhoLikedCountRecyclerView;
     public TextView cingleSenseCreditsTextView;
+    public RecyclerView likesRecyclerView;
 
 
     public ProfileCinglesViewHolder(View itemView){
@@ -63,8 +67,7 @@ public class ProfileCinglesViewHolder extends RecyclerView.ViewHolder implements
         cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
         cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsTextView);
         cingleTradeMethodTextView = (TextView) mView.findViewById(R.id.cingleTradeMethodTextView);
-        usersWhoLikedCountRecyclerView = (RecyclerView) mView.findViewById(R.id.likesRecyclerView);
-
+        likesRecyclerView = (RecyclerView) mView.findViewById(R.id.likesRecyclerView);
 
         likesImageView.setOnClickListener(this);
         commentsImageView.setOnClickListener(this);
@@ -110,13 +113,17 @@ public class ProfileCinglesViewHolder extends RecyclerView.ViewHolder implements
         if (cingle.getDescription().equals("")){
             descriptionRelativeLayout.setVisibility(View.GONE);
         }else {
-            cingleDescriptionTextView.setText(cingle.getDescription() + "..." + "more");
+            cingleDescriptionTextView.setText(cingle.getDescription());
+
         }
 
-        cingleSenseCreditsTextView.setText("SP" + " " + (cingle.getSensepoint()));
+        DecimalFormat formatter =  new DecimalFormat("0.00000000");
+        cingleSenseCreditsTextView.setText("CSC" + " " + formatter.format(cingle.getSensepoint()));
         timeTextView.setText(DateUtils.getRelativeTimeSpanString((long) cingle.getTimeStamp()));
 
     }
+
+
 
     @Override
     public  void onClick(View v){

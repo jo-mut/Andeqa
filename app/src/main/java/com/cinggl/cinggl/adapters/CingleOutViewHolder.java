@@ -1,9 +1,15 @@
 package com.cinggl.cinggl.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableStringBuilder;
 import android.text.format.DateUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -12,12 +18,19 @@ import android.widget.TextView;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.ProportionalImageView;
+import com.cinggl.cinggl.utils.ExpandableTextView;
 import com.google.firebase.database.DatabaseReference;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.text.DecimalFormat;
+import java.util.Map;
+
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
+import static com.cinggl.cinggl.R.id.cingleDescriptionTextView;
 
 /**
  * Created by J.EL on 5/26/2017.
@@ -32,7 +45,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder{
     public ImageView commentsImageView;
     public TextView likesCountTextView;
     public TextView cingleTitleTextView;
-    public TextView cingleDescriptionTextView;
+    public ExpandableTextView cingleDescriptionTextView;
     public TextView accountUsernameTextView;
     public CircleImageView profileImageView;
     public TextView commentsCountTextView;
@@ -48,6 +61,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder{
     private RelativeLayout descriptionRelativeLayout;
     public RecyclerView likesRecyclerView;
 
+
     public CingleOutViewHolder(View itemView){
         super(itemView);
         mView = itemView;
@@ -55,7 +69,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder{
         likesImageView = (ImageView) itemView.findViewById(R.id.likesImageView);
         likesCountTextView =(TextView)itemView.findViewById(R.id.likesCountTextView);
         commentsImageView = (ImageView) itemView.findViewById(R.id.commentsImageView);
-        cingleDescriptionTextView = (TextView) itemView.findViewById(R.id.cingleDescriptionTextView);
+        cingleDescriptionTextView = (ExpandableTextView) itemView.findViewById(R.id.cingleDescriptionTextView);
         cingleTitleTextView = (TextView) itemView.findViewById(R.id.cingleTitleTextView);
         accountUsernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
@@ -72,10 +86,11 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder{
 
     }
 
+
     public void bindCingle(final Cingle cingle){
         final ProportionalImageView cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
         TextView cingleTitleTextView = (TextView) mView.findViewById(R.id.cingleTitleTextView);
-        TextView cingleDescriptionTextView = (TextView) mView.findViewById(R.id.cingleDescriptionTextView);
+        ExpandableTextView cingleDescriptionTextView = (ExpandableTextView) mView.findViewById(R.id.cingleDescriptionTextView);
         TextView cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsTextView);
         TextView timeTextView = (TextView) mView.findViewById(R.id.timeTextView);
         RelativeLayout cingleTitleRelativeLayout = (RelativeLayout) mView.findViewById(R.id.cingleTitleRelativeLayout);
@@ -109,17 +124,19 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder{
         if (cingle.getDescription().equals("")){
             descriptionRelativeLayout.setVisibility(View.GONE);
         }else {
-            cingleDescriptionTextView.setText(cingle.getDescription() + "..." + "more");
+            cingleDescriptionTextView.setText(cingle.getDescription());
         }
-
-//        NumberFormat nf = NumberFormat.getCurrencyInstance();
-//        String pattern = ((DecimalFormat) nf).toPattern();
-//        String newPattern = pattern.replace("\u00A4", "CSC").trim();
-//        NumberFormat newFormat = new DecimalFormat(newPattern);
-//        cingleSenseCreditsTextView.setText("" + newFormat.format(cingle.getSensepoint()));
 
         timeTextView.setText(DateUtils.getRelativeTimeSpanString((long) cingle.getTimeStamp()));
         cingleTradeMethodTextView.setText("@CingleBacking");
+
+        //REMOVE SCIENTIFIC NOATATION
+        DecimalFormat formatter =  new DecimalFormat("0.00000000");
+        if (cingle.getSensepoint() == 0.00){
+            cingleSenseCreditsTextView.setText("CSC" + " " + "0.00");
+        }else {
+            cingleSenseCreditsTextView.setText("CSC" + " " + formatter.format(cingle.getSensepoint()));
+        }
     }
 
 
