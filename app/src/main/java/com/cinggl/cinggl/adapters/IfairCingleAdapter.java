@@ -167,235 +167,92 @@ public class IfairCingleAdapter extends RecyclerView.Adapter<IfairCinglesViewHol
                             }
                         }
                     });
-                }
 
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        ifairReference.child("Cingle Selling").child(postKey).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()){
-                    CingleSale sale = dataSnapshot.getValue(CingleSale.class);
-                    final String uid = sale.getUid();
-                    final String pushId = sale.getPushId();
-                    final double salePrice = sale.getSalePrice();
-
-                    DecimalFormat formatter =  new DecimalFormat("0.00000000");
-                    holder.cingleSalePriceTextView.setText("CSC" + "" + "" + formatter.format(sale.getSalePrice()));
-
-                    //retrieve cingle info
-                    cinglesReference.child(pushId).addValueEventListener(new ValueEventListener() {
+                    ifairReference.child("Cingle Selling").child(postKey).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()){
-                               final Cingle cingle = dataSnapshot.getValue(Cingle.class);
+                                CingleSale sale = dataSnapshot.getValue(CingleSale.class);
+                                final String uid = sale.getUid();
+                                final String pushId = sale.getPushId();
+                                final double salePrice = sale.getSalePrice();
 
-                                Picasso.with(mContext)
-                                        .load(cingle.getCingleImageUrl())
-                                        .networkPolicy(NetworkPolicy.OFFLINE)
-                                        .into(holder.cingleImageView, new Callback() {
-                                            @Override
-                                            public void onSuccess() {
-
-                                            }
-
-                                            @Override
-                                            public void onError() {
-                                                Picasso.with(mContext)
-                                                        .load(cingle.getCingleImageUrl())
-                                                        .into(holder.cingleImageView);
-
-
-                                            }
-                                        });
                                 DecimalFormat formatter =  new DecimalFormat("0.00000000");
-                                holder.cingleSenseCreditsTextView.setText("CSC" + "" + "" + formatter.format(cingle.getSensepoint()));
-                                holder.datePostedTextView.setText(cingle.getDatePosted());
+                                holder.cingleSalePriceTextView.setText("CSC" + " " + "" + formatter.format(sale.getSalePrice()));
 
-                            }
-                        }
+                                //retrieve cingle info
+                                cinglesReference.child(pushId).addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        if (dataSnapshot.exists()){
+                                            final Cingle cingle = dataSnapshot.getValue(Cingle.class);
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-
-                    //retrieve user info
-                    usersRef.child(uid).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists()){
-                                final Cingulan cingulan = dataSnapshot.getValue(Cingulan.class);
-
-                                Picasso.with(mContext)
-                                        .load(cingulan.getProfileImage())
-                                        .networkPolicy(NetworkPolicy.OFFLINE)
-                                        .into(holder.profileImageView, new Callback() {
-                                            @Override
-                                            public void onSuccess() {
-
-                                            }
-
-                                            @Override
-                                            public void onError() {
-                                                Picasso.with(mContext)
-                                                        .load(cingulan.getProfileImage())
-                                                        .into(holder.profileImageView);
-
-
-                                            }
-                                        });
-                                holder.usernameTextView.setText(cingulan.getUsername());
-
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        //SET THE TRADE METHOD TEXT ACCORDING TO THE TRADE METHOD OF THE CINGLE
-        ifairReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                final String uid = dataSnapshot.child("Cingle Selling")
-                        .child(postKey).child("uid").getValue(String.class);
-
-                //SET CINGLE TRADE METHOD WHEN THERE ARE ALL TRADE METHODS
-                if (dataSnapshot.child("Cingle Lacing").hasChild(postKey)){
-                    holder.cingleTradeMethodTextView.setText("@CingleLacing");
-                }else if (dataSnapshot.child("Cingle Leasing").hasChild(postKey)){
-                    holder.cingleTradeMethodTextView.setText("@CingleLeasing");
-
-                }else if (dataSnapshot.child("Cingle Selling").hasChild(postKey)){
-                    holder.cingleTradeMethodTextView.setText("@CingleSelling");
-                }else if ( dataSnapshot.child("Cingle Backing").hasChild(postKey)){
-                    holder.cingleTradeMethodTextView.setText("@CingleBacking");
-                }else {
-                    holder.cingleTradeMethodTextView.setText("@NotForTrade");
-                }
-
-
-                //HIDE TRADING LAYOUT IF CINGLE IS NOT ON IFAIR
-                if (!dataSnapshot.child("Cingle Selling").hasChild(postKey)){
-                    holder.cingleTradeMethodTextView.setText("Listed not for sale");
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-
-        //SET THE OWNER OF THE CINGLE
-        cingleOwnerReference.child(postKey).child("owner").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()){
-                    TransactionDetails transactionDetails = dataSnapshot.getValue(TransactionDetails.class);
-                    final String ownerUid = transactionDetails.getUid();
-                    usersRef.child(ownerUid).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            Cingulan cingulan = dataSnapshot.getValue(Cingulan.class);
-                            final String username = cingulan.getUsername();
-                            final String profileImage = cingulan.getProfileImage();
-                            holder.cingleOwnerTextView.setText(username);
-                            Picasso.with(mContext)
-                                    .load(profileImage)
-                                    .fit()
-                                    .centerCrop()
-                                    .placeholder(R.drawable.profle_image_background)
-                                    .networkPolicy(NetworkPolicy.OFFLINE)
-                                    .into(holder.ownerImageView, new Callback() {
-                                        @Override
-                                        public void onSuccess() {
-
-                                        }
-
-                                        @Override
-                                        public void onError() {
                                             Picasso.with(mContext)
-                                                    .load(profileImage)
-                                                    .fit()
-                                                    .centerCrop()
-                                                    .placeholder(R.drawable.profle_image_background)
-                                                    .into(holder.ownerImageView);
+                                                    .load(cingle.getCingleImageUrl())
+                                                    .networkPolicy(NetworkPolicy.OFFLINE)
+                                                    .into(holder.cingleImageView, new Callback() {
+                                                        @Override
+                                                        public void onSuccess() {
+
+                                                        }
+
+                                                        @Override
+                                                        public void onError() {
+                                                            Picasso.with(mContext)
+                                                                    .load(cingle.getCingleImageUrl())
+                                                                    .into(holder.cingleImageView);
+
+
+                                                        }
+                                                    });
+                                            DecimalFormat formatter =  new DecimalFormat("0.00000000");
+                                            holder.cingleSenseCreditsTextView.setText("CSC" + " " + "" + formatter.format(cingle.getSensepoint()));
+                                            holder.datePostedTextView.setText(cingle.getDatePosted());
+
                                         }
-                                    });
-                        }
+                                    }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
 
-                        }
-                    });
-                }else {
-                    //RETRIEVE THE CREATOR PERSONAL PROFILE DETAIL FOR THE CINGLE
-                    cinglesReference.child(postKey).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists()){
-                                final String creatorUid = dataSnapshot.child("uid").getValue(String.class);
-                                usersRef.child(creatorUid).addValueEventListener
-                                        (new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                                Cingulan cingulan = dataSnapshot.getValue(Cingulan.class);
-                                                final String username = cingulan.getUsername();
-                                                final String profileImage = cingulan.getProfileImage();
-                                                holder.cingleOwnerTextView.setText(username);
-                                                Picasso.with(mContext)
-                                                        .load(profileImage)
-                                                        .fit()
-                                                        .centerCrop()
-                                                        .placeholder(R.drawable.profle_image_background)
-                                                        .networkPolicy(NetworkPolicy.OFFLINE)
-                                                        .into(holder.ownerImageView, new Callback() {
-                                                            @Override
-                                                            public void onSuccess() {
+                                    }
+                                });
 
-                                                            }
+                                //retrieve user info
+                                usersRef.child(uid).addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        if (dataSnapshot.exists()){
+                                            final Cingulan cingulan = dataSnapshot.getValue(Cingulan.class);
 
-                                                            @Override
-                                                            public void onError() {
-                                                                Picasso.with(mContext)
-                                                                        .load(profileImage)
-                                                                        .fit()
-                                                                        .centerCrop()
-                                                                        .placeholder(R.drawable.profle_image_background)
-                                                                        .into(holder.ownerImageView);
-                                                            }
-                                                        });
+                                            Picasso.with(mContext)
+                                                    .load(cingulan.getProfileImage())
+                                                    .networkPolicy(NetworkPolicy.OFFLINE)
+                                                    .into(holder.profileImageView, new Callback() {
+                                                        @Override
+                                                        public void onSuccess() {
 
-                                            }
+                                                        }
 
-                                            @Override
-                                            public void onCancelled(DatabaseError databaseError) {
+                                                        @Override
+                                                        public void onError() {
+                                                            Picasso.with(mContext)
+                                                                    .load(cingulan.getProfileImage())
+                                                                    .into(holder.profileImageView);
 
-                                            }
-                                        });
 
+                                                        }
+                                                    });
+                                            holder.usernameTextView.setText(cingulan.getUsername());
+
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
                             }
                         }
 
@@ -405,7 +262,87 @@ public class IfairCingleAdapter extends RecyclerView.Adapter<IfairCinglesViewHol
                         }
                     });
 
+                    //SET THE TRADE METHOD TEXT ACCORDING TO THE TRADE METHOD OF THE CINGLE
+                    ifairReference.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            final String uid = dataSnapshot.child("Cingle Selling")
+                                    .child(postKey).child("uid").getValue(String.class);
+
+                            //SET CINGLE TRADE METHOD WHEN THERE ARE ALL TRADE METHODS
+                            if (dataSnapshot.child("Cingle Lacing").hasChild(postKey)){
+                                holder.cingleTradeMethodTextView.setText("@CingleLacing");
+                            }else if (dataSnapshot.child("Cingle Leasing").hasChild(postKey)){
+                                holder.cingleTradeMethodTextView.setText("@CingleLeasing");
+
+                            }else if (dataSnapshot.child("Cingle Selling").hasChild(postKey)){
+                                holder.cingleTradeMethodTextView.setText("@CingleSelling");
+                            }else if ( dataSnapshot.child("Cingle Backing").hasChild(postKey)){
+                                holder.cingleTradeMethodTextView.setText("@CingleBacking");
+                            }else {
+                                holder.cingleTradeMethodTextView.setText("@NotForTrade");
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+
+                    /**display the person who currently owns the cingle*/
+                    cingleOwnerReference.child(postKey).child("owner").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            TransactionDetails transactionDetails = dataSnapshot.getValue(TransactionDetails.class);
+                            final String ownerUid = transactionDetails.getUid();
+
+                            usersRef.child(ownerUid).addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    Cingulan cingulan = dataSnapshot.getValue(Cingulan.class);
+                                    final String username = cingulan.getUsername();
+                                    final String profileImage = cingulan.getProfileImage();
+                                    holder.cingleOwnerTextView.setText(username);
+                                    Picasso.with(mContext)
+                                            .load(profileImage)
+                                            .fit()
+                                            .centerCrop()
+                                            .placeholder(R.drawable.profle_image_background)
+                                            .networkPolicy(NetworkPolicy.OFFLINE)
+                                            .into(holder.ownerImageView, new Callback() {
+                                                @Override
+                                                public void onSuccess() {
+
+                                                }
+
+                                                @Override
+                                                public void onError() {
+                                                    Picasso.with(mContext)
+                                                            .load(profileImage)
+                                                            .fit()
+                                                            .centerCrop()
+                                                            .placeholder(R.drawable.profle_image_background)
+                                                            .into(holder.ownerImageView);
+                                                }
+                                            });
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
                 }
+
             }
 
             @Override

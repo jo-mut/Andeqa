@@ -24,6 +24,8 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Map;
 
@@ -45,7 +47,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder{
     public ImageView commentsImageView;
     public TextView likesCountTextView;
     public TextView cingleTitleTextView;
-    public ExpandableTextView cingleDescriptionTextView;
+    public TextView cingleDescriptionTextView;
     public TextView accountUsernameTextView;
     public CircleImageView profileImageView;
     public TextView commentsCountTextView;
@@ -69,7 +71,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder{
         likesImageView = (ImageView) itemView.findViewById(R.id.likesImageView);
         likesCountTextView =(TextView)itemView.findViewById(R.id.likesCountTextView);
         commentsImageView = (ImageView) itemView.findViewById(R.id.commentsImageView);
-        cingleDescriptionTextView = (ExpandableTextView) itemView.findViewById(R.id.cingleDescriptionTextView);
+        cingleDescriptionTextView = (TextView) itemView.findViewById(R.id.cingleDescriptionTextView);
         cingleTitleTextView = (TextView) itemView.findViewById(R.id.cingleTitleTextView);
         accountUsernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
@@ -90,7 +92,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder{
     public void bindCingle(final Cingle cingle){
         final ProportionalImageView cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
         TextView cingleTitleTextView = (TextView) mView.findViewById(R.id.cingleTitleTextView);
-        ExpandableTextView cingleDescriptionTextView = (ExpandableTextView) mView.findViewById(R.id.cingleDescriptionTextView);
+        TextView cingleDescriptionTextView = (TextView) mView.findViewById(R.id.cingleDescriptionTextView);
         TextView cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsTextView);
         TextView timeTextView = (TextView) mView.findViewById(R.id.timeTextView);
         RelativeLayout cingleTitleRelativeLayout = (RelativeLayout) mView.findViewById(R.id.cingleTitleRelativeLayout);
@@ -137,6 +139,14 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder{
         }else {
             cingleSenseCreditsTextView.setText("CSC" + " " + formatter.format(cingle.getSensepoint()));
         }
+    }
+
+    private static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 
 

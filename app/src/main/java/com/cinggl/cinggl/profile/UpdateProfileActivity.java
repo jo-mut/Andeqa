@@ -63,7 +63,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     @Bind(R.id.bioEditText)EditText mBioEditText;
     @Bind(R.id.fisrtNameEditText)EditText mFirstNameEditText;
     @Bind(R.id.secondNameEditText)EditText mSecondNameEditText;
-    @Bind(R.id.deleteAccountRelativeLayout)RelativeLayout mDeleteAccountRelativeLayout;
+//    @Bind(R.id.deleteAccountRelativeLayout)RelativeLayout mDeleteAccountRelativeLayout;
     @Bind(R.id.animator)ViewAnimator viewAnimator;
     @Bind(R.id.profileCoverImageView)ImageView mProfileCoverImageView;
     @Bind(R.id.updateProfilePictureImageButton)ImageButton mUpdateProfilePictureImageButton;
@@ -101,7 +101,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 
             updateProfileProgessDialog();
 
-            mDeleteAccountRelativeLayout.setOnClickListener(this);
+//            mDeleteAccountRelativeLayout.setOnClickListener(this);
             mUpdateProfilePictureImageButton.setOnClickListener(this);
             mUpdateCoverTextView.setOnClickListener(this);
         }
@@ -150,23 +150,23 @@ public class UpdateProfileActivity extends AppCompatActivity implements
             startActivityForResult(intent, GALLERY_PROFILE_PHOTO_REQUEST);
         }
 
-        if (v == mDeleteAccountRelativeLayout){
-            //delete your account permanently
-            FragmentManager fragmenManager = getSupportFragmentManager();
-            DeleteAccountDialog deleteAccountDialog = DeleteAccountDialog.newInstance("create your cingle");
-            deleteAccountDialog.show(fragmenManager, "new post fragment");
-
-
-//            new AlertDialog.Builder(UpdateProfileActivity.this)
-//                    .setTitle("Confirm account deletion")
-//                    .setMessage("You will not be able to sign in once you confirm your account deletion")
-//                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            deleteAccount();
-//                        }
-//                    });
-
-        }
+//        if (v == mDeleteAccountRelativeLayout){
+//            //delete your account permanently
+//            FragmentManager fragmenManager = getSupportFragmentManager();
+//            DeleteAccountDialog deleteAccountDialog = DeleteAccountDialog.newInstance("create your cingle");
+//            deleteAccountDialog.show(fragmenManager, "new post fragment");
+//
+//
+////            new AlertDialog.Builder(UpdateProfileActivity.this)
+////                    .setTitle("Confirm account deletion")
+////                    .setMessage("You will not be able to sign in once you confirm your account deletion")
+////                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+////                        public void onClick(DialogInterface dialog, int which) {
+////                            deleteAccount();
+////                        }
+////                    });
+//
+//        }
 
         if (v == mUpdateCoverTextView){
             Intent intent = new Intent();

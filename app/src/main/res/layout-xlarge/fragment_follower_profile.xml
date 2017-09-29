@@ -25,7 +25,7 @@
                 android:id="@+id/header_cover_relative_layout"
                 android:layout_width="match_parent"
                 android:background="@drawable/gradient_color"
-                android:layout_height="530dp">
+                android:layout_height="700dp">
 
 
                 <ImageView
@@ -44,13 +44,13 @@
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="80dp"
-                    android:layout_width="140dp"
-                    android:layout_height="160dp" />
+                    android:layout_width="200dp"
+                    android:layout_height="240dp" />
 
                 <RelativeLayout
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:layout_marginTop="280dp">
+                    android:layout_marginTop="350dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -102,7 +102,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
-                    android:layout_marginTop="360dp">
+                    android:layout_marginTop="450dp">
 
 
                     <TextView
@@ -215,14 +215,16 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="40dp"
                     android:layout_below="@id/countsLayout"
                     android:id="@+id/followButton"
                     android:background="@drawable/colour_btn_background"
                     android:layout_height="60dp"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
-                    android:textColor="@android:color/white" />
+                    android:clickable="true"
+                    android:textColor="@android:color/white"
+                    android:minWidth="240dp" />
 
             </RelativeLayout>
 

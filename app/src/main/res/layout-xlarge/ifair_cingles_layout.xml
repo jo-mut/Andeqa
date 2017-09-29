@@ -4,6 +4,7 @@
     android:orientation="vertical"
     android:background="@android:color/white"
     android:layout_marginBottom="15dp"
+    android:id="@+id/ifair_cingles_linear_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 

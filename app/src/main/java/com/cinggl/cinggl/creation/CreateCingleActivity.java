@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -23,6 +24,8 @@ import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.home.NavigationDrawerActivity;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.ProportionalImageView;
+import com.cinggl.cinggl.models.TransactionDetails;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -32,6 +35,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Callback;
@@ -86,6 +90,7 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
     private ProgressDialog progressDialog;
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
+    private DatabaseReference cingleOwnersReference;
     private DatabaseReference usernameRef;
     private List<Cingle> cingles = new ArrayList<>();
 
@@ -108,6 +113,7 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
             usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
             profileCinglesReference = FirebaseDatabase.getInstance().getReference(Constants.PROFILE_CINGLES);
+            cingleOwnersReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_ONWERS);
 
             fetchUserData();
             uploadingToFirebaseDialog();
@@ -391,7 +397,6 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
 
     public void uploadingToFirebaseDialog(){
         progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Adding your Cingle...");
         progressDialog.setCancelable(true);
     }
 
@@ -479,9 +484,19 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
                                                 profileCingle.setNumber(currentIdex);
 
                                                 profileCinglesReference.child(firebaseAuth.getCurrentUser().getUid())
-                                                        .push()
+                                                        .child(pushId)
                                                         .setValue(profileCingle);
 
+                                                TransactionDetails transactionDetails = new TransactionDetails();
+                                                transactionDetails.setPushId(pushId);
+                                                transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                transactionDetails.setDate(currentDate);
+
+                                                //save the cingle owner
+                                                cingleOwnersReference.child(pushId).child("owner").setValue(transactionDetails);
+                                                //save the cingle ownership history
+                                                cingleOwnersReference.child(pushId).child("onwership history").setValue(transactionDetails);
+                                                //once cingle has been bought remove it from cingle selling
                                                 mCingleTitleEditText.setText("");
                                                 mCingleDescriptionEditText.setText("");
                                                 mProportionalImageView.setImageBitmap(null);
@@ -513,6 +528,18 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
 
 
 
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        progressDialog.dismiss();
+                        Toast.makeText(CreateCingleActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                      double progress = (100.0 * taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
+                        progressDialog.setMessage("Adding your Cingle" + " " + ((int) progress) + "%...");
                     }
                 });
 

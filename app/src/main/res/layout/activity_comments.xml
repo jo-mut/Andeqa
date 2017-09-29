@@ -194,6 +194,18 @@
             android:freezesText="true"
             android:layout_marginRight="50sp" />
 
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/commentCountTextView"
+            android:textSize="12sp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="2dp"
+            android:layout_below="@+id/commentEditText"/>
+
     </RelativeLayout>
 
 </LinearLayout>

@@ -26,7 +26,7 @@ public class PersonalProfileActivity extends AppCompatActivity {
         ProfileFragment profileFragment = new ProfileFragment();
         fragmentManager = this.getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.replace(R.id.profile_container, profileFragment);
+        ft.add(R.id.profile_container, profileFragment);
         ft.commit();
 
         firebaseAuth = FirebaseAuth.getInstance();

@@ -74,35 +74,35 @@
 
         </RelativeLayout>
 
-        <RelativeLayout
-            android:id="@+id/reportCingleRelativeLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <!--<RelativeLayout-->
+            <!--android:id="@+id/reportCingleRelativeLayout"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content">-->
 
-            <TextView
-                android:text="Report Cingle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:textColor="@android:color/black"
-                android:textStyle="normal|bold"
-                android:layout_alignParentTop="false"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="false"
-                android:id="@+id/reportCingleTextView"
-                android:layout_centerInParent="true"
-                android:paddingLeft="5dp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp" />
+            <!--<TextView-->
+                <!--android:text="Report Cingle"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:textSize="12sp"-->
+                <!--android:textColor="@android:color/black"-->
+                <!--android:textStyle="normal|bold"-->
+                <!--android:layout_alignParentTop="false"-->
+                <!--android:layout_alignParentLeft="true"-->
+                <!--android:layout_alignParentStart="false"-->
+                <!--android:id="@+id/reportCingleTextView"-->
+                <!--android:layout_centerInParent="true"-->
+                <!--android:paddingLeft="5dp"-->
+                <!--android:paddingTop="5dp"-->
+                <!--android:paddingBottom="5dp" />-->
 
 
-            <View
-                android:layout_below="@+id/reportCingleTextView"
-                android:layout_width="match_parent"
-                android:layout_height="0.1dp"
-                android:background="@color/colorDivider"/>
+            <!--<View-->
+                <!--android:layout_below="@+id/reportCingleTextView"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="0.1dp"-->
+                <!--android:background="@color/colorDivider"/>-->
 
-        </RelativeLayout>
+        <!--</RelativeLayout>-->
 
         <RelativeLayout
             android:id="@+id/redeemCreditsRelativeLayout"

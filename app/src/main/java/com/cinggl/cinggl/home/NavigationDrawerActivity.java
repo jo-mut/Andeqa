@@ -57,6 +57,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
     private static final int MAX_WIDTH = 300;
     private static final int MAX_HEIGHT = 300;
     final FragmentManager fragmentManager = getSupportFragmentManager();
+    private static final String TAG = NavigationDrawerActivity.class.getSimpleName();
     final Fragment profileFragment = new ProfileFragment();
     final Fragment homeFragment = new HomeFragment();
     private int mSelectedItem;
@@ -201,11 +202,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
         mEmailTextView.setText(firebaseUser.getEmail());
     }
 
-//    public void onSaveInstanceState(Bundle outState){
-//
-//        //Save the fragment's instance
-//        getSupportFragmentManager().putFragment(outState, HomeFragment.class.getName(), savedState);
-//    }
 
     private void fetchData(){
         //database references
@@ -305,7 +301,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
         if (id == R.id.action_about){
             Intent intent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://www.androidhive.info/privacy-policy"));
+                    Uri.parse("https://johnmutuku628.wixsite.com/cinggl"));
             startActivity(intent);
         }
 

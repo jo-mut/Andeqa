@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
@@ -161,11 +162,10 @@ public class WalletActivity extends AppCompatActivity {
                                             @Override
                                             public void onClick(View view) {
                                                 Intent intent = new Intent(WalletActivity.this, TradeDetailActivity.class);
-                                                intent.putExtra(WalletActivity.EXTRA_POST_KEY, postKey);
+                                                intent.putExtra(WalletActivity.EXTRA_POST_KEY, postId);
                                                 startActivity(intent);
                                             }
                                         });
-
                                     }
                                 }
 

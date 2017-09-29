@@ -1,6 +1,7 @@
 package com.cinggl.cinggl.home;
 
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -52,6 +53,7 @@ public class LikesActivity extends AppCompatActivity {
     private static final String TAG = LikesActivity.class.getSimpleName();
     private static final String EXTRA_USER_UID = "uid";
     private static final String EXTRA_POST_KEY = "post key";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,7 +134,6 @@ public class LikesActivity extends AppCompatActivity {
                                     final String firstName = (String) dataSnapshot.child("firstName").getValue();
                                     final String secondName = (String) dataSnapshot.child("secondName").getValue();
 
-
                                     viewHolder.usernameTextView.setText(username);
                                     viewHolder.firstNameTextView.setText(firstName);
                                     viewHolder.secondNameTextView.setText(secondName);
@@ -169,6 +170,24 @@ public class LikesActivity extends AppCompatActivity {
                                 }
                             });
 
+                            relationsRef.child("following").child(firebaseAuth.getCurrentUser().getUid())
+                                    .addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                            if (dataSnapshot.hasChild(uid)){
+                                                viewHolder.followButton.setText("Following");
+                                            }else {
+                                                viewHolder.followButton.setText("Follow");
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
+
                             viewHolder.profileImageView.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
@@ -185,7 +204,6 @@ public class LikesActivity extends AppCompatActivity {
 
                             if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
                                 viewHolder.followButton.setVisibility(View.GONE);
-
                             }else {
                                 viewHolder.followButton.setVisibility(View.VISIBLE);
                                 viewHolder.followButton.setOnClickListener(new View.OnClickListener() {
@@ -209,7 +227,7 @@ public class LikesActivity extends AppCompatActivity {
                                                         try {
                                                             relationsRef.child("following").child(firebaseAuth.getCurrentUser().getUid())
                                                                     .child(postKey)
-                                                                    .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
+                                                                    .child("uid").setValue(postKey);
 
                                                             relationsRef.child("followers").child(postKey).child(firebaseAuth.getCurrentUser().getUid())
                                                                     .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());

@@ -25,7 +25,8 @@
                 android:layout_width="match_parent"
                 android:background="@drawable/gradient_color"
                 android:layout_marginBottom="15dp"
-                android:layout_height="350dp">
+                android:layout_height="400dp">
+
 
                 <ImageView
                     android:id="@+id/header_cover_image"
@@ -37,19 +38,19 @@
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/profileImageView"
-                    android:layout_height="120dp"
                     android:background="@drawable/profile_circular_border_imageview"
-                    android:padding="10dp"
                     android:scaleType="centerCrop"
+                    android:padding="10dp"
                     android:layout_alignParentTop="true"
-                    android:layout_width="100dp"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="40dp" />
+                    android:layout_marginTop="60dp"
+                    android:layout_width="100dp"
+                    android:layout_height="120dp" />
 
                 <RelativeLayout
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:layout_marginTop="180dp">
+                    android:layout_marginTop="200dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -93,7 +94,6 @@
                         android:layout_centerVertical="true"
                         android:layout_centerInParent="true" />
 
-
                 </RelativeLayout>
 
 
@@ -102,7 +102,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
-                    android:layout_marginTop="240dp">
+                    android:layout_marginTop="250dp">
 
 
                     <TextView
@@ -209,17 +209,17 @@
 
                 </RelativeLayout>
 
-
                 <Button
                     android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:id="@+id/followButton"
-                    android:background="@drawable/colour_btn_background"
-                    android:layout_alignParentBottom="true"
+                    android:layout_height="30sp"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginBottom="12dp"
-                    android:textColor="@android:color/white" />
-
+                    android:layout_marginTop="30dp"
+                    android:layout_below="@id/countsLayout"
+                    android:id="@+id/followButton"
+                    android:clickable="true"
+                    android:background="@drawable/colour_btn_background"
+                    android:textColor="@android:color/white"
+                    android:minWidth="120dip" />
 
             </RelativeLayout>
 

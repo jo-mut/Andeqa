@@ -69,6 +69,7 @@ public class FollowersActivity extends AppCompatActivity {
                 finish();
             }
         });
+        firebaseAuth = FirebaseAuth.getInstance();
 
         if (firebaseAuth.getCurrentUser() != null){
             mUid = getIntent().getStringExtra(EXTRA_USER_UID);

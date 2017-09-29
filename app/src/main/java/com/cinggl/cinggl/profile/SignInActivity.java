@@ -29,6 +29,8 @@ import com.google.firebase.database.ValueEventListener;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+import static android.os.Build.VERSION_CODES.N;
+
 public class SignInActivity extends AppCompatActivity implements
         View.OnClickListener{
 

@@ -1,8 +1,10 @@
 package com.cinggl.cinggl.profile;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +19,7 @@ import android.widget.Toast;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.home.NavigationDrawerActivity;
+import com.cinggl.cinggl.ifair.SetCinglePriceActivity;
 import com.cinggl.cinggl.models.Cingulan;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -43,17 +46,13 @@ public class SignUpActivity extends AppCompatActivity implements
     @Bind(R.id.passwordEditText) EditText mPasswordEditText;
     @Bind(R.id.confirmPasswordEditText) EditText mConfirmPasswordEditText;
     @Bind(R.id.loginTextView) TextView mLoginTextView;
-    @Bind(R.id.fisrtNameEditText)EditText mFirstNameEditText;
-    @Bind(R.id.secondNameEditText)EditText mSecondNameEditText;
-    @Bind(R.id.usernameEditText) EditText mUsernameEditText;
-
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private ProgressDialog mAuthProgressDialog;
-    private String mName;
-    private DatabaseReference usersRef;
-    private DatabaseReference databaseReference;
+    private static final String PASSWORD = "password";
+    private static final String EMAIL = "email";
+//    private ProgressDialog mLogingInProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +62,7 @@ public class SignUpActivity extends AppCompatActivity implements
         ButterKnife.bind(this);
 
         mAuth = FirebaseAuth.getInstance();
-        usersRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
+
 
         createAuthStateListener();
         createAuthProgressDialog();
@@ -98,14 +97,82 @@ public class SignUpActivity extends AppCompatActivity implements
 
         if (view == mCreateUserButton) {
             createNewUser();
+
         }
 
     }
 
+//    private void loginWithPassword() {
+//        String email = mEmailEditText.getText().toString().trim();
+//        String password = mPasswordEditText.getText().toString().trim();
+//
+//        if (email.equals("")) {
+//            mEmailEditText.setError("Please enter your email");
+//            return;
+//        }
+//
+//        if (password.equals("")) {
+//            mPasswordEditText.setError("Password cannot be blank");
+//            return;
+//        }
+//
+//        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+//            @Override
+//            public void onComplete(@NonNull Task<AuthResult> task) {
+//                Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
+//                mAuthProgressDialog.dismiss();
+//                if (!task.isSuccessful()) {
+//                    Log.w(TAG, "signInWithEmail", task.getException());
+//                    Toast.makeText(SignUpActivity.this, "Please confirm that your email and password match",
+//                            Toast.LENGTH_SHORT).show();
+//                }else {
+//                    checkIfImailVerified();
+//                }
+//            }
+//        });
+//
+//    }
+//
+//
+//
+//    public void checkIfImailVerified(){
+//        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+//        if (firebaseUser.isEmailVerified()){
+//
+//            //user is verified sp you can finish this activity or send user to activity you want
+//            Toast.makeText(SignUpActivity.this, "You have Successfully signed in",
+//                    Toast.LENGTH_SHORT).show();
+//
+//            Intent intent = new Intent(SignUpActivity.this, CreateProfileActivity.class);
+//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//            startActivity(intent);
+//            finish();
+//
+//        }else {
+//            //email is not verified so just prompt the massge to the user and restart this activity
+//            FirebaseAuth.getInstance().signOut();
+//            //restart this activity
+//
+//            new AlertDialog.Builder(SignUpActivity.this)
+//                    .setTitle("Sorry !")
+//                    .setMessage("Please make sure that you have verified your email so you can sign in")
+//                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//                        }
+//                    }).setIcon(android.R.drawable.ic_dialog_alert).show();
+//
+//
+//            overridePendingTransition(0,0);
+//            finish();
+//            overridePendingTransition(0,0);
+//            startActivity(getIntent());
+//        }
+//    }
+
     private void createNewUser() {
         //editText for email and password
         final String email = mEmailEditText.getText().toString().trim();
-        String password = mPasswordEditText.getText().toString().trim();
+        final String password = mPasswordEditText.getText().toString().trim();
         String confirmPassword = mConfirmPasswordEditText.getText().toString().trim();
 
         //validation for email and password
@@ -122,17 +189,37 @@ public class SignUpActivity extends AppCompatActivity implements
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         mAuthProgressDialog.dismiss();
                         if (!task.isSuccessful()) {
-                            //sign up failed
-                            Toast.makeText(SignUpActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
                             //check email exists
                             if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                                Toast.makeText(SignUpActivity.this, "User with this email already exist.", Toast.LENGTH_LONG).show();
+                                new AlertDialog.Builder(SignUpActivity.this)
+                                        .setTitle("Sorry !")
+                                        .setMessage("User with this email already exists. Please choose another email!")
+                                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                            }
+                                        }).setIcon(android.R.drawable.ic_dialog_alert).show();
+                            }else {
+                                //sign up failed
+                                new AlertDialog.Builder(SignUpActivity.this)
+                                        .setTitle("Authentication failed")
+                                        .setMessage("Check that you are connection to the internet")
+                                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                            }
+                                        }).setIcon(android.R.drawable.ic_dialog_alert).show();
                             }
                         }else {
                             //sign up successful
                             Log.d(TAG, "Authentication successful");
-                            createProfile();
+                            if (mAuth.getCurrentUser().getUid() != null){
+                                Intent intent = new Intent(SignUpActivity.this, CreateProfileActivity.class);
+                                intent.putExtra(SignUpActivity.EMAIL, email);
+                                intent.putExtra(SignUpActivity.PASSWORD, password);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                                finish();
+
+                            }
                         }
 
                     }
@@ -156,69 +243,6 @@ public class SignUpActivity extends AppCompatActivity implements
 
     }
 
-    //get user input and submit info
-    public void createProfile(){
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        final String uid = user.getUid();
-
-        usersRef= FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS)
-                .child(uid);
-
-        final String username = mUsernameEditText.getText().toString().toLowerCase().trim();
-        final String firstName = mFirstNameEditText.getText().toString().trim();
-        final String secondName = mSecondNameEditText.getText().toString().trim();
-
-        boolean validName = isValidName(mUsernameEditText.getText().toString());
-        boolean validFirstName = isValidFirstName(mFirstNameEditText.getText().toString());
-        boolean validSecondName = isValidSecondName(mSecondNameEditText.getText().toString());
-
-        if (!validName|| !validFirstName || !validSecondName) return;
-
-        Cingulan cingulan = new Cingulan();
-        cingulan.setFirstName(firstName);
-        cingulan.setSecondName(secondName);
-        cingulan.setUsername(username);
-        cingulan.setUid(uid);
-
-        DatabaseReference pushRef = usersRef;
-        String pushId = pushRef.getKey();
-        pushRef.setValue(cingulan).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()){
-                    Log.d("user profile created", "firstime");
-                }
-
-            }
-        });
-
-    }
-
-    private boolean isValidName(String name) {
-        if (name.equals("")) {
-            mUsernameEditText.setError("Please enter a valid name!");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isValidFirstName(String firstName) {
-        if (firstName.equals("")) {
-            mFirstNameEditText.setError("Please enter a valid name!");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isValidSecondName(String secondName) {
-        if (secondName.equals("")) {
-            mSecondNameEditText.setError("Please enter a valid name!");
-            return false;
-        }
-        return true;
-    }
-
-
 
     private void sendVerificationEmail(){
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -231,14 +255,19 @@ public class SignUpActivity extends AppCompatActivity implements
                             firebaseUser.getEmail(), Toast.LENGTH_LONG).show();
                     //after email is sent, sign out and finish this activity
                     FirebaseAuth.getInstance().signOut();
-                    Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
-                    startActivity(intent);
-                    finish();
+//                    Intent intent = new Intent(SignUpActivity.this, CreateProfileActivity.class);
+//                    startActivity(intent);
+//                    finish();
                 }else {
                     //email not sent, so display a message and restart the activity and restart this activity
-
                     Toast.makeText(SignUpActivity.this, "Could not send verification email", Toast.LENGTH_LONG).show();
-
+                    new AlertDialog.Builder(SignUpActivity.this)
+                            .setMessage("Cinggl could not send you verification email, please confirm that you " +
+                                    "entered the right email and check your internet connection")
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            }).setIcon(android.R.drawable.ic_dialog_alert).show();
                     overridePendingTransition(0,0);
                     finish();
                     overridePendingTransition(0,0);
@@ -254,6 +283,7 @@ public class SignUpActivity extends AppCompatActivity implements
         mAuthProgressDialog.setMessage("Authenticating your sign up details...");
         mAuthProgressDialog.setCancelable(false);
     }
+
 
     private boolean isValidEmail(String email) {
         boolean isGoodEmail =

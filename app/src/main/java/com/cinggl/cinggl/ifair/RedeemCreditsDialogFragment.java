@@ -229,13 +229,17 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
                                                                                          .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                                              @Override
                                                                                              public void onComplete(@NonNull Task<Void> task) {
-                                                                                                 if (task.isComplete()){
-                                                                                                     Toast.makeText(getContext(), "Transaction successful",
-                                                                                                             Toast.LENGTH_LONG).show();
-                                                                                                 }else {
-                                                                                                     Toast.makeText(getContext(), "Transaction not successful. " +
-                                                                                                             "Please try again later",
-                                                                                                             Toast.LENGTH_LONG).show();
+                                                                                                 try {
+                                                                                                     if (task.isComplete()){
+                                                                                                         Toast.makeText(getContext(), "Transaction successful",
+                                                                                                                 Toast.LENGTH_LONG).show();
+                                                                                                     }else {
+                                                                                                         Toast.makeText(getContext(), "Transaction not successful. " +
+                                                                                                                         "Please try again later",
+                                                                                                                 Toast.LENGTH_LONG).show();
+                                                                                                     }
+                                                                                                 }catch (Exception e){
+                                                                                                     e.printStackTrace();
                                                                                                  }
                                                                                              }
                                                                                          });

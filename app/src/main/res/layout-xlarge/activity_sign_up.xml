@@ -29,89 +29,6 @@
                 android:paddingLeft="70dp"
                 android:paddingRight="70dp">
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="10dp">
-
-                    <EditText
-                        android:layout_height="wrap_content"
-                        android:hint="First Name"
-                        android:inputType="textCapWords"
-                        android:nextFocusDown="@+id/passwordEditText"
-                        android:textColor="@android:color/black"
-                        android:layout_toLeftOf="@+id/nameDivider"
-                        android:layout_toStartOf="@+id/nameDivider"
-                        android:textSize="28sp"
-                        android:id="@+id/fisrtNameEditText"
-                        android:layout_centerInParent="false"
-                        android:layout_centerVertical="false"
-                        android:layout_alignParentRight="false"
-                        android:layout_alignParentLeft="true"
-                        android:layout_width="150sp"
-                        android:layout_centerHorizontal="false"
-                        android:layout_marginRight="5dp"
-                        android:padding="30dp"
-                        android:background="@drawable/input_background" />
-
-                    <View
-                        android:id="@+id/nameDivider"
-                        android:layout_height="0.3dp"
-                        android:layout_alignParentLeft="false"
-                        android:background="@android:color/transparent"
-                        android:layout_centerHorizontal="false"
-                        android:layout_centerInParent="true"
-                        android:layout_width="1dp"
-                        android:layout_marginBottom="40dp" />
-
-
-
-                    <EditText
-                        android:inputType="textCapWords"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/input_background"
-                        android:hint="Second Name"
-                        android:nextFocusDown="@+id/passwordEditText"
-                        android:padding="30dp"
-                        android:textColor="@android:color/black"
-                        android:textSize="28sp"
-                        android:layout_toRightOf="@+id/nameDivider"
-                        android:layout_toEndOf="@+id/nameDivider"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true"
-                        android:id="@+id/secondNameEditText"
-                        android:layout_alignParentLeft="true"
-                        android:layout_width="150sp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="5dp" />
-
-
-                </RelativeLayout>
-
-
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:paddingBottom="10dp">
-
-                    <EditText
-                        android:layout_height="wrap_content"
-                        android:inputType="textMultiLine"
-                        android:ems="10"
-                        android:id="@+id/usernameEditText"
-                        android:freezesText="true"
-                        android:textSize="28sp"
-                        android:layout_width="match_parent"
-                        android:background="@drawable/input_background"
-                        android:hint="Username"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:padding="30dp" />
-
-
-                </RelativeLayout>
 
                 <RelativeLayout
                     android:id="@+id/emailRelativeLayout"
@@ -212,7 +129,7 @@
                         android:id="@+id/loginTextView"
                         android:layout_gravity="center_horizontal"
                         android:textColor="@android:color/white"
-                        android:padding="30dp" />
+                        android:paddingTop="5dp" />
 
                 </RelativeLayout>
             </LinearLayout>

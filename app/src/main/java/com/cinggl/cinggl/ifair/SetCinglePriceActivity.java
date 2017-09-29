@@ -227,123 +227,82 @@ public class SetCinglePriceActivity extends AppCompatActivity implements View.On
 
     }
 
+
     @Override
     public void onClick(View v){
         if (v == mSetCinglePriceButton){
             //GET EDITTEXT INPUT
             final String stringSalePrice = mSetCingleSalePriceEditText.getText().toString().trim();
-            final double intSalePrice = Double.parseDouble(stringSalePrice);
-            Log.d("amount entered", intSalePrice + "");
+            if (stringSalePrice.equals("")){
+                mSetCingleSalePriceEditText.setError("Sale price is empty!");
+            }else {
+                final double intSalePrice = Double.parseDouble(stringSalePrice);
+                Log.d("amount entered", intSalePrice + "");
+                final String formattedString = formatter.format(intSalePrice);
 
-            final String formattedString = formatter.format(intSalePrice);
+                cinglesReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        final Cingle cingle = dataSnapshot.getValue(Cingle.class);
+                        final Double senseCredits = cingle.getSensepoint();
 
+                        if (intSalePrice < senseCredits){
+                            mSetCingleSalePriceEditText.setError("Sale price is less than Cingle Sense Credits!");
+                        }else if (intSalePrice >= senseCredits){
+                            //SET CINGLE ON SALE IN IFAIR
+                            CingleSale cingleSale =  new CingleSale();
+                            cingleSale.setUid(firebaseAuth.getCurrentUser().getUid());
+                            cingleSale.setPushId(mPostKey);
+                            cingleSale.setSalePrice(intSalePrice);
+                            ifairReference.child("Cingle Selling").child(mPostKey).setValue(cingleSale)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()){
+                                                ifairReference.child("Cingle Selling").child(mPostKey)
+                                                        .addValueEventListener(new ValueEventListener() {
+                                                            @Override
+                                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                if (dataSnapshot.exists()){
+                                                                    CingleSale salePrice = (dataSnapshot.getValue(CingleSale.class));
+                                                                    DecimalFormat formatter =  new DecimalFormat("0.00000000");
+                                                                    mCingleSalePriceTextView.setText("CSC" + " " + "" + formatter
+                                                                            .format(salePrice.getSalePrice()));
+                                                                }
+                                                            }
 
-            cinglesReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    final Cingle cingle = dataSnapshot.getValue(Cingle.class);
-                    final Double senseCredits = dataSnapshot.child("sensepoint").getValue(Double.class);
+                                                            @Override
+                                                            public void onCancelled(DatabaseError databaseError) {
 
-                    if (intSalePrice >= senseCredits){
+                                                            }
+                                                        });
+                                            }
+                                        }
+                                    });
 
-                        //SET CINGLE ON SALE IN IFAIR
-                        ifairReference.child("Cingle Selling").addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(final DataSnapshot dataSnapshot) {
-                                if (dataSnapshot.hasChild(mPostKey)){
-                                    CingleSale cingleSale =  new CingleSale();
-                                    cingleSale.setUid(firebaseAuth.getCurrentUser().getUid());
-                                    cingleSale.setPushId(mPostKey);
-                                    cingleSale.setSalePrice(intSalePrice);
-                                    ifairReference.child("Cingle Selling").child(mPostKey).setValue(cingleSale)
-                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if (task.isSuccessful()){
-                                                       ifairReference.child("Cingle Selling").child(mPostKey)
-                                                               .addValueEventListener(new ValueEventListener() {
-                                                           @Override
-                                                           public void onDataChange(DataSnapshot dataSnapshot) {
-                                                               if (dataSnapshot.exists()){
-                                                                   final Double salePrice = (Double) dataSnapshot.child("salePrice").getValue();
-                                                                   DecimalFormat formatter =  new DecimalFormat("0.00000000");
-                                                                   mCingleSalePriceTextView.setText("CSC" + " " + "" + formatter.format(salePrice));
-                                                               }
-                                                           }
+                            Toast.makeText(SetCinglePriceActivity.this, "Your cingle has been listed on Ifair",
+                                    Toast.LENGTH_SHORT).show();
+                        }else {
 
-                                                           @Override
-                                                           public void onCancelled(DatabaseError databaseError) {
-
-                                                           }
-                                                       });
-                                                    }
-                                                }
-                                            });
-
-                                    Toast.makeText(SetCinglePriceActivity.this, "Your cingle has been listed on Ifair",
-                                            Toast.LENGTH_SHORT).show();
-
-                                }else {
-                                    CingleSale cingleSale =  new CingleSale();
-                                    cingleSale.setUid(firebaseAuth.getCurrentUser().getUid());
-                                    cingleSale.setPushId(mPostKey);
-                                    cingleSale.setSalePrice(intSalePrice);
-                                    ifairReference.child("Cingle Selling").child(mPostKey).setValue(cingleSale)
-                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if (task.isSuccessful()){
-                                                        ifairReference.child("Cingle Selling").child(mPostKey)
-                                                                .addValueEventListener(new ValueEventListener() {
-                                                                    @Override
-                                                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                                                        if (dataSnapshot.exists()){
-                                                                            final Double salePrice = (Double) dataSnapshot.child("salePrice").getValue();
-                                                                            mCingleSalePriceTextView.setText(Double.toString(salePrice));
-                                                                        }
-                                                                    }
-
-                                                                    @Override
-                                                                    public void onCancelled(DatabaseError databaseError) {
-
-                                                                    }
-                                                                });
-
-                                                    }
-                                                }
-                                            });
-
-                                    Toast.makeText(SetCinglePriceActivity.this, "Your cingle has been listed on Ifair",
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-                    }else {
-//                        Toast.makeText(SetCinglePriceActivity.this, "The sale price cannot be less than the Cingle's Sense Credits",
-//                                Toast.LENGTH_SHORT).show();
-//
-                        new AlertDialog.Builder(SetCinglePriceActivity.this)
-                                .setTitle("Sorry !")
-                                .setMessage("The sale price cannot be less than the Cingle's Sense Credits")
-                                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                    }
-                                }).setIcon(android.R.drawable.ic_dialog_alert).show();
+                            new AlertDialog.Builder(SetCinglePriceActivity.this)
+                                    .setTitle("Sorry !")
+                                    .setMessage("The sale price cannot be less than the Cingle's Sense Credits")
+                                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                        }
+                                    }).setIcon(android.R.drawable.ic_dialog_alert).show();
+                        }
                     }
-                }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-                }
-            });
+                    }
+                });
 
-            mSetCingleSalePriceEditText.setText("");
+                mSetCingleSalePriceEditText.setText("");
+            }
+
         }
     }
 
@@ -374,8 +333,7 @@ public class SetCinglePriceActivity extends AppCompatActivity implements View.On
                             return "0.";
                         }else if (temp.equals("0")){
                             return "0.";//if number begins with 0 return decimal place right after
-                        }
-                        else if (temp.toString().indexOf(".") == -1) {
+                        }else if (temp.toString().indexOf(".") == -1) {
                             // no decimal point placed yet
                             if (temp.length() > beforeDecimal) {
                                 return "";

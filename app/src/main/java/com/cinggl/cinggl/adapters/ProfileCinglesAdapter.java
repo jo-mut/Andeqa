@@ -2,6 +2,7 @@ package com.cinggl.cinggl.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -68,8 +69,10 @@ public class ProfileCinglesAdapter extends RecyclerView.Adapter<ProfileCinglesVi
     private DatabaseReference usersRef;
     private DatabaseReference ifairReference;
     private DatabaseReference cingleWalletReference;
+    private DatabaseReference profileCinglesReference;
     private Query likesQuery;
     private DatabaseReference cinglesReference;
+    private DatabaseReference cingleOwnersReference;
     private DatabaseReference commentReference;
     private DatabaseReference likesRef;
     private FirebaseAuth firebaseAuth;
@@ -134,12 +137,15 @@ public class ProfileCinglesAdapter extends RecyclerView.Adapter<ProfileCinglesVi
                     .getReference(Constants.FIREBASE_CINGLES);
             ifairReference = FirebaseDatabase.getInstance().getReference(Constants.IFAIR);
             cingleWalletReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_WALLET);
-
+            profileCinglesReference = FirebaseDatabase.getInstance().getReference(Constants.PROFILE_CINGLES);
+            cingleOwnersReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_ONWERS);
 
             usersRef.keepSynced(true);
             cinglesReference.keepSynced(true);
             likesRef.keepSynced(true);
             commentReference.keepSynced(true);
+            profileCinglesReference.keepSynced(true);
+            cingleOwnersReference.keepSynced(true);
         }
 
         //DATABASE REFERENCE TO READ THE UID OF THE USER IN THE CINGLE
@@ -154,6 +160,8 @@ public class ProfileCinglesAdapter extends RecyclerView.Adapter<ProfileCinglesVi
                     final String description = profileCingle.getDescription();
                     final double sensecredits = profileCingle.getSensepoint();
                     final long timestamp = profileCingle.getTimeStamp();
+                    final String pushId = profileCingle.getPushId();
+                    Log.d("push id", pushId);
 
                     Picasso.with(mContext)
                             .load(image)
@@ -240,6 +248,29 @@ public class ProfileCinglesAdapter extends RecyclerView.Adapter<ProfileCinglesVi
                         }
                     });
 
+                    cingleOwnersReference.child(postKey).child("owner").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()){
+                                TransactionDetails transactionDetails = dataSnapshot.getValue(TransactionDetails.class);
+                                final String ownerUid = transactionDetails.getUid();
+                                Log.d("owner uid", ownerUid);
+
+                                if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
+                                    holder.cingleSettingsImageView.setVisibility(View.VISIBLE);
+                                }else {
+                                    holder.cingleSettingsImageView.setVisibility(View.INVISIBLE);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+
                     //SET THE CINGULAN CURRENT USERNAME AND PROFILE IMAGE
                     usersRef.child(uid).addValueEventListener(new ValueEventListener() {
                         @Override
@@ -305,6 +336,12 @@ public class ProfileCinglesAdapter extends RecyclerView.Adapter<ProfileCinglesVi
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             holder.likesCountTextView.setText(dataSnapshot.getChildrenCount() +" " + "Likes");
+
+                            if (dataSnapshot.hasChildren()){
+                                holder.likesImageView.setColorFilter(Color.RED);
+                            }else {
+                                holder.likesImageView.setColorFilter(Color.BLACK);
+                            }
 
                         }
 
@@ -429,7 +466,8 @@ public class ProfileCinglesAdapter extends RecyclerView.Adapter<ProfileCinglesVi
 
                                     holder.likesRecyclerView.setAdapter(firebaseRecyclerAdapter);
                                     holder.likesRecyclerView.setHasFixedSize(false);
-                                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, true);
+                                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext,
+                                            LinearLayoutManager.HORIZONTAL, true);
                                     layoutManager.setAutoMeasureEnabled(true);
                                     holder.likesRecyclerView.setNestedScrollingEnabled(false);
                                     holder.likesRecyclerView.setLayoutManager(layoutManager);
@@ -465,12 +503,14 @@ public class ProfileCinglesAdapter extends RecyclerView.Adapter<ProfileCinglesVi
                                                                 .removeValue();
                                                         onLikeCounter(false);
                                                         processLikes = false;
+                                                        holder.likesImageView.setColorFilter(Color.BLACK);
 
                                                     }else {
                                                         likesRef.child(postKey).child(firebaseAuth.getCurrentUser().getUid())
                                                                 .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
                                                         processLikes = false;
                                                         onLikeCounter(false);
+                                                        holder.likesImageView.setColorFilter(Color.RED);
                                                     }
                                                 }
 
@@ -571,6 +611,7 @@ public class ProfileCinglesAdapter extends RecyclerView.Adapter<ProfileCinglesVi
 
                         }
                     });
+
                 }
             }
 
@@ -615,7 +656,7 @@ public class ProfileCinglesAdapter extends RecyclerView.Adapter<ProfileCinglesVi
 
 
     //region listeners
-    public static double round(double value, int places) {
+    private static double round(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
 
         BigDecimal bd = new BigDecimal(value);

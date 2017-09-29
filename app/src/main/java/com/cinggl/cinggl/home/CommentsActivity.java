@@ -1,6 +1,8 @@
 package com.cinggl.cinggl.home;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,10 +10,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -54,6 +58,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     @Bind(R.id.saySomethingRelativeLayout)RelativeLayout mSaySomethingRelativeLayout;
     @Bind(R.id.cingleTitleTextView)TextView mCingleTitleTextView;
     @Bind(R.id.cingleTitleRelativeLayout)RelativeLayout mCingleTitleRelativeLayout;
+    @Bind(R.id.commentCountTextView)TextView mCommentCountTextView;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -67,9 +72,10 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     private static final String TAG = CommentsActivity.class.getSimpleName();
     private boolean processFollow = false;
     private DatabaseReference usernameRef;
+    private LinearLayoutManager layoutManager;
     private TextView usernameTextView;
     private CircleImageView profileImageView;
-
+    private static final int DEFAULT_COMMENT_LENGTH_LIMIT = 500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +93,8 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                 finish();
             }
         });
+
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
@@ -111,10 +119,44 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
             cinglesReference.keepSynced(true);
             relationsRef.keepSynced(true);
 
+            mCommentEditText.setFilters(new InputFilter[]{new InputFilter
+                    .LengthFilter(DEFAULT_COMMENT_LENGTH_LIMIT)});
+            textWatchers();
+
             setData();
             setUpFirebaseComments();
 
         }
+    }
+
+    private void textWatchers(){
+        //TITLE TEXT WATCHER
+        mCommentEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                int count = DEFAULT_COMMENT_LENGTH_LIMIT - editable.length();
+                mCommentCountTextView.setText(Integer.toString(count));
+
+                if (count < 0){
+                }else if (count < 300){
+                    mCommentCountTextView.setTextColor(Color.GRAY);
+                }else {
+                    mCommentCountTextView.setTextColor(Color.BLACK);
+                }
+
+            }
+        });
+
     }
 
     public void setData(){
@@ -400,6 +442,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         mCommentsRecyclerView.setLayoutManager(layoutManager);
     }
 
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -413,6 +456,12 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         //remove the event listner
         firebaseRecyclerAdapter.cleanup();
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
 //
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {

@@ -2,6 +2,7 @@ package com.cinggl.cinggl.home;
 
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
@@ -25,6 +27,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -57,10 +60,10 @@ public class BestCinglesFragment extends Fragment {
     private FirebaseAuth firebaseAuth;
     private ChildEventListener mChildEventListener;
     private static final int TOTAL_ITEM_EACH_LOAD = 2;
+    private Parcelable recyclerViewState;
 
     @Bind(R.id.bestCinglesRecyclerView)RecyclerView bestCinglesRecyclerView;
     @Bind(R.id.bestCinglesProgressbar)ProgressBar progressBar;
-//    @Bind(R.id.currentDateTextView)TextView mCurrentDateTextView;
 
     public BestCinglesFragment() {
         // Required empty public constructor
@@ -94,7 +97,6 @@ public class BestCinglesFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         setCurrentDate();
-        bestCinglesRecyclerView.addOnScrollListener(mOnScollListener);
         setBestCingles(currentPage);
 
         return view;
@@ -108,10 +110,7 @@ public class BestCinglesFragment extends Fragment {
         initializeViewsAdapter();
 
         if (savedInstanceState != null){
-            //restore saved layout manager type
-            bestCingleRecyclerPosition = (int) savedInstanceState
-                    .getSerializable(KEY_LAYOUT_POSITION);
-            bestCinglesRecyclerView.scrollToPosition(bestCingleRecyclerPosition);
+            recyclerViewState = savedInstanceState.getParcelable(KEY_LAYOUT_POSITION);
         }
     }
 
@@ -127,26 +126,6 @@ public class BestCinglesFragment extends Fragment {
     }
 
 
-    private RecyclerView.OnScrollListener mOnScollListener = new RecyclerView.OnScrollListener(){
-        private int lastVisibileItem;
-
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            super.onScrolled(recyclerView, dx, dy);
-            lastVisibileItem = layoutManager.findLastVisibleItemPosition();
-        }
-
-        @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            super.onScrollStateChanged(recyclerView, newState);
-            if (newState == RecyclerView.SCROLL_STATE_IDLE
-                    && lastVisibileItem +1 == bestCinglesAdapter.getItemCount()){
-//                progressBar.setVisibility(View.VISIBLE);
-                setBestCingles(currentPage + 1);
-            }
-        }
-    };
-
     private void setCurrentDate(){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d");
         String date = simpleDateFormat.format(new Date());
@@ -161,8 +140,7 @@ public class BestCinglesFragment extends Fragment {
             simpleDateFormat = new SimpleDateFormat("d'th' MMM yyyy");
         String currentDate = simpleDateFormat.format(new Date());
 
-//        mCurrentDateTextView.setText(currentDate);
-    }
+   }
 
     public void setBestCingles(int start){
 //        progressBar.setVisibility(View.VISIBLE);
@@ -173,18 +151,25 @@ public class BestCinglesFragment extends Fragment {
         ChildEventListener childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d("Snapshot", dataSnapshot.toString());
-//                progressBar.setVisibility(View.GONE);
+               if (dataSnapshot.exists() && dataSnapshot.hasChild("uid")){
+                   Cingle cingle = dataSnapshot.getValue(Cingle.class);
+                   final double credits = cingle.getSensepoint();
+                   if (credits > 0){
+                       Log.d("Snapshot", dataSnapshot.toString());
+                       progressBar.setVisibility(View.GONE);
 
-                Cingle cingle = dataSnapshot.getValue(Cingle.class);
-                cinglesIds.add(dataSnapshot.getKey());
-                bestCingles.add(cingle);
+                       cinglesIds.add(dataSnapshot.getKey());
+                       bestCingles.add(cingle);
 
-                currentPage += TOTAL_ITEM_EACH_LOAD;
-                bestCinglesAdapter.setCingles(bestCingles);
-                bestCinglesAdapter.notifyItemInserted(bestCingles.size());
-                bestCinglesAdapter.getItemCount();
-                Log.d("size of best cingles", bestCingles.size() + "");
+                       currentPage += TOTAL_ITEM_EACH_LOAD;
+                       bestCinglesAdapter.setCingles(bestCingles);
+                       bestCinglesAdapter.notifyItemInserted(bestCingles.size());
+                       bestCinglesAdapter.getItemCount();
+                       Log.d("size of best cingles", bestCingles.size() + "");
+                   }
+               }else {
+                   progressBar.setVisibility(View.VISIBLE);
+               }
 
             }
 
@@ -257,23 +242,9 @@ public class BestCinglesFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        //save currently selected layout manager;
-        int recyclerViewScrollPosition =  getRecyclerViewScrollPosition();
-        Log.d(TAG, "Recycler view scroll position:" + recyclerViewScrollPosition);
-        outState.putSerializable(KEY_LAYOUT_POSITION, recyclerViewScrollPosition);
-        super.onSaveInstanceState(outState);
-
+        outState.putParcelable(KEY_LAYOUT_POSITION, layoutManager.onSaveInstanceState());
     }
 
-    private int getRecyclerViewScrollPosition() {
-        int scrollPosition = 0;
-        // TODO: Is null check necessary?
-        if (bestCinglesRecyclerView != null && bestCinglesRecyclerView.getLayoutManager() != null) {
-            scrollPosition = ((LinearLayoutManager) bestCinglesRecyclerView.getLayoutManager())
-                    .findFirstCompletelyVisibleItemPosition();
-        }
-        return scrollPosition;
-    }
 
     public void cleanUpListener(){
         if (mChildEventListener != null){
@@ -291,6 +262,9 @@ public class BestCinglesFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        if (recyclerViewState != null){
+            layoutManager.onRestoreInstanceState(recyclerViewState);
+        }
     }
 
     @Override

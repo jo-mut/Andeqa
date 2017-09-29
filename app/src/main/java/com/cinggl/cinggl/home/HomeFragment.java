@@ -4,8 +4,11 @@ package com.cinggl.cinggl.home;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -78,9 +81,13 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
+    }
 
-//    @Override
+    //    @Override
 //    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 //        // Inflate the menu; this adds items to the action bar if it is present.
 //        super.onCreateOptionsMenu(menu, inflater);
@@ -108,7 +115,7 @@ public class HomeFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-//    // Method to manually check connection status
+    //    // Method to manually check connection status
 //    private void checkConnection() {
 //        boolean isConnected = ConnectivityReceiver.isConnected();
 //        showConnection(isConnected);
@@ -153,7 +160,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        viewPager.setAdapter(homePagerAdapter);
+//        viewPager.setAdapter(homePagerAdapter);
     }
 //
 //    /**

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -41,6 +42,7 @@ public class IfairCinglesViewHolder extends RecyclerView.ViewHolder {
     public CircleImageView ownerImageView;
     public TextView datePostedTextView;
     public TextView cingleSalePriceTextView;
+    public LinearLayout ifairCinglesLinearLayout;
 
     public IfairCinglesViewHolder(View itemView) {
         super(itemView);
@@ -56,6 +58,7 @@ public class IfairCinglesViewHolder extends RecyclerView.ViewHolder {
         datePostedTextView = (TextView) mView.findViewById(R.id.datePostedTextView);
         usernameTextView = (TextView) mView.findViewById(R.id.usernameTextView);
         cingleSalePriceTextView = (TextView) mView.findViewById(R.id.cingleSalePriceTextView);
+        ifairCinglesLinearLayout = (LinearLayout) mView.findViewById(R.id.ifair_cingles_linear_layout);
 
 
     }

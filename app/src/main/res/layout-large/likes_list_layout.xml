@@ -71,7 +71,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
                 android:id="@+id/secondNameTextView"
                 android:layout_below="@+id/usernameTextView"
                 android:layout_alignBaseline="@+id/firstNameTextView"

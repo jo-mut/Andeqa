@@ -158,6 +158,7 @@
                     android:layout_toEndOf="@+id/commentsCountTextView"
                     android:layout_marginLeft="10dp" />
 
+
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -192,8 +193,7 @@
                     android:layout_alignTop="@+id/cingleSenseCreditsTextView"
                     android:layout_toRightOf="@+id/commentsImageView"
                     android:layout_toEndOf="@+id/commentsImageView"
-                    android:textStyle="normal|bold"
-                    android:textColor="@android:color/black" />
+                    android:textStyle="normal" />
 
 
             </RelativeLayout>
@@ -249,7 +249,7 @@
                 android:padding="3dp"
                 android:id="@+id/descriptionRelativeLayout">
 
-                <com.cinggl.cinggl.utils.ExpandableTextView
+                <TextView
                     android:text="The Cities of Tomorrow; the Cities of Light, with the evolution of technology"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

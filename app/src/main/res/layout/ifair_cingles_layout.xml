@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:id="@+id/ifair_cingles_linear_layout"
     android:background="@android:color/white"
     android:layout_marginBottom="15dp"
     android:layout_width="match_parent"

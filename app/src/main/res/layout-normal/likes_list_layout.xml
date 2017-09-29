@@ -75,7 +75,8 @@
                 android:layout_alignBottom="@+id/firstNameTextView"
                 android:layout_toRightOf="@+id/firstNameTextView"
                 android:layout_centerVertical="true"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:layout_marginLeft="3dp" />
 
         </RelativeLayout>
 

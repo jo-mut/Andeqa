@@ -4,6 +4,7 @@ package com.cinggl.cinggl.home;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -23,6 +24,8 @@ import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.ifair.RedeemCreditsDialogFragment;
 import com.cinggl.cinggl.ifair.SetCinglePriceActivity;
 import com.cinggl.cinggl.models.TransactionDetails;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -41,7 +44,7 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
     @Bind(R.id.deleteCingleRelativeLayout)RelativeLayout mDeleteCingleRelativeLayout;
 //    @Bind(R.id.editCingleRelativeLayout)RelativeLayout mEditCingleRelativeLayout;
     @Bind(R.id.tradeCingleRelativeLayout)RelativeLayout mTradeCingleRelativeLayout;
-    @Bind(R.id.reportCingleRelativeLayout)RelativeLayout mReportCingleRelativeLayoout;
+//    @Bind(R.id.reportCingleRelativeLayout)RelativeLayout mReportCingleRelativeLayoout;
     @Bind(R.id.redeemCreditsRelativeLayout)RelativeLayout mRedeemCreditsRelativeLayout;
     private static final String EXTRA_POST_KEY = "post key";
     private String mPostKey;
@@ -50,6 +53,7 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
     private DatabaseReference ifairReference;
     private DatabaseReference cinglesReference;
     private DatabaseReference cingleOwnerReference;
+    private DatabaseReference profileCinglesReference;
     private Query mKeyQuery;
     private static final String TAG = CingleSettingsDialog.class.getSimpleName();
 
@@ -80,14 +84,12 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
         View view = inflater.inflate(R.layout.fragment_cingle_settings_dialog, container, false);
         ButterKnife.bind(this, view);
 
-
-
         firebaseAuth = FirebaseAuth.getInstance();
 
         if (firebaseAuth.getCurrentUser() != null){
             mDeleteCingleRelativeLayout.setOnClickListener(this);
-            mReportCingleRelativeLayoout.setOnClickListener(this);
-//        mEditCingleRelativeLayout.setOnClickListener(this);
+//            mReportCingleRelativeLayoout.setOnClickListener(this);
+//            mEditCingleRelativeLayout.setOnClickListener(this);
             mTradeCingleRelativeLayout.setOnClickListener(this);
             mRedeemCreditsRelativeLayout.setOnClickListener(this);
 
@@ -106,13 +108,14 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
             cinglesReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
             mKeyQuery = databaseReference;
             cingleOwnerReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_ONWERS);
+            profileCinglesReference = FirebaseDatabase.getInstance().getReference(Constants.PROFILE_CINGLES)
+                    .child(firebaseAuth.getCurrentUser().getUid());
 
             ifairReference.keepSynced(true);
             cingleOwnerReference.keepSynced(true);
             databaseReference.keepSynced(true);
+            profileCinglesReference.keepSynced(true);
 
-            hideLayouts();
-            redeemCredits();
         }
 
         return view;
@@ -121,8 +124,6 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-
 
         String title = getArguments().getString("title", "cingle settings");
         getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
@@ -136,9 +137,9 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
             deleteCingle();
         }
 
-        if (v == mReportCingleRelativeLayoout){
-
-        }
+//        if (v == mReportCingleRelativeLayoout){
+//
+//        }
 
 //        if (v == mEditCingleRelativeLayout){
 //            editCingle();
@@ -157,9 +158,13 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
                            e.printStackTrace();
                        }
                     }else {
-                        Intent intent = new Intent(getActivity(), SetCinglePriceActivity.class);
-                        intent.putExtra(CingleSettingsDialog.EXTRA_POST_KEY, mPostKey);
-                        startActivity(intent);
+                        try {
+                            Intent intent = new Intent(getActivity(), SetCinglePriceActivity.class);
+                            intent.putExtra(CingleSettingsDialog.EXTRA_POST_KEY, mPostKey);
+                            startActivity(intent);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
                     }
                 }
 
@@ -189,114 +194,28 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
         dismiss();
     }
 
-    public void redeemCredits(){
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child(mPostKey).exists()){
-                    final String uid = dataSnapshot.child(mPostKey).child("uid").getValue(String.class);
-
-                    cingleOwnerReference.child(mPostKey).child("owner").addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                           if (dataSnapshot.exists()){
-                               //if owner exist then its only him that can delete the cingle
-                               TransactionDetails transactionDetails = dataSnapshot.getValue(TransactionDetails.class);
-                               final String ownerUid = transactionDetails.getUid();
-                               if ((firebaseAuth.getCurrentUser().getUid().equals(ownerUid))){
-                                   //SHOW THE REDEEM LAYOUT
-                                   mRedeemCreditsRelativeLayout.setVisibility(View.VISIBLE);
-
-                               }else {
-                                   //HIDE THE REDEEM LAYOUT
-                                   mRedeemCreditsRelativeLayout.setVisibility(View.GONE);
-                               }
-                           }else {
-                               if ((firebaseAuth.getCurrentUser().getUid().equals(uid))){
-                                   //SHOW THE REDEEM LAYOUT
-                                   mRedeemCreditsRelativeLayout.setVisibility(View.VISIBLE);
-
-                               }else {
-                                   //HIDE THE REDEEM LAYOUT
-                                   mRedeemCreditsRelativeLayout.setVisibility(View.GONE);
-                               }
-                           }
-
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-                    if ((firebaseAuth.getCurrentUser().getUid().equals(uid))){
-                        //SHOW THE REDEEM LAYOUT
-                        mRedeemCreditsRelativeLayout.setVisibility(View.VISIBLE);
-
-                    }else {
-                        //HIDE THE REDEEM LAYOUT
-                        mRedeemCreditsRelativeLayout.setVisibility(View.GONE);
-                    }
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    public void hideLayouts(){
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child(mPostKey).exists()){
-                    final String uid = dataSnapshot.child(mPostKey).child("uid").getValue(String.class);
-
-                    if ((firebaseAuth.getCurrentUser().getUid().equals(uid))){
-                        //SHOW THE DELETE LAYOUT
-                        mDeleteCingleRelativeLayout.setVisibility(View.VISIBLE);
-                        mTradeCingleRelativeLayout.setVisibility(View.VISIBLE);
-//                        mEditCingleRelativeLayout.setVisibility(View.VISIBLE);
-                    }else {
-                        //HIDE THE DELETE LAYOUT
-                        mDeleteCingleRelativeLayout.setVisibility(View.GONE);
-                        mTradeCingleRelativeLayout.setVisibility(View.GONE);
-//                        mEditCingleRelativeLayout.setVisibility(View.GONE);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
     public void deleteCingle(){
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.child(mPostKey).exists()){
                     final String uid = dataSnapshot.child(mPostKey).child("uid").getValue(String.class);
-
-
                     Log.d("post uid", uid);
-
-                    if ((firebaseAuth.getCurrentUser().getUid().equals(uid))){
-                        //SHOW THE DELETE LAYOUT
-                        mDeleteCingleRelativeLayout.setVisibility(View.GONE);
+                    if (firebaseAuth.getCurrentUser().getUid().equals(uid)){
                         //DELETE THE CINGLE
                         if (dataSnapshot.hasChild(mPostKey)){
-                            databaseReference.child(mPostKey).removeValue();
+                            databaseReference.child(mPostKey).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()){
+                                        profileCinglesReference.child(mPostKey).removeValue();
+                                        ifairReference.child("Cingle Selling").child(mPostKey).removeValue();
+                                    }
+                                }
+                            });
                         }
-                    }else {
-                        //HIDE THE DELETE LAYOUT
-                        mDeleteCingleRelativeLayout.setVisibility(View.GONE);
                     }
+
                 }
             }
 
@@ -306,5 +225,6 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
             }
         });
 
+        dismiss();
     }
 }

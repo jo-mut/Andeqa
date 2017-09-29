@@ -142,13 +142,13 @@
             android:label="Set sale price"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
+        <activity android:name=".preferences.TermsOfServiceActivity" />
         <activity
-            android:name=".preferences.TermsOfServiceActivity"/>
-        <activity
-            android:theme="@style/AppTheme"
+            android:name=".ifair.IfairCinglesActivity"
             android:label="Ifair"
             android:screenOrientation="portrait"
-            android:name=".ifair.IfairCinglesActivity"/>
+            android:theme="@style/AppTheme" />
+        <activity android:name=".profile.CreateProfileActivity"></activity>
     </application>
 
 </manifest>

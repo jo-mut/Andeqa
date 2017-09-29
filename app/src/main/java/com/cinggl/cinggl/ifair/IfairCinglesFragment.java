@@ -2,6 +2,7 @@ package com.cinggl.cinggl.ifair;
 
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,6 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
@@ -23,6 +26,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +39,7 @@ import butterknife.ButterKnife;
  */
 public class IfairCinglesFragment extends Fragment {
     @Bind(R.id.ifairCinglesRecyclerView)RecyclerView mIfairCingleRecyclerView;
+    @Bind(R.id.ifairCinglesProgressbar)ProgressBar progressBar;
 
     private DatabaseReference cinglesReference;
     private DatabaseReference ifairReference;
@@ -45,15 +50,16 @@ public class IfairCinglesFragment extends Fragment {
     private IfairCingleAdapter ifairCingleAdapter;
     private DatabaseReference senseCreditsReference;
     private static final String TAG = "CingleOutFragment";
-    private LinearLayoutManager layoutManager;
 
     private List<CingleSale> ifairCingles = new ArrayList<>();
     private List<String> ifairCinglesIds = new ArrayList<>();
 
     private int currentPage = 0;
     private static final int TOTAL_ITEM_EACH_LOAD = 10;
+    private LinearLayoutManager layoutManager;
     private static final String KEY_LAYOUT_POSITION = "layout pooition";
-    private int ifairCinglesRecyclerViewPosition = 0;
+    private Parcelable recyclerViewState;
+
 
     public IfairCinglesFragment() {
         // Required empty public constructor
@@ -77,8 +83,6 @@ public class IfairCinglesFragment extends Fragment {
 
             usernameRef.keepSynced(true);
 
-            initializeViewsAdapter();
-            mIfairCingleRecyclerView.addOnScrollListener(mOnScollListener);
             setCinglesOnIfair(currentPage);
         }
 
@@ -98,34 +102,12 @@ public class IfairCinglesFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        initializeViewsAdapter();
+
         if (savedInstanceState != null){
-            //restore saved layout manager type
-            ifairCinglesRecyclerViewPosition = (int) savedInstanceState
-                    .getSerializable(KEY_LAYOUT_POSITION);
-            mIfairCingleRecyclerView.scrollToPosition(ifairCinglesRecyclerViewPosition);
+            recyclerViewState = savedInstanceState.getParcelable(KEY_LAYOUT_POSITION);
         }
     }
-
-    private RecyclerView.OnScrollListener mOnScollListener = new RecyclerView.OnScrollListener(){
-        private int lastVisibileItem;
-
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            super.onScrolled(recyclerView, dx, dy);
-            lastVisibileItem = layoutManager.findLastVisibleItemPosition();
-        }
-
-        @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            super.onScrollStateChanged(recyclerView, newState);
-            if (newState == RecyclerView.SCROLL_STATE_IDLE
-                    && lastVisibileItem + 1 ==  ifairCingleAdapter.getItemCount()){
-//                progressBar.setVisibility(View.VISIBLE);
-                setCinglesOnIfair(currentPage + 1);
-            }
-        }
-    };
-
 
     public void setCinglesOnIfair(int start){
 //        progressBar.setVisibility(View.VISIBLE);
@@ -136,18 +118,21 @@ public class IfairCinglesFragment extends Fragment {
         ChildEventListener childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d("Snapshot", dataSnapshot.toString());
-//                progressBar.setVisibility(View.GONE);
+                if (dataSnapshot.exists()){
+                    Log.d("Snapshot", dataSnapshot.toString());
+                    progressBar.setVisibility(View.GONE);
+                    CingleSale cingleSale = dataSnapshot.getValue(CingleSale.class);
+                    ifairCinglesIds.add(dataSnapshot.getKey());
+                    ifairCingles.add(cingleSale);
 
-                CingleSale cingleSale = dataSnapshot.getValue(CingleSale.class);
-                ifairCinglesIds.add(dataSnapshot.getKey());
-                ifairCingles.add(cingleSale);
-
-                currentPage += 10;
-                ifairCingleAdapter.setIfairCingles(ifairCingles);
-                ifairCingleAdapter.notifyItemInserted(ifairCingles.size());
-                ifairCingleAdapter.getItemCount();
-                Log.d("size of cingles list", ifairCingles.size() + "");
+                    currentPage += 10;
+                    ifairCingleAdapter.setIfairCingles(ifairCingles);
+                    ifairCingleAdapter.notifyItemInserted(ifairCingles.size());
+                    ifairCingleAdapter.getItemCount();
+                    Log.d("size of cingles list", ifairCingles.size() + "");
+                }else {
+                    progressBar.setVisibility(View.VISIBLE);
+                }
 
             }
 
@@ -222,22 +207,7 @@ public class IfairCinglesFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        //save currently selected layout manager;
-        int recyclerViewScrollPosition =  getRecyclerViewScrollPosition();
-        Log.d(TAG, "Recycler view scroll position:" + recyclerViewScrollPosition);
-        outState.putSerializable(KEY_LAYOUT_POSITION, recyclerViewScrollPosition);
-        super.onSaveInstanceState(outState);
-
-    }
-
-    private int getRecyclerViewScrollPosition() {
-        int scrollPosition = 0;
-        // TODO: Is null check necessary?
-        if (mIfairCingleRecyclerView != null && mIfairCingleRecyclerView.getLayoutManager() != null) {
-            scrollPosition = ((LinearLayoutManager) mIfairCingleRecyclerView.getLayoutManager())
-                    .findFirstCompletelyVisibleItemPosition();
-        }
-        return scrollPosition;
+        outState.putParcelable(KEY_LAYOUT_POSITION, layoutManager.onSaveInstanceState());
     }
 
     @Override
@@ -245,6 +215,15 @@ public class IfairCinglesFragment extends Fragment {
         super.onDestroy();
         cleanUpListener();
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (recyclerViewState != null){
+            layoutManager.onRestoreInstanceState(recyclerViewState);
+        }
+    }
+
 
 
 }

@@ -2,8 +2,10 @@ package com.cinggl.cinggl.home;
 
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
@@ -24,6 +27,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +61,7 @@ public class CingleOutFragment extends Fragment{
     private int currentPage = 0;
     private static final int TOTAL_ITEM_EACH_LOAD = 10;
     private static final String KEY_LAYOUT_POSITION = "layout pooition";
-    private int cingleOutRecyclerViewPosition = 0;
+    private Parcelable recyclerViewState;
 
 
 
@@ -86,7 +90,6 @@ public class CingleOutFragment extends Fragment{
             usernameRef.keepSynced(true);
             commentReference.keepSynced(true);
 
-            cingleOutRecyclerView.addOnScrollListener(mOnScollListener);
             setAllCingles(currentPage);
         }
 
@@ -96,14 +99,10 @@ public class CingleOutFragment extends Fragment{
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         initializeViewsAdapter();
 
         if (savedInstanceState != null){
-            //restore saved layout manager type
-            cingleOutRecyclerViewPosition = (int) savedInstanceState
-                    .getSerializable(KEY_LAYOUT_POSITION);
-            cingleOutRecyclerView.scrollToPosition(cingleOutRecyclerViewPosition);
+            recyclerViewState = savedInstanceState.getParcelable(KEY_LAYOUT_POSITION);
         }
     }
 
@@ -128,28 +127,9 @@ public class CingleOutFragment extends Fragment{
         cingleOutAdapter.notifyDataSetChanged();
     }
 
-    private RecyclerView.OnScrollListener mOnScollListener = new RecyclerView.OnScrollListener(){
-        private int lastVisibileItem;
-
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            super.onScrolled(recyclerView, dx, dy);
-            lastVisibileItem = layoutManager.findLastVisibleItemPosition();
-        }
-
-        @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            super.onScrollStateChanged(recyclerView, newState);
-            if (newState == RecyclerView.SCROLL_STATE_IDLE
-                    && lastVisibileItem + 1 == cingleOutAdapter.getItemCount()){
-//                progressBar.setVisibility(View.VISIBLE);
-                setAllCingles(currentPage + 1);
-            }
-        }
-    };
 
     public void setAllCingles(int start){
-        progressBar.setVisibility(View.VISIBLE);
+//        progressBar.setVisibility(View.VISIBLE);
         cinglesQuery = databaseReference.orderByChild("randomNumber").startAt(start)
                 .endAt(start + TOTAL_ITEM_EACH_LOAD);
         cinglesQuery.keepSynced(true);
@@ -157,18 +137,22 @@ public class CingleOutFragment extends Fragment{
         ChildEventListener childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d("Snapshot", dataSnapshot.toString());
-                progressBar.setVisibility(View.GONE);
+               if (dataSnapshot.exists() && dataSnapshot.hasChild("uid")){
+                   Log.d("Snapshot", dataSnapshot.toString());
+                   progressBar.setVisibility(View.GONE);
 
-                Cingle cingle = dataSnapshot.getValue(Cingle.class);
-                cinglesIds.add(dataSnapshot.getKey());
-                cingles.add(cingle);
+                   Cingle cingle = dataSnapshot.getValue(Cingle.class);
+                   cinglesIds.add(dataSnapshot.getKey());
+                   cingles.add(cingle);
 
-                currentPage += 10;
-                cingleOutAdapter.setCingles(cingles);
-                cingleOutAdapter.notifyItemInserted(cingles.size());
-                cingleOutAdapter.getItemCount();
-                Log.d("size of all cingles", cingles.size() + "");
+                   currentPage += 10;
+                   cingleOutAdapter.setCingles(cingles);
+                   cingleOutAdapter.notifyItemInserted(cingles.size());
+                   cingleOutAdapter.getItemCount();
+                   Log.d("size of all cingles", cingles.size() + "");
+               }else {
+                   progressBar.setVisibility(View.VISIBLE);
+               }
 
             }
 
@@ -245,22 +229,8 @@ public class CingleOutFragment extends Fragment{
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        //save currently selected layout manager;
-        int recyclerViewScrollPosition =  getRecyclerViewScrollPosition();
-        Log.d(TAG, "Recycler view scroll position:" + recyclerViewScrollPosition);
-        outState.putSerializable(KEY_LAYOUT_POSITION, recyclerViewScrollPosition);
-        super.onSaveInstanceState(outState);
+        outState.putParcelable(KEY_LAYOUT_POSITION, layoutManager.onSaveInstanceState());
 
-    }
-
-    private int getRecyclerViewScrollPosition() {
-        int scrollPosition = 0;
-        // TODO: Is null check necessary?
-        if (cingleOutRecyclerView != null && cingleOutRecyclerView.getLayoutManager() != null) {
-            scrollPosition = ((LinearLayoutManager) cingleOutRecyclerView.getLayoutManager())
-                    .findFirstCompletelyVisibleItemPosition();
-        }
-        return scrollPosition;
     }
 
     @Override
@@ -272,6 +242,9 @@ public class CingleOutFragment extends Fragment{
     @Override
     public void onResume() {
         super.onResume();
+        if (recyclerViewState != null){
+            layoutManager.onRestoreInstanceState(recyclerViewState);
+        }
     }
 
     @Override

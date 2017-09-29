@@ -414,6 +414,7 @@
                         android:layout_centerVertical="true" />
 
                     <Button
+                        android:text=""
                         android:layout_width="wrap_content"
                         android:layout_alignParentEnd="false"
                         android:id="@+id/tradeCingleButton"
@@ -476,7 +477,7 @@
                         android:layout_toEndOf="@+id/likesRecyclerView"
                         android:layout_marginLeft="5dp"
                         android:textSize="9sp"
-                        android:text="+0"
+                        android:text=""
                         android:paddingRight="5dp"
                         android:paddingLeft="5dp" />
 

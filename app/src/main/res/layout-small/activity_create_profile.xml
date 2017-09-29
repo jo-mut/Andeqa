@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_create_profile"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.cinggl.cinggl.profile.CreateProfileActivity"
+    android:background="@drawable/gradient_color">
+
+    <ScrollView
+        android:scrollbars="none"
+        android:overScrollMode="never"
+        android:fillViewport="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_weight="0.07"
+                    android:background="@drawable/gradient_color"
+                    android:layout_marginBottom="15dp">
+
+                    <ImageView
+                        android:id="@+id/profileCoverImageView"
+                        android:src="@drawable/gradient_color"
+                        android:alpha="0.1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop" />
+
+
+                    <ViewAnimator
+                        android:id="@+id/animator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:animateFirstView="false"
+                        android:layout_centerInParent="true">
+
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/profilePictureImageView"
+                            android:layout_centerHorizontal="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_gravity="center"
+                            android:background="@drawable/profile_circular_border_imageview"
+                            android:layout_width="80dp"
+                            android:layout_height="100dp" />
+
+                        <ProgressBar
+                            android:id="@+id/progress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"/>
+
+                    </ViewAnimator>
+
+                    <ImageButton
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_menu_camera"
+                        android:layout_width="40dp"
+                        android:layout_marginLeft="50dp"
+                        android:layout_marginStart="50dp"
+                        android:id="@+id/updateProfilePictureImageButton"
+                        android:layout_alignBottom="@+id/animator"
+                        android:layout_alignLeft="@+id/animator"
+                        android:layout_alignStart="@+id/animator" />
+
+                    <TextView
+                        android:text="Update Cover"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginBottom="12dp"
+                        android:textSize="10sp"
+                        android:id="@+id/updateCoverTextView"
+                        android:textColor="@android:color/white"
+                        android:layout_marginRight="10dp"
+                        android:padding="5dp" />
+
+                </RelativeLayout>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:padding="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="5dp">
+
+                    <EditText
+                        android:layout_height="wrap_content"
+                        android:hint="First Name"
+                        android:inputType="textCapWords"
+                        android:nextFocusDown="@+id/passwordEditText"
+                        android:textColor="@android:color/black"
+                        android:layout_toLeftOf="@+id/nameDivider"
+                        android:layout_toStartOf="@+id/nameDivider"
+                        android:textSize="10sp"
+                        android:id="@+id/fisrtNameEditText"
+                        android:layout_centerInParent="false"
+                        android:layout_centerVertical="false"
+                        android:layout_alignParentRight="false"
+                        android:layout_alignParentLeft="true"
+                        android:layout_width="150sp"
+                        android:layout_centerHorizontal="false"
+                        android:padding="15dp"
+                        android:background="@drawable/input_background"
+                        android:layout_marginRight="3dp" />
+
+                    <View
+                        android:id="@+id/nameDivider"
+                        android:layout_height="0.3dp"
+                        android:layout_alignParentLeft="false"
+                        android:background="@android:color/transparent"
+                        android:layout_centerHorizontal="false"
+                        android:layout_centerInParent="true"
+                        android:layout_width="1dp"
+                        android:layout_marginBottom="40dp" />
+
+
+
+                    <EditText
+                        android:inputType="textCapWords"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/input_background"
+                        android:hint="Second Name"
+                        android:nextFocusDown="@+id/passwordEditText"
+                        android:padding="15dp"
+                        android:textColor="@android:color/black"
+                        android:textSize="10sp"
+                        android:layout_toRightOf="@+id/nameDivider"
+                        android:layout_toEndOf="@+id/nameDivider"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:id="@+id/secondNameEditText"
+                        android:layout_alignParentLeft="true"
+                        android:layout_width="150sp"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="3dp" />
+
+
+                </RelativeLayout>
+
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingBottom="5dp">
+
+                    <EditText
+                        android:layout_height="wrap_content"
+                        android:inputType="textMultiLine"
+                        android:ems="10"
+                        android:id="@+id/usernameEditText"
+                        android:freezesText="true"
+                        android:textSize="10sp"
+                        android:layout_width="match_parent"
+                        android:background="@drawable/input_background"
+                        android:hint="Username"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:padding="15dp" />
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/submitRelativeLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingBottom="5dp">
+
+                    <Button
+                        android:id="@+id/submitUserInfoButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:text="Sign up"
+                        android:background="@drawable/colour_btn_background"
+                        android:textSize="10sp"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/white"
+                        android:layout_centerVertical="true" />
+
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+    
+</LinearLayout>
