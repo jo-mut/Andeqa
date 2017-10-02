@@ -56,8 +56,8 @@ public class IfairCingleAdapter extends RecyclerView.Adapter<IfairCinglesViewHol
     private static final double GOLDEN_RATIO = 1.618;
     private static final String TAG = IfairCingleAdapter.class.getSimpleName();
     private List<CingleSale> ifairCingles = new ArrayList<>();
-    public static final int MAX_WIDTH = 400;
-    public static final int MAX_HEIGHT = 400;
+    public static final int MAX_WIDTH = 200;
+    public static final int MAX_HEIGHT = 200;
 
     public IfairCingleAdapter(Context mContext) {
         this.mContext = mContext;
@@ -301,32 +301,36 @@ public class IfairCingleAdapter extends RecyclerView.Adapter<IfairCinglesViewHol
                             usersRef.child(ownerUid).addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    Cingulan cingulan = dataSnapshot.getValue(Cingulan.class);
-                                    final String username = cingulan.getUsername();
-                                    final String profileImage = cingulan.getProfileImage();
-                                    holder.cingleOwnerTextView.setText(username);
-                                    Picasso.with(mContext)
-                                            .load(profileImage)
-                                            .fit()
-                                            .centerCrop()
-                                            .placeholder(R.drawable.profle_image_background)
-                                            .networkPolicy(NetworkPolicy.OFFLINE)
-                                            .into(holder.ownerImageView, new Callback() {
-                                                @Override
-                                                public void onSuccess() {
+                                    if (dataSnapshot.exists()){
+                                        Cingulan cingulan = dataSnapshot.getValue(Cingulan.class);
+                                        final String username = cingulan.getUsername();
+                                        final String profileImage = cingulan.getProfileImage();
+                                        holder.cingleOwnerTextView.setText(username);
+                                        Picasso.with(mContext)
+                                                .load(profileImage)
+                                                .resize(MAX_WIDTH, MAX_HEIGHT)
+                                                .onlyScaleDown()
+                                                .centerCrop()
+                                                .placeholder(R.drawable.profle_image_background)
+                                                .networkPolicy(NetworkPolicy.OFFLINE)
+                                                .into(holder.ownerImageView, new Callback() {
+                                                    @Override
+                                                    public void onSuccess() {
 
-                                                }
+                                                    }
 
-                                                @Override
-                                                public void onError() {
-                                                    Picasso.with(mContext)
-                                                            .load(profileImage)
-                                                            .fit()
-                                                            .centerCrop()
-                                                            .placeholder(R.drawable.profle_image_background)
-                                                            .into(holder.ownerImageView);
-                                                }
-                                            });
+                                                    @Override
+                                                    public void onError() {
+                                                        Picasso.with(mContext)
+                                                                .load(profileImage)
+                                                                .resize(MAX_WIDTH, MAX_HEIGHT)
+                                                                .onlyScaleDown()
+                                                                .centerCrop()
+                                                                .placeholder(R.drawable.profle_image_background)
+                                                                .into(holder.ownerImageView);
+                                                    }
+                                                });
+                                    }
                                 }
 
                                 @Override

@@ -15,7 +15,6 @@ public class PersonalProfileActivity extends AppCompatActivity {
     private FragmentManager fragmentManager;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
-    private String mUid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +30,6 @@ public class PersonalProfileActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        mUid = firebaseUser.getUid();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

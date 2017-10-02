@@ -19,7 +19,7 @@
         <TextView
             android:ems="10"
             android:id="@+id/enterAmountDescription"
-            android:text="Enter the ammount of CSC you would like to invest in this Cingle"
+            android:text="Enter the exact amount of the sale price"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -46,22 +46,6 @@
             android:layout_alignParentStart="true"
             android:hint="Enter amount"
             android:textSize="14sp" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingRight="20dp"
-        android:paddingLeft="20dp"
-        android:layout_marginTop="10dp">
-
-        <TextView
-            android:ems="10"
-            android:id="@+id/amountOwnedTextView"
-            android:text="Your share in this Cingle will be 20%"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
     </RelativeLayout>
 
 

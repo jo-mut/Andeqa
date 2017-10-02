@@ -54,8 +54,8 @@ public class NavigationDrawerActivity extends AppCompatActivity
 //    @Bind(R.id.bottomNavigationView)BottomNavigationView mBottomNavigationView;
 
 
-    private static final int MAX_WIDTH = 300;
-    private static final int MAX_HEIGHT = 300;
+    private static final int MAX_WIDTH = 200;
+    private static final int MAX_HEIGHT = 200;
     final FragmentManager fragmentManager = getSupportFragmentManager();
     private static final String TAG = NavigationDrawerActivity.class.getSimpleName();
     final Fragment profileFragment = new ProfileFragment();

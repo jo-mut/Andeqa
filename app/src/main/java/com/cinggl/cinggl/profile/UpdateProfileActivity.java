@@ -79,8 +79,8 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     private DatabaseReference databaseReference;
     private DatabaseReference usersRef;
     private ProgressDialog progressDialog;
-    private static final int MAX_WIDTH = 300;
-    private static final int MAX_HEIGHT = 300;
+    private static final int MAX_WIDTH = 200;
+    private static final int MAX_HEIGHT = 200;
     private static final int MAX_COVER_WIDTH = 400;
     private static final int MAX_COVER_HEIGHT = 400;
 

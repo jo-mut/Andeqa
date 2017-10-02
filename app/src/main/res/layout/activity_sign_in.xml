@@ -21,15 +21,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-
             <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="93dp">
-
-
-            </RelativeLayout>
-
-            <RelativeLayout
+                android:layout_marginTop="100dp"
+                android:layout_marginBottom="40dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -42,8 +36,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:paddingLeft="30dp"
-                    android:paddingRight="30dp"
-                    android:paddingTop="30dp">
+                    android:paddingRight="30dp">
 
                     <EditText
                         android:id="@+id/emailEditText"

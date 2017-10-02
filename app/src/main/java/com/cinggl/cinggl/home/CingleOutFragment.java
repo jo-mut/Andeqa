@@ -121,7 +121,7 @@ public class CingleOutFragment extends Fragment{
     private void initializeViewsAdapter(){
         layoutManager =  new LinearLayoutManager(getContext());
         cingleOutRecyclerView.setLayoutManager(layoutManager);
-        cingleOutRecyclerView.setHasFixedSize(true);
+        cingleOutRecyclerView.setHasFixedSize(false);
         cingleOutAdapter = new CingleOutAdapter(getContext());
         cingleOutRecyclerView.setAdapter(cingleOutAdapter);
         cingleOutAdapter.notifyDataSetChanged();
@@ -129,7 +129,7 @@ public class CingleOutFragment extends Fragment{
 
 
     public void setAllCingles(int start){
-//        progressBar.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
         cinglesQuery = databaseReference.orderByChild("randomNumber").startAt(start)
                 .endAt(start + TOTAL_ITEM_EACH_LOAD);
         cinglesQuery.keepSynced(true);
@@ -139,7 +139,7 @@ public class CingleOutFragment extends Fragment{
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                if (dataSnapshot.exists() && dataSnapshot.hasChild("uid")){
                    Log.d("Snapshot", dataSnapshot.toString());
-                   progressBar.setVisibility(View.GONE);
+//                   progressBar.setVisibility(View.GONE);
 
                    Cingle cingle = dataSnapshot.getValue(Cingle.class);
                    cinglesIds.add(dataSnapshot.getKey());
@@ -151,7 +151,7 @@ public class CingleOutFragment extends Fragment{
                    cingleOutAdapter.getItemCount();
                    Log.d("size of all cingles", cingles.size() + "");
                }else {
-                   progressBar.setVisibility(View.VISIBLE);
+//                   progressBar.setVisibility(View.VISIBLE);
                }
 
             }
@@ -213,7 +213,7 @@ public class CingleOutFragment extends Fragment{
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "load Cingles : onCancelled", databaseError.toException());
-                Toast.makeText(getContext(), "Failed to load comments.", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "Failed to load data.", Toast.LENGTH_SHORT).show();
 
             }
         };

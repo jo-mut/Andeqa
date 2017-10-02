@@ -66,8 +66,8 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
     private ProgressDialog mAuthProgressDialog;
     private static  final int GALLERY_PROFILE_PHOTO_REQUEST = 111;
     private static final int GALLERY_PROFILE_COVER_PHOTO = 222;
-    private static final int MAX_WIDTH = 300;
-    private static final int MAX_HEIGHT = 300;
+    private static final int MAX_WIDTH = 200;
+    private static final int MAX_HEIGHT = 200;
     private static final int MAX_COVER_WIDTH = 400;
     private static final int MAX_COVER_HEIGHT = 400;
     private Uri profileUri;
@@ -100,7 +100,6 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
                throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
            }
 
-
            usersRef.keepSynced(true);
            createAuthProgressDialog();
 
@@ -119,22 +118,35 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
     }
 
     private void loginWithPassword() {
+      if (!TextUtils.isEmpty(mFirstNameEditText.getText().toString()) &&
+              !TextUtils.isEmpty(mSecondNameEditText.getText().toString()) &&
+              !TextUtils.isEmpty(mUsernameEditText.getText().toString())){
 
-        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
-                mAuthProgressDialog.dismiss();
-                if (!task.isSuccessful()) {
-                    Log.w(TAG, "signInWithEmail", task.getException());
-                    Toast.makeText(CreateProfileActivity.this, "Please confirm that your email and password match",
-                            Toast.LENGTH_SHORT).show();
-                }else {
-                    checkIfImailVerified();
-                }
-            }
-        });
+          mAuth.signInWithEmailAndPassword(email, password)
+                  .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                      @Override
+                      public void onComplete(@NonNull Task<AuthResult> task) {
+                          Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
+                          mAuthProgressDialog.dismiss();
+                          if (!task.isSuccessful()) {
+                              Log.w(TAG, "signInWithEmail", task.getException());
+                              Toast.makeText(CreateProfileActivity.this, "Please confirm that your email and password match",
+                                      Toast.LENGTH_SHORT).show();
+                          }else {
+                              checkIfImailVerified();
+                          }
+                      }
+                  });
 
+      }else {
+          overridePendingTransition(0,0);
+          finish();
+          overridePendingTransition(0,0);
+          startActivity(getIntent());
+
+          Toast.makeText(CreateProfileActivity.this, "Submit your profile info",
+                  Toast.LENGTH_LONG).show();
+      }
     }
 
 
@@ -142,6 +154,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
     public void checkIfImailVerified(){
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser.isEmailVerified()){
+
             createProfile();
             //user is verified sp you can finish this activity or send user to activity you want
             Toast.makeText(CreateProfileActivity.this, "You have Successfully signed in",
@@ -157,7 +170,8 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
             FirebaseAuth.getInstance().signOut();
             //restart this activity
 
-            Toast.makeText(CreateProfileActivity.this, "Please check that you have confirmed your email", Toast.LENGTH_LONG).show();
+            Toast.makeText(CreateProfileActivity.this, "Please check that you have confirmed your email",
+                    Toast.LENGTH_LONG).show();
 
             overridePendingTransition(0,0);
             finish();
@@ -219,9 +233,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
 
             }
         });
-
     }
-
 
     private boolean isValidName(String name) {
         if (name.equals("")) {
@@ -325,7 +337,14 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
         }
 
         if (v == mSubmitUserInfoButton){
-            loginWithPassword();
+           if (mAuth.getCurrentUser() != null){
+               Intent intent = new Intent(CreateProfileActivity.this, NavigationDrawerActivity.class);
+               intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+               startActivity(intent);
+               finish();
+           }else {
+               loginWithPassword();
+           }
         }
     }
 }

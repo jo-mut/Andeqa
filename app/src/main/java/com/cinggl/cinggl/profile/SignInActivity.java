@@ -1,8 +1,10 @@
 package com.cinggl.cinggl.profile;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +17,7 @@ import android.widget.Toast;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.home.NavigationDrawerActivity;
+import com.cinggl.cinggl.models.Cingulan;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -48,6 +51,9 @@ public class SignInActivity extends AppCompatActivity implements
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private ProgressDialog mAuthProgressDialog;
+    private DatabaseReference usersRef;
+    private static final String PASSWORD = "password";
+    private static final String EMAIL = "email";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,25 +61,24 @@ public class SignInActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_sign_in);
 
         ButterKnife.bind(this);
-
         mRegisterTextView.setOnClickListener(this);
         mPasswordLoginButton.setOnClickListener(this);
         mForgotPasswordTextView.setOnClickListener(this);
-
         mAuth = FirebaseAuth.getInstance();
         createAuthProgressDialog();
+
+        usersRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull final FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    //check if the user has created personal profile
+
                     Intent intent = new Intent(SignInActivity.this, NavigationDrawerActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();
-
                 }
             }
 
@@ -92,6 +97,31 @@ public class SignInActivity extends AppCompatActivity implements
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+    }
+
+    private void navigateToCreateProfile(){
+        String email = mEmailEditText.getText().toString().trim();
+        String password = mPasswordEditText.getText().toString().trim();
+        mAuthProgressDialog.show();
+
+        if (email.equals("")) {
+            mEmailEditText.setError("Please enter your email");
+            return;
+        }
+
+        if (password.equals("")) {
+            mPasswordEditText.setError("Password cannot be blank");
+            return;
+        }
+
+
+        Intent intent = new Intent(SignInActivity.this, CreateProfileActivity.class);
+        intent.putExtra(SignInActivity.PASSWORD, password);
+        intent.putExtra(SignInActivity.EMAIL, email);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+
     }
 
     private void loginWithPassword() {
@@ -131,14 +161,31 @@ public class SignInActivity extends AppCompatActivity implements
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser.isEmailVerified()){
 
+            usersRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.hasChild(mAuth.getCurrentUser().getUid())){
+                        //LAUCNH SETUP PROFIFLE ACTIVITY IF NO
+                        Intent intent = new Intent(SignInActivity.this, NavigationDrawerActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    }
+                    else {
+                     navigateToCreateProfile();
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+
+            });
+
             //user is verified sp you can finish this activity or send user to activity you want
             Toast.makeText(SignInActivity.this, "You have Successfully signed in",
                     Toast.LENGTH_SHORT).show();
-
-            Intent intent = new Intent(SignInActivity.this, NavigationDrawerActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
 
         }else {
             //email is not verified so just prompt the massge to the user and restart this activity

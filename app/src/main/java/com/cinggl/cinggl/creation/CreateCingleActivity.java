@@ -25,8 +25,10 @@ import com.cinggl.cinggl.home.NavigationDrawerActivity;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.ProportionalImageView;
 import com.cinggl.cinggl.models.TransactionDetails;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -437,78 +439,171 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
                                         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                                Cingle cingle = new Cingle();
+                                                usernameRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(final DataSnapshot dataSnapshot) {
+                                                        if (dataSnapshot.hasChild(firebaseAuth.getCurrentUser().getUid())){
+                                                            Cingle cingle = new Cingle();
 
-                                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d");
-                                                String date = simpleDateFormat.format(new Date());
+                                                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d");
+                                                            String date = simpleDateFormat.format(new Date());
 
-                                                if (date.endsWith("1") && !date.endsWith("11"))
-                                                    simpleDateFormat = new SimpleDateFormat("d'st' MMM yyyy");
-                                                else if (date.endsWith("2") && !date.endsWith("12"))
-                                                    simpleDateFormat = new SimpleDateFormat("d'nd' MMM yyyy");
-                                                else if (date.endsWith("3") && !date.endsWith("13"))
-                                                    simpleDateFormat = new SimpleDateFormat("d'rd' MMM yyyy");
-                                                else
-                                                    simpleDateFormat = new SimpleDateFormat("d'th' MMM yyyy");
-                                                String currentDate = simpleDateFormat.format(new Date());
+                                                            if (date.endsWith("1") && !date.endsWith("11"))
+                                                                simpleDateFormat = new SimpleDateFormat("d'st' MMM yyyy");
+                                                            else if (date.endsWith("2") && !date.endsWith("12"))
+                                                                simpleDateFormat = new SimpleDateFormat("d'nd' MMM yyyy");
+                                                            else if (date.endsWith("3") && !date.endsWith("13"))
+                                                                simpleDateFormat = new SimpleDateFormat("d'rd' MMM yyyy");
+                                                            else
+                                                                simpleDateFormat = new SimpleDateFormat("d'th' MMM yyyy");
+                                                            String currentDate = simpleDateFormat.format(new Date());
 
-                                                long index = dataSnapshot.getChildrenCount();
+                                                            long index = dataSnapshot.getChildrenCount();
 
-                                                final long currentIdex = index + 1;
+                                                            final long currentIdex = index + 1;
 
-                                                cingle.setCingleIndex("Cingle number" + " " + currentIdex);
-                                                cingle.setNumber(currentIdex);
-                                                cingle.setRandomNumber((double) new Random().nextDouble());
-                                                cingle.setTitle(mCingleTitleEditText.getText().toString());
-                                                cingle.setDescription(mCingleDescriptionEditText.getText().toString());
-                                                cingle.setTimeStamp(timeStamp);
-                                                cingle.setUid(uid);
+                                                            cingle.setCingleIndex("Cingle number" + " " + currentIdex);
+                                                            cingle.setNumber(currentIdex);
+                                                            cingle.setRandomNumber((double) new Random().nextDouble());
+                                                            cingle.setTitle(mCingleTitleEditText.getText().toString());
+                                                            cingle.setDescription(mCingleDescriptionEditText.getText().toString());
+                                                            cingle.setTimeStamp(timeStamp);
+                                                            cingle.setUid(uid);
 
-                                                cingle.setDatePosted(currentDate);
-                                                cingle.setCingleImageUrl(downloadUrl.toString());
+                                                            cingle.setDatePosted(currentDate);
+                                                            cingle.setCingleImageUrl(downloadUrl.toString());
 
-                                                     /*Getting the current logged in user*/
-                                                DatabaseReference databaseReference = FirebaseDatabase
-                                                        .getInstance()
-                                                        .getReference(Constants.FIREBASE_CINGLES);
+                                                            /*Getting the current logged in user*/
+                                                            DatabaseReference databaseReference = FirebaseDatabase
+                                                                    .getInstance()
+                                                                    .getReference(Constants.FIREBASE_CINGLES);
 
-                                                    /*Pushing the same cingle to a reference from where Cingles posted by the
-                                                    user will be retrieved and displayed on their profile*/
-                                                DatabaseReference userRef = databaseReference.push();
-                                                String pushId = userRef.getKey();
-                                                cingle.setPushId(pushId);
-                                                userRef.setValue(cingle);
+                                                            /*Pushing the same cingle to a reference from where Cingles posted by the
+                                                            user will be retrieved and displayed on their profile*/
+                                                            DatabaseReference userRef = databaseReference.push();
+                                                            String pushId = userRef.getKey();
+                                                            cingle.setPushId(pushId);
+                                                            userRef.setValue(cingle);
 
-                                                Cingle profileCingle = new Cingle();
-                                                profileCingle.setPushId(pushId);
-                                                profileCingle.setNumber(currentIdex);
+                                                            Cingle profileCingle = new Cingle();
+                                                            profileCingle.setPushId(pushId);
+                                                            profileCingle.setNumber(currentIdex);
 
-                                                profileCinglesReference.child(firebaseAuth.getCurrentUser().getUid())
-                                                        .child(pushId)
-                                                        .setValue(profileCingle);
+                                                            profileCinglesReference.child(firebaseAuth.getCurrentUser().getUid())
+                                                                    .child(pushId)
+                                                                    .setValue(profileCingle);
 
-                                                TransactionDetails transactionDetails = new TransactionDetails();
-                                                transactionDetails.setPushId(pushId);
-                                                transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                transactionDetails.setDate(currentDate);
+                                                            TransactionDetails transactionDetails = new TransactionDetails();
+                                                            transactionDetails.setPushId(pushId);
+                                                            transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                            transactionDetails.setDate(currentDate);
 
-                                                //save the cingle owner
-                                                cingleOwnersReference.child(pushId).child("owner").setValue(transactionDetails);
-                                                //save the cingle ownership history
-                                                cingleOwnersReference.child(pushId).child("onwership history").setValue(transactionDetails);
-                                                //once cingle has been bought remove it from cingle selling
-                                                mCingleTitleEditText.setText("");
-                                                mCingleDescriptionEditText.setText("");
-                                                mProportionalImageView.setImageBitmap(null);
+                                                            //save the cingle owner
+                                                            cingleOwnersReference.child(pushId).child("owner").setValue(transactionDetails);
+                                                            //save the cingle ownership history
+                                                            cingleOwnersReference.child(pushId).child("onwership history").setValue(transactionDetails);
+                                                            //once cingle has been bought remove it from cingle selling
+                                                            mCingleTitleEditText.setText("");
+                                                            mCingleDescriptionEditText.setText("");
+                                                            mProportionalImageView.setImageBitmap(null);
 
-                                                progressDialog.dismiss();
+                                                            progressDialog.dismiss();
 
-                                                Toast.makeText(CreateCingleActivity.this, "Your Cingle has successfully been posted", Toast.LENGTH_LONG).show();
+                                                            Toast.makeText(CreateCingleActivity.this, "Your Cingle has successfully been posted", Toast.LENGTH_LONG).show();
 
-                                                Intent intent = new Intent(CreateCingleActivity.this, NavigationDrawerActivity.class);
-                                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                startActivity(intent);
-                                                finish();
+                                                            Intent intent = new Intent(CreateCingleActivity.this, NavigationDrawerActivity.class);
+                                                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                            startActivity(intent);
+                                                            finish();
+                                                        }else {
+                                                            usernameRef.child(firebaseAuth.getCurrentUser().getUid()).child("uid")
+                                                                    .setValue(firebaseAuth.getCurrentUser().getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<Void> task) {
+                                                                    if (task.isSuccessful()){
+                                                                        Cingle cingle = new Cingle();
+
+                                                                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d");
+                                                                        String date = simpleDateFormat.format(new Date());
+
+                                                                        if (date.endsWith("1") && !date.endsWith("11"))
+                                                                            simpleDateFormat = new SimpleDateFormat("d'st' MMM yyyy");
+                                                                        else if (date.endsWith("2") && !date.endsWith("12"))
+                                                                            simpleDateFormat = new SimpleDateFormat("d'nd' MMM yyyy");
+                                                                        else if (date.endsWith("3") && !date.endsWith("13"))
+                                                                            simpleDateFormat = new SimpleDateFormat("d'rd' MMM yyyy");
+                                                                        else
+                                                                            simpleDateFormat = new SimpleDateFormat("d'th' MMM yyyy");
+                                                                        String currentDate = simpleDateFormat.format(new Date());
+
+                                                                        long index = dataSnapshot.getChildrenCount();
+
+                                                                        final long currentIdex = index + 1;
+
+                                                                        cingle.setCingleIndex("Cingle number" + " " + currentIdex);
+                                                                        cingle.setNumber(currentIdex);
+                                                                        cingle.setRandomNumber((double) new Random().nextDouble());
+                                                                        cingle.setTitle(mCingleTitleEditText.getText().toString());
+                                                                        cingle.setDescription(mCingleDescriptionEditText.getText().toString());
+                                                                        cingle.setTimeStamp(timeStamp);
+                                                                        cingle.setUid(uid);
+
+                                                                        cingle.setDatePosted(currentDate);
+                                                                        cingle.setCingleImageUrl(downloadUrl.toString());
+
+                                                                        /*Getting the current logged in user*/
+                                                                        DatabaseReference databaseReference = FirebaseDatabase
+                                                                                .getInstance()
+                                                                                .getReference(Constants.FIREBASE_CINGLES);
+
+                                                                        /*Pushing the same cingle to a reference from where Cingles posted by the
+                                                                        user will be retrieved and displayed on their profile*/
+                                                                        DatabaseReference userRef = databaseReference.push();
+                                                                        String pushId = userRef.getKey();
+                                                                        cingle.setPushId(pushId);
+                                                                        userRef.setValue(cingle);
+
+                                                                        Cingle profileCingle = new Cingle();
+                                                                        profileCingle.setPushId(pushId);
+                                                                        profileCingle.setNumber(currentIdex);
+
+                                                                        profileCinglesReference.child(firebaseAuth.getCurrentUser().getUid())
+                                                                                .child(pushId)
+                                                                                .setValue(profileCingle);
+
+                                                                        TransactionDetails transactionDetails = new TransactionDetails();
+                                                                        transactionDetails.setPushId(pushId);
+                                                                        transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                        transactionDetails.setDate(currentDate);
+
+                                                                        //save the cingle owner
+                                                                        cingleOwnersReference.child(pushId).child("owner").setValue(transactionDetails);
+                                                                        //save the cingle ownership history
+                                                                        cingleOwnersReference.child(pushId).child("onwership history").setValue(transactionDetails);
+                                                                        //once cingle has been bought remove it from cingle selling
+                                                                        mCingleTitleEditText.setText("");
+                                                                        mCingleDescriptionEditText.setText("");
+                                                                        mProportionalImageView.setImageBitmap(null);
+
+                                                                        progressDialog.dismiss();
+
+                                                                        Toast.makeText(CreateCingleActivity.this, "Your Cingle has successfully been posted", Toast.LENGTH_LONG).show();
+
+                                                                        Intent intent = new Intent(CreateCingleActivity.this, NavigationDrawerActivity.class);
+                                                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                                        startActivity(intent);
+                                                                        finish();
+                                                                    }
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(DatabaseError databaseError) {
+
+                                                    }
+                                                });
 
                                             }
 

@@ -202,7 +202,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
     private void initializeViewsAdapter(){
         layoutManager =  new LinearLayoutManager(getContext());
         mProfileCinglesRecyclerView.setLayoutManager(layoutManager);
-        mProfileCinglesRecyclerView.setHasFixedSize(true);
+        mProfileCinglesRecyclerView.setHasFixedSize(false);
         profileCinglesAdapter = new ProfileCinglesAdapter(getContext());
         mProfileCinglesRecyclerView.setAdapter(profileCinglesAdapter);
         profileCinglesAdapter.notifyDataSetChanged();
@@ -433,7 +433,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "load Cingles : onCancelled", databaseError.toException());
-                Toast.makeText(getContext(), "Failed to load comments.", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "Failed to load data.", Toast.LENGTH_SHORT).show();
 
             }
         };

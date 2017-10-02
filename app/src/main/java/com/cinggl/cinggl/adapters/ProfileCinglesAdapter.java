@@ -81,8 +81,8 @@ public class ProfileCinglesAdapter extends RecyclerView.Adapter<ProfileCinglesVi
     private static final double GOLDEN_RATIO = 1.618;
     private static final String TAG = IfairCingleAdapter.class.getSimpleName();
     private List<Cingle> cingles = new ArrayList<>();
-    public static final int MAX_WIDTH = 400;
-    public static final int MAX_HEIGHT = 400;
+    public static final int MAX_WIDTH = 200;
+    public static final int MAX_HEIGHT = 200;
 
     public ProfileCinglesAdapter(Context mContext) {
         this.mContext = mContext;
@@ -281,7 +281,8 @@ public class ProfileCinglesAdapter extends RecyclerView.Adapter<ProfileCinglesVi
                                 holder.accountUsernameTextView.setText(cingulan.getUsername());
                                 Picasso.with(mContext)
                                         .load(cingulan.getProfileImage())
-                                        .fit()
+                                        .resize(MAX_WIDTH, MAX_HEIGHT)
+                                        .onlyScaleDown()
                                         .centerCrop()
                                         .placeholder(R.drawable.profle_image_background)
                                         .networkPolicy(NetworkPolicy.OFFLINE)
@@ -295,7 +296,8 @@ public class ProfileCinglesAdapter extends RecyclerView.Adapter<ProfileCinglesVi
                                             public void onError() {
                                                 Picasso.with(mContext)
                                                         .load(cingulan.getProfileImage())
-                                                        .fit()
+                                                        .resize(MAX_WIDTH, MAX_HEIGHT)
+                                                        .onlyScaleDown()
                                                         .centerCrop()
                                                         .placeholder(R.drawable.profle_image_background)
                                                         .into(holder.profileImageView);
@@ -422,7 +424,8 @@ public class ProfileCinglesAdapter extends RecyclerView.Adapter<ProfileCinglesVi
 
                                                                 Picasso.with(mContext)
                                                                         .load(profileImage)
-                                                                        .fit()
+                                                                        .resize(MAX_WIDTH, MAX_HEIGHT)
+                                                                        .onlyScaleDown()
                                                                         .centerCrop()
                                                                         .placeholder(R.drawable.profle_image_background)
                                                                         .networkPolicy(NetworkPolicy.OFFLINE)
@@ -436,7 +439,8 @@ public class ProfileCinglesAdapter extends RecyclerView.Adapter<ProfileCinglesVi
                                                                             public void onError() {
                                                                                 Picasso.with(mContext)
                                                                                         .load(profileImage)
-                                                                                        .fit()
+                                                                                        .resize(MAX_WIDTH, MAX_HEIGHT)
+                                                                                        .onlyScaleDown()
                                                                                         .centerCrop()
                                                                                         .placeholder(R.drawable.profle_image_background)
                                                                                         .into(viewHolder.usersWhoLikedProfileImageView);

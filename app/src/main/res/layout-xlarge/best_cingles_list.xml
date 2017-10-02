@@ -79,7 +79,7 @@
                 android:layout_height="60dp" />
 
             <TextView
-                android:text="username"
+                android:text=""
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
@@ -248,7 +248,7 @@
             android:id="@+id/titleRelativeLayout">
 
             <TextView
-                android:text="TheCitiesOfLights"
+                android:text=""
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/cingleTitleTextView"
@@ -396,7 +396,7 @@
             android:paddingBottom="10dp"
             android:id="@+id/descriptionRelativeLayout">
 
-            <com.cinggl.cinggl.utils.ExpandableTextView
+            <TextView
                 android:text=""
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

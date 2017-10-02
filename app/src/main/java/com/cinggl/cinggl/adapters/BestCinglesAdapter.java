@@ -80,6 +80,8 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
     private boolean processLikes = false;
     private static final double DEFAULT_PRICE = 1.5;
     private static final double GOLDEN_RATIO = 1.618;
+    private static final int MAX_WIDTH = 200;
+    private static final int MAX_HEIGHT = 200;
 
     private Query mQuery;
     private static final String TAG = BestCinglesFragment.class.getSimpleName();
@@ -344,7 +346,8 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                                 holder.usernameTextView.setText(cingulan.getUsername());
                                 Picasso.with(mContext)
                                         .load(cingulan.getProfileImage())
-                                        .fit()
+                                        .resize(MAX_HEIGHT, MAX_WIDTH)
+                                        .onlyScaleDown()
                                         .centerCrop()
                                         .placeholder(R.drawable.profle_image_background)
                                         .networkPolicy(NetworkPolicy.OFFLINE)
@@ -358,7 +361,8 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                                             public void onError() {
                                                 Picasso.with(mContext)
                                                         .load(cingulan.getProfileImage())
-                                                        .fit()
+                                                        .resize(MAX_HEIGHT, MAX_WIDTH)
+                                                        .onlyScaleDown()
                                                         .centerCrop()
                                                         .placeholder(R.drawable.profle_image_background)
                                                         .into(holder.profileImageView);
@@ -403,32 +407,36 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                                 usersRef.child(ownerUid).addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
-                                        Cingulan cingulan = dataSnapshot.getValue(Cingulan.class);
-                                        final String username = cingulan.getUsername();
-                                        final String profileImage = cingulan.getProfileImage();
-                                        holder.cingleOwnerTextView.setText(username);
-                                        Picasso.with(mContext)
-                                                .load(profileImage)
-                                                .fit()
-                                                .centerCrop()
-                                                .placeholder(R.drawable.profle_image_background)
-                                                .networkPolicy(NetworkPolicy.OFFLINE)
-                                                .into(holder.ownerImageView, new Callback() {
-                                                    @Override
-                                                    public void onSuccess() {
+                                        if (dataSnapshot.exists()){
+                                            Cingulan cingulan = dataSnapshot.getValue(Cingulan.class);
+                                            final String username = cingulan.getUsername();
+                                            final String profileImage = cingulan.getProfileImage();
+                                            holder.cingleOwnerTextView.setText(username);
+                                            Picasso.with(mContext)
+                                                    .load(profileImage)
+                                                    .resize(MAX_HEIGHT, MAX_WIDTH)
+                                                    .onlyScaleDown()
+                                                    .centerCrop()
+                                                    .placeholder(R.drawable.profle_image_background)
+                                                    .networkPolicy(NetworkPolicy.OFFLINE)
+                                                    .into(holder.ownerImageView, new Callback() {
+                                                        @Override
+                                                        public void onSuccess() {
 
-                                                    }
+                                                        }
 
-                                                    @Override
-                                                    public void onError() {
-                                                        Picasso.with(mContext)
-                                                                .load(profileImage)
-                                                                .fit()
-                                                                .centerCrop()
-                                                                .placeholder(R.drawable.profle_image_background)
-                                                                .into(holder.ownerImageView);
-                                                    }
-                                                });
+                                                        @Override
+                                                        public void onError() {
+                                                            Picasso.with(mContext)
+                                                                    .load(profileImage)
+                                                                    .resize(MAX_HEIGHT, MAX_WIDTH)
+                                                                    .onlyScaleDown()
+                                                                    .centerCrop()
+                                                                    .placeholder(R.drawable.profle_image_background)
+                                                                    .into(holder.ownerImageView);
+                                                        }
+                                                    });
+                                        }
                                     }
 
                                     @Override
@@ -453,7 +461,8 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                                                            holder.cingleOwnerTextView.setText(username);
                                                            Picasso.with(mContext)
                                                                    .load(profileImage)
-                                                                   .fit()
+                                                                   .resize(MAX_HEIGHT, MAX_WIDTH)
+                                                                   .onlyScaleDown()
                                                                    .centerCrop()
                                                                    .placeholder(R.drawable.profle_image_background)
                                                                    .networkPolicy(NetworkPolicy.OFFLINE)
@@ -467,7 +476,8 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                                                                        public void onError() {
                                                                            Picasso.with(mContext)
                                                                                    .load(profileImage)
-                                                                                   .fit()
+                                                                                   .resize(MAX_HEIGHT, MAX_WIDTH)
+                                                                                   .onlyScaleDown()
                                                                                    .centerCrop()
                                                                                    .placeholder(R.drawable.profle_image_background)
                                                                                    .into(holder.ownerImageView);
@@ -563,8 +573,9 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
 
                                                                 Picasso.with(mContext)
                                                                         .load(profileImage)
-                                                                        .fit()
                                                                         .centerCrop()
+                                                                        .resize(MAX_HEIGHT, MAX_WIDTH)
+                                                                        .onlyScaleDown()
                                                                         .placeholder(R.drawable.profle_image_background)
                                                                         .networkPolicy(NetworkPolicy.OFFLINE)
                                                                         .into(viewHolder.usersWhoLikedProfileImageView, new Callback() {
@@ -577,8 +588,9 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
                                                                             public void onError() {
                                                                                 Picasso.with(mContext)
                                                                                         .load(profileImage)
-                                                                                        .fit()
+                                                                                        .resize(MAX_HEIGHT, MAX_WIDTH)
                                                                                         .centerCrop()
+                                                                                        .onlyScaleDown()
                                                                                         .placeholder(R.drawable.profle_image_background)
                                                                                         .into(viewHolder.usersWhoLikedProfileImageView);
 

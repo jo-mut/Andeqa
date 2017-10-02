@@ -86,6 +86,8 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
     private boolean processCredits = false;
     private static final double DEFAULT_PRICE = 1.5;
     private static final double GOLDEN_RATIO = 1.618;
+    private static final int MAX_WIDTH = 200;
+    private static final int MAX_HEIGHT = 200;
     private DatabaseReference ifairReference;
     private DatabaseReference cingleWalletReference;
     private DatabaseReference profileCinglesReference;
@@ -272,7 +274,8 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
                                 holder.accountUsernameTextView.setText(cingulan.getUsername());
                                 Picasso.with(mContext)
                                         .load(cingulan.getProfileImage())
-                                        .fit()
+                                        .resize(MAX_WIDTH, MAX_HEIGHT)
+                                        .onlyScaleDown()
                                         .centerCrop()
                                         .placeholder(R.drawable.profle_image_background)
                                         .networkPolicy(NetworkPolicy.OFFLINE)
@@ -286,7 +289,8 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
                                             public void onError() {
                                                 Picasso.with(mContext)
                                                         .load(cingulan.getProfileImage())
-                                                        .fit()
+                                                        .resize(MAX_WIDTH, MAX_HEIGHT)
+                                                        .onlyScaleDown()
                                                         .centerCrop()
                                                         .placeholder(R.drawable.profle_image_background)
                                                         .into(holder.profileImageView);
@@ -414,7 +418,8 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
 
                                                                 Picasso.with(mContext)
                                                                         .load(profileImage)
-                                                                        .fit()
+                                                                        .resize(MAX_WIDTH, MAX_HEIGHT)
+                                                                        .onlyScaleDown()
                                                                         .centerCrop()
                                                                         .placeholder(R.drawable.profle_image_background)
                                                                         .networkPolicy(NetworkPolicy.OFFLINE)
@@ -428,7 +433,8 @@ public class CingleOutAdapter extends RecyclerView.Adapter<CingleOutViewHolder> 
                                                                             public void onError() {
                                                                                 Picasso.with(mContext)
                                                                                         .load(profileImage)
-                                                                                        .fit()
+                                                                                        .resize(MAX_WIDTH, MAX_HEIGHT)
+                                                                                        .onlyScaleDown()
                                                                                         .centerCrop()
                                                                                         .placeholder(R.drawable.profle_image_background)
                                                                                         .into(viewHolder.usersWhoLikedProfileImageView);

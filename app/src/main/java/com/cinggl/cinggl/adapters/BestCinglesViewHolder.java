@@ -36,7 +36,7 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
     public ImageView commentsImageView;
     public TextView likesCountTextView;
     public TextView cingleTitleTextView;
-    public ExpandableTextView cingleDescriptionTextView;
+    public TextView cingleDescriptionTextView;
     public CircleImageView profileImageView;
     public TextView usernameTextView;
     public TextView commentsCountTextView;
@@ -65,7 +65,7 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
         likesImageView = (ImageView) itemView.findViewById(R.id.likesImageView);
         likesCountTextView =(TextView)itemView.findViewById(R.id.likesCountTextView);
         commentsImageView = (ImageView) itemView.findViewById(R.id.commentsImageView);
-        cingleDescriptionTextView = (ExpandableTextView) itemView.findViewById(R.id.cingleDescriptionTextView);
+        cingleDescriptionTextView = (TextView) itemView.findViewById(R.id.cingleDescriptionTextView);
         cingleTitleTextView = (TextView) itemView.findViewById(R.id.cingleTitleTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
@@ -91,7 +91,7 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
     public void bindBestCingle(final Cingle cingle){
         final ProportionalImageView cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
         TextView cingleTitleTextView = (TextView) mView.findViewById(R.id.cingleTitleTextView);
-        ExpandableTextView cingleDescriptionTextView = (ExpandableTextView) mView.findViewById(R.id.cingleDescriptionTextView);
+        TextView cingleDescriptionTextView = (TextView) mView.findViewById(R.id.cingleDescriptionTextView);
         TextView cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsTextView);
         TextView datePostedTextView = (TextView) mView.findViewById(R.id.datePostedTextView);
 

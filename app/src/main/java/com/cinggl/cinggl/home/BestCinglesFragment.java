@@ -119,7 +119,7 @@ public class BestCinglesFragment extends Fragment {
         layoutManager.setStackFromEnd(true);
         layoutManager.setReverseLayout(true);
         bestCinglesRecyclerView.setLayoutManager(layoutManager);
-        bestCinglesRecyclerView.setHasFixedSize(true);
+        bestCinglesRecyclerView.setHasFixedSize(false);
         bestCinglesAdapter = new BestCinglesAdapter(getContext());
         bestCinglesRecyclerView.setAdapter(bestCinglesAdapter);
 
@@ -143,7 +143,7 @@ public class BestCinglesFragment extends Fragment {
    }
 
     public void setBestCingles(int start){
-//        progressBar.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
         bestCinglesQuery = databaseReference.orderByChild("sensepoint").startAt(start)
                 .endAt(start + TOTAL_ITEM_EACH_LOAD);
         bestCinglesQuery.keepSynced(true);
@@ -156,7 +156,7 @@ public class BestCinglesFragment extends Fragment {
                    final double credits = cingle.getSensepoint();
                    if (credits > 0){
                        Log.d("Snapshot", dataSnapshot.toString());
-                       progressBar.setVisibility(View.GONE);
+//                       progressBar.setVisibility(View.GONE);
 
                        cinglesIds.add(dataSnapshot.getKey());
                        bestCingles.add(cingle);
@@ -168,7 +168,7 @@ public class BestCinglesFragment extends Fragment {
                        Log.d("size of best cingles", bestCingles.size() + "");
                    }
                }else {
-                   progressBar.setVisibility(View.VISIBLE);
+//                   progressBar.setVisibility(View.VISIBLE);
                }
 
             }
@@ -232,7 +232,7 @@ public class BestCinglesFragment extends Fragment {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "load Cingles : onCancelled", databaseError.toException());
-                Toast.makeText(getContext(), "Failed to load comments.", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "Failed to load data.", Toast.LENGTH_SHORT).show();
 
             }
         };

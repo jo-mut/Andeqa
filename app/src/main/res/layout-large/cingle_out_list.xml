@@ -250,7 +250,7 @@
                 android:id="@+id/descriptionRelativeLayout">
 
                 <TextView
-                    android:text="The Cities of Tomorrow; the Cities of Light, with the evolution of technology"
+                    android:text=""
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/cingleDescriptionTextView"

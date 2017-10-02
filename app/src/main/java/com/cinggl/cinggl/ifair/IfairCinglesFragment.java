@@ -191,7 +191,7 @@ public class IfairCinglesFragment extends Fragment {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "load Cingles : onCancelled", databaseError.toException());
-                Toast.makeText(getContext(), "Failed to load comments.", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "Failed to load data.", Toast.LENGTH_SHORT).show();
 
             }
         };

@@ -63,7 +63,6 @@ public class SignUpActivity extends AppCompatActivity implements
 
         mAuth = FirebaseAuth.getInstance();
 
-
         createAuthStateListener();
         createAuthProgressDialog();
 
@@ -102,73 +101,6 @@ public class SignUpActivity extends AppCompatActivity implements
 
     }
 
-//    private void loginWithPassword() {
-//        String email = mEmailEditText.getText().toString().trim();
-//        String password = mPasswordEditText.getText().toString().trim();
-//
-//        if (email.equals("")) {
-//            mEmailEditText.setError("Please enter your email");
-//            return;
-//        }
-//
-//        if (password.equals("")) {
-//            mPasswordEditText.setError("Password cannot be blank");
-//            return;
-//        }
-//
-//        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-//            @Override
-//            public void onComplete(@NonNull Task<AuthResult> task) {
-//                Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
-//                mAuthProgressDialog.dismiss();
-//                if (!task.isSuccessful()) {
-//                    Log.w(TAG, "signInWithEmail", task.getException());
-//                    Toast.makeText(SignUpActivity.this, "Please confirm that your email and password match",
-//                            Toast.LENGTH_SHORT).show();
-//                }else {
-//                    checkIfImailVerified();
-//                }
-//            }
-//        });
-//
-//    }
-//
-//
-//
-//    public void checkIfImailVerified(){
-//        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-//        if (firebaseUser.isEmailVerified()){
-//
-//            //user is verified sp you can finish this activity or send user to activity you want
-//            Toast.makeText(SignUpActivity.this, "You have Successfully signed in",
-//                    Toast.LENGTH_SHORT).show();
-//
-//            Intent intent = new Intent(SignUpActivity.this, CreateProfileActivity.class);
-//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//            startActivity(intent);
-//            finish();
-//
-//        }else {
-//            //email is not verified so just prompt the massge to the user and restart this activity
-//            FirebaseAuth.getInstance().signOut();
-//            //restart this activity
-//
-//            new AlertDialog.Builder(SignUpActivity.this)
-//                    .setTitle("Sorry !")
-//                    .setMessage("Please make sure that you have verified your email so you can sign in")
-//                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int which) {
-//                        }
-//                    }).setIcon(android.R.drawable.ic_dialog_alert).show();
-//
-//
-//            overridePendingTransition(0,0);
-//            finish();
-//            overridePendingTransition(0,0);
-//            startActivity(getIntent());
-//        }
-//    }
-
     private void createNewUser() {
         //editText for email and password
         final String email = mEmailEditText.getText().toString().trim();
@@ -193,7 +125,7 @@ public class SignUpActivity extends AppCompatActivity implements
                             if (task.getException() instanceof FirebaseAuthUserCollisionException) {
                                 new AlertDialog.Builder(SignUpActivity.this)
                                         .setTitle("Sorry !")
-                                        .setMessage("User with this email already exists. Please choose another email!")
+                                        .setMessage("User with this email already exists. Please use another email!")
                                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
                                             }
@@ -202,7 +134,7 @@ public class SignUpActivity extends AppCompatActivity implements
                                 //sign up failed
                                 new AlertDialog.Builder(SignUpActivity.this)
                                         .setTitle("Authentication failed")
-                                        .setMessage("Check that you are connection to the internet")
+                                        .setMessage("Check that you are connected to the internet")
                                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
                                             }
@@ -262,7 +194,7 @@ public class SignUpActivity extends AppCompatActivity implements
                     //email not sent, so display a message and restart the activity and restart this activity
                     Toast.makeText(SignUpActivity.this, "Could not send verification email", Toast.LENGTH_LONG).show();
                     new AlertDialog.Builder(SignUpActivity.this)
-                            .setMessage("Cinggl could not send you verification email, please confirm that you " +
+                            .setMessage("Cinggl could not send verification email, please confirm that you " +
                                     "entered the right email and check your internet connection")
                             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
