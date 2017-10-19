@@ -1,26 +1,30 @@
 package com.cinggl.cinggl.home;
 
 import android.content.Intent;
-import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.adapters.LikesViewHolder;
-import com.cinggl.cinggl.adapters.TransactionHistoryViewHolder;
+import com.cinggl.cinggl.models.Cingulan;
+import com.cinggl.cinggl.viewholders.LikesViewHolder;
 import com.cinggl.cinggl.models.Like;
-import com.cinggl.cinggl.models.TransactionDetails;
-import com.cinggl.cinggl.relations.FollowerProfileActivity;
+import com.cinggl.cinggl.people.FollowerProfileActivity;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
+import com.firebase.ui.common.ChangeEventType;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.firebase.ui.firestore.ObservableSnapshotArray;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,6 +33,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -37,13 +49,22 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.cinggl.cinggl.R.id.firstNameTextView;
+import static com.cinggl.cinggl.R.id.secondNameTextView;
+import static com.cinggl.cinggl.R.id.usernameTextView;
+
 public class LikesActivity extends AppCompatActivity {
     @Bind(R.id.recentLikesRecyclerView)RecyclerView mRecentLikesRecyclerView;
     @Bind(R.id.emptyLikesRelativeLayout)RelativeLayout mEmptyRelativelayout;
-
-    private DatabaseReference likesRef;
-    private DatabaseReference usernameRef;
-    private DatabaseReference relationsRef;
+    //firestore
+    private CollectionReference relationsReference;
+    private CollectionReference usersReference;
+    private CollectionReference likesReference;
+    private Query likesQuery;
+    //adapters
+    private FirestoreRecyclerOptions firestoreRecyclerOptions;
+    private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
+    //firebase auth
     private FirebaseAuth firebaseAuth;
     private CircleImageView profileImageView;
     private String mPostKey;
@@ -79,12 +100,10 @@ public class LikesActivity extends AppCompatActivity {
             if(mPostKey == null){
                 throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
             }
-            likesRef = FirebaseDatabase.getInstance()
-                    .getReference(Constants.LIKES).child(mPostKey);
-            usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
-            relationsRef = FirebaseDatabase.getInstance().getReference(Constants.RELATIONS);
+            usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+            relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
+            likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
 
-            likesRef.keepSynced(true);
             setUpFirebaseLikes();
         }
 
@@ -105,215 +124,189 @@ public class LikesActivity extends AppCompatActivity {
 
 
     public void setUpFirebaseLikes(){
-        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Like, LikesViewHolder>
-                (Like.class, R.layout.likes_list_layout ,LikesViewHolder.class, likesRef) {
-            @Override
-            protected void populateViewHolder(final LikesViewHolder viewHolder,final Like model, int position) {
-                DatabaseReference userRef = getRef(position);
-                final String postKey = userRef.getKey();
+        likesQuery = likesReference.document("Cingle Likes").collection("Likes").orderBy("uid");
+        FirestoreRecyclerOptions<Like> options = new FirestoreRecyclerOptions.Builder<Like>()
+                .setQuery(likesQuery, Like.class)
+                .build();
 
-                if (likesRef.child(postKey) != null){
+        firestoreRecyclerAdapter = new FirestoreRecyclerAdapter<Like, LikesViewHolder>(options) {
+            @Override
+            protected void onBindViewHolder(final LikesViewHolder holder, int position, Like model) {
+                holder.bindLikes(model);
+                final String likeKey = getSnapshots().get(position).getPushId();
+                final String uid = getSnapshots().get(position).getUid();
+
+                if (likesReference.document(likeKey)!= null){
                     mEmptyRelativelayout.setVisibility(View.GONE);
-                    viewHolder.bindLikes(model);
+                    holder.bindLikes(model);
                 }else {
                     mEmptyRelativelayout.setVisibility(View.VISIBLE);
                 }
 
-
-                likesRef.child(postKey).addValueEventListener(new ValueEventListener() {
+                holder.profileImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()){
-                            final String uid = (String) dataSnapshot.child("uid").getValue();
-
-                            usernameRef.child(uid).addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    final String username = (String) dataSnapshot.child("username").getValue();
-                                    final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
-                                    final String firstName = (String) dataSnapshot.child("firstName").getValue();
-                                    final String secondName = (String) dataSnapshot.child("secondName").getValue();
-
-                                    viewHolder.usernameTextView.setText(username);
-                                    viewHolder.firstNameTextView.setText(firstName);
-                                    viewHolder.secondNameTextView.setText(secondName);
-
-                                    Picasso.with(LikesActivity.this)
-                                            .load(profileImage)
-                                            .fit()
-                                            .centerCrop()
-                                            .placeholder(R.drawable.profle_image_background)
-                                            .networkPolicy(NetworkPolicy.OFFLINE)
-                                            .into(viewHolder.profileImageView, new Callback() {
-                                                @Override
-                                                public void onSuccess() {
-
-                                                }
-
-                                                @Override
-                                                public void onError() {
-                                                    Picasso.with(LikesActivity.this)
-                                                            .load(profileImage)
-                                                            .fit()
-                                                            .centerCrop()
-                                                            .placeholder(R.drawable.profle_image_background)
-                                                            .into(viewHolder.profileImageView);
-
-
-                                                }
-                                            });
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-
-                                }
-                            });
-
-                            relationsRef.child("following").child(firebaseAuth.getCurrentUser().getUid())
-                                    .addValueEventListener(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-
-                                            if (dataSnapshot.hasChild(uid)){
-                                                viewHolder.followButton.setText("Following");
-                                            }else {
-                                                viewHolder.followButton.setText("Follow");
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
-
-                                        }
-                                    });
-
-                            viewHolder.profileImageView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                        Intent intent = new Intent(LikesActivity.this, PersonalProfileActivity.class);
-                                        startActivity(intent);
-                                    }else {
-                                        Intent intent = new Intent(LikesActivity.this, FollowerProfileActivity.class);
-                                        intent.putExtra(LikesActivity.EXTRA_USER_UID, uid);
-                                        startActivity(intent);
-                                    }
-                                }
-                            });
-
-                            if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                viewHolder.followButton.setVisibility(View.GONE);
-                            }else {
-                                viewHolder.followButton.setVisibility(View.VISIBLE);
-                                viewHolder.followButton.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        processFollow = true;
-                                        relationsRef.addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                                if (processFollow){
-                                                    if (dataSnapshot.child("following").child(firebaseAuth.getCurrentUser().getUid()).hasChild(postKey)){
-                                                        relationsRef.child("following").child(firebaseAuth.getCurrentUser().getUid()).child(postKey)
-                                                                .removeValue();
-                                                        relationsRef.child("followers").child(postKey).child(firebaseAuth.getCurrentUser().getUid())
-                                                                .removeValue();
-                                                        processFollow = false;
-                                                        onFollow(false);
-                                                        //set the text on the button to follow if the user in not yet following;
-
-                                                    }else {
-                                                        try {
-                                                            relationsRef.child("following").child(firebaseAuth.getCurrentUser().getUid())
-                                                                    .child(postKey)
-                                                                    .child("uid").setValue(postKey);
-
-                                                            relationsRef.child("followers").child(postKey).child(firebaseAuth.getCurrentUser().getUid())
-                                                                    .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
-                                                            processFollow = false;
-                                                            onFollow(false);
-
-                                                            //set text on the button to following;
-                                                            viewHolder.followButton.setText("Following");
-
-                                                        }catch (Exception e){
-
-                                                        }
-
-                                                    }
-
-                                                }
-
-                                            }
-
-                                            @Override
-                                            public void onCancelled(DatabaseError databaseError) {
-
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-
-                            relationsRef.child("following").child(firebaseAuth.getCurrentUser().getUid())
-                                    .addValueEventListener(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-
-                                            if (dataSnapshot.hasChild(postKey)){
-                                                viewHolder.followButton.setText("Following");
-                                            }else {
-                                                viewHolder.followButton.setText("Follow");
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
-
-                                        }
-                                    });
+                    public void onClick(View view) {
+                        if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                            Intent intent = new Intent(LikesActivity.this, PersonalProfileActivity.class);
+                            startActivity(intent);
+                        }else {
+                            Intent intent = new Intent(LikesActivity.this, FollowerProfileActivity.class);
+                            intent.putExtra(LikesActivity.EXTRA_USER_UID, uid);
+                            startActivity(intent);
                         }
                     }
+                });
 
+                holder.profileImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
+                    public void onClick(View view) {
+                        if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                            Intent intent = new Intent(LikesActivity.this, PersonalProfileActivity.class);
+                            startActivity(intent);
+                        }else {
+                            Intent intent = new Intent(LikesActivity.this, FollowerProfileActivity.class);
+                            intent.putExtra(LikesActivity.EXTRA_USER_UID, uid);
+                            startActivity(intent);
+                        }
                     }
                 });
+
+
+                usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        Cingulan cingulan = documentSnapshot.toObject(Cingulan.class);
+                        final String profileImage = cingulan.getProfileImage();
+                        final String firstName = cingulan.getFirstName();
+                        final String secondName = cingulan.getSecondName();
+                        final String username = cingulan.getUsername();
+
+                        holder.usernameTextView.setText(username);
+                        holder.firstNameTextView.setText(firstName);
+                        holder.secondNameTextView.setText(secondName);
+
+                        Picasso.with(LikesActivity.this)
+                                .load(profileImage)
+                                .fit()
+                                .centerCrop()
+                                .placeholder(R.drawable.profle_image_background)
+                                .networkPolicy(NetworkPolicy.OFFLINE)
+                                .into(holder.profileImageView, new Callback() {
+                                    @Override
+                                    public void onSuccess() {
+
+                                    }
+
+                                    @Override
+                                    public void onError() {
+                                        Picasso.with(LikesActivity.this)
+                                                .load(profileImage)
+                                                .fit()
+                                                .centerCrop()
+                                                .placeholder(R.drawable.profle_image_background)
+                                                .into(holder.profileImageView);
+
+
+                                    }
+                                });
+                    }
+                });
+
+                relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
+                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                            @Override
+                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                                if (e != null) {
+                                    Log.w(TAG, "Listen error", e);
+                                    return;
+                                }
+
+                                if (documentSnapshots.getDocuments().contains(uid)){
+                                    holder.followButton.setText("Following");
+                                }else {
+                                    holder.followButton.setText("Following");
+                                }
+                            }
+                        });
+
+
+
+            }
+
+            @Override
+            public LikesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.likes_list_layout, parent, false);
+                return new LikesViewHolder(view);
+            }
+
+            @Override
+            public void onError(FirebaseFirestoreException e) {
+                super.onError(e);
+            }
+
+            @Override
+            public void onDataChanged() {
+                super.onDataChanged();
+            }
+
+            @Override
+            public void onChildChanged(ChangeEventType type, DocumentSnapshot snapshot, int newIndex, int oldIndex) {
+                super.onChildChanged(type, snapshot, newIndex, oldIndex);
+            }
+
+            @Override
+            public int getItemCount() {
+                return super.getItemCount();
+            }
+
+            @Override
+            public Like getItem(int position) {
+                return super.getItem(position);
+            }
+
+            @Override
+            public ObservableSnapshotArray<Like> getSnapshots() {
+                return super.getSnapshots();
             }
         };
 
-        mRecentLikesRecyclerView.setAdapter(firebaseRecyclerAdapter);
+        mRecentLikesRecyclerView.setAdapter(firestoreRecyclerAdapter);
         mRecentLikesRecyclerView.setHasFixedSize(false);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setAutoMeasureEnabled(true);
         mRecentLikesRecyclerView.setLayoutManager(layoutManager);
     }
-
-    private void onFollow(final boolean increament){
-        relationsRef.runTransaction(new Transaction.Handler() {
-            @Override
-            public Transaction.Result doTransaction(MutableData mutableData) {
-                if(mutableData.getValue() != null){
-                    int value = mutableData.getValue(Integer.class);
-                    if(increament){
-                        value++;
-                    }else{
-                        value--;
-                    }
-                    mutableData.setValue(value);
-                }
-                return Transaction.success(mutableData);
-            }
-
-            @Override
-            public void onComplete(DatabaseError databaseError, boolean b,
-                                   DataSnapshot dataSnapshot) {
-                Log.d(TAG, "followTransaction:onComplete" + databaseError);
-
-            }
-        });
-    }
+//
+//    private void onFollow(final boolean increament){
+//        relationsRef.runTransaction(new Transaction.Handler() {
+//            @Override
+//            public Transaction.Result doTransaction(MutableData mutableData) {
+//                if(mutableData.getValue() != null){
+//                    int value = mutableData.getValue(Integer.class);
+//                    if(increament){
+//                        value++;
+//                    }else{
+//                        value--;
+//                    }
+//                    mutableData.setValue(value);
+//                }
+//                return Transaction.success(mutableData);
+//            }
+//
+//            @Override
+//            public void onComplete(DatabaseError databaseError, boolean b,
+//                                   DataSnapshot dataSnapshot) {
+//                Log.d(TAG, "followTransaction:onComplete" + databaseError);
+//
+//            }
+//        });
+//    }
 
 }

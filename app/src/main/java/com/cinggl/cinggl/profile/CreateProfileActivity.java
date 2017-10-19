@@ -1,13 +1,9 @@
 package com.cinggl.cinggl.profile;
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -22,20 +18,20 @@ import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.home.NavigationDrawerActivity;
-import com.cinggl.cinggl.ifair.SetCinglePriceActivity;
+import com.cinggl.cinggl.home.MainActivity;
 import com.cinggl.cinggl.models.Cingulan;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -46,9 +42,6 @@ import com.squareup.picasso.Picasso;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static android.os.Build.VERSION_CODES.N;
-import static java.lang.System.load;
 
 public class CreateProfileActivity extends AppCompatActivity implements View.OnClickListener{
     @Bind(R.id.fisrtNameEditText)EditText mFirstNameEditText;
@@ -61,7 +54,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
     @Bind(R.id.submitUserInfoButton)Button mSubmitUserInfoButton;
 
     private static final String TAG = CreateProfileActivity.class.getSimpleName();
-    private DatabaseReference usersRef;
+    private CollectionReference usersReference;
     private FirebaseAuth mAuth;
     private ProgressDialog mAuthProgressDialog;
     private static  final int GALLERY_PROFILE_PHOTO_REQUEST = 111;
@@ -88,7 +81,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
         mAuth = FirebaseAuth.getInstance();
 
        if (mAuth != null){
-           usersRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
+           usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
 
            email = getIntent().getStringExtra(EMAIL);
            if(email == null){
@@ -100,7 +93,6 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
                throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
            }
 
-           usersRef.keepSynced(true);
            createAuthProgressDialog();
 
            mUpdateCoverTextView.setOnClickListener(this);
@@ -160,7 +152,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
             Toast.makeText(CreateProfileActivity.this, "You have Successfully signed in",
                     Toast.LENGTH_SHORT).show();
 
-            Intent intent = new Intent(CreateProfileActivity.this, NavigationDrawerActivity.class);
+            Intent intent = new Intent(CreateProfileActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
@@ -218,15 +210,18 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
                 cingulan.setUid(uid);
                 cingulan.setProfileImage(profileImage);
 
-                DatabaseReference pushRef = usersRef.child(uid);
-                String pushId = pushRef.getKey();
-                pushRef.setValue(cingulan).addOnCompleteListener(new OnCompleteListener<Void>() {
+                DocumentReference pushRef = usersReference.document(uid);
+                String pushId = pushRef.getId();
+                cingulan.setPushId(pushId);
+                pushRef.set(cingulan).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()){
-                            Log.d("user profile created", "firstime");
-                        }
-
+                    public void onSuccess(Void aVoid) {
+                        Log.d("user profile created", "firstime");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(CreateProfileActivity.this, "Profile successfully updated", Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -338,7 +333,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
 
         if (v == mSubmitUserInfoButton){
            if (mAuth.getCurrentUser() != null){
-               Intent intent = new Intent(CreateProfileActivity.this, NavigationDrawerActivity.class);
+               Intent intent = new Intent(CreateProfileActivity.this, MainActivity.class);
                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                startActivity(intent);
                finish();

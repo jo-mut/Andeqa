@@ -10,22 +10,19 @@ import android.view.ViewGroup;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.home.BestCinglesFragment;
 import com.cinggl.cinggl.home.CingleDetailActivity;
-import com.cinggl.cinggl.ifair.TradeDetailActivity;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.models.CingleSale;
 import com.cinggl.cinggl.models.Cingulan;
 import com.cinggl.cinggl.models.TransactionDetails;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
-import com.cinggl.cinggl.relations.FollowerProfileActivity;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.cinggl.cinggl.people.FollowerProfileActivity;
+import com.cinggl.cinggl.viewholders.IfairCinglesViewHolder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
@@ -35,8 +32,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.media.CamcorderProfile.get;
-import static com.cinggl.cinggl.R.id.cingleImageView;
 
 /**
  * Created by J.EL on 9/14/2017.
@@ -104,7 +99,7 @@ public class IfairCingleAdapter extends RecyclerView.Adapter<IfairCinglesViewHol
         //DATABASE REFERENCE PATH;
         usersRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
         cinglesReference = FirebaseDatabase.getInstance()
-                .getReference(Constants.FIREBASE_CINGLES);
+                .getReference(Constants.POSTS);
         ifairReference = FirebaseDatabase.getInstance().getReference(Constants.IFAIR);
         cingleOwnerReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_ONWERS);
 
@@ -121,7 +116,7 @@ public class IfairCingleAdapter extends RecyclerView.Adapter<IfairCinglesViewHol
                     holder.cingleTradeMethodTextView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent intent =  new Intent(mContext, TradeDetailActivity.class);
+                            Intent intent =  new Intent(mContext, CingleDetailActivity.class);
                             intent.putExtra(IfairCingleAdapter.EXTRA_POST_KEY, postKey);
                             mContext.startActivity(intent);
                         }
@@ -130,7 +125,7 @@ public class IfairCingleAdapter extends RecyclerView.Adapter<IfairCinglesViewHol
                     holder.cingleImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent intent = new Intent(mContext, TradeDetailActivity.class);
+                            Intent intent = new Intent(mContext, CingleDetailActivity.class);
                             intent.putExtra(IfairCingleAdapter.EXTRA_POST_KEY, postKey);
                             mContext.startActivity(intent);
                         }

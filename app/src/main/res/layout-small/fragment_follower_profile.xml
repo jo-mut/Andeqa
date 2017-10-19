@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#e4e4e4"
-    tools:context="com.cinggl.cinggl.relations.FollowerProfileFragment">
+    tools:context="com.cinggl.cinggl.people.FollowerProfileFragment">
 
 
 

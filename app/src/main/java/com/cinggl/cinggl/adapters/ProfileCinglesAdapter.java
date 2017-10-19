@@ -17,18 +17,17 @@ import android.view.ViewGroup;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.home.CingleDetailActivity;
+import com.cinggl.cinggl.home.FullImageViewActivity;
 import com.cinggl.cinggl.home.CingleSettingsDialog;
 import com.cinggl.cinggl.home.CommentsActivity;
 import com.cinggl.cinggl.home.LikesActivity;
-import com.cinggl.cinggl.ifair.TradeDetailActivity;
 import com.cinggl.cinggl.models.Balance;
 import com.cinggl.cinggl.models.Cingle;
-import com.cinggl.cinggl.models.CingleSale;
 import com.cinggl.cinggl.models.Cingulan;
 import com.cinggl.cinggl.models.Like;
 import com.cinggl.cinggl.models.TransactionDetails;
-import com.cinggl.cinggl.profile.PersonalProfileActivity;
-import com.cinggl.cinggl.relations.FollowerProfileActivity;
+import com.cinggl.cinggl.viewholders.ProfileCinglesViewHolder;
+import com.cinggl.cinggl.viewholders.WhoLikedViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -48,14 +47,6 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.cinggl.cinggl.R.id.cingleDescriptionTextView;
-import static com.cinggl.cinggl.R.id.cingleImageView;
-import static com.cinggl.cinggl.R.id.cingleSenseCreditsTextView;
-import static com.cinggl.cinggl.R.id.cingleTitleRelativeLayout;
-import static com.cinggl.cinggl.R.id.cingleTitleTextView;
-import static com.cinggl.cinggl.R.id.descriptionRelativeLayout;
-import static com.cinggl.cinggl.R.id.timeTextView;
 
 /**
  * Created by J.EL on 9/20/2017.
@@ -134,7 +125,7 @@ public class ProfileCinglesAdapter extends RecyclerView.Adapter<ProfileCinglesVi
             likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
             likesQuery = likesRef.child(postKey).limitToFirst(5);
             cinglesReference = FirebaseDatabase.getInstance()
-                    .getReference(Constants.FIREBASE_CINGLES);
+                    .getReference(Constants.POSTS);
             ifairReference = FirebaseDatabase.getInstance().getReference(Constants.IFAIR);
             cingleWalletReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_WALLET);
             profileCinglesReference = FirebaseDatabase.getInstance().getReference(Constants.PROFILE_CINGLES);
@@ -221,7 +212,7 @@ public class ProfileCinglesAdapter extends RecyclerView.Adapter<ProfileCinglesVi
                     holder.cingleImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent intent = new Intent(mContext, CingleDetailActivity.class);
+                            Intent intent = new Intent(mContext, FullImageViewActivity.class);
                             intent.putExtra(ProfileCinglesAdapter.EXTRA_POST_KEY, postKey);
                             mContext.startActivity(intent);
                         }
@@ -230,7 +221,7 @@ public class ProfileCinglesAdapter extends RecyclerView.Adapter<ProfileCinglesVi
                     holder.cingleTradeMethodTextView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent intent =  new Intent(mContext, TradeDetailActivity.class);
+                            Intent intent =  new Intent(mContext, CingleDetailActivity.class);
                             intent.putExtra(ProfileCinglesAdapter.EXTRA_POST_KEY, postKey);
                             mContext.startActivity(intent);
                         }
@@ -339,7 +330,7 @@ public class ProfileCinglesAdapter extends RecyclerView.Adapter<ProfileCinglesVi
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             holder.likesCountTextView.setText(dataSnapshot.getChildrenCount() +" " + "Likes");
 
-                            if (dataSnapshot.hasChildren()){
+                            if (dataSnapshot.hasChild(firebaseAuth.getCurrentUser().getUid())){
                                 holder.likesImageView.setColorFilter(Color.RED);
                             }else {
                                 holder.likesImageView.setColorFilter(Color.BLACK);
@@ -391,8 +382,8 @@ public class ProfileCinglesAdapter extends RecyclerView.Adapter<ProfileCinglesVi
                                 if (dataSnapshot.getChildrenCount()>0){
                                     holder.likesRecyclerView.setVisibility(View.VISIBLE);
                                     //SETUP USERS WHO LIKED THE CINGLE
-                                    firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Like, UsersWhoLiked>
-                                            (Like.class, R.layout.users_who_liked_count, UsersWhoLiked.class, likesQuery) {
+                                    firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Like, WhoLikedViewHolder>
+                                            (Like.class, R.layout.who_liked_count, WhoLikedViewHolder.class, likesQuery) {
                                         @Override
                                         public int getItemCount() {
                                             return super.getItemCount();
@@ -405,7 +396,7 @@ public class ProfileCinglesAdapter extends RecyclerView.Adapter<ProfileCinglesVi
                                         }
 
                                         @Override
-                                        protected void populateViewHolder(final UsersWhoLiked viewHolder, final Like model, final int position) {
+                                        protected void populateViewHolder(final WhoLikedViewHolder viewHolder, final Like model, final int position) {
                                             DatabaseReference userRef = getRef(position);
                                             final String likesPostKey = userRef.getKey();
                                             Log.d(TAG, "likes post key" + likesPostKey);
@@ -429,7 +420,7 @@ public class ProfileCinglesAdapter extends RecyclerView.Adapter<ProfileCinglesVi
                                                                         .centerCrop()
                                                                         .placeholder(R.drawable.profle_image_background)
                                                                         .networkPolicy(NetworkPolicy.OFFLINE)
-                                                                        .into(viewHolder.usersWhoLikedProfileImageView, new Callback() {
+                                                                        .into(viewHolder.whoLikedImageView, new Callback() {
                                                                             @Override
                                                                             public void onSuccess() {
 
@@ -443,7 +434,7 @@ public class ProfileCinglesAdapter extends RecyclerView.Adapter<ProfileCinglesVi
                                                                                         .onlyScaleDown()
                                                                                         .centerCrop()
                                                                                         .placeholder(R.drawable.profle_image_background)
-                                                                                        .into(viewHolder.usersWhoLikedProfileImageView);
+                                                                                        .into(viewHolder.whoLikedImageView);
 
 
                                                                             }

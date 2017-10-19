@@ -12,7 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.home.NavigationDrawerActivity;
+import com.cinggl.cinggl.home.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -70,7 +70,7 @@ public class ResetPasswordActivity extends AppCompatActivity implements
                         }
                     });
 
-            Intent intent = new Intent(ResetPasswordActivity.this, NavigationDrawerActivity.class);
+            Intent intent = new Intent(ResetPasswordActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();

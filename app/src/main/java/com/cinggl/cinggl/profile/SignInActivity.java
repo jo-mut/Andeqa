@@ -1,10 +1,8 @@
 package com.cinggl.cinggl.profile;
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,8 +14,7 @@ import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.home.NavigationDrawerActivity;
-import com.cinggl.cinggl.models.Cingulan;
+import com.cinggl.cinggl.home.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -28,11 +25,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-
-import static android.os.Build.VERSION_CODES.N;
 
 public class SignInActivity extends AppCompatActivity implements
         View.OnClickListener{
@@ -51,7 +51,7 @@ public class SignInActivity extends AppCompatActivity implements
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private ProgressDialog mAuthProgressDialog;
-    private DatabaseReference usersRef;
+    private CollectionReference usersRefernece;
     private static final String PASSWORD = "password";
     private static final String EMAIL = "email";
 
@@ -67,7 +67,7 @@ public class SignInActivity extends AppCompatActivity implements
         mAuth = FirebaseAuth.getInstance();
         createAuthProgressDialog();
 
-        usersRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
+        usersRefernece = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -75,7 +75,7 @@ public class SignInActivity extends AppCompatActivity implements
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
 
-                    Intent intent = new Intent(SignInActivity.this, NavigationDrawerActivity.class);
+                    Intent intent = new Intent(SignInActivity.this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();
@@ -161,26 +161,19 @@ public class SignInActivity extends AppCompatActivity implements
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser.isEmailVerified()){
 
-            usersRef.addValueEventListener(new ValueEventListener() {
+            usersRefernece.addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.hasChild(mAuth.getCurrentUser().getUid())){
+                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                    if (documentSnapshots.getDocuments().contains(mAuth.getCurrentUser().getUid())){
                         //LAUCNH SETUP PROFIFLE ACTIVITY IF NO
-                        Intent intent = new Intent(SignInActivity.this, NavigationDrawerActivity.class);
+                        Intent intent = new Intent(SignInActivity.this, MainActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                         finish();
-                    }
-                    else {
-                     navigateToCreateProfile();
+                    }else {
+                        navigateToCreateProfile();
                     }
                 }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-
             });
 
             //user is verified sp you can finish this activity or send user to activity you want

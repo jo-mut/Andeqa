@@ -1,6 +1,8 @@
 package com.cinggl.cinggl;
 
 import android.app.Application;
+import android.content.Context;
+import android.support.multidex.MultiDex;
 
 import com.cinggl.cinggl.services.ConnectivityReceiver;
 import com.google.firebase.database.FirebaseDatabase;
@@ -41,5 +43,9 @@ public class App extends Application {
         ConnectivityReceiver.connectivityReceiverListener = listener;
     }
 
-
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
 }

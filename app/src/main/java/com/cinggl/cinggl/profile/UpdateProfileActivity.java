@@ -1,12 +1,9 @@
 package com.cinggl.cinggl.profile;
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -19,16 +16,14 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.home.DeleteAccountDialog;
-import com.cinggl.cinggl.home.NavigationDrawerActivity;
-import com.cinggl.cinggl.ifair.SetCinglePriceActivity;
+import com.cinggl.cinggl.home.MainActivity;
+import com.cinggl.cinggl.models.Cingulan;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -41,6 +36,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -48,12 +49,12 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static com.cinggl.cinggl.R.string.profile;
-import static java.security.AccessController.getContext;
 
 
 public class UpdateProfileActivity extends AppCompatActivity implements
@@ -74,10 +75,11 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     private static final String TAG = UpdateProfileActivity.class.getSimpleName();
     private Uri imageUri;
     private Uri profileUri;
+    //firebase auth
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference databaseReference;
-    private DatabaseReference usersRef;
+    //firestore
+    private CollectionReference usersReference;
     private ProgressDialog progressDialog;
     private static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
@@ -94,10 +96,10 @@ public class UpdateProfileActivity extends AppCompatActivity implements
         setSupportActionBar(toolbar);
 
         firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
 
         if (firebaseAuth.getCurrentUser() != null){
-            usersRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS)
-                    .child(firebaseAuth.getCurrentUser().getUid());
+            usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
 
             updateProfileProgessDialog();
 
@@ -300,50 +302,54 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                     final String profileImage = (downloadUrl.toString());
                     Log.d("profile image", profileImage);
 
-                    usersRef.child("profileImage").setValue(profileImage);
+                    DocumentReference imageRef = usersReference.document(firebaseUser.getUid());
+                    imageRef.update("profileImage", profileImage);
                     mProfilePictureImageView.setImageBitmap(null);
 
                     //progress dialog to show the retrieval of the update profile picture
 //                    viewAnimator.setDisplayedChild(1);
 
-                    usersRef.addValueEventListener(new ValueEventListener() {
+                    usersReference.document(firebaseUser.getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
-                            Log.d("profile image", profileImage);
+                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                            if (documentSnapshot.exists()){
+                                final Cingulan cingulan = documentSnapshot.toObject(Cingulan.class);
+                                final String profileImage = cingulan.getProfileImage();
+                                Log.d("profile image", profileImage);
 
-                            Picasso.with(UpdateProfileActivity.this)
-                                    .load(profileImage)
-                                    .resize(MAX_WIDTH, MAX_HEIGHT)
-                                    .onlyScaleDown()
-                                    .centerCrop()
-                                    .placeholder(R.drawable.profle_image_background)
-                                    .networkPolicy(NetworkPolicy.OFFLINE)
-                                    .into(mProfilePictureImageView, new Callback() {
-                                        @Override
-                                        public void onSuccess() {
+                                Picasso.with(UpdateProfileActivity.this)
+                                        .load(profileImage)
+                                        .resize(MAX_WIDTH, MAX_HEIGHT)
+                                        .onlyScaleDown()
+                                        .centerCrop()
+                                        .placeholder(R.drawable.profle_image_background)
+                                        .networkPolicy(NetworkPolicy.OFFLINE)
+                                        .into(mProfilePictureImageView, new Callback() {
+                                            @Override
+                                            public void onSuccess() {
 //                                            viewAnimator.setDisplayedChild(0);
-                                        }
+                                            }
 
-                                        @Override
-                                        public void onError() {
-                                            Picasso.with(UpdateProfileActivity.this)
-                                                    .load(profileImage)
-                                                    .resize(MAX_WIDTH, MAX_HEIGHT)
-                                                    .onlyScaleDown()
-                                                    .centerCrop()
-                                                    .placeholder(R.drawable.profle_image_background)
-                                                    .into(mProfilePictureImageView);
+                                            @Override
+                                            public void onError() {
+                                                Picasso.with(UpdateProfileActivity.this)
+                                                        .load(profileImage)
+                                                        .resize(MAX_WIDTH, MAX_HEIGHT)
+                                                        .onlyScaleDown()
+                                                        .centerCrop()
+                                                        .placeholder(R.drawable.profle_image_background)
+                                                        .into(mProfilePictureImageView);
 
-                                        }
-                                    });
-                            progressDialog.dismiss();
-                            Intent intent = new Intent(UpdateProfileActivity.this, NavigationDrawerActivity.class);
-                            startActivity(intent);
-                        }
+                                            }
+                                        });
+                                progressDialog.dismiss();
+                                //restart this activity
+                                overridePendingTransition(0,0);
+                                finish();
+                                overridePendingTransition(0,0);
+                                startActivity(getIntent());
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                            }
 
                         }
                     });
@@ -374,49 +380,49 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 
                     final String profileCoverPhoto = (downloadUrl.toString());
 
-                    usersRef.child("profileCover").setValue(profileCoverPhoto);
-                    mProfileCoverImageView.setImageBitmap(null);
+                    DocumentReference imageRef = usersReference.document(firebaseUser.getUid());
+                    imageRef.update("profileCover", profileCoverPhoto);
+                    mProfilePictureImageView.setImageBitmap(null);
 
                     //progress dialog to show the retrieval of the update profile picture
-//                    viewAnimator.setDisplayedChild(1);
-
-                    usersRef.addValueEventListener(new ValueEventListener() {
+                    usersReference.document(firebaseUser.getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            final String profileCover = (String) dataSnapshot.child("profileCover").getValue();
-                            Log.d("profile cover", profileCover);
+                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                            if (documentSnapshot.exists()){
+                                final Cingulan cingulan = documentSnapshot.toObject(Cingulan.class);
+                                final String profileCover= cingulan.getProfileCover();
+                                Log.d("profile image", profileCover);
 
-                            Picasso.with(UpdateProfileActivity.this)
-                                    .load(profileCover).resize(MAX_WIDTH, MAX_HEIGHT)
-                                    .onlyScaleDown().centerCrop().placeholder(R.drawable.gradient_color)
-                                    .networkPolicy(NetworkPolicy.OFFLINE)
-                                    .into(mProfileCoverImageView, new Callback() {
-                                        @Override
-                                        public void onSuccess() {
+                                Picasso.with(UpdateProfileActivity.this)
+                                        .load(profileCover).resize(MAX_WIDTH, MAX_HEIGHT)
+                                        .onlyScaleDown().centerCrop().placeholder(R.drawable.gradient_color)
+                                        .networkPolicy(NetworkPolicy.OFFLINE)
+                                        .into(mProfileCoverImageView, new Callback() {
+                                            @Override
+                                            public void onSuccess() {
 //                                            viewAnimator.setDisplayedChild(0);
-                                        }
+                                            }
 
-                                        @Override
-                                        public void onError() {
-                                            Picasso.with(UpdateProfileActivity.this)
-                                                    .load(profileCover).resize(MAX_WIDTH, MAX_HEIGHT)
-                                                    .onlyScaleDown().centerCrop()
-                                                    .placeholder(R.drawable.gradient_color)
-                                                    .into(mProfileCoverImageView);
+                                            @Override
+                                            public void onError() {
+                                                Picasso.with(UpdateProfileActivity.this)
+                                                        .load(profileCover).resize(MAX_WIDTH, MAX_HEIGHT)
+                                                        .onlyScaleDown().centerCrop()
+                                                        .placeholder(R.drawable.gradient_color)
+                                                        .into(mProfileCoverImageView);
 
-                                        }
-                                    });
-                            progressDialog.dismiss();
-                            Intent intent = new Intent(UpdateProfileActivity.this, NavigationDrawerActivity.class);
-                            startActivity(intent);
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                                            }
+                                        });
+                                progressDialog.dismiss();
+                                //restart this activity
+                                overridePendingTransition(0,0);
+                                finish();
+                                overridePendingTransition(0,0);
+                                startActivity(getIntent());
+                            }
 
                         }
                     });
-
 
                 }
             });
@@ -433,21 +439,25 @@ public class UpdateProfileActivity extends AppCompatActivity implements
         final String secondName = (mSecondNameEditText.getText().toString());
 
         if (!TextUtils.isEmpty(username)){
-            usersRef.child("username").setValue(username);
+            DocumentReference usernameRef = usersReference.document(firebaseUser.getUid());
+            usernameRef.update("username", username);
             mUsernameEditText.setText("");
         }
         if(!TextUtils.isEmpty(bio)){
-            usersRef.child("bio").setValue(bio);
+            DocumentReference bioRef = usersReference.document(firebaseUser.getUid());
+            bioRef.update("bio", bio);
             mBioEditText.setText("");
         }
 
         if (!TextUtils.isEmpty(firstName)){
-            usersRef.child("firstName").setValue(firstName);
+            DocumentReference firstNameRef = usersReference.document(firebaseUser.getUid());
+            firstNameRef.update("firstName", firstName);
             mFirstNameEditText.setText("");
         }
 
         if (!TextUtils.isEmpty(secondName)){
-            usersRef.child("secondName").setValue(secondName);
+            DocumentReference secondNameRef = usersReference.document(firebaseUser.getUid());
+            secondNameRef.update("secondName", secondName);
             mSecondNameEditText.setText("");
         }
     }

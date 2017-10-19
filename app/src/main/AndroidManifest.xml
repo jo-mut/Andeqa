@@ -47,7 +47,15 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".creation.CreateCingleActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".profile.UpdateProfileActivity"
             android:label="Update your profile"
@@ -64,7 +72,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".relations.PeopleActivity"
+            android:name=".people.PeopleActivity"
             android:label="People"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
@@ -96,36 +104,32 @@
         </receiver>
 
         <activity
-            android:name=".relations.FollowerProfileActivity"
+            android:name=".people.FollowerProfileActivity"
             android:label="Profile"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".relations.FollowersActivity"
+            android:name=".people.FollowersActivity"
             android:label="Followers"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".relations.FollowingActivity"
+            android:name=".people.FollowingActivity"
             android:label="Following"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".home.NavigationDrawerActivity"
+            android:name=".home.MainActivity"
             android:label="Cinggl"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".home.CingleDetailActivity"
+            android:name=".home.FullImageViewActivity"
             android:label="Cingle" />
         <activity
             android:name=".preferences.PreferencesActivity"
             android:label="Preferences"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".ifair.TradeDetailActivity"
-            android:label="Cingle"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".preferences.AboutActivity"
@@ -138,7 +142,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".ifair.SetCinglePriceActivity"
+            android:name=".ifair.ListOnIfairActivity"
             android:label="Set sale price"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
@@ -148,7 +152,12 @@
             android:label="Ifair"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity android:name=".profile.CreateProfileActivity"></activity>
+        <activity android:name=".profile.CreateProfileActivity" />
+        <activity
+            android:label="Cingle"
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait"
+            android:name=".home.CingleDetailActivity" />
     </application>
 
 </manifest>

@@ -17,14 +17,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.ProfileCinglesAdapter;
 import com.cinggl.cinggl.ifair.WalletActivity;
 import com.cinggl.cinggl.models.Cingle;
-import com.cinggl.cinggl.relations.PeopleActivity;
+import com.cinggl.cinggl.people.PeopleActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -71,8 +70,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
     private DatabaseReference cingleWalletReference;
     private boolean processLikes = false;
     private static final String TAG = ProfileFragment.class.getSimpleName();
-    private  static final int MAX_WIDTH = 300;
-    private static final int MAX_HEIGHT = 300;
+    private  static final int MAX_WIDTH = 200;
+    private static final int MAX_HEIGHT = 200;
     private static final double GOLDEN_RATIO = 1.618;
     private static final double DEFAULT_PRICE = 1.5;
     private static final String EXTRA_POST_KEY = "post key";
@@ -123,7 +122,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
 
         if (firebaseAuth.getCurrentUser()!= null){
             //DATABASE REFERENCE
-            databaseReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_CINGLES);
+            databaseReference = FirebaseDatabase.getInstance().getReference(Constants.POSTS);
             profileInfoQuery = databaseReference.orderByChild("uid").equalTo(firebaseAuth.getCurrentUser().getUid());
             relationsRef = FirebaseDatabase.getInstance().getReference(Constants.RELATIONS);
             usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
@@ -201,6 +200,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
 
     private void initializeViewsAdapter(){
         layoutManager =  new LinearLayoutManager(getContext());
+        layoutManager.setStackFromEnd(true);
+        layoutManager.setReverseLayout(true);
         mProfileCinglesRecyclerView.setLayoutManager(layoutManager);
         mProfileCinglesRecyclerView.setHasFixedSize(false);
         profileCinglesAdapter = new ProfileCinglesAdapter(getContext());
@@ -414,6 +415,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
                     cingles.remove(cingle_key);
                     profileCinglesAdapter.removeAt(cingle_index);
                     profileCinglesAdapter.notifyItemRemoved(cingle_index);
+                    profileCinglesAdapter.getItemCount();
 
                 }else {
                     Log.w(TAG, "onChildRemoved:unknown_child:" + cingle_key);

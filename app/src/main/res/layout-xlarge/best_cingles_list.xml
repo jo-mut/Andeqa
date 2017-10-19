@@ -409,6 +409,22 @@
 
         </RelativeLayout>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/lacedCinglesRecyclerView"
+                android:overScrollMode="never"
+                android:nestedScrollingEnabled="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true">
+
+            </android.support.v7.widget.RecyclerView>
+
+        </RelativeLayout>
+
     </LinearLayout>
 
 

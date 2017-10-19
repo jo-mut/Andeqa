@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.cinggl.cinggl.relations.FollowerProfileActivity">
+    tools:context="com.cinggl.cinggl.people.FollowerProfileActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -33,7 +33,7 @@
 
         <fragment
             android:id="@+id/fragmentItemsList"
-            android:name="com.cinggl.cinggl.relations.FollowerProfileFragment"
+            android:name="com.cinggl.cinggl.people.FollowerProfileFragment"
             android:layout_height="match_parent"
             android:layout_width="match_parent"
             tools:layout="@layout/fragment_follower_profile" />
