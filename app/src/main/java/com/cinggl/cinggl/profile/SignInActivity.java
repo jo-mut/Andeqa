@@ -102,7 +102,6 @@ public class SignInActivity extends AppCompatActivity implements
     private void navigateToCreateProfile(){
         String email = mEmailEditText.getText().toString().trim();
         String password = mPasswordEditText.getText().toString().trim();
-        mAuthProgressDialog.show();
 
         if (email.equals("")) {
             mEmailEditText.setError("Please enter your email");

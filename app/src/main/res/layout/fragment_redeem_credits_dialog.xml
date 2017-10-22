@@ -56,27 +56,6 @@
         android:paddingLeft="20dp"
         android:layout_marginTop="10dp">
 
-        <TextView
-            android:paddingTop="10dp"
-            android:paddingBottom="5dp"
-            android:id="@+id/currenctAmountDescriptionTextView"
-            android:text="Current balance:"
-            android:textStyle="bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:ems="10"
-            android:paddingTop="10dp"
-            android:paddingBottom="5dp"
-            android:id="@+id/currenctAmountTextView"
-            android:text="CSC 200"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@+id/currenctAmountDescriptionTextView"
-            android:layout_toEndOf="@+id/currenctAmountDescriptionTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
     </RelativeLayout>
 
     <RelativeLayout

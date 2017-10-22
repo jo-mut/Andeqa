@@ -250,7 +250,7 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
 //                        }
 //                    });
 //
-//                    holder.profileImageView.setOnClickListener(new View.OnClickListener() {
+//                    holder.creatorImageView.setOnClickListener(new View.OnClickListener() {
 //                        @Override
 //                        public void onClick(View view) {
 //                            if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
@@ -330,7 +330,7 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
 //                                        .centerCrop()
 //                                        .placeholder(R.drawable.profle_image_background)
 //                                        .networkPolicy(NetworkPolicy.OFFLINE)
-//                                        .into(holder.profileImageView, new Callback() {
+//                                        .into(holder.creatorImageView, new Callback() {
 //                                            @Override
 //                                            public void onSuccess() {
 //
@@ -344,7 +344,7 @@ public class BestCinglesAdapter extends RecyclerView.Adapter<BestCinglesViewHold
 //                                                        .onlyScaleDown()
 //                                                        .centerCrop()
 //                                                        .placeholder(R.drawable.profle_image_background)
-//                                                        .into(holder.profileImageView);
+//                                                        .into(holder.creatorImageView);
 //                                            }
 //                                        });
 //                            }

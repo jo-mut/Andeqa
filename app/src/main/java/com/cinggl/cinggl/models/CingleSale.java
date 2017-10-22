@@ -11,18 +11,22 @@ public class CingleSale {
     long timeStamp;
     double randomNumber;
     double salePrice;
+    long number;
 
     public CingleSale() {
+
     }
 
-    public CingleSale(String pushId,
-                      String uid, String datePosted,
-                      long timeStamp, String salePrice, double randomNumber) {
+    public CingleSale(String pushId, String uid, String datePosted,
+                      long timeStamp, double randomNumber, double
+                              salePrice, long number) {
         this.pushId = pushId;
         this.uid = uid;
         this.datePosted = datePosted;
         this.timeStamp = timeStamp;
         this.randomNumber = randomNumber;
+        this.salePrice = salePrice;
+        this.number = number;
     }
 
     public String getPushId() {
@@ -72,4 +76,13 @@ public class CingleSale {
     public void setSalePrice(double salePrice) {
         this.salePrice = salePrice;
     }
+
+    public long getNumber() {
+        return number;
+    }
+
+    public void setNumber(long number) {
+        this.number = number;
+    }
 }
+

@@ -3,7 +3,6 @@ package com.cinggl.cinggl.viewholders;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -11,19 +10,9 @@ import android.widget.TextView;
 
 import com.cinggl.cinggl.ProportionalImageView;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.models.CingleSale;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
-
-import java.text.DecimalFormat;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static com.cinggl.cinggl.R.id.cingleImageView;
-import static com.cinggl.cinggl.R.id.cingleSalePriceTextView;
-import static com.cinggl.cinggl.R.id.datePostedTextView;
 
 /**
  * Created by J.EL on 9/14/2017.
@@ -33,7 +22,7 @@ public class IfairCinglesViewHolder extends RecyclerView.ViewHolder {
     View mView;
     Context mContext;
     ProgressBar progressBar;
-    public CircleImageView profileImageView;
+    public CircleImageView creatorImageView;
     public TextView usernameTextView;
     public TextView cingleTradeMethodTextView;
     public TextView cingleSenseCreditsTextView;
@@ -49,7 +38,7 @@ public class IfairCinglesViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
-        profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
+        creatorImageView = (CircleImageView) itemView.findViewById(R.id.creatorImageView);
         cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
         cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsCountTextView);
         cingleTradeMethodTextView = (TextView) mView.findViewById(R.id.cingleTradeMethodTextView);

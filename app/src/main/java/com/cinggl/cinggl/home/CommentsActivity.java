@@ -57,7 +57,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     @Bind(R.id.commentsRecyclerView)RecyclerView mCommentsRecyclerView;
     @Bind(R.id.cingleImageView)ProportionalImageView mCingleImageView;
     @Bind(R.id.usernameTextView)TextView mAccountUsernameTextView;
-    @Bind(R.id.profileImageView)CircleImageView mUserProfileImageView;
+    @Bind(R.id.creatorImageView)CircleImageView mUserProfileImageView;
     @Bind(R.id.saySomethingRelativeLayout)RelativeLayout mSaySomethingRelativeLayout;
     @Bind(R.id.cingleTitleTextView)TextView mCingleTitleTextView;
     @Bind(R.id.cingleTitleRelativeLayout)RelativeLayout mCingleTitleRelativeLayout;
@@ -158,7 +158,8 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     public void setData() {
-        cinglesReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        cinglesReference.document("Cingles").collection("Cingles")
+                .document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -259,7 +260,8 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     public void setUpFirebaseComments(){
-        commentQuery = commentsReference.orderBy("pushId");
+        commentQuery = commentsReference.document("Cingles Comments").collection("Comments")
+                .orderBy("pushId");
         FirestoreRecyclerOptions<Comment> options = new FirestoreRecyclerOptions.Builder<Comment>()
                 .setQuery(commentQuery, Comment.class)
                 .build();

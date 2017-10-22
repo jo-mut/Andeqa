@@ -57,6 +57,9 @@ public class FollowersActivity extends AppCompatActivity {
     private CollectionReference usersReference;
     private Query followersQuery;
     //adapters
+    //firebase
+    private DatabaseReference relationsRef;
+    private DatabaseReference followingRef;
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -95,6 +98,13 @@ public class FollowersActivity extends AppCompatActivity {
             if(mUid == null){
                 throw new IllegalArgumentException("pass an EXTRA_USER_UID");
             }
+
+            followingRef = FirebaseDatabase.getInstance().getReference(Constants.RELATIONS)
+                    .child("following");
+            relationsRef = FirebaseDatabase.getInstance().getReference(Constants.RELATIONS);
+
+            relationsRef.keepSynced(true);
+            followingRef.keepSynced(true);
 
             firebaseAuth = FirebaseAuth.getInstance();
             firebaseUser = firebaseAuth.getCurrentUser();
@@ -194,70 +204,66 @@ public class FollowersActivity extends AppCompatActivity {
                             });
 
 
-//                            if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-//                                viewHolder.followButton.setVisibility(View.GONE);
-//                            }else {
-//                                viewHolder.followButton.setVisibility(View.VISIBLE);
-//
-//                                viewHolder.followButton.setOnClickListener(new View.OnClickListener() {
-//                                    @Override
-//                                    public void onClick(View view) {
-//                                        processFollow = true;
-//                                        followingRef.addValueEventListener(new ValueEventListener() {
-//                                            @Override
-//                                            public void onDataChange(DataSnapshot dataSnapshot) {
-//                                                if (processFollow){
-//                                                    if (dataSnapshot.child("followers").child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
-//
-//                                                        //remove the uid from the person followed
-//                                                        followingRef.child("followers").child(postKey).child(firebaseAuth.getCurrentUser().getUid())
-//                                                                .removeValue();
-//
-//                                                        //remove the person uid is following from the uid
-//                                                        followingRef.child("following").child(firebaseAuth.getCurrentUser().getUid()).child(postKey)
-//                                                                .removeValue();
-//
-//                                                        processFollow = false;
-//                                                        onFollow(false);
-//                                                        //set the text on the button to follow if the user in not yet following;
-////                                        followButton.setText("FOLLOW");
-//
-//                                                    }else {
-//                                                        try {
-//                                                            //add uid to the uid of the person followed
-//                                                            followingRef.child("followers").child(postKey).child(firebaseAuth.getCurrentUser().getUid())
-//                                                                    .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
-//
-//                                                            //add uid of the person followed to the uid that is folowing
-//                                                            followingRef.child("following").child(firebaseAuth.getCurrentUser().getUid()).child(postKey)
-//                                                                    .child("uid").setValue(postKey);
-//
-//                                                            processFollow = false;
-//                                                            onFollow(false);
-//
-//                                                            //set text on the button to following;
-//                                                            viewHolder.followButton.setText("Following");
-//
-//                                                        }catch (Exception e){
-//
-//                                                        }
-//
-//                                                    }
-//
-//                                                }
-//
-//                                            }
-//
-//                                            @Override
-//                                            public void onCancelled(DatabaseError databaseError) {
-//
-//                                            }
-//                                        });
-//                                    }
-//                                });
-//
-//                            }
-//
+                            if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                holder.followButton.setVisibility(View.GONE);
+                            }else {
+                                holder.followButton.setVisibility(View.VISIBLE);
+
+                                holder.followButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        processFollow = true;
+                                        followingRef.addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                if (processFollow){
+                                                    if (dataSnapshot.child("followers").child(postKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
+
+                                                        //remove the uid from the person followed
+                                                        followingRef.child("followers").child(postKey).child(firebaseAuth.getCurrentUser().getUid())
+                                                                .removeValue();
+
+                                                        //remove the person uid is following from the uid
+                                                        followingRef.child("following").child(firebaseAuth.getCurrentUser().getUid()).child(postKey)
+                                                                .removeValue();
+
+                                                        processFollow = false;
+                                                        onFollow(false);
+                                                        //set the text on the button to follow if the user in not yet following;
+//                                        followButton.setText("FOLLOW");
+
+                                                    }else {
+                                                        //add uid to the uid of the person followed
+                                                        followingRef.child("followers").child(postKey).child(firebaseAuth.getCurrentUser().getUid())
+                                                                .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
+
+                                                        //add uid of the person followed to the uid that is folowing
+                                                        followingRef.child("following").child(firebaseAuth.getCurrentUser().getUid()).child(postKey)
+                                                                .child("uid").setValue(postKey);
+
+                                                        processFollow = false;
+                                                        onFollow(false);
+
+                                                        //set text on the button to following;
+                                                        holder.followButton.setText("Following");
+
+
+                                                    }
+
+                                                }
+
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+
+                                            }
+                                        });
+                                    }
+                                });
+
+                            }
+
                         }
                     }
                 });
@@ -330,30 +336,30 @@ public class FollowersActivity extends AppCompatActivity {
 
     }
 
-//    private void onFollow(final boolean increament){
-//        relationsRef.runTransaction(new Transaction.Handler() {
-//            @Override
-//            public Transaction.Result doTransaction(MutableData mutableData) {
-//                if(mutableData.getValue() != null){
-//                    int value = mutableData.getValue(Integer.class);
-//                    if(increament){
-//                        value++;
-//                    }else{
-//                        value--;
-//                    }
-//                    mutableData.setValue(value);
-//                }
-//                return Transaction.success(mutableData);
-//            }
-//
-//            @Override
-//            public void onComplete(DatabaseError databaseError, boolean b,
-//                                   DataSnapshot dataSnapshot) {
-//                Log.d(TAG, "followTransaction:onComplete" + databaseError);
-//
-//            }
-//        });
-//    }
+    private void onFollow(final boolean increament){
+        relationsRef.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                if(mutableData.getValue() != null){
+                    int value = mutableData.getValue(Integer.class);
+                    if(increament){
+                        value++;
+                    }else{
+                        value--;
+                    }
+                    mutableData.setValue(value);
+                }
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b,
+                                   DataSnapshot dataSnapshot) {
+                Log.d(TAG, "followTransaction:onComplete" + databaseError);
+
+            }
+        });
+    }
 
     @Override
     protected void onStop() {

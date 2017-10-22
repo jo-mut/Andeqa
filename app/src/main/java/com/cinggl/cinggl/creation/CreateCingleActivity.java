@@ -67,7 +67,7 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
     @Bind(R.id.postCingleImageView)ImageView mPostCingleImageView;
     @Bind(R.id.cameraImageView)ImageView mCameraImageView;
 //    @Bind(R.id.galleryImageView)ImageView mGalleryImageView;
-    @Bind(R.id.profileImageView)CircleImageView mProfileImageView;
+    @Bind(R.id.creatorImageView)CircleImageView mProfileImageView;
     @Bind(R.id.usernameTextView)TextView mAccountUsernameTextView;
     @Bind(R.id.img)ProportionalImageView mProportionalImageView;
     @Bind(R.id.descriptionCountTextView)TextView mDescriptionCountTextView;
@@ -458,7 +458,7 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
 
     private void savingDataToFirebase(){
         if (mProportionalImageView != null){
-            progressDialog.show();
+//            progressDialog.show();
             mProportionalImageView.setDrawingCacheEnabled(true);
             mProportionalImageView.buildDrawingCache();
             photoReducedSizeBitmap = mProportionalImageView.getDrawingCache();
@@ -487,7 +487,7 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
                     cl.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override
                         public void onSuccess(QuerySnapshot documentSnapshots) {
-                            final int index = documentSnapshots.size();
+                            final int index = documentSnapshots.getDocuments().size();
                             Cingle cingle = new Cingle();
 
                             final Long timeStamp = System.currentTimeMillis();
@@ -540,7 +540,7 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
                             transactionDetails.getOwnershipId();
                             historyRef.set(transactionDetails);
 
-                            progressDialog.dismiss();
+//                            progressDialog.dismiss();
 
                             Toast.makeText(CreateCingleActivity.this, "Your Cingle has successfully been posted", Toast.LENGTH_LONG).show();
 

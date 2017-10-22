@@ -82,7 +82,7 @@
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
-                    android:id="@+id/profileImageView"
+                    android:id="@+id/creatorImageView"
                     android:layout_width="60dp"
                     android:layout_height="60dp" />
 

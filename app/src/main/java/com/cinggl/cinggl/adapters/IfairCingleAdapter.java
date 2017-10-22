@@ -147,7 +147,7 @@ public class IfairCingleAdapter extends RecyclerView.Adapter<IfairCinglesViewHol
                         }
                     });
 
-                    holder.profileImageView.setOnClickListener(new View.OnClickListener() {
+                    holder.creatorImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
@@ -223,7 +223,7 @@ public class IfairCingleAdapter extends RecyclerView.Adapter<IfairCinglesViewHol
                                             Picasso.with(mContext)
                                                     .load(cingulan.getProfileImage())
                                                     .networkPolicy(NetworkPolicy.OFFLINE)
-                                                    .into(holder.profileImageView, new Callback() {
+                                                    .into(holder.creatorImageView, new Callback() {
                                                         @Override
                                                         public void onSuccess() {
 
@@ -233,7 +233,7 @@ public class IfairCingleAdapter extends RecyclerView.Adapter<IfairCinglesViewHol
                                                         public void onError() {
                                                             Picasso.with(mContext)
                                                                     .load(cingulan.getProfileImage())
-                                                                    .into(holder.profileImageView);
+                                                                    .into(holder.creatorImageView);
 
 
                                                         }

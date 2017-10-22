@@ -32,7 +32,7 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
         mContext = itemView.getContext();
         usernameTextView = (TextView)itemView.findViewById(R.id.usernameTextView);
         commentCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
-        profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
+        profileImageView = (CircleImageView) itemView.findViewById(R.id.creatorImageView);
         followButton = (Button) itemView.findViewById(R.id.followButton);
         firstNameTextView = (TextView) itemView.findViewById(R.id.firstNameTextView);
         secondNameTextView = (TextView) itemView.findViewById(R.id.secondNameTextView);

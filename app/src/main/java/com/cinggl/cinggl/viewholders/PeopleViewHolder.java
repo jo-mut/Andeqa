@@ -33,13 +33,13 @@ public class PeopleViewHolder extends RecyclerView.ViewHolder {
         mContext = itemView.getContext();
         firstNameTextView = (TextView) itemView.findViewById(R.id.firstNameTextView);
         secondNameTextView = (TextView) itemView.findViewById(R.id.secondNameTextView);
-        profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
+        profileImageView = (CircleImageView) itemView.findViewById(R.id.creatorImageView);
         followButton = (Button) itemView.findViewById(R.id.followButton);
         usernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
     }
 
     public void bindPeople(final Cingulan cingulan){
-        final CircleImageView profileImageView = (CircleImageView) mView.findViewById(R.id.profileImageView);
+        final CircleImageView profileImageView = (CircleImageView) mView.findViewById(R.id.creatorImageView);
         final TextView firstNameTextView = (TextView) mView.findViewById(R.id.firstNameTextView);
         final TextView secondNameTextView = (TextView) mView.findViewById(R.id.secondNameTextView);
 

@@ -66,11 +66,11 @@
                         android:textColor="@android:color/black"
                         android:textStyle="normal|bold"
                         android:layout_alignParentTop="true"
-                        android:layout_toRightOf="@+id/profileImageView"
-                        android:layout_toEndOf="@+id/profileImageView" />
+                        android:layout_toRightOf="@+id/creatorImageView"
+                        android:layout_toEndOf="@+id/creatorImageView" />
 
                     <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/profileImageView"
+                        android:id="@+id/creatorImageView"
                         android:layout_width="55dp"
                         android:layout_height="55dp"
                         android:background="@drawable/profle_image_background"

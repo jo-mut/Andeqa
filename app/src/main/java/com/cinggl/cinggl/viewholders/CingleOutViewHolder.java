@@ -63,7 +63,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder{
         cingleDescriptionTextView = (TextView) itemView.findViewById(R.id.cingleDescriptionTextView);
         cingleTitleTextView = (TextView) itemView.findViewById(R.id.cingleTitleTextView);
         accountUsernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
-        profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
+        profileImageView = (CircleImageView) itemView.findViewById(R.id.creatorImageView);
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
         timeTextView = (TextView) itemView.findViewById(R.id.timeTextView);
         cingleSettingsImageView = (ImageView) itemView.findViewById(R.id.cingleSettingsImageView);
