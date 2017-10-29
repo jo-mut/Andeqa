@@ -32,6 +32,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -39,8 +42,6 @@ import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -52,10 +53,12 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
     private String mPostKey;
     private static final String EXTRA_POST_KEY = "post key";
     private boolean processPay = false;
+    //firebase
     private DatabaseReference walletReference;
-    private DatabaseReference cingleOwnersReference;
     private DatabaseReference cingleWalletReference;
     private DatabaseReference ifairReference;
+    //firestore
+    private CollectionReference cingleOwnersReference;
     private FirebaseAuth firebaseAuth;
 
     //REMOVE SCIENTIFIC NOATATION
@@ -98,11 +101,12 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
 
             //initialize input filter
             setEditTextFilter();
-
+            //firebase
             walletReference = FirebaseDatabase.getInstance().getReference(Constants.WALLET);
             cingleWalletReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_WALLET);
             ifairReference = FirebaseDatabase.getInstance().getReference(Constants.IFAIR);
-            cingleOwnersReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_ONWERS);
+            //firestore
+            cingleOwnersReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
 
         }
         return view;
@@ -212,10 +216,14 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
                                                                                            transactionDetails.setWalletBalance(newWalletBalance);
                                                                                            transactionDetails.setDate(currentDate);
 
-                                                                                           //save the cingle owner
-                                                                                           cingleOwnersReference.child(mPostKey).child("owner").setValue(transactionDetails);
-                                                                                           //save the cingle ownership history
-                                                                                           cingleOwnersReference.child(mPostKey).child("onwership history").setValue(transactionDetails);
+                                                                                           DocumentReference ownerRef = cingleOwnersReference.document("Ownership")
+                                                                                                   .collection(mPostKey).document("Owner");
+                                                                                           ownerRef.set(transactionDetails);
+                                                                                           DocumentReference historyRef = cingleOwnersReference.document(mPostKey)
+                                                                                                   .collection("Ownership history").document();
+                                                                                           final String historyId = historyRef.getId();
+                                                                                           transactionDetails.setHistoryId(historyId);
+                                                                                           historyRef.set(transactionDetails);
                                                                                            //once cingle has been bought remove it from cingle selling
                                                                                            ifairReference.child("Cingle Selling").child(mPostKey).removeValue();
 
@@ -242,10 +250,16 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
                                                                                            transactionDetails.setWalletBalance(newWalletBalance);
                                                                                            transactionDetails.setDate(currentDate);
 
-                                                                                           //save the cingle owner
-                                                                                           cingleOwnersReference.child(mPostKey).child("owner").setValue(transactionDetails);
-                                                                                           //save the cingle ownership history
-                                                                                           cingleOwnersReference.child(mPostKey).child("onwership history").setValue(transactionDetails);
+
+                                                                                           DocumentReference ownerRef = cingleOwnersReference.document("Ownership")
+                                                                                                   .collection(mPostKey).document("Owner");
+                                                                                           ownerRef.set(transactionDetails);
+                                                                                           DocumentReference historyRef = cingleOwnersReference.document(mPostKey)
+                                                                                                   .collection("Ownership history").document();
+                                                                                           final String historyId = historyRef.getId();
+                                                                                           transactionDetails.setHistoryId(historyId);
+                                                                                           historyRef.set(transactionDetails);
+
                                                                                            //once cingle has been bought remove it from cingle selling
                                                                                            ifairReference.child("Cingle Selling").child(mPostKey).removeValue();
                                                                                        }

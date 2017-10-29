@@ -56,6 +56,5 @@ public class IfairCinglesViewHolder extends RecyclerView.ViewHolder {
     public void bindIfairCingle(final CingleSale cingleSale){
         TextView datePostedTextView = (TextView) mView.findViewById(R.id.datePostedTextView);
 
-
     }
 }

@@ -13,43 +13,29 @@ public class Cingle {
     String creator;
     String cingleImageUrl;
     String description;
-    String moreDescription;
     String pushId;
     String cingleIndex;
-    String uid;
     String datePosted;
-    String cingleId;
-    long timeStamp;
-    long number;
-    double randomNumber;
-    double sensepoint;
+    String uid;
     double rate;
     double defaultRate;
-
 
     public Cingle() {
 
     }
 
-    public Cingle(String title, String creator, String cingleImageUrl, String description,
-                  String moreDescription, String pushId, String cingleIndex,
-                  String uid, String datePosted, String cingleId, long timeStamp,
-                  long number, double randomNumber, double sensepoint, double rate,
+    public Cingle(String title, String creator, String cingleImageUrl,
+                  String description, String pushId, String cingleIndex,
+                  String datePosted, String uid, double rate,
                   double defaultRate) {
         this.title = title;
         this.creator = creator;
         this.cingleImageUrl = cingleImageUrl;
         this.description = description;
-        this.moreDescription = moreDescription;
         this.pushId = pushId;
         this.cingleIndex = cingleIndex;
-        this.uid = uid;
         this.datePosted = datePosted;
-        this.cingleId = cingleId;
-        this.timeStamp = timeStamp;
-        this.number = number;
-        this.randomNumber = randomNumber;
-        this.sensepoint = sensepoint;
+        this.uid = uid;
         this.rate = rate;
         this.defaultRate = defaultRate;
     }
@@ -86,14 +72,6 @@ public class Cingle {
         this.description = description;
     }
 
-    public String getMoreDescription() {
-        return moreDescription;
-    }
-
-    public void setMoreDescription(String moreDescription) {
-        this.moreDescription = moreDescription;
-    }
-
     public String getPushId() {
         return pushId;
     }
@@ -110,14 +88,6 @@ public class Cingle {
         this.cingleIndex = cingleIndex;
     }
 
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
     public String getDatePosted() {
         return datePosted;
     }
@@ -126,44 +96,12 @@ public class Cingle {
         this.datePosted = datePosted;
     }
 
-    public String getCingleId() {
-        return cingleId;
+    public String getUid() {
+        return uid;
     }
 
-    public void setCingleId(String cingleId) {
-        this.cingleId = cingleId;
-    }
-
-    public long getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(long timeStamp) {
-        this.timeStamp = timeStamp;
-    }
-
-    public long getNumber() {
-        return number;
-    }
-
-    public void setNumber(long number) {
-        this.number = number;
-    }
-
-    public double getRandomNumber() {
-        return randomNumber;
-    }
-
-    public void setRandomNumber(double randomNumber) {
-        this.randomNumber = randomNumber;
-    }
-
-    public double getSensepoint() {
-        return sensepoint;
-    }
-
-    public void setSensepoint(double sensepoint) {
-        this.sensepoint = sensepoint;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public double getRate() {

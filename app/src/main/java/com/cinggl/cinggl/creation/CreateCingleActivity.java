@@ -25,6 +25,7 @@ import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.home.MainActivity;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.ProportionalImageView;
+import com.cinggl.cinggl.models.CingleData;
 import com.cinggl.cinggl.models.TransactionDetails;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -90,7 +91,6 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
     private File file;
     private StorageReference storageReference;
     private DatabaseReference databaseReference;
-    private DatabaseReference profileCinglesReference;
     private ProgressDialog progressDialog;
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
@@ -101,6 +101,8 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
     private static final int DEFAULT_TITLE_LENGTH_LIMIT = 100;
     private static final int DEFAULT_DESCRIPTION_LENGTH_LIMIT = 500;
 
+    //FIREBASE
+    private DatabaseReference cinglesRef;
     //FIRESTORE
     private FirebaseFirestore firebaseFirestore;
     private ListenerRegistration listenerRegistration;
@@ -132,8 +134,8 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
             //firebase database
             usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.POSTS);
-            profileCinglesReference = FirebaseDatabase.getInstance().getReference(Constants.PROFILE_CINGLES);
             cingleOwnersReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_ONWERS);
+            cinglesRef = FirebaseDatabase.getInstance().getReference(Constants.POSTS);
 
             fetchUserData();
             uploadingToFirebaseDialog();
@@ -469,11 +471,8 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             final String uid = user.getUid();
 
-            DocumentReference ref = cinglesReference.document();
-            final String pushId = ref.getId();
-
-            final DocumentReference cingleRef = cinglesReference.document("Cingles").collection("Cingles").document(pushId);
-            final String cingleId = cingleRef.getId();
+            final DocumentReference cingleRef = cinglesReference.document();
+            final String pushId = cingleRef.getId();
 
             storageReference.child(uid).child(pushId);
 
@@ -488,7 +487,8 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
                         @Override
                         public void onSuccess(QuerySnapshot documentSnapshots) {
                             final int index = documentSnapshots.getDocuments().size();
-                            Cingle cingle = new Cingle();
+                            CingleData firestoreCingle = new CingleData();
+                            Cingle firebaseCingle = new Cingle();
 
                             final Long timeStamp = System.currentTimeMillis();
 
@@ -507,18 +507,21 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
 
                             final long currentIdex = index + 1;
 
-                            cingle.setCingleIndex("Cingle number" + " " + currentIdex);
-                            cingle.setNumber(currentIdex);
-                            cingle.setRandomNumber((double) new Random().nextDouble());
-                            cingle.setTitle(mCingleTitleEditText.getText().toString());
-                            cingle.setDescription(mCingleDescriptionEditText.getText().toString());
-                            cingle.setTimeStamp(timeStamp);
-                            cingle.setUid(uid);
-                            cingle.setPushId(pushId);
-                            cingle.setDatePosted(currentDate);
-                            cingle.setCingleImageUrl(downloadUrl.toString());
-                            cingle.setCingleId(cingleId);
-                            cingleRef.set(cingle);
+                            firestoreCingle.setNumber(currentIdex);
+                            firestoreCingle.setRandomNumber((double) new Random().nextDouble());
+                            firestoreCingle.setTimeStamp(timeStamp);
+                            firestoreCingle.setUid(firebaseAuth.getCurrentUser().getUid());
+                            firestoreCingle.setPushId(pushId);
+                            cingleRef.set(firestoreCingle);
+
+                            firebaseCingle.setTitle(mCingleTitleEditText.getText().toString());
+                            firebaseCingle.setDescription(mCingleDescriptionEditText.getText().toString());
+                            firebaseCingle.setCingleImageUrl(downloadUrl.toString());
+                            firebaseCingle.setPushId(pushId);
+                            firebaseCingle.setUid(firebaseAuth.getCurrentUser().getUid());
+                            firebaseCingle.setDatePosted(currentDate);
+                            firebaseCingle.setCingleIndex("Cingle number" + " " + currentIdex);
+                            cinglesRef.child(pushId).setValue(firebaseCingle);
 
                             //reset input fields
                             mCingleTitleEditText.setText("");
@@ -536,8 +539,8 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
                             ownerRef.set(transactionDetails);
                             DocumentReference historyRef = ownersReference.document(pushId)
                                     .collection("Ownership history").document();
-                            final String ownershipId = historyRef.getId();
-                            transactionDetails.getOwnershipId();
+                            final String historyId = historyRef.getId();
+                            transactionDetails.setHistoryId(historyId);
                             historyRef.set(transactionDetails);
 
 //                            progressDialog.dismiss();

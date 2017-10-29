@@ -21,7 +21,9 @@ import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.BestCinglesAdapter;
 import com.cinggl.cinggl.models.Balance;
 import com.cinggl.cinggl.models.Cingle;
+import com.cinggl.cinggl.models.CingleData;
 import com.cinggl.cinggl.models.Cingulan;
+import com.cinggl.cinggl.models.Credits;
 import com.cinggl.cinggl.models.Like;
 import com.cinggl.cinggl.models.TransactionDetails;
 import com.cinggl.cinggl.people.FollowerProfileActivity;
@@ -51,12 +53,14 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -83,9 +87,11 @@ public class BestCinglesFragment extends Fragment {
     private CollectionReference usersReference;
     private CollectionReference commentsReference;
     private CollectionReference ifairReference;
-    //firebaase
+    private CollectionReference senseCreditReference;
+    //firebase
     private DatabaseReference cingleWalletReference;
     private DatabaseReference likesRef;
+    private DatabaseReference cinglesRef;
     private Query likesQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
@@ -129,15 +135,15 @@ public class BestCinglesFragment extends Fragment {
             //firebase
             likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
             cingleWalletReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_WALLET);
-            likesQuery = likesRef.limitToFirst(5);
+            cinglesRef = FirebaseDatabase.getInstance().getReference(Constants.POSTS);
             //firestore
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
             commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
-            bestCinglesQuery = cinglesReference.document("Cingles").collection("Cingles")
-                    .orderBy("sensepoint");
+            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
+            bestCinglesQuery = senseCreditReference.orderBy("amount");
 
             bestCinglesQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
@@ -203,29 +209,33 @@ public class BestCinglesFragment extends Fragment {
 
 
     public void setBestCingles(){
-        FirestoreRecyclerOptions<Cingle> options = new FirestoreRecyclerOptions.Builder<Cingle>()
-                .setQuery(bestCinglesQuery, Cingle.class)
+        FirestoreRecyclerOptions<Credits> options = new FirestoreRecyclerOptions.Builder<Credits>()
+                .setQuery(bestCinglesQuery, Credits.class)
                 .build();
 
-        firestoreRecyclerAdapter = new FirestoreRecyclerAdapter<Cingle, BestCinglesViewHolder>(options) {
+        firestoreRecyclerAdapter = new FirestoreRecyclerAdapter<Credits, BestCinglesViewHolder>(options) {
             @Override
-            protected void onBindViewHolder(final BestCinglesViewHolder holder, int position, Cingle model) {
+            protected void onBindViewHolder(final BestCinglesViewHolder holder, int position, Credits model) {
                 holder.bindBestCingle(model);
                 final String postKey = getSnapshots().get(position).getPushId();
                 final String uid = getSnapshots().get(position).getUid();
+                final double senseCredits = getSnapshots().get(position).getAmount();
                 Log.d("best cingles postKey", postKey);
+                Log.d("best sensecredits", senseCredits + "");
 
                 //document reference
                 commentsCountQuery= commentsReference;
                 //init document references
                 ownerReference.document(postKey);
                 cinglesReference.document(postKey);
+                likesQuery = likesRef.child(postKey).limitToFirst(5);
                 //path to ownerRef
                 DocumentReference ownerRef = ownerReference.document("ownership")
                         .collection(postKey).document("owner");
-                //path to sensCredits
-                final DocumentReference creditsRef = cinglesReference
-                        .document("Cingles").collection("Cingles").document(postKey);
+
+//                DecimalFormat formatter = new DecimalFormat("0.00000000");
+//                holder.cingleSenseCreditsTextView.setText("CSC" + " " + formatter.format(senseCredits));
+
                 //path to cingle wallet reference
                 holder.likesCountTextView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -263,6 +273,7 @@ public class BestCinglesFragment extends Fragment {
                     }
                 });
 
+
                 holder.cingleSettingsImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -291,6 +302,54 @@ public class BestCinglesFragment extends Fragment {
                         }
                     }
                 });
+
+
+                cinglesRef.child(postKey).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()){
+                            final Cingle cingle = dataSnapshot.getValue(Cingle.class);
+
+                            Picasso.with(getContext())
+                                    .load(cingle.getCingleImageUrl())
+                                    .networkPolicy(NetworkPolicy.OFFLINE)
+                                    .into(holder.cingleImageView, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+
+                                        }
+
+                                        @Override
+                                        public void onError() {
+                                            Picasso.with(getContext())
+                                                    .load(cingle.getCingleImageUrl())
+                                                    .into(holder.cingleImageView);
+
+
+                                        }
+                                    });
+
+                            if (cingle.getTitle().equals("")){
+                                holder.titleRelativeLayout.setVisibility(View.GONE);
+                            }else {
+                                holder.titleRelativeLayout.setVisibility(View.GONE);
+                            }
+
+                            if (cingle.getDescription().equals("")){
+                                holder.descriptionRelativeLayout.setVisibility(View.GONE);
+                            }else {
+                                holder.cingleDescriptionTextView.setText(cingle.getDescription());
+                            }
+
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                }) ;
 
                 usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
@@ -700,12 +759,19 @@ public class BestCinglesFragment extends Fragment {
                                                 final double totalSenseCredits = senseCredits - amountRedeemed;
                                                 Log.d("total sense credits", totalSenseCredits + "");
 
-                                                Map<String, Cingle> credits = new HashMap<String, Cingle>();
-                                                creditsRef.update("sensepoint", totalSenseCredits);
+                                                Credits credits = new Credits();
+                                                credits.setPushId(postKey);
+                                                credits.setAmount(totalSenseCredits);
+                                                credits.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                senseCreditReference.document(postKey).set(credits, SetOptions.merge());
 
                                             }else {
-                                                Map<String, Cingle> credits = new HashMap<String, Cingle>();
-                                                creditsRef.update("sensepoint", finalPoints);
+                                                Credits credits = new Credits();
+                                                credits.setPushId(postKey);
+                                                credits.setAmount(finalPoints);
+                                                credits.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                senseCreditReference.document(postKey).set(credits, SetOptions.merge());
+
                                             }
                                         }
 
@@ -731,12 +797,20 @@ public class BestCinglesFragment extends Fragment {
                                                 Log.d("sense credits", senseCredits + "");
                                                 final double totalSenseCredits = senseCredits - amountRedeemed;
                                                 Log.d("total sense credits", totalSenseCredits + "");
-                                                Map<String, Cingle> credits = new HashMap<String, Cingle>();
-                                                creditsRef.update("sensepoint", totalSenseCredits);
+
+                                                Credits credits = new Credits();
+                                                credits.setPushId(postKey);
+                                                credits.setAmount(totalSenseCredits);
+                                                credits.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                senseCreditReference.document(postKey).set(credits, SetOptions.merge());
 
                                             }else {
-                                                Map<String, Cingle> credits = new HashMap<String, Cingle>();
-                                                creditsRef.update("sensepoint", finalPoints);
+                                                Credits credits = new Credits();
+                                                credits.setPushId(postKey);
+                                                credits.setAmount(finalPoints);
+                                                credits.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                senseCreditReference.document(postKey).set(credits, SetOptions.merge());
+
                                             }
                                         }
 
@@ -791,12 +865,12 @@ public class BestCinglesFragment extends Fragment {
             }
 
             @Override
-            public Cingle getItem(int position) {
+            public Credits getItem(int position) {
                 return super.getItem(position);
             }
 
             @Override
-            public ObservableSnapshotArray<Cingle> getSnapshots() {
+            public ObservableSnapshotArray<Credits> getSnapshots() {
                 return super.getSnapshots();
             }
         };

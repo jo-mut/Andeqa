@@ -45,6 +45,7 @@
 
 
            <TextView
+               android:inputType="textCapWords"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
                android:id="@+id/firstNameTextView"
@@ -57,7 +58,7 @@
                android:layout_marginRight="1dp"
                android:layout_alignParentRight="false"
                android:layout_alignParentLeft="true"
-               android:text="John"
+               android:text=""
                android:layout_alignParentBottom="false"
                android:layout_centerVertical="true" />
 
@@ -75,6 +76,7 @@
                android:layout_centerVertical="true" />
 
            <TextView
+               android:inputType="textCapWords"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
                android:id="@+id/secondNameTextView"
@@ -88,14 +90,14 @@
                android:layout_centerHorizontal="false"
                android:layout_centerVertical="true"
                android:layout_centerInParent="true"
-               android:text="Ngei" />
+               android:text="" />
 
            <TextView
                android:layout_below="@+id/nameDivider"
                android:id="@+id/emailTextView"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
-               android:text="example@gmail.com"
+               android:text=""
                android:textSize="24sp"
                android:layout_marginTop="10dp" />
 

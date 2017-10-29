@@ -56,12 +56,14 @@ public class WalletActivity extends AppCompatActivity {
     @Bind(R.id.currentWalletBalanceTextview)TextView mCurrentWalletBalanceTextView;
     @Bind(R.id.emptyRelativeLayout)RelativeLayout mEmptyRelativeLayout;
     //firestore
-    private CollectionReference walletReference;
     private CollectionReference cinglesReference;
-    private CollectionReference transactionReference;
     private Query transactionQuery;
+    //firebase
+    private DatabaseReference transactionReference;
+    private DatabaseReference walletReference;
     //adapters
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
+    private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     private FirebaseAuth firebaseAuth;
     private static final String EXTRA_POST_KEY = "post key";
     private DecimalFormat formatter =  new DecimalFormat("0.00000000");
@@ -87,10 +89,15 @@ public class WalletActivity extends AppCompatActivity {
         });
         if (firebaseAuth.getCurrentUser()!= null){
 
+            //firestore
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            walletReference = FirebaseFirestore.getInstance().collection(Constants.WALLET);
-            transactionReference = FirebaseFirestore.getInstance().collection(Constants.TRANSACTION_HISTORY)
-                    .document(firebaseAuth.getCurrentUser().getUid()).collection("History");
+            //firebase
+            transactionReference = FirebaseDatabase.getInstance().getReference(Constants.TRANSACTION_HISTORY)
+                    .child(firebaseAuth.getCurrentUser().getUid());
+            walletReference = FirebaseDatabase.getInstance().getReference(Constants.WALLET);
+
+            walletReference.keepSynced(true);
+            transactionReference.keepSynced(true);
 
             setTransactionHistory();
             setCurrentWalletBalance();
@@ -98,17 +105,31 @@ public class WalletActivity extends AppCompatActivity {
         }
     }
 
+    public void setTransactionHistory(){
+        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<TransactionDetails, TransactionHistoryViewHolder>
+                (TransactionDetails.class, R.layout.transaction_history_layout,
+                        TransactionHistoryViewHolder.class, transactionReference) {
 
-    private void setTransactionHistory(){
-        FirestoreRecyclerOptions<TransactionDetails> options = new FirestoreRecyclerOptions.Builder<TransactionDetails>()
-                .setQuery(transactionQuery, TransactionDetails.class)
-                .build();
-
-        firestoreRecyclerAdapter = new FirestoreRecyclerAdapter<TransactionDetails, TransactionHistoryViewHolder>(options) {
             @Override
-            protected void onBindViewHolder(final TransactionHistoryViewHolder holder, int position, TransactionDetails model) {
-                holder.bindTransactionHistory(model);
-                final String postKey = getSnapshots().get(position).getPushId();
+            public int getItemCount() {
+                return super.getItemCount();
+            }
+
+            @Override
+            public void onBindViewHolder(TransactionHistoryViewHolder viewHolder, int position) {
+                super.onBindViewHolder(viewHolder, position);
+            }
+
+            @Override
+            public TransactionHistoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                return super.onCreateViewHolder(parent, viewType);
+            }
+
+            @Override
+            protected void populateViewHolder(final TransactionHistoryViewHolder viewHolder,
+                                              TransactionDetails model, int position) {
+
+                viewHolder.bindTransactionHistory(model);
 
                 if (transactionReference != null){
                     mEmptyRelativeLayout.setVisibility(View.GONE);
@@ -116,29 +137,23 @@ public class WalletActivity extends AppCompatActivity {
                     mEmptyRelativeLayout.setVisibility(View.VISIBLE);
                 }
 
-                holder.deleteHistoryImageView.setOnClickListener(new View.OnClickListener() {
+                final String postKey = getRef(position).getKey();
+
+                viewHolder.deleteHistoryImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        transactionReference.document(firebaseAuth.getCurrentUser().getUid())
-                                .collection("History").document(postKey).delete();
+                        transactionReference.child(postKey).removeValue();
                     }
                 });
 
                 //SET THE CINGLE IMAGE
-                transactionReference.document(firebaseAuth.getCurrentUser().getUid())
-                        .collection("History").document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                transactionReference.child(postKey).addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onEvent(final DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()){
+                            final String postId = (String) dataSnapshot.child("postId").getValue();
 
-                        if (documentSnapshot.exists()){
-                            TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
-                            final String transctionKey = transactionDetails.getPushId();
-
-                            cinglesReference.document("Cingles").collection("Cingles").document(transctionKey)
+                            cinglesReference.document("Cingles").collection("Cingles").document(postId)
                                     .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                         @Override
                                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -155,7 +170,7 @@ public class WalletActivity extends AppCompatActivity {
                                                 Picasso.with(WalletActivity.this)
                                                         .load(cingle.getCingleImageUrl())
                                                         .networkPolicy(NetworkPolicy.OFFLINE)
-                                                        .into(holder.cingleImageView, new Callback() {
+                                                        .into(viewHolder.cingleImageView, new Callback() {
                                                             @Override
                                                             public void onSuccess() {
 
@@ -165,13 +180,13 @@ public class WalletActivity extends AppCompatActivity {
                                                             public void onError() {
                                                                 Picasso.with(WalletActivity.this)
                                                                         .load(cingle.getCingleImageUrl())
-                                                                        .into(holder.cingleImageView);
+                                                                        .into(viewHolder.cingleImageView);
 
 
                                                             }
                                                         });
 
-                                                holder.cingleImageView.setOnClickListener(new View.OnClickListener() {
+                                                viewHolder.cingleImageView.setOnClickListener(new View.OnClickListener() {
                                                     @Override
                                                     public void onClick(View view) {
                                                         Intent intent = new Intent(WalletActivity.this, CingleDetailActivity.class);
@@ -183,111 +198,54 @@ public class WalletActivity extends AppCompatActivity {
                                             }
                                         }
                                     });
+
                         }
+
                     }
-                });
 
-
-                //SET THE CINGLE IMAGE
-                transactionReference.document(firebaseAuth.getCurrentUser().getUid())
-                        .collection("History").document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
-                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
+                    public void onCancelled(DatabaseError databaseError) {
 
-                        if (documentSnapshot.exists()){
-                            TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
-                            final String transctionKey = transactionDetails.getPushId();
-
-                            cinglesReference.document("Cingles").collection("Cingles").document(transctionKey)
-                                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                                        }
-                                    });
-                        }
                     }
                 });
-            }
 
-            @Override
-            public TransactionHistoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                return null;
-            }
+                viewHolder.deleteHistoryImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        transactionReference.child(postKey).removeValue();
+                    }
+                });
 
-            @Override
-            public void onDataChanged() {
-                super.onDataChanged();
-            }
-
-            @Override
-            public int getItemCount() {
-                return super.getItemCount();
-            }
-
-            @Override
-            public void onChildChanged(ChangeEventType type, DocumentSnapshot snapshot, int newIndex, int oldIndex) {
-                super.onChildChanged(type, snapshot, newIndex, oldIndex);
-            }
-
-            @Override
-            public TransactionDetails getItem(int position) {
-                return super.getItem(position);
-            }
-
-            @Override
-            public ObservableSnapshotArray<TransactionDetails> getSnapshots() {
-                return super.getSnapshots();
             }
         };
 
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setAutoMeasureEnabled(true);
-        mTransactionHistoryRecyclerView.setAdapter(firestoreRecyclerAdapter);
+        mTransactionHistoryRecyclerView.setAdapter(firebaseRecyclerAdapter);
         mTransactionHistoryRecyclerView.setHasFixedSize(false);
         mTransactionHistoryRecyclerView.setLayoutManager(layoutManager);
     }
 
     public void setCurrentWalletBalance(){
-        walletReference.document("balance").collection(firebaseAuth.getCurrentUser().getUid())
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+        walletReference.child("balance").child(firebaseAuth.getCurrentUser().getUid())
+                .addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()){
+                            Balance balance = dataSnapshot.getValue(Balance.class);
+                            final double walletBalance = balance.getTotalBalance();
 
-                        if (documentSnapshots.isEmpty()){
-
+                            mCurrentWalletBalanceTextView.setText("CSC" + " " + formatter.format(walletBalance));
                         }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
                     }
                 });
 
-        walletReference.document("balance").collection("balance")
-                .document(firebaseAuth.getCurrentUser().getUid())
-                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    final Balance balance = documentSnapshot.toObject(Balance.class);
-                    final double totalBalance = balance.getTotalBalance();
-
-                    mCurrentWalletBalanceTextView.setText("CSC" + " " + formatter.format(totalBalance));
-
-                }
-            }
-        });
 
     }
 

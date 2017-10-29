@@ -24,12 +24,20 @@ import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.models.CingleSale;
 import com.cinggl.cinggl.models.Cingulan;
+import com.cinggl.cinggl.models.Credits;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.people.FollowerProfileActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -68,9 +76,11 @@ public class ListOnIfairActivity extends AppCompatActivity implements View.OnCli
     //firestore
     private CollectionReference cinglesReference;
     private CollectionReference usersReference;
-    private CollectionReference ifairReference;
     private CollectionReference relationsReference;
     private CollectionReference commentReference;
+    //firebase
+    private DatabaseReference ifairRef;
+    private DatabaseReference senseCreditReference;
     //REMOVE SCIENTIFIC NOATATION
     private DecimalFormat formatter =  new DecimalFormat("0.00000000");
 
@@ -105,7 +115,9 @@ public class ListOnIfairActivity extends AppCompatActivity implements View.OnCli
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             commentReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
-            ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
+            //firebase
+            ifairRef = FirebaseDatabase.getInstance().getReference(Constants.IFAIR);
+            senseCreditReference = FirebaseDatabase.getInstance().getReference(Constants.SENSECREDITS);
 
 
             //initialize input filter
@@ -119,8 +131,8 @@ public class ListOnIfairActivity extends AppCompatActivity implements View.OnCli
 
     public void setData(){
         //SET THE CINGLE IMAGE AND USER PROFILE
-        cinglesReference.document("Cingles").collection("Cingles")
-                .document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        cinglesReference.document(mPostKey)
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -233,19 +245,12 @@ public class ListOnIfairActivity extends AppCompatActivity implements View.OnCli
                 Log.d("amount entered", intSalePrice + "");
                 final String formattedString = formatter.format(intSalePrice);
 
-                cinglesReference.document("Cingles").collection("Cingles").document(mPostKey)
-                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                senseCreditReference.child(mPostKey).addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (documentSnapshot.exists()){
-                            final Cingle cingle = documentSnapshot.toObject(Cingle.class);
-                            final Double senseCredits = cingle.getSensepoint();
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()){
+                            final Credits credits = dataSnapshot.getValue(Credits.class);
+                            final double senseCredits = credits.getAmount();
                             Log.d("seanse credits", senseCredits + "");
 
                             if (intSalePrice < senseCredits){
@@ -258,113 +263,34 @@ public class ListOnIfairActivity extends AppCompatActivity implements View.OnCli
                                 cingleSale.setSalePrice(intSalePrice);
                                 Log.d("set sale price", intSalePrice + "");
 
-                                ifairReference.document("Cingles").collection("Cingle Selling")
-                                        .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onSuccess(QuerySnapshot documentSnapshots) {
-
-                                        if (!documentSnapshots.isEmpty()){
-
-                                            final int index = documentSnapshots.size();
-                                            Log.d("cingle count", index + "");
-
-                                            final Long timeStamp = System.currentTimeMillis();
-
-                                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d");
-                                            String date = simpleDateFormat.format(new Date());
-
-                                            if (date.endsWith("1") && !date.endsWith("11"))
-                                                simpleDateFormat = new SimpleDateFormat("d'st' MMM yyyy");
-                                            else if (date.endsWith("2") && !date.endsWith("12"))
-                                                simpleDateFormat = new SimpleDateFormat("d'nd' MMM yyyy");
-                                            else if (date.endsWith("3") && !date.endsWith("13"))
-                                                simpleDateFormat = new SimpleDateFormat("d'rd' MMM yyyy");
-                                            else
-                                                simpleDateFormat = new SimpleDateFormat("d'th' MMM yyyy");
-                                            String currentDate = simpleDateFormat.format(new Date());
-
-                                            final long currentIdex = index + 1;
-                                            Log.d("current index", currentIdex + "");
-
-
-                                            cingleSale.setDatePosted(currentDate);
-                                            cingleSale.setRandomNumber(currentIdex);
-                                            cingleSale.setTimeStamp(timeStamp);
-                                            cingleSale.setNumber(currentIdex);
-                                            cingleSale.setRandomNumber((double) new Random().nextDouble());
-
-                                            ifairReference.document("Cingles").collection("Cingle Selling").document(mPostKey)
-                                                    .set(cingleSale).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    Toast.makeText(ListOnIfairActivity.this, "Your cingle has been listed on Ifair",
-                                                            Toast.LENGTH_SHORT).show();
-                                                }
-                                            }).addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    new AlertDialog.Builder(ListOnIfairActivity.this)
-                                                            .setTitle("Sorry !")
-                                                            .setMessage("Looks like something went wrong. Please try again later!")
-                                                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                                                public void onClick(DialogInterface dialog, int which) {
+                                ifairRef.child("Cingle Selling").child(mPostKey).setValue(cingleSale)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()){
+                                                    ifairRef.child("Cingle Selling").child(mPostKey)
+                                                            .addValueEventListener(new ValueEventListener() {
+                                                                @Override
+                                                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                    if (dataSnapshot.exists()){
+                                                                        CingleSale salePrice = (dataSnapshot.getValue(CingleSale.class));
+                                                                        DecimalFormat formatter =  new DecimalFormat("0.00000000");
+                                                                        mCingleSalePriceTextView.setText("CSC" + " " + "" + formatter
+                                                                                .format(salePrice.getSalePrice()));
+                                                                    }
                                                                 }
-                                                            }).setIcon(android.R.drawable.ic_dialog_alert).show();
-                                                }
-                                            });
-                                        }else {
-                                            final int index = 0;
-                                            Log.d("cingle count", index + "");
 
-                                            Cingle cingle = new Cingle();
+                                                                @Override
+                                                                public void onCancelled(DatabaseError databaseError) {
 
-                                            final Long timeStamp = System.currentTimeMillis();
-
-                                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d");
-                                            String date = simpleDateFormat.format(new Date());
-
-                                            if (date.endsWith("1") && !date.endsWith("11"))
-                                                simpleDateFormat = new SimpleDateFormat("d'st' MMM yyyy");
-                                            else if (date.endsWith("2") && !date.endsWith("12"))
-                                                simpleDateFormat = new SimpleDateFormat("d'nd' MMM yyyy");
-                                            else if (date.endsWith("3") && !date.endsWith("13"))
-                                                simpleDateFormat = new SimpleDateFormat("d'rd' MMM yyyy");
-                                            else
-                                                simpleDateFormat = new SimpleDateFormat("d'th' MMM yyyy");
-                                            String currentDate = simpleDateFormat.format(new Date());
-
-                                            final long currentIdex = index + 1;
-                                            Log.d("current index", currentIdex + "");
-
-
-                                            cingleSale.setDatePosted(currentDate);
-                                            cingleSale.setRandomNumber(currentIdex);
-                                            cingleSale.setTimeStamp(timeStamp);
-
-                                            ifairReference.document("Cingles").collection("Cingle Selling").document(mPostKey)
-                                                    .set(cingleSale).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    Toast.makeText(ListOnIfairActivity.this, "Your cingle has been listed on Ifair",
-                                                            Toast.LENGTH_SHORT).show();
-                                                }
-                                            }).addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    new AlertDialog.Builder(ListOnIfairActivity.this)
-                                                            .setTitle("Sorry !")
-                                                            .setMessage("Looks like something went wrong. Please try again later!")
-                                                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                                                public void onClick(DialogInterface dialog, int which) {
                                                                 }
-                                                            }).setIcon(android.R.drawable.ic_dialog_alert).show();
+                                                            });
                                                 }
-                                            });
-                                        }
+                                            }
+                                        });
 
-                                    }
-                                });
-
+                                Toast.makeText(ListOnIfairActivity.this, "Your cingle has been listed on Ifair",
+                                        Toast.LENGTH_SHORT).show();
                             }else {
 
                                 new AlertDialog.Builder(ListOnIfairActivity.this)
@@ -376,6 +302,11 @@ public class ListOnIfairActivity extends AppCompatActivity implements View.OnCli
                                         }).setIcon(android.R.drawable.ic_dialog_alert).show();
                             }
                         }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
                     }
                 });
 

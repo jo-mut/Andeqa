@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.cinggl.cinggl.ProportionalImageView;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cingle;
+import com.cinggl.cinggl.models.CingleData;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -73,54 +74,6 @@ public class ProfileCinglesViewHolder extends RecyclerView.ViewHolder implements
 
 
     }
-
-    public void bindProfileCingle(final Cingle cingle){
-        final ProportionalImageView cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
-        TextView cingleTitleTextView = (TextView) mView.findViewById(R.id.cingleTitleTextView);
-        TextView cingleDescriptionTextView = (TextView) mView.findViewById(R.id.cingleDescriptionTextView);
-        TextView cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsTextView);
-        TextView timeTextView = (TextView) mView.findViewById(R.id.timeTextView);
-        RelativeLayout cingleTitleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
-
-        Picasso.with(mContext)
-                .load(cingle.getCingleImageUrl())
-                .networkPolicy(NetworkPolicy.OFFLINE)
-                .into(cingleImageView, new Callback() {
-                    @Override
-                    public void onSuccess() {
-
-                    }
-
-                    @Override
-                    public void onError() {
-                        Picasso.with(mContext)
-                                .load(cingle.getCingleImageUrl())
-                                .into(cingleImageView);
-
-
-                    }
-                });
-
-
-        if (cingle.getTitle().equals("")){
-            cingleTitleRelativeLayout.setVisibility(View.GONE);
-        }else {
-            cingleTitleTextView.setText(cingle.getTitle());
-        }
-
-        if (cingle.getDescription().equals("")){
-            descriptionRelativeLayout.setVisibility(View.GONE);
-        }else {
-            cingleDescriptionTextView.setText(cingle.getDescription());
-
-        }
-
-        DecimalFormat formatter =  new DecimalFormat("0.00000000");
-        cingleSenseCreditsTextView.setText("CSC" + " " + formatter.format(cingle.getSensepoint()));
-        timeTextView.setText(DateUtils.getRelativeTimeSpanString((long) cingle.getTimeStamp()));
-
-    }
-
 
 
     @Override

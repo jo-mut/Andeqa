@@ -9,7 +9,7 @@ public class TransactionDetails {
     String pushId;
     String postId;
     String date;
-    String ownershipId;
+    String historyId;
     double amount;
     double walletBalance;
 
@@ -19,12 +19,12 @@ public class TransactionDetails {
 
 
     public TransactionDetails(String uid, String pushId, String postId, String date,
-                              String ownershipId, double amount, double walletBalance) {
+                              String historyId, double amount, double walletBalance) {
         this.uid = uid;
         this.pushId = pushId;
         this.postId = postId;
         this.date = date;
-        this.ownershipId = ownershipId;
+        this.historyId = historyId;
         this.amount = amount;
         this.walletBalance = walletBalance;
     }
@@ -62,12 +62,12 @@ public class TransactionDetails {
         this.date = date;
     }
 
-    public String getOwnershipId() {
-        return ownershipId;
+    public String getHistoryId() {
+        return historyId;
     }
 
-    public void setOwnershipId(String ownershipId) {
-        this.ownershipId = ownershipId;
+    public void setHistoryId(String historyId) {
+        this.historyId = historyId;
     }
 
     public double getAmount() {

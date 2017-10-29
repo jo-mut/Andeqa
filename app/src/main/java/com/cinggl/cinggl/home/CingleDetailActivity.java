@@ -3,6 +3,7 @@ package com.cinggl.cinggl.home;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import com.cinggl.cinggl.models.Balance;
 import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.models.CingleSale;
 import com.cinggl.cinggl.models.Cingulan;
+import com.cinggl.cinggl.models.Credits;
 import com.cinggl.cinggl.models.Like;
 import com.cinggl.cinggl.models.TransactionDetails;
 import com.cinggl.cinggl.people.FollowerProfileActivity;
@@ -38,6 +40,7 @@ import com.cinggl.cinggl.viewholders.WhoLikedViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -57,6 +60,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -122,9 +126,11 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
     private CollectionReference commentsReference;
     private CollectionReference ifairReference;
     private CollectionReference cingleOwnerReference;
+    private CollectionReference senseCreditReference;
     //firebase
     private DatabaseReference likesRef;
     private DatabaseReference cingleWalletRef;
+    private DatabaseReference cingleWalletReference;
     private Query likesQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
@@ -184,17 +190,18 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
             //firebase
             likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
             cingleWalletRef = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_WALLET);
-            likesQuery = likesRef.limitToFirst(5);
+            likesQuery = likesRef.child(mPostKey).limitToFirst(5);
+            cingleWalletReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_WALLET);
             //firestore
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
             cingleOwnerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
-            commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS)
-                    .document("Cingles Comments").collection("Comments");
+            commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
             randomQuery = FirebaseFirestore.getInstance().collection(Constants.POSTS)
                     .orderBy("randomNumber");
+            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
 
             commentsCountQuery = commentsReference;
 
@@ -246,7 +253,7 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
             }
         });
 
-        cinglesReference.document("Cingles").collection("Cingles").document(mPostKey)
+        cinglesReference.document(mPostKey)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -261,7 +268,6 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
                     final String uid = cingle.getUid();
                     final String title = cingle.getTitle();
                     final String description = cingle.getDescription();
-                    final double sensecredits = cingle.getSensepoint();
 
                     //LAUCNH PROFILE IF ITS NOT DELETED ELSE CATCH THE EXCEPTION
                     mProfileImageView.setOnClickListener(new View.OnClickListener() {
@@ -291,7 +297,6 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
                         mCingleDescriptionTextView.setText(description);
                     }
 
-                    mCingleSenseCreditsTextView.setText("CSC" + " " + " " + sensecredits);
                     mDatePostedTextView.setText(cingle.getDatePosted());
 
                     //set the cingle image
@@ -409,8 +414,7 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
 
     /**display the price of the cingle*/
     private void setCingleInfo() {
-        cinglesReference.document("Cingles").collection("Cingles")
-                .document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        cinglesReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -447,45 +451,6 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
                 }
             }
         });
-
-
-        cinglesReference.document("Cingles").collection("Cingles")
-                .document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()) {
-                    final Cingle cingle = documentSnapshot.toObject(Cingle.class);
-
-                    Picasso.with(mContext)
-                            .load(cingle.getCingleImageUrl())
-                            .networkPolicy(NetworkPolicy.OFFLINE)
-                            .into(mCingleImageView, new Callback() {
-                                @Override
-                                public void onSuccess() {
-
-                                }
-
-                                @Override
-                                public void onError() {
-                                    Picasso.with(mContext)
-                                            .load(cingle.getCingleImageUrl())
-                                            .into(mCingleImageView);
-
-
-                                }
-                            });
-                    DecimalFormat formatter = new DecimalFormat("0.00000000");
-                    mCingleSenseCreditsTextView.setText("CSC" + " " + "" + formatter.format(cingle.getSensepoint()));
-                    mDatePostedTextView.setText(cingle.getDatePosted());
-                }
-            }
-        });
-
 
         //retrieve the first users who liked
         likesRef.child(mPostKey).addValueEventListener(new ValueEventListener() {
@@ -856,131 +821,6 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
     @Override
     public void onClick(View v){
 
-//        if (v == mLikesImageView){
-//            processLikes = true;
-//            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(DataSnapshot dataSnapshot) {
-//                    if (dataSnapshot.child(mPostKey).exists()){
-//                        processLikes = true;
-//                        likesRef.addValueEventListener(new ValueEventListener() {
-//                            @Override
-//                            public void onDataChange(final DataSnapshot dataSnapshot) {
-//                                if(processLikes){
-//                                    if(dataSnapshot.child(mPostKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
-//                                        likesRef.child(mPostKey).child(firebaseAuth.getCurrentUser()
-//                                                .getUid())
-//                                                .removeValue();
-//                                        onLikeCounter(false);
-//                                        processLikes = false;
-//                                        mLikesImageView.setColorFilter(Color.BLACK);
-//
-//                                    }else {
-//                                        likesRef.child(mPostKey).child(firebaseAuth.getCurrentUser().getUid())
-//                                                .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
-//                                        processLikes = false;
-//                                        onLikeCounter(false);
-//                                        mLikesImageView.setColorFilter(Color.RED);
-//                                    }
-//                                }
-//
-//
-//                                String likesCount = dataSnapshot.child(mPostKey).getChildrenCount() + "";
-//                                Log.d(likesCount, "all the likes in one cingle");
-//                                //convert children count which is a string to integer
-//                                final int x = Integer.parseInt(likesCount);
-//
-//                                if (x > 0){
-//                                    //mille is a thousand likes
-//                                    double MILLE = 1000.0;
-//                                    //get the number of likes per a thousand likes
-//                                    double likesPerMille = x/MILLE;
-//                                    //get the default rate of likes per unit time in seconds;
-//                                    double rateOfLike = 1000.0/1800.0;
-//                                    //get the current rate of likes per unit time in seconds;
-//                                    double currentRateOfLkes = x * rateOfLike/MILLE;
-//                                    //get the current price of cingle
-//                                    final double currentPrice = currentRateOfLkes * DEFAULT_PRICE/rateOfLike;
-//                                    //get the perfection value of cingle's interactivity online
-//                                    double perfectionValue = GOLDEN_RATIO/x;
-//                                    //get the new worth of Cingle price in Sen
-//                                    final double cingleWorth = perfectionValue * likesPerMille * currentPrice;
-//                                    //round of the worth of the cingle to 10 decimal number
-//                                    final double finalPoints = round( cingleWorth, 10);
-//
-//                                    Log.d("final points", finalPoints + "");
-//
-//                                    cingleWalletReference.child(mPostKey).addListenerForSingleValueEvent(new ValueEventListener() {
-//                                        @Override
-//                                        public void onDataChange(DataSnapshot dataSnapshot) {
-//                                            if (dataSnapshot.exists()) {
-//                                                final Balance balance = dataSnapshot.getValue(Balance.class);
-//                                                final double amountRedeemed = balance.getAmountRedeemed();
-//                                                Log.d(amountRedeemed + "", "amount redeemed");
-//                                                final  double amountDeposited = balance.getAmountDeposited();
-//                                                Log.d(amountDeposited + "", "amount deposited");
-//                                                final double senseCredits = amountDeposited + finalPoints;
-//                                                Log.d("sense credits", senseCredits + "");
-//                                                final double totalSenseCredits = senseCredits - amountRedeemed;
-//                                                Log.d("total sense credits", totalSenseCredits + "");
-//                                                databaseReference.child(mPostKey).child("sensepoint").setValue(totalSenseCredits);
-//                                            }else {
-//                                                databaseReference.child(mPostKey).child("sensepoint").setValue(finalPoints);
-//                                            }
-//                                        }
-//
-//                                        @Override
-//                                        public void onCancelled(DatabaseError databaseError) {
-//
-//                                        }
-//                                    });
-//                                }
-//                                else{
-//                                    final double finalPoints = 0.00;
-//                                    Log.d("final points", finalPoints + "");
-//                                    cingleWalletReference.child(mPostKey).addListenerForSingleValueEvent(new ValueEventListener() {
-//                                        @Override
-//                                        public void onDataChange(DataSnapshot dataSnapshot) {
-//                                            if (dataSnapshot.exists()) {
-//                                                final Balance balance = dataSnapshot.getValue(Balance.class);
-//                                                final double amountRedeemed = balance.getAmountRedeemed();
-//                                                Log.d(amountRedeemed + "", "amount redeemed");
-//                                                final  double amountDeposited = balance.getAmountDeposited();
-//                                                Log.d(amountDeposited + "", "amount deposited");
-//                                                final double senseCredits = amountDeposited + finalPoints;
-//                                                Log.d("sense credits", senseCredits + "");
-//                                                final double totalSenseCredits = senseCredits - amountRedeemed;
-//                                                Log.d("total sense credits", totalSenseCredits + "");
-//                                                databaseReference.child(mPostKey).child("sensepoint").setValue(totalSenseCredits);
-//                                            }else {
-//                                                databaseReference.child(mPostKey).child("sensepoint").setValue(finalPoints);
-//                                            }
-//                                        }
-//
-//                                        @Override
-//                                        public void onCancelled(DatabaseError databaseError) {
-//
-//                                        }
-//                                    });
-//
-//                                }
-//                            }
-//
-//                            @Override
-//                            public void onCancelled(DatabaseError databaseError) {
-//
-//                            }
-//                        });
-//                    }
-//                }
-//
-//                @Override
-//                public void onCancelled(DatabaseError databaseError) {
-//
-//                }
-//            });
-//
-//        }
 
         if (v == mCommentImageView){
             Intent intent = new Intent(CingleDetailActivity.this, CommentsActivity.class);
@@ -1019,6 +859,143 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
             mEditSalePriceImageView.setVisibility(View.GONE);
             mDoneEditingImageView.setVisibility(View.VISIBLE);
         }
+
+        if (v == mLikesImageView){
+            processLikes = true;
+            likesRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(final DataSnapshot dataSnapshot) {
+                    if(processLikes){
+                        if(dataSnapshot.child(mPostKey).hasChild(firebaseAuth.getCurrentUser().getUid())){
+                            likesRef.child(mPostKey).child(firebaseAuth.getCurrentUser()
+                                    .getUid())
+                                    .removeValue();
+                            onLikeCounter(false);
+                            processLikes = false;
+                            mLikesImageView.setColorFilter(Color.BLACK);
+
+                        }else {
+                            Like like = new Like();
+                            like.setUid(firebaseAuth.getCurrentUser().getUid());
+                            likesRef.child(mPostKey).child(firebaseAuth.getCurrentUser().getUid())
+                                    .child(firebaseAuth.getCurrentUser().getUid()).setValue(like);
+                            processLikes = false;
+                            onLikeCounter(false);
+                            mLikesImageView.setColorFilter(Color.RED);
+                        }
+                    }
+
+
+                    String likesCount = dataSnapshot.child(mPostKey).getChildrenCount() + "";
+                    Log.d(likesCount, "all the likes in one cingle");
+                    //convert children count which is a string to integer
+                    final int x = Integer.parseInt(likesCount);
+
+                    if (x > 0){
+                        //mille is a thousand likes
+                        double MILLE = 1000.0;
+                        //get the number of likes per a thousand likes
+                        double likesPerMille = x/MILLE;
+                        //get the default rate of likes per unit time in seconds;
+                        double rateOfLike = 1000.0/1800.0;
+                        //get the current rate of likes per unit time in seconds;
+                        double currentRateOfLkes = x * rateOfLike/MILLE;
+                        //get the current price of cingle
+                        final double currentPrice = currentRateOfLkes * DEFAULT_PRICE/rateOfLike;
+                        //get the perfection value of cingle's interactivity online
+                        double perfectionValue = GOLDEN_RATIO/x;
+                        //get the new worth of Cingle price in Sen
+                        final double cingleWorth = perfectionValue * likesPerMille * currentPrice;
+                        //round of the worth of the cingle to 10 decimal number
+                        final double finalPoints = round( cingleWorth, 10);
+
+                        Log.d("final points", finalPoints + "");
+
+                        cingleWalletReference.child(mPostKey).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    final Balance balance = dataSnapshot.getValue(Balance.class);
+                                    final double amountRedeemed = balance.getAmountRedeemed();
+                                    Log.d(amountRedeemed + "", "amount redeemed");
+                                    final  double amountDeposited = balance.getAmountDeposited();
+                                    Log.d(amountDeposited + "", "amount deposited");
+                                    final double senseCredits = amountDeposited + finalPoints;
+                                    Log.d("sense credits", senseCredits + "");
+                                    final double totalSenseCredits = senseCredits - amountRedeemed;
+                                    Log.d("total sense credits", totalSenseCredits + "");
+
+                                    Credits credits = new Credits();
+                                    credits.setPushId(mPostKey);
+                                    credits.setAmount(totalSenseCredits);
+                                    credits.setUid(firebaseAuth.getCurrentUser().getUid());
+                                    senseCreditReference.document(mPostKey).set(credits, SetOptions.merge());
+
+
+                                }else {
+                                    Credits credits = new Credits();
+                                    credits.setPushId(mPostKey);
+                                    credits.setAmount(finalPoints);
+                                    credits.setUid(firebaseAuth.getCurrentUser().getUid());
+                                    senseCreditReference.document(mPostKey).set(credits, SetOptions.merge());
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                    else{
+                        final double finalPoints = 0.00;
+                        Log.d("final points", finalPoints + "");
+                        cingleWalletReference.child(mPostKey).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    final Balance balance = dataSnapshot.getValue(Balance.class);
+                                    final double amountRedeemed = balance.getAmountRedeemed();
+                                    Log.d(amountRedeemed + "", "amount redeemed");
+                                    final  double amountDeposited = balance.getAmountDeposited();
+                                    Log.d(amountDeposited + "", "amount deposited");
+                                    final double senseCredits = amountDeposited + finalPoints;
+                                    Log.d("sense credits", senseCredits + "");
+                                    final double totalSenseCredits = senseCredits - amountRedeemed;
+                                    Log.d("total sense credits", totalSenseCredits + "");
+
+                                    Credits credits = new Credits();
+                                    credits.setPushId(mPostKey);
+                                    credits.setAmount(totalSenseCredits);
+                                    credits.setUid(firebaseAuth.getCurrentUser().getUid());
+                                    senseCreditReference.document(mPostKey).set(credits, SetOptions.merge());
+
+                                }else {
+                                    Credits credits = new Credits();
+                                    credits.setPushId(mPostKey);
+                                    credits.setAmount(finalPoints);
+                                    credits.setUid(firebaseAuth.getCurrentUser().getUid());
+                                    senseCreditReference.document(mPostKey).set(credits, SetOptions.merge());
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
     }
 
     private void showEditImageView(){
@@ -1054,71 +1031,69 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
         }else {
             final double intSalePrice = Double.parseDouble(stringSalePrice);
 
-            cinglesReference.document("Cingles").collection("Cingles")
-                    .document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            senseCreditReference.document(mPostKey).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
-                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                    if (e != null) {
-                        Log.w(TAG, "Listen error", e);
-                        return;
-                    }
-
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
                     if (documentSnapshot.exists()){
-                        Cingle cingle = documentSnapshot.toObject(Cingle.class);
-                        final double sensecredits = cingle.getSensepoint();
+                        final Credits credits = documentSnapshot.toObject(Credits.class);
+                        final double senseCredits = credits.getAmount();
+                        DecimalFormat formatter = new DecimalFormat("0.00000000");
+                        mCingleSenseCreditsTextView.setText("CSC" + " " + "" + formatter.format(senseCredits));
 
-                        if (intSalePrice < sensecredits){
+
+                        if (intSalePrice < senseCredits){
                             mEditSalePriceEditText.setError("Sale price is less than Cingle Sense Crdits!");
                         }else {
                             mSalePriceProgressBar.setVisibility(View.VISIBLE);
                             ifairReference.document("Cingles").collection("Cingle Selling").document(mPostKey)
                                     .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                @Override
-                                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                    if (e != null) {
-                                        Log.w(TAG, "Listen error", e);
-                                        return;
-                                    }
+                                        @Override
+                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                            if (e != null) {
+                                                Log.w(TAG, "Listen error", e);
+                                                return;
+                                            }
 
-                                    Map<String, Double> credit = new HashMap<String, Double>();
-                                    credit.put("salePrice", intSalePrice);
-                                    ifairReference.document("Cingles").collection("Cingle Seling").document(mPostKey)
-                                            .set(credit);
+                                            Map<String, Double> credit = new HashMap<String, Double>();
+                                            credit.put("salePrice", intSalePrice);
+                                            ifairReference.document("Cingles").collection("Cingle Seling").document(mPostKey)
+                                                    .set(credit);
 
-                                }
-                            });
+                                        }
+                                    });
                         }
                     }
                 }
             });
+
             mEditSalePriceEditText.setText("");
         }
     }
 
-//    private void onLikeCounter(final boolean increament){
-//        likesRef.runTransaction(new Transaction.Handler() {
-//            @Override
-//            public Transaction.Result doTransaction(MutableData mutableData) {
-//                if(mutableData.getValue() != null){
-//                    int value = mutableData.getValue(Integer.class);
-//                    if(increament){
-//                        value++;
-//                    }else{
-//                        value--;
-//                    }
-//                    mutableData.setValue(value);
-//                }
-//                return Transaction.success(mutableData);
-//            }
-//
-//            @Override
-//            public void onComplete(DatabaseError databaseError, boolean b,
-//                                   DataSnapshot dataSnapshot) {
-//                Log.d(TAG, "likeTransaction:onComplete" + databaseError);
-//
-//            }
-//        });
-//    }
+    private void onLikeCounter(final boolean increament){
+        likesRef.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                if(mutableData.getValue() != null){
+                    int value = mutableData.getValue(Integer.class);
+                    if(increament){
+                        value++;
+                    }else{
+                        value--;
+                    }
+                    mutableData.setValue(value);
+                }
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b,
+                                   DataSnapshot dataSnapshot) {
+                Log.d(TAG, "likeTransaction:onComplete" + databaseError);
+
+            }
+        });
+    }
 
 
     //region listeners

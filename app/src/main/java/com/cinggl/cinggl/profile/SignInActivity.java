@@ -16,6 +16,7 @@ import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.home.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -74,7 +75,6 @@ public class SignInActivity extends AppCompatActivity implements
             public void onAuthStateChanged(@NonNull final FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-
                     Intent intent = new Intent(SignInActivity.this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
@@ -160,20 +160,15 @@ public class SignInActivity extends AppCompatActivity implements
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser.isEmailVerified()){
 
-            usersRefernece.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                    if (documentSnapshots.getDocuments().contains(mAuth.getCurrentUser().getUid())){
-                        //LAUCNH SETUP PROFIFLE ACTIVITY IF NO
-                        Intent intent = new Intent(SignInActivity.this, MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        finish();
-                    }else {
-                        navigateToCreateProfile();
-                    }
-                }
-            });
+            if (usersRefernece.document(mAuth.getCurrentUser().getUid()) != null){
+                //LAUCNH SETUP PROFIFLE ACTIVITY IF NO
+                Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            }else {
+                navigateToCreateProfile();
+            }
 
             //user is verified sp you can finish this activity or send user to activity you want
             Toast.makeText(SignInActivity.this, "You have Successfully signed in",

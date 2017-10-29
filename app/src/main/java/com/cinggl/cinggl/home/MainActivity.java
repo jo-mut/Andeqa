@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.ContentFrameLayout;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -26,8 +27,10 @@ import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.creation.CreateCingleActivity;
 import com.cinggl.cinggl.ifair.IfairCinglesActivity;
+import com.cinggl.cinggl.models.Cingulan;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.profile.ProfileFragment;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -35,6 +38,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -61,6 +67,7 @@ public class MainActivity extends AppCompatActivity
     private ContentFrameLayout mContent;
     private ProgressDialog mProgressDialog;
     private DatabaseReference usersRef;
+    private DocumentReference usersReference;
     private FirebaseAuth firebaseAuth;
     private ImageView mProfileCover;
     private CircleImageView mProfileImageView;
@@ -84,13 +91,15 @@ public class MainActivity extends AppCompatActivity
 
         mFloatingActionButton.setOnClickListener(this);
 
+        //firebase
+        usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS)
+                .document(firebaseAuth.getCurrentUser().getUid());
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
-
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -201,78 +210,72 @@ public class MainActivity extends AppCompatActivity
 
     private void fetchData(){
         //database references
-        usersRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
-        usersRef.keepSynced(true);
-        usersRef.child(firebaseAuth.getCurrentUser().getUid())
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()){
-                            String firstName = (String) dataSnapshot.child("firstName").getValue();
-                            String secondName = (String) dataSnapshot.child("secondName").getValue();
-                            final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
-                            final String profileCover = (String) dataSnapshot.child("profileCover").getValue();
+        usersReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()){
+                    final Cingulan cingulan = documentSnapshot.toObject(Cingulan.class);
+                    String firstName = cingulan.getFirstName();
+                    String secondName = cingulan.getSecondName();
+                    final String profileImage = cingulan.getProfileImage();
+                    final String profileCover = cingulan.getProfileCover();
 
-                            mFirstNameTextView.setText(firstName);
-                            mSecondNameTextView.setText(secondName);
+                    mFirstNameTextView.setText(firstName);
+                    mSecondNameTextView.setText(secondName);
 
-                            Picasso.with(MainActivity.this)
-                                    .load(profileImage)
-                                    .resize(MAX_WIDTH, MAX_HEIGHT)
-                                    .onlyScaleDown()
-                                    .centerCrop()
-                                    .placeholder(R.drawable.profle_image_background)
-                                    .networkPolicy(NetworkPolicy.OFFLINE)
-                                    .into(mProfileImageView, new Callback() {
-                                        @Override
-                                        public void onSuccess() {
+                    Picasso.with(MainActivity.this)
+                            .load(profileImage)
+                            .resize(MAX_WIDTH, MAX_HEIGHT)
+                            .onlyScaleDown()
+                            .centerCrop()
+                            .placeholder(R.drawable.profle_image_background)
+                            .networkPolicy(NetworkPolicy.OFFLINE)
+                            .into(mProfileImageView, new Callback() {
+                                @Override
+                                public void onSuccess() {
 
-                                        }
+                                }
 
-                                        @Override
-                                        public void onError() {
-                                            Picasso.with(MainActivity.this)
-                                                    .load(profileImage)
-                                                    .resize(MAX_WIDTH, MAX_HEIGHT)
-                                                    .onlyScaleDown()
-                                                    .centerCrop()
-                                                    .placeholder(R.drawable.profle_image_background)
-                                                    .into(mProfileImageView);
+                                @Override
+                                public void onError() {
+                                    Picasso.with(MainActivity.this)
+                                            .load(profileImage)
+                                            .resize(MAX_WIDTH, MAX_HEIGHT)
+                                            .onlyScaleDown()
+                                            .centerCrop()
+                                            .placeholder(R.drawable.profle_image_background)
+                                            .into(mProfileImageView);
 
-                                        }
-                                    });
+                                }
+                            });
 
-                            Picasso.with(MainActivity.this)
-                                    .load(profileCover)
-                                    .fit()
-                                    .centerCrop()
-                                    .networkPolicy(NetworkPolicy.OFFLINE)
-                                    .into(mProfileCover, new Callback() {
-                                        @Override
-                                        public void onSuccess() {
+                    Picasso.with(MainActivity.this)
+                            .load(profileCover)
+                            .fit()
+                            .centerCrop()
+                            .networkPolicy(NetworkPolicy.OFFLINE)
+                            .into(mProfileCover, new Callback() {
+                                @Override
+                                public void onSuccess() {
 
-                                        }
+                                }
 
-                                        @Override
-                                        public void onError() {
-                                            Picasso.with(MainActivity.this)
-                                                    .load(profileCover)
-                                                    .fit()
-                                                    .centerCrop()
-                                                    .into(mProfileCover);
+                                @Override
+                                public void onError() {
+                                    Picasso.with(MainActivity.this)
+                                            .load(profileCover)
+                                            .fit()
+                                            .centerCrop()
+                                            .into(mProfileCover);
 
 
-                                        }
-                                    });
-                        }
+                                }
+                            });
 
-                    }
+                }
+            }
+        });
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

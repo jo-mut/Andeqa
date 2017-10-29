@@ -34,8 +34,16 @@ import com.firebase.ui.common.ChangeEventType;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -50,6 +58,8 @@ import com.squareup.picasso.Picasso;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.cinggl.cinggl.R.id.followButton;
 
 public class CommentsActivity extends AppCompatActivity implements View.OnClickListener {
     @Bind(R.id.sendCommentImageView)ImageView mSendCommentImageView;
@@ -66,9 +76,11 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private String mPostKey;
+    //firebase
+    private DatabaseReference relationsRef;
+    private DatabaseReference cinglesRef;
     //firestore
     private CollectionReference commentsReference;
-    private CollectionReference relationsReference;
     private CollectionReference cinglesReference;
     private Query commentQuery;
     private CollectionReference usersReference;
@@ -112,9 +124,12 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                 throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
             }
 
+            //firebase
+            relationsRef = FirebaseDatabase.getInstance().getReference(Constants.RELATIONS);
+            cinglesRef = FirebaseDatabase.getInstance().getReference(Constants.POSTS);
+            //firestore
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
-            relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
 
             mCommentEditText.setFilters(new InputFilter[]{new InputFilter
@@ -158,20 +173,15 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     public void setData() {
-        cinglesReference.document("Cingles").collection("Cingles")
-                .document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        cinglesRef.child(mPostKey).addValueEventListener(new ValueEventListener() {
             @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()) {
-                    final Cingle cingle = documentSnapshot.toObject(Cingle.class);
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    final Cingle cingle = dataSnapshot.getValue(Cingle.class);
                     final String uid = cingle.getUid();
                     final String image = cingle.getCingleImageUrl();
                     final String title = cingle.getTitle();
+
 
                     //LAUCNH PROFILE IF ITS NOT DELETED ELSE CATCH THE EXCEPTION
                     mUserProfileImageView.setOnClickListener(new View.OnClickListener() {
@@ -213,14 +223,9 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                                 }
                             });
 
-                    usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    usersReference.document(uid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
-                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
-
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
                             if (documentSnapshot.exists()) {
                                 final Cingulan cingulan = documentSnapshot.toObject(Cingulan.class);
                                 final String profileImage = cingulan.getProfileImage();
@@ -251,17 +256,19 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                                         });
                             }
                         }
-
                     });
-
                 }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
     }
 
     public void setUpFirebaseComments(){
-        commentQuery = commentsReference.document("Cingles Comments").collection("Comments")
-                .orderBy("pushId");
+        commentQuery = commentsReference.orderBy("pushId");
         FirestoreRecyclerOptions<Comment> options = new FirestoreRecyclerOptions.Builder<Comment>()
                 .setQuery(commentQuery, Comment.class)
                 .build();
@@ -293,8 +300,6 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                         }
                     }
                 });
-
-
 
                 usersReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                    @Override
@@ -342,67 +347,67 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                        });
                    }
                 });
-//
-//                if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-//                    viewHolder.followButton.setVisibility(View.GONE);
-//                }else {
-//                    viewHolder.followButton.setVisibility(View.VISIBLE);
-//                    //FOLLOW PROFILE IF THE ACCOUNT IS NOT DELETED ELSE CATCH THE EXCEPTION
-//                    try {
-//                        viewHolder.followButton.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View view) {
-//                                processFollow = true;
-//                                relationsRef.addValueEventListener(new ValueEventListener() {
-//                                    @Override
-//                                    public void onDataChange(DataSnapshot dataSnapshot) {
-//                                        if (processFollow){
-//                                            if (dataSnapshot.child("following").child(firebaseAuth.getCurrentUser().getUid()).hasChild(uid)){
-//                                                relationsRef.child("following").child(firebaseAuth.getCurrentUser().getUid()).child(uid)
-//                                                        .removeValue();
-//                                                relationsRef.child("followers").child(uid).child(firebaseAuth.getCurrentUser().getUid())
-//                                                        .removeValue();
-//                                                processFollow = false;
-//                                                onFollow(false);
-//                                                //set the text on the button to follow if the user in not yet following;
-//
-//                                            }else {
-//                                                try {
-//                                                    relationsRef.child("following").child(firebaseAuth.getCurrentUser().getUid())
-//                                                            .child(uid).child("uid").setValue(uid);
-//                                                    processFollow = false;
-//                                                    onFollow(false);
-//
-//                                                    relationsRef.child("followers").child(uid).child(firebaseAuth.getCurrentUser().getUid())
-//                                                            .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
-//                                                    processFollow = false;
-//                                                    onFollow(false);
-//
-//                                                    //set text on the button to following;
-//                                                    viewHolder.followButton.setText("Following");
-//
-//                                                }catch (Exception e){
-//
-//                                                }
-//
-//                                            }
-//
-//                                        }
-//
-//                                    }
-//
-//                                    @Override
-//                                    public void onCancelled(DatabaseError databaseError) {
-//
-//                                    }
-//                                });
-//                            }
-//                        });
-//
-//                    }catch (Exception e){
-//                        e.printStackTrace();
-//                    }
-//                }
+
+                if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                    holder.followButton.setVisibility(View.GONE);
+                }else {
+                    holder.followButton.setVisibility(View.VISIBLE);
+                    //FOLLOW PROFILE IF THE ACCOUNT IS NOT DELETED ELSE CATCH THE EXCEPTION
+                    try {
+                        holder.followButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                processFollow = true;
+                                relationsRef.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        if (processFollow){
+                                            if (dataSnapshot.child("following").child(firebaseAuth.getCurrentUser().getUid()).hasChild(uid)){
+                                                relationsRef.child("following").child(firebaseAuth.getCurrentUser().getUid()).child(uid)
+                                                        .removeValue();
+                                                relationsRef.child("followers").child(uid).child(firebaseAuth.getCurrentUser().getUid())
+                                                        .removeValue();
+                                                processFollow = false;
+                                                onFollow(false);
+                                                //set the text on the button to follow if the user in not yet following;
+
+                                            }else {
+                                                try {
+                                                    relationsRef.child("following").child(firebaseAuth.getCurrentUser().getUid())
+                                                            .child(uid).child("uid").setValue(uid);
+                                                    processFollow = false;
+                                                    onFollow(false);
+
+                                                    relationsRef.child("followers").child(uid).child(firebaseAuth.getCurrentUser().getUid())
+                                                            .child("uid").setValue(firebaseAuth.getCurrentUser().getUid());
+                                                    processFollow = false;
+                                                    onFollow(false);
+
+                                                    //set text on the button to following;
+                                                    holder.followButton.setText("Following");
+
+                                                }catch (Exception e){
+
+                                                }
+
+                                            }
+
+                                        }
+
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+                        });
+
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
 
             }
 
@@ -513,8 +518,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                             comment.setUid(uid);
                             comment.setCommentText(commentText);
 
-                            DocumentReference pushRef = commentsReference.document("Cingles Comments")
-                                    .collection("Comments").document(mPostKey);
+                            DocumentReference pushRef = commentsReference.document(mPostKey);
                             final String pushId = pushRef.getId();
                             comment.setPushId(pushId);
                             pushRef.set(comment);
@@ -529,30 +533,30 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         }
 
     }
-//
-//    private void onFollow(final boolean increament){
-//        relationsRef.runTransaction(new Transaction.Handler() {
-//            @Override
-//            public Transaction.Result doTransaction(MutableData mutableData) {
-//                if(mutableData.getValue() != null){
-//                    int value = mutableData.getValue(Integer.class);
-//                    if(increament){
-//                        value++;
-//                    }else{
-//                        value--;
-//                    }
-//                    mutableData.setValue(value);
-//                }
-//                return Transaction.success(mutableData);
-//            }
-//
-//            @Override
-//            public void onComplete(DatabaseError databaseError, boolean b,
-//                                   DataSnapshot dataSnapshot) {
-//                Log.d(TAG, "followTransaction:onComplete" + databaseError);
-//
-//            }
-//        });
-//    }
+
+    private void onFollow(final boolean increament){
+        relationsRef.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                if(mutableData.getValue() != null){
+                    int value = mutableData.getValue(Integer.class);
+                    if(increament){
+                        value++;
+                    }else{
+                        value--;
+                    }
+                    mutableData.setValue(value);
+                }
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b,
+                                   DataSnapshot dataSnapshot) {
+                Log.d(TAG, "followTransaction:onComplete" + databaseError);
+
+            }
+        });
+    }
 
 }

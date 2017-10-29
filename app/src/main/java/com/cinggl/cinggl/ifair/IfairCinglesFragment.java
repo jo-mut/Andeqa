@@ -30,6 +30,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -56,12 +57,13 @@ public class IfairCinglesFragment extends Fragment {
 
     //firestore
     private CollectionReference cinglesReference;
-    private CollectionReference ifairReference;
+//    private CollectionReference ifairReference;
+    private DocumentReference ifairReference;
     private CollectionReference usersReference;
     private CollectionReference creditsReference;
     private CollectionReference cingleWalletReference;
     private CollectionReference ownerReference;
-    private com.google.firebase.firestore.Query ifairQuery;
+    private com.google.firebase.firestore.Query sellingQuery;
     //adapters
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     private FirebaseAuth firebaseAuth;
@@ -97,34 +99,15 @@ public class IfairCinglesFragment extends Fragment {
 
         if (firebaseAuth.getCurrentUser()!= null){
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
+//            ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
+            ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR)
+                    .document("Cingles");
             cingleWalletReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_WALLET);
-            ifairQuery = ifairReference.document("Cingles").collection("Cingle Selling")
+            sellingQuery = ifairReference.collection("Cingle Selling")
                     .orderBy("randomNumber");
             ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
-            usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
 
             setCinglesOnIfair();
-
-            ifairQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e){
-                    final int size = documentSnapshots.size();
-                    Log.d("size of Cingles", size + " ");
-
-                    if (e != null) {
-                        Log.w(TAG, "Listen error", e);
-                        return;
-                    }
-
-
-                    if (documentSnapshots.isEmpty()){
-                        progressBar.setVisibility(View.VISIBLE);
-                    }else {
-                        progressBar.setVisibility(View.GONE);
-                    }
-                }
-            });
         }
 
         return  view;
@@ -142,7 +125,7 @@ public class IfairCinglesFragment extends Fragment {
 
     public void setCinglesOnIfair(){
         FirestoreRecyclerOptions<CingleSale> options = new FirestoreRecyclerOptions.Builder<CingleSale>()
-                .setQuery(ifairQuery, CingleSale.class)
+                .setQuery(sellingQuery, CingleSale.class)
                 .build();
         firestoreRecyclerAdapter = new FirestoreRecyclerAdapter<CingleSale, IfairCinglesViewHolder>(options) {
             @Override
@@ -153,9 +136,9 @@ public class IfairCinglesFragment extends Fragment {
                 final double salePrice = getSnapshots().get(position).getSalePrice();
 
                 DecimalFormat formatter =  new DecimalFormat("0.00000000");
-                holder.cingleSalePriceTextView.setText("CSC" + " " + "" + formatter.format(salePrice));
+                holder.cingleSalePriceTextView.setText("CSC" + " " + formatter.format(salePrice));
 
-                Log.d("ifair cingles postKey", postKey);
+                Log.d("best cingles postKey", postKey);
 
                 holder.cingleTradeMethodTextView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -207,7 +190,62 @@ public class IfairCinglesFragment extends Fragment {
                     }
                 });
 
-                ifairReference.document("Cingles").addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (documentSnapshot.exists()){
+                            Cingulan cingulan = documentSnapshot.toObject(Cingulan.class);
+                            final String profileImage = cingulan.getProfileImage();
+                            final String username = cingulan.getUsername();
+                            holder.usernameTextView.setText(username);
+                            Picasso.with(getContext())
+                                    .load(profileImage)
+                                    .resize(MAX_WIDTH, MAX_HEIGHT)
+                                    .onlyScaleDown()
+                                    .centerCrop()
+                                    .placeholder(R.drawable.profle_image_background)
+                                    .networkPolicy(NetworkPolicy.OFFLINE)
+                                    .into(holder.creatorImageView, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+
+                                        }
+
+                                        @Override
+                                        public void onError() {
+                                            Picasso.with(getContext())
+                                                    .load(profileImage)
+                                                    .resize(MAX_WIDTH, MAX_HEIGHT)
+                                                    .onlyScaleDown()
+                                                    .centerCrop()
+                                                    .placeholder(R.drawable.profle_image_background)
+                                                    .into(holder.creatorImageView);
+                                        }
+                                    });
+                        }
+                    }
+                });
+
+                ifairReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                    }
+                });
+
+
+
+                    ifairReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                         if (e != null) {
@@ -279,48 +317,6 @@ public class IfairCinglesFragment extends Fragment {
                     }
                 });
 
-                usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (documentSnapshot.exists()){
-                            Cingulan cingulan = documentSnapshot.toObject(Cingulan.class);
-                            final String profileImage = cingulan.getProfileImage();
-                            final String username = cingulan.getUsername();
-                            holder.usernameTextView.setText(username);
-                            Picasso.with(getContext())
-                                    .load(profileImage)
-                                    .resize(MAX_WIDTH, MAX_HEIGHT)
-                                    .onlyScaleDown()
-                                    .centerCrop()
-                                    .placeholder(R.drawable.profle_image_background)
-                                    .networkPolicy(NetworkPolicy.OFFLINE)
-                                    .into(holder.creatorImageView, new Callback() {
-                                        @Override
-                                        public void onSuccess() {
-
-                                        }
-
-                                        @Override
-                                        public void onError() {
-                                            Picasso.with(getContext())
-                                                    .load(profileImage)
-                                                    .resize(MAX_WIDTH, MAX_HEIGHT)
-                                                    .onlyScaleDown()
-                                                    .centerCrop()
-                                                    .placeholder(R.drawable.profle_image_background)
-                                                    .into(holder.creatorImageView);
-                                        }
-                                    });
-                        }
-                    }
-                });
-
                 ownerReference.document("Ownership").collection(postKey)
                         .document("Owner").addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
@@ -380,149 +376,7 @@ public class IfairCinglesFragment extends Fragment {
                     }
                 });
 
-
-                ifairReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (documentSnapshots.getDocuments().contains("Cingle Selling")) {
-                            ifairReference.document("Cingle Selling").addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                @Override
-                                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                                    if (e != null) {
-                                        Log.w(TAG, "Listen error", e);
-                                        return;
-                                    }
-
-                                    if (documentSnapshot.exists()) {
-                                        if (documentSnapshot.contains(postKey)) {
-                                            holder.cingleTradeMethodTextView.setText("@CingleSelling");
-                                        }
-                                    }
-                                }
-                            });
-                        } else if (documentSnapshots.getDocuments().contains("Cingle Lacing")) {
-                            ifairReference.document("Cingle Lacing").addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                @Override
-                                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                                    if (e != null) {
-                                        Log.w(TAG, "Listen error", e);
-                                        return;
-                                    }
-
-                                    if (documentSnapshot.exists()) {
-                                        if (documentSnapshot.contains(postKey)) {
-                                            holder.cingleTradeMethodTextView.setText("@CingleLacing");
-                                        }
-                                    }
-                                }
-                            });
-                        } else if (documentSnapshots.getDocuments().contains("Cingle Leasing")) {
-                            ifairReference.document("Cingle Leasing").addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                @Override
-                                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                                    if (e != null) {
-                                        Log.w(TAG, "Listen error", e);
-                                        return;
-                                    }
-
-                                    if (documentSnapshot.exists()) {
-                                        if (documentSnapshot.contains(postKey)) {
-                                            holder.cingleTradeMethodTextView.setText("@CingleLeasing");
-                                        }
-                                    }
-                                }
-                            });
-                        } else if (documentSnapshots.getDocuments().contains("Cingle Backing")) {
-                            ifairReference.document("Cingle Backing").addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                @Override
-                                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                                    if (e != null) {
-                                        Log.w(TAG, "Listen error", e);
-                                        return;
-                                    }
-
-                                    if (documentSnapshot.exists()) {
-                                        if (documentSnapshot.contains(postKey)) {
-                                            holder.cingleTradeMethodTextView.setText("@CingleBacking");
-                                        }
-                                    }
-                                }
-                            });
-                        } else {
-                            holder.cingleTradeMethodTextView.setText("@NotForTrade");
-                        }
-
-                    }
-                });
-
-                cingleWalletReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (documentSnapshot.exists()){
-                            final TransactionDetails details = documentSnapshot.toObject(TransactionDetails.class);
-                            final String ownerUid = details.getUid();
-
-                            usersReference.document(ownerUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                @Override
-                                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                    if (e != null) {
-                                        Log.w(TAG, "Listen error", e);
-                                        return;
-                                    }
-
-                                    if (documentSnapshot.exists()){
-                                        final Cingulan cingulan = documentSnapshot.toObject(Cingulan.class);
-                                        final String username = cingulan.getUsername();
-                                        final String profileImage = cingulan.getProfileImage();
-                                        holder.cingleOwnerTextView.setText(username);
-                                        Picasso.with(getContext())
-                                                .load(profileImage)
-                                                .resize(MAX_WIDTH, MAX_HEIGHT)
-                                                .onlyScaleDown()
-                                                .centerCrop()
-                                                .placeholder(R.drawable.profle_image_background)
-                                                .networkPolicy(NetworkPolicy.OFFLINE)
-                                                .into(holder.ownerImageView, new Callback() {
-                                                    @Override
-                                                    public void onSuccess() {
-
-                                                    }
-
-                                                    @Override
-                                                    public void onError() {
-                                                        Picasso.with(getContext())
-                                                                .load(profileImage)
-                                                                .resize(MAX_WIDTH, MAX_HEIGHT)
-                                                                .onlyScaleDown()
-                                                                .centerCrop()
-                                                                .placeholder(R.drawable.profle_image_background)
-                                                                .into(holder.ownerImageView);
-                                                    }
-                                                });
-                                    }
-                                }
-                            });
-
-                        }
-                    }
-                });
-
-                cinglesReference.document("Cingles").collection("Cingles").document(postKey)
+                cinglesReference.document(postKey)
                         .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -553,8 +407,6 @@ public class IfairCinglesFragment extends Fragment {
 
                                         }
                                     });
-                            DecimalFormat formatter =  new DecimalFormat("0.00000000");
-                            holder.cingleSenseCreditsTextView.setText("CSC" + " " + "" + formatter.format(cingle.getSensepoint()));
                             holder.datePostedTextView.setText(cingle.getDatePosted());
                         }
 
