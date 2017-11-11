@@ -16,14 +16,5 @@
 
     </android.support.v7.widget.RecyclerView>
 
-    <ProgressBar
-        android:id="@+id/bestCinglesProgressbar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_centerVertical="false"
-        android:layout_centerHorizontal="false"
-        android:layout_centerInParent="true" />
-
 
 </RelativeLayout>

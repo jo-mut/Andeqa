@@ -28,8 +28,6 @@ import com.cinggl.cinggl.models.Credits;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.people.FollowerProfileActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -43,15 +41,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -78,9 +72,12 @@ public class ListOnIfairActivity extends AppCompatActivity implements View.OnCli
     private CollectionReference usersReference;
     private CollectionReference relationsReference;
     private CollectionReference commentReference;
+    private CollectionReference senseCreditReference;
+    private CollectionReference ifairReference;
+
     //firebase
     private DatabaseReference ifairRef;
-    private DatabaseReference senseCreditReference;
+    private DatabaseReference cinglesRef;
     //REMOVE SCIENTIFIC NOATATION
     private DecimalFormat formatter =  new DecimalFormat("0.00000000");
 
@@ -104,6 +101,8 @@ public class ListOnIfairActivity extends AppCompatActivity implements View.OnCli
 
 
         firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseFirestore.setLoggingEnabled(true);
+
         if (firebaseAuth.getCurrentUser() != null){
 
             mPostKey = getIntent().getStringExtra(EXTRA_POST_KEY);
@@ -115,9 +114,15 @@ public class ListOnIfairActivity extends AppCompatActivity implements View.OnCli
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             commentReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
+            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
+            ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
+
             //firebase
             ifairRef = FirebaseDatabase.getInstance().getReference(Constants.IFAIR);
-            senseCreditReference = FirebaseDatabase.getInstance().getReference(Constants.SENSECREDITS);
+            cinglesRef = FirebaseDatabase.getInstance().getReference(Constants.POSTS);
+
+            ifairRef.keepSynced(true);
+            cinglesRef.keepSynced(true);
 
 
             //initialize input filter
@@ -130,9 +135,8 @@ public class ListOnIfairActivity extends AppCompatActivity implements View.OnCli
     }
 
     public void setData(){
-        //SET THE CINGLE IMAGE AND USER PROFILE
-        cinglesReference.document(mPostKey)
-                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        //set the cingle image
+        cinglesReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -147,6 +151,46 @@ public class ListOnIfairActivity extends AppCompatActivity implements View.OnCli
                     final String title = cingle.getTitle();
                     final String image = cingle.getCingleImageUrl();
 
+                    if (cingle.getTitle().equals("")){
+                        mCingleTitleRelativeLayout.setVisibility(View.GONE);
+                    }else {
+                        mCingleTitleTextView.setText(cingle.getTitle());
+                    }
+
+                    //set the cingle title
+                    mCingleTitleTextView.setText(title);
+                    //set the cingle image
+                    Picasso.with(ListOnIfairActivity.this)
+                            .load(image)
+                            .networkPolicy(NetworkPolicy.OFFLINE)
+                            .into(mCingleImageView, new Callback() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onError() {
+                                    Picasso.with(ListOnIfairActivity.this)
+                                            .load(image)
+                                            .into(mCingleImageView);
+                                }
+                            });
+
+                    //lauch the user profile
+                    mUserProfileImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                Intent intent = new Intent(ListOnIfairActivity.this, PersonalProfileActivity.class);
+                                startActivity(intent);
+                            }else {
+                                Intent intent = new Intent(ListOnIfairActivity.this, FollowerProfileActivity.class);
+                                intent.putExtra(ListOnIfairActivity.EXTRA_USER_UID, uid);
+                                startActivity(intent);
+                            }
+                        }
+                    });
 
                     usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
@@ -180,53 +224,13 @@ public class ListOnIfairActivity extends AppCompatActivity implements View.OnCli
                                             }
                                         });
 
-//                              LAUCNH PROFILE IF ITS NOT DELETED ELSE CATCH THE EXCEPTION
-                                mUserProfileImageView.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                            Intent intent = new Intent(ListOnIfairActivity.this, PersonalProfileActivity.class);
-                                            startActivity(intent);
-                                        }else {
-                                            Intent intent = new Intent(ListOnIfairActivity.this, FollowerProfileActivity.class);
-                                            intent.putExtra(ListOnIfairActivity.EXTRA_USER_UID, uid);
-                                            startActivity(intent);
-                                        }
-                                    }
-                                });
+//
 
                             }
                         }
                     });
 
-                    //set the title of the cingle
-                    if (title.equals("")){
-                        mCingleTitleRelativeLayout.setVisibility(View.GONE);
-                    }else {
-                        mCingleTitleTextView.setText(title);
-                    }
-
-                    //set the cingle image
-                    Picasso.with(ListOnIfairActivity.this)
-                            .load(image)
-                            .networkPolicy(NetworkPolicy.OFFLINE)
-                            .into(mCingleImageView, new Callback() {
-                                @Override
-                                public void onSuccess() {
-
-                                }
-
-                                @Override
-                                public void onError() {
-                                    Picasso.with(ListOnIfairActivity.this)
-                                            .load(image)
-                                            .into(mCingleImageView);
-                                }
-                            });
-
-
                 }
-
             }
         });
 
@@ -245,11 +249,17 @@ public class ListOnIfairActivity extends AppCompatActivity implements View.OnCli
                 Log.d("amount entered", intSalePrice + "");
                 final String formattedString = formatter.format(intSalePrice);
 
-                senseCreditReference.child(mPostKey).addValueEventListener(new ValueEventListener() {
+                senseCreditReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()){
-                            final Credits credits = dataSnapshot.getValue(Credits.class);
+                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (documentSnapshot.exists()){
+                            final Credits credits = documentSnapshot.toObject(Credits.class);
                             final double senseCredits = credits.getAmount();
                             Log.d("seanse credits", senseCredits + "");
 
@@ -263,34 +273,16 @@ public class ListOnIfairActivity extends AppCompatActivity implements View.OnCli
                                 cingleSale.setSalePrice(intSalePrice);
                                 Log.d("set sale price", intSalePrice + "");
 
-                                ifairRef.child("Cingle Selling").child(mPostKey).setValue(cingleSale)
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()){
-                                                    ifairRef.child("Cingle Selling").child(mPostKey)
-                                                            .addValueEventListener(new ValueEventListener() {
-                                                                @Override
-                                                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                                                    if (dataSnapshot.exists()){
-                                                                        CingleSale salePrice = (dataSnapshot.getValue(CingleSale.class));
-                                                                        DecimalFormat formatter =  new DecimalFormat("0.00000000");
-                                                                        mCingleSalePriceTextView.setText("CSC" + " " + "" + formatter
-                                                                                .format(salePrice.getSalePrice()));
-                                                                    }
-                                                                }
+                                ifairReference.document(mPostKey).set(cingleSale).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()){
+                                            Toast.makeText(ListOnIfairActivity.this, "Your cingle has been listed on Ifair",
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
 
-                                                                @Override
-                                                                public void onCancelled(DatabaseError databaseError) {
-
-                                                                }
-                                                            });
-                                                }
-                                            }
-                                        });
-
-                                Toast.makeText(ListOnIfairActivity.this, "Your cingle has been listed on Ifair",
-                                        Toast.LENGTH_SHORT).show();
                             }else {
 
                                 new AlertDialog.Builder(ListOnIfairActivity.this)
@@ -302,11 +294,6 @@ public class ListOnIfairActivity extends AppCompatActivity implements View.OnCli
                                         }).setIcon(android.R.drawable.ic_dialog_alert).show();
                             }
                         }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
                     }
                 });
 

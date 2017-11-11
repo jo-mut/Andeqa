@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -23,22 +24,22 @@ import android.widget.Toast;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.home.MainActivity;
-import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.ProportionalImageView;
-import com.cinggl.cinggl.models.CingleData;
+import com.cinggl.cinggl.models.Cingle;
+import com.cinggl.cinggl.models.Cingulan;
 import com.cinggl.cinggl.models.TransactionDetails;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
@@ -95,20 +96,17 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
     private DatabaseReference cingleOwnersReference;
-    private DatabaseReference usernameRef;
     private List<Cingle> cingles = new ArrayList<>();
 
     private static final int DEFAULT_TITLE_LENGTH_LIMIT = 100;
     private static final int DEFAULT_DESCRIPTION_LENGTH_LIMIT = 500;
 
-    //FIREBASE
-    private DatabaseReference cinglesRef;
     //FIRESTORE
     private FirebaseFirestore firebaseFirestore;
     private ListenerRegistration listenerRegistration;
     private CollectionReference cinglesReference;
-    private DocumentReference cingleReference;
     private CollectionReference ownersReference;
+    private CollectionReference usersReference;
 //
 
     @Override
@@ -129,13 +127,12 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
             //get the reference to cingles(collection reference)
             cinglesReference = firebaseFirestore.collection(Constants.POSTS);
             ownersReference = firebaseFirestore.collection(Constants.CINGLE_ONWERS);
+            usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             //firebase storage
             storageReference = FirebaseStorage.getInstance().getReference(Constants.POSTS);
             //firebase database
-            usernameRef = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.POSTS);
             cingleOwnersReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_ONWERS);
-            cinglesRef = FirebaseDatabase.getInstance().getReference(Constants.POSTS);
 
             fetchUserData();
             uploadingToFirebaseDialog();
@@ -332,40 +329,43 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
     }
 
     public void fetchUserData(){
-        usernameRef.child(firebaseAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+        usersReference.document(firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                final String profileImage = (String) dataSnapshot.child("profileImage").getValue();
-                String username = (String) dataSnapshot.child("username").getValue();
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
 
-                mAccountUsernameTextView.setText(username);
+                if (documentSnapshot.exists()) {
+                    final Cingulan cingulan = documentSnapshot.toObject(Cingulan.class);
+                    final String username = cingulan.getUsername();
+                    final String profileImage = cingulan.getProfileImage();
 
-                Picasso.with(CreateCingleActivity.this)
-                        .load(profileImage)
-                        .fit()
-                        .centerCrop()
-                        .networkPolicy(NetworkPolicy.OFFLINE)
-                        .into(mProfileImageView, new Callback() {
-                            @Override
-                            public void onSuccess() {
+                    mAccountUsernameTextView.setText(username);
 
-                            }
+                    Picasso.with(CreateCingleActivity.this)
+                            .load(profileImage)
+                            .fit()
+                            .centerCrop()
+                            .networkPolicy(NetworkPolicy.OFFLINE)
+                            .into(mProfileImageView, new Callback() {
+                                @Override
+                                public void onSuccess() {
 
-                            @Override
-                            public void onError() {
-                                Picasso.with(CreateCingleActivity.this)
-                                        .load(profileImage)
-                                        .fit()
-                                        .centerCrop()
-                                        .into(mProfileImageView);
-                            }
-                        });
+                                }
 
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
+                                @Override
+                                public void onError() {
+                                    Picasso.with(CreateCingleActivity.this)
+                                            .load(profileImage)
+                                            .fit()
+                                            .centerCrop()
+                                            .into(mProfileImageView);
+                                }
+                            });
+                }
             }
         });
     }
@@ -459,7 +459,7 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void savingDataToFirebase(){
-        if (mProportionalImageView != null){
+        if (image != null){
 //            progressDialog.show();
             mProportionalImageView.setDrawingCacheEnabled(true);
             mProportionalImageView.buildDrawingCache();
@@ -487,7 +487,7 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
                         @Override
                         public void onSuccess(QuerySnapshot documentSnapshots) {
                             final int index = documentSnapshots.getDocuments().size();
-                            CingleData firestoreCingle = new CingleData();
+                            Cingle firestoreCingle = new Cingle();
                             Cingle firebaseCingle = new Cingle();
 
                             final Long timeStamp = System.currentTimeMillis();
@@ -512,16 +512,14 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
                             firestoreCingle.setTimeStamp(timeStamp);
                             firestoreCingle.setUid(firebaseAuth.getCurrentUser().getUid());
                             firestoreCingle.setPushId(pushId);
+                            firestoreCingle.setTitle(mCingleTitleEditText.getText().toString());
+                            firestoreCingle.setDescription(mCingleDescriptionEditText.getText().toString());
+                            firestoreCingle.setCingleImageUrl(downloadUrl.toString());
+                            firestoreCingle.setPushId(pushId);
+                            firestoreCingle.setUid(firebaseAuth.getCurrentUser().getUid());
+                            firestoreCingle.setDatePosted(currentDate);
+                            firestoreCingle.setCingleIndex("Cingle number" + " " + currentIdex);
                             cingleRef.set(firestoreCingle);
-
-                            firebaseCingle.setTitle(mCingleTitleEditText.getText().toString());
-                            firebaseCingle.setDescription(mCingleDescriptionEditText.getText().toString());
-                            firebaseCingle.setCingleImageUrl(downloadUrl.toString());
-                            firebaseCingle.setPushId(pushId);
-                            firebaseCingle.setUid(firebaseAuth.getCurrentUser().getUid());
-                            firebaseCingle.setDatePosted(currentDate);
-                            firebaseCingle.setCingleIndex("Cingle number" + " " + currentIdex);
-                            cinglesRef.child(pushId).setValue(firebaseCingle);
 
                             //reset input fields
                             mCingleTitleEditText.setText("");
@@ -537,10 +535,10 @@ public class CreateCingleActivity extends AppCompatActivity implements View.OnCl
                             DocumentReference ownerRef = ownersReference.document("Ownership")
                                     .collection(pushId).document("Owner");
                             ownerRef.set(transactionDetails);
-                            DocumentReference historyRef = ownersReference.document(pushId)
+                            DocumentReference historyRef = ownersReference.document("Ownership")
                                     .collection("Ownership history").document();
                             final String historyId = historyRef.getId();
-                            transactionDetails.setHistoryId(historyId);
+                            transactionDetails.setCingleId(historyId);
                             historyRef.set(transactionDetails);
 
 //                            progressDialog.dismiss();

@@ -355,7 +355,8 @@
                             android:id="@+id/likesImageView"
                             tools:scaleType="centerCrop"
                             android:scaleType="centerCrop"
-                            android:padding="5dp" />
+                            android:padding="5dp"
+                            android:layout_centerVertical="true" />
 
                         <TextView
                             android:text="0"
@@ -366,8 +367,8 @@
                             android:layout_toRightOf="@+id/commentsImageView"
                             android:textSize="12sp"
                             android:layout_centerHorizontal="false"
-                            android:layout_centerVertical="false"
-                            android:layout_marginTop="10dp" />
+                            android:layout_marginTop="10dp"
+                            android:layout_centerVertical="true" />
 
 
                         <TextView
@@ -376,7 +377,7 @@
                             android:layout_height="wrap_content"
                             android:id="@+id/cingleSenseCreditsTextView"
                             android:textStyle="normal|bold"
-                            android:background="@drawable/text_border_default"
+                            android:background="@drawable/border_color_primary"
                             android:textSize="12sp"
                             android:paddingTop="3dp"
                             android:paddingBottom="3dp"
@@ -389,7 +390,7 @@
                             android:layout_centerVertical="true" />
 
                         <Button
-                            android:text=""
+                            android:text="Buy"
                             android:layout_width="wrap_content"
                             android:layout_alignParentEnd="false"
                             android:id="@+id/tradeCingleButton"
@@ -397,11 +398,9 @@
                             android:background="@drawable/colour_btn_background"
                             android:layout_height="wrap_content"
                             android:textColor="@android:color/white"
-                            android:layout_alignParentRight="false"
-                            android:layout_toRightOf="@+id/cingleSenseCreditsTextView"
-                            android:layout_toEndOf="@+id/cingleSenseCreditsTextView"
+                            android:layout_alignParentRight="true"
                             android:layout_centerVertical="true"
-                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
                             android:minHeight="26dp"
                             android:minWidth="50dip" />
 
@@ -417,7 +416,8 @@
                             android:layout_marginStart="16dp"
                             android:layout_alignParentTop="true"
                             android:layout_toRightOf="@+id/likesImageView"
-                            android:layout_toEndOf="@+id/likesImageView" />
+                            android:layout_toEndOf="@+id/likesImageView"
+                            android:layout_centerVertical="true" />
 
                     </RelativeLayout>
 
@@ -443,7 +443,7 @@
                             android:layout_centerVertical="true"
                             android:layout_alignParentLeft="false"
                             android:layout_alignParentStart="false"
-                            android:background="@drawable/text_border_default"
+                            android:background="@drawable/border_color_primary"
                             android:scaleType="centerCrop"
                             android:cropToPadding="false"
                             android:layout_width="wrap_content"

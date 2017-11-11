@@ -22,8 +22,7 @@ public class LikesViewHolder extends RecyclerView.ViewHolder {
     public TextView usernameTextView;
     public CircleImageView profileImageView;
     public Button followButton;
-    public TextView firstNameTextView;
-    public TextView secondNameTextView;
+    public TextView fullNameTextView;
 
     public LikesViewHolder(View itemView) {
         super(itemView);
@@ -32,8 +31,7 @@ public class LikesViewHolder extends RecyclerView.ViewHolder {
         usernameTextView = (TextView)itemView.findViewById(R.id.usernameTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.creatorImageView);
         followButton = (Button) itemView.findViewById(R.id.followButton);
-        firstNameTextView = (TextView) itemView.findViewById(R.id.firstNameTextView);
-        secondNameTextView = (TextView) itemView.findViewById(R.id.secondNameTextView);
+        fullNameTextView = (TextView) itemView.findViewById(R.id.fullNameTextView);
     }
 
     public void bindLikes(final Like like){

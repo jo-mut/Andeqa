@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +35,8 @@ public class SignUpActivity extends AppCompatActivity implements
     @Bind(R.id.passwordEditText) EditText mPasswordEditText;
     @Bind(R.id.confirmPasswordEditText) EditText mConfirmPasswordEditText;
     @Bind(R.id.loginTextView) TextView mLoginTextView;
+    @Bind(R.id.errorRelativeLayout)RelativeLayout mErrorRelativeLayout;
+    @Bind(R.id.errorTextView)TextView mErrorTextView;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -111,22 +114,11 @@ public class SignUpActivity extends AppCompatActivity implements
                         if (!task.isSuccessful()) {
                             //check email exists
                             if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                                new AlertDialog.Builder(SignUpActivity.this)
-                                        .setTitle("Sorry !")
-                                        .setMessage("User with this email already exists. Please use another email!")
-                                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                            }
-                                        }).setIcon(android.R.drawable.ic_dialog_alert).show();
+                                mErrorRelativeLayout.setVisibility(View.VISIBLE);
+                                mErrorTextView.setText("Sorry !" +" " + "User with this email already exists. Please use another email!");
                             }else {
-                                //sign up failed
-                                new AlertDialog.Builder(SignUpActivity.this)
-                                        .setTitle("Authentication failed")
-                                        .setMessage("Check that you are connected to the internet")
-                                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                            }
-                                        }).setIcon(android.R.drawable.ic_dialog_alert).show();
+                                mErrorRelativeLayout.setVisibility(View.VISIBLE);
+                                mErrorTextView.setText("Authentication failed !" + " " + "Check that you are connected to the internet!");
                             }
                         }else {
                             //sign up successful
@@ -171,8 +163,9 @@ public class SignUpActivity extends AppCompatActivity implements
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()){
                     //email sent
-                    Toast.makeText(SignUpActivity.this, "Confirm your email! Verification email successfully sent to" + " " +
-                            firebaseUser.getEmail(), Toast.LENGTH_LONG).show();
+                    mErrorRelativeLayout.setVisibility(View.VISIBLE);
+                    mErrorTextView.setText("Confirm your email! Verification email successfully sent to" + " " +
+                            firebaseUser.getEmail());
                     //after email is sent, sign out and finish this activity
                     FirebaseAuth.getInstance().signOut();
 //                    Intent intent = new Intent(SignUpActivity.this, CreateProfileActivity.class);
@@ -180,7 +173,6 @@ public class SignUpActivity extends AppCompatActivity implements
 //                    finish();
                 }else {
                     //email not sent, so display a message and restart the activity and restart this activity
-                    Toast.makeText(SignUpActivity.this, "Could not send verification email", Toast.LENGTH_LONG).show();
                     new AlertDialog.Builder(SignUpActivity.this)
                             .setMessage("Cinggl could not send verification email, please confirm that you " +
                                     "entered the right email and check your internet connection")

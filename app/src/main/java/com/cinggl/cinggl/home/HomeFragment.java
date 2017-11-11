@@ -36,7 +36,6 @@ public class HomeFragment extends Fragment {
     private HomePagerAdapter homePagerAdapter;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
-    private String mUid;
     private Handler handler = new Handler();
     private int progressStatus = 0;
     private ProgressBar progressBar;
@@ -62,8 +61,6 @@ public class HomeFragment extends Fragment {
 
         firebaseAuth =  FirebaseAuth.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        mUid = firebaseUser.getUid();
-
 
     }
 

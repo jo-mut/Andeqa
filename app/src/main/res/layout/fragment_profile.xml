@@ -56,43 +56,15 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/firstNameTextView"
+                        android:id="@+id/fullNameTextView"
                         android:textStyle="normal|bold"
                         android:textColor="@android:color/white"
                         android:textSize="25sp"
                         android:layout_alignParentTop="false"
                         android:layout_alignParentLeft="false"
                         android:layout_alignParentStart="false"
-                        android:layout_alignParentRight="false"
-                        android:layout_toStartOf="@+id/nameDivider"
-                        android:layout_toLeftOf="@+id/nameDivider"
-                        android:layout_centerInParent="false"
                         android:layout_centerVertical="true"
-                        android:layout_marginRight="1dp" />
-
-                    <View
-                        android:id="@+id/nameDivider"
-                        android:layout_height="0.3dp"
-                        android:layout_alignParentLeft="false"
-                        android:background="@android:color/transparent"
-                        android:layout_centerHorizontal="false"
-                        android:layout_centerInParent="true"
-                        android:layout_width="1dp"
-                        android:layout_marginBottom="40dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/secondNameTextView"
-                        android:textStyle="normal|bold"
-                        android:textColor="@android:color/white"
-                        android:textSize="25sp"
-                        android:layout_alignParentTop="false"
-                        android:layout_toRightOf="@+id/nameDivider"
-                        android:layout_toEndOf="@+id/nameDivider"
-                        android:layout_marginLeft="1dp"
-                        android:layout_centerHorizontal="false"
-                        android:layout_centerVertical="true"
+                        android:layout_marginRight="1dp"
                         android:layout_centerInParent="true" />
 
 
@@ -112,7 +84,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/cinglesCountTextView"
                         android:textSize="10sp"
-                        android:background="@drawable/text_border_white"
+                        android:background="@drawable/border_white"
                         android:paddingTop="3dp"
                         android:paddingBottom="3dp"
                         android:paddingLeft="10dp"
@@ -152,7 +124,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/followersCountTextView"
                         android:textSize="10sp"
-                        android:background="@drawable/text_border_white"
+                        android:background="@drawable/border_white"
                         android:paddingTop="3dp"
                         android:paddingBottom="3dp"
                         android:paddingLeft="10dp"
@@ -178,7 +150,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/followingCountTextView"
                         android:textSize="10sp"
-                        android:background="@drawable/text_border_white"
+                        android:background="@drawable/border_white"
                         android:paddingTop="3dp"
                         android:paddingBottom="3dp"
                         android:paddingLeft="10dp"

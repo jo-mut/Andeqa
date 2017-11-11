@@ -56,28 +56,13 @@
                 android:layout_alignParentTop="false" />
 
             <TextView
-                android:text="First"
+                android:text=""
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/firstNameTextView"
+                android:id="@+id/fullNameTextView"
                 android:textSize="21sp"
                 android:layout_below="@+id/usernameTextView"
                 android:layout_centerVertical="true" />
-
-            <TextView
-                android:text="Second"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
-                android:id="@+id/secondNameTextView"
-                android:layout_below="@+id/usernameTextView"
-                android:layout_alignBaseline="@+id/firstNameTextView"
-                android:layout_alignBottom="@+id/firstNameTextView"
-                android:layout_toRightOf="@+id/firstNameTextView"
-                android:layout_centerVertical="true"
-                android:textSize="21sp" />
-
 
         </RelativeLayout>
 

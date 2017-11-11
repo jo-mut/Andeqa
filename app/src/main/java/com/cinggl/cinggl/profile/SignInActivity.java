@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +49,8 @@ public class SignInActivity extends AppCompatActivity implements
     @Bind(R.id.registerTextView)
     TextView mRegisterTextView;
     @Bind(R.id.forgotPasswordTextView)TextView mForgotPasswordTextView;
+    @Bind(R.id.errorRelativeLayout)RelativeLayout mErrorRelativeLayout;
+    @Bind(R.id.errorTextView)TextView mErrorTextView;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -145,8 +148,11 @@ public class SignInActivity extends AppCompatActivity implements
                 mAuthProgressDialog.dismiss();
                 if (!task.isSuccessful()) {
                     Log.w(TAG, "signInWithEmail", task.getException());
-                    Toast.makeText(SignInActivity.this, "Please confirm that your email and password match",
-                            Toast.LENGTH_SHORT).show();
+                    mErrorRelativeLayout.setVisibility(View.VISIBLE);
+                    mErrorTextView.setText("Authentication failed! " +
+                            "\n" +
+                            "\nPlease confirm that your email and password match and " +
+                            "that you are connected to the internet");
                     mAuthProgressDialog.dismiss();
                 }else {
                     checkIfImailVerified();
@@ -179,9 +185,8 @@ public class SignInActivity extends AppCompatActivity implements
             FirebaseAuth.getInstance().signOut();
             //restart this activity
 
-            Toast.makeText(SignInActivity.this, "Check that you have confirmed your email",
-                    Toast.LENGTH_SHORT).show();
-
+            mErrorRelativeLayout.setVisibility(View.VISIBLE);
+            mErrorTextView.setText("Check that you have confirmed your email");
             overridePendingTransition(0,0);
             finish();
             overridePendingTransition(0,0);

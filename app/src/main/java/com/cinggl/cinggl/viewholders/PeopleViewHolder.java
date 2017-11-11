@@ -8,11 +8,14 @@ import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cingulan;
+import com.cinggl.cinggl.models.Relation;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.cinggl.cinggl.R.id.secondNameTextView;
 
 /**
  * Created by J.EL on 7/3/2017.
@@ -21,8 +24,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class PeopleViewHolder extends RecyclerView.ViewHolder {
     View mView;
     Context mContext;
-    public TextView firstNameTextView;
-    public TextView secondNameTextView;
+    public TextView fullNameTextView;
     public CircleImageView profileImageView;
     public Button followButton;
     public TextView usernameTextView;
@@ -31,44 +33,14 @@ public class PeopleViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
-        firstNameTextView = (TextView) itemView.findViewById(R.id.firstNameTextView);
-        secondNameTextView = (TextView) itemView.findViewById(R.id.secondNameTextView);
+        fullNameTextView = (TextView) itemView.findViewById(R.id.fullNameTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.creatorImageView);
         followButton = (Button) itemView.findViewById(R.id.followButton);
         usernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
     }
 
-    public void bindPeople(final Cingulan cingulan){
-        final CircleImageView profileImageView = (CircleImageView) mView.findViewById(R.id.creatorImageView);
-        final TextView firstNameTextView = (TextView) mView.findViewById(R.id.firstNameTextView);
-        final TextView secondNameTextView = (TextView) mView.findViewById(R.id.secondNameTextView);
-
-        firstNameTextView.setText(cingulan.getFirstName());
-        secondNameTextView.setText(cingulan.getSecondName());
-
-        Picasso.with(mContext)
-                .load(cingulan.getProfileImage())
-                .fit()
-                .centerCrop()
-                .placeholder(R.drawable.profle_image_background)
-                .networkPolicy(NetworkPolicy.OFFLINE)
-                .into(profileImageView, new Callback() {
-                    @Override
-                    public void onSuccess() {
-
-                    }
-
-                    @Override
-                    public void onError() {
-                        Picasso.with(mContext)
-                                .load(cingulan.getProfileImage())
-                                .fit()
-                                .centerCrop()
-                                .placeholder(R.drawable.profle_image_background)
-                                .into(profileImageView);
+    public void bindPeople(final Relation relation){
 
 
-                    }
-                });
     }
 }

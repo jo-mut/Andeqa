@@ -25,6 +25,7 @@ import com.cinggl.cinggl.models.Balance;
 import com.cinggl.cinggl.models.CingleSale;
 import com.cinggl.cinggl.models.TransactionDetails;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -34,6 +35,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.DecimalFormat;
@@ -56,9 +58,9 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
     //firebase
     private DatabaseReference walletReference;
     private DatabaseReference cingleWalletReference;
-    private DatabaseReference ifairReference;
     //firestore
     private CollectionReference cingleOwnersReference;
+    private CollectionReference ifairReference;
     private FirebaseAuth firebaseAuth;
 
     //REMOVE SCIENTIFIC NOATATION
@@ -104,9 +106,9 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
             //firebase
             walletReference = FirebaseDatabase.getInstance().getReference(Constants.WALLET);
             cingleWalletReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_WALLET);
-            ifairReference = FirebaseDatabase.getInstance().getReference(Constants.IFAIR);
             //firestore
             cingleOwnersReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
+            ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
 
         }
         return view;
@@ -146,151 +148,146 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
                     simpleDateFormat = new SimpleDateFormat("d'th' MMM yyyy");
                 final String currentDate = simpleDateFormat.format(new Date());
 
-                ifairReference.child("Cingle Selling").child(mPostKey).addListenerForSingleValueEvent
-                        (new ValueEventListener() {
+                ifairReference.document(mPostKey).get()
+                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                       if (dataSnapshot.exists()){
-                           CingleSale cingleSale = dataSnapshot.getValue(CingleSale.class);
-                           final double salePrice = cingleSale.getSalePrice();
-                           Log.d("cingle sale price", salePrice + "");
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()){
+                            final CingleSale cingleSale = documentSnapshot.toObject(CingleSale.class);
 
-                           if (amountTransferred < salePrice){
-                               mAmountEnteredEditText.setError("Your wallet has insufficient balance");
-                           }else if (mAmountEnteredEditText.equals("")){
-                               mAmountEnteredEditText.setError("Amount cannot be empty");
-                           }else  if (amountTransferred > salePrice){
-                               mAmountEnteredEditText.setError("Amount is more than sale price");
-                           } else{
-                               walletReference.child("balance").child(firebaseAuth.getCurrentUser().getUid())
-                                       .addListenerForSingleValueEvent(new ValueEventListener() {
-                                           @Override
-                                           public void onDataChange(DataSnapshot dataSnapshot) {
-                                               if (dataSnapshot.exists()){
-                                                   Balance walletBalance = dataSnapshot.getValue(Balance.class);
-                                                   final double currentBalance = walletBalance.getTotalBalance();
-                                                   Log.d("old wallet balance", currentBalance + "");
+                            final double salePrice = cingleSale.getSalePrice();
+                            Log.d("cingle sale price", salePrice + "");
 
-                                                   final double newWalletBalance = currentBalance - amountTransferred;
-                                                   Log.d("new wallet balance", newWalletBalance + "");
+                            if (amountTransferred < salePrice){
+                                mAmountEnteredEditText.setError("Your wallet has insufficient balance");
+                            }else if (mAmountEnteredEditText.equals("")){
+                                mAmountEnteredEditText.setError("Amount cannot be empty");
+                            }else  if (amountTransferred > salePrice){
+                                mAmountEnteredEditText.setError("Amount is more than sale price");
+                            } else{
+                                walletReference.child("balance").child(firebaseAuth.getCurrentUser().getUid())
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                if (dataSnapshot.exists()){
+                                                    Balance walletBalance = dataSnapshot.getValue(Balance.class);
+                                                    final double currentBalance = walletBalance.getTotalBalance();
+                                                    Log.d("old wallet balance", currentBalance + "");
 
-                                                   //record new wallet balance
-                                                   final Balance balance = new Balance();
-                                                   balance.setTotalBalance(newWalletBalance);
+                                                    final double newWalletBalance = currentBalance - amountTransferred;
+                                                    Log.d("new wallet balance", newWalletBalance + "");
 
-                                                   walletReference.child("balance").child(firebaseAuth.getCurrentUser()
-                                                           .getUid()).setValue(balance)
-                                                           .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                               @Override
-                                                               public void onComplete(@NonNull Task<Void> task) {
-                                                                   if (task.isSuccessful()){
-                                                                       cingleWalletReference.child(mPostKey).child("amount deposited")
-                                                                               .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                                   @Override
-                                                                                   public void onDataChange(DataSnapshot dataSnapshot) {
-                                                                                       if (dataSnapshot.exists()){
-                                                                                           Balance cingleWalletBalance = (Balance)dataSnapshot.getValue();
-                                                                                           final double currentBalance = cingleWalletBalance.getTotalBalance();
-                                                                                           Log.d("old cingle balance", currentBalance + "");
-                                                                                           final double newCingleBalance = currentBalance + amountTransferred;
-                                                                                           Log.d("new cingle balance", newCingleBalance + "");
+                                                    //record new wallet balance
+                                                    final Balance balance = new Balance();
+                                                    balance.setTotalBalance(newWalletBalance);
 
-                                                                                           //record new cingle wallet balance
-                                                                                           balance.setAmountDeposited(newCingleBalance);
+                                                    walletReference.child("balance").child(firebaseAuth.getCurrentUser()
+                                                            .getUid()).setValue(balance)
+                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<Void> task) {
+                                                                    if (task.isSuccessful()){
+                                                                        cingleWalletReference.child(mPostKey).child("amount deposited")
+                                                                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                    @Override
+                                                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                                        if (dataSnapshot.exists()){
+                                                                                            Balance cingleWalletBalance = (Balance)dataSnapshot.getValue();
+                                                                                            final double currentBalance = cingleWalletBalance.getTotalBalance();
+                                                                                            Log.d("old cingle balance", currentBalance + "");
+                                                                                            final double newCingleBalance = currentBalance + amountTransferred;
+                                                                                            Log.d("new cingle balance", newCingleBalance + "");
 
-                                                                                           cingleWalletReference.child(mPostKey).child("amount deposited")
-                                                                                                   .setValue(balance).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                                               @Override
-                                                                                               public void onComplete(@NonNull Task<Void> task) {
-                                                                                                   if (task.isSuccessful()){
-                                                                                                       Toast.makeText(getContext(), "Transaction successful",
-                                                                                                               Toast.LENGTH_LONG).show();
-                                                                                                   }
-                                                                                               }
-                                                                                           });
+                                                                                            //record new cingle wallet balance
+                                                                                            balance.setAmountDeposited(newCingleBalance);
 
-                                                                                           TransactionDetails transactionDetails = new TransactionDetails();
-                                                                                           transactionDetails.setPushId(mPostKey);
-                                                                                           transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                                           transactionDetails.setAmount(amountTransferred);
-                                                                                           transactionDetails.setWalletBalance(newWalletBalance);
-                                                                                           transactionDetails.setDate(currentDate);
+                                                                                            cingleWalletReference.child(mPostKey).child("amount deposited")
+                                                                                                    .setValue(balance).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                                @Override
+                                                                                                public void onComplete(@NonNull Task<Void> task) {
+                                                                                                    if (task.isSuccessful()){
+                                                                                                        Toast.makeText(getContext(), "Transaction successful",
+                                                                                                                Toast.LENGTH_LONG).show();
+                                                                                                    }
+                                                                                                }
+                                                                                            });
 
-                                                                                           DocumentReference ownerRef = cingleOwnersReference.document("Ownership")
-                                                                                                   .collection(mPostKey).document("Owner");
-                                                                                           ownerRef.set(transactionDetails);
-                                                                                           DocumentReference historyRef = cingleOwnersReference.document(mPostKey)
-                                                                                                   .collection("Ownership history").document();
-                                                                                           final String historyId = historyRef.getId();
-                                                                                           transactionDetails.setHistoryId(historyId);
-                                                                                           historyRef.set(transactionDetails);
-                                                                                           //once cingle has been bought remove it from cingle selling
-                                                                                           ifairReference.child("Cingle Selling").child(mPostKey).removeValue();
+                                                                                            TransactionDetails transactionDetails = new TransactionDetails();
+                                                                                            transactionDetails.setPushId(mPostKey);
+                                                                                            transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                                            transactionDetails.setAmount(amountTransferred);
+                                                                                            transactionDetails.setWalletBalance(newWalletBalance);
+                                                                                            transactionDetails.setDate(currentDate);
 
-                                                                                       }else {
-                                                                                           final double newCingleBalance = amountTransferred;
-                                                                                           Log.d("new cingle balance", newCingleBalance + "");
-                                                                                           balance.setAmountDeposited(amountTransferred);
-                                                                                           cingleWalletReference.child(mPostKey).child("amount deposited")
-                                                                                                   .setValue(balance).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                                               @Override
-                                                                                               public void onComplete(@NonNull Task<Void> task) {
-                                                                                                   if (task.isSuccessful()){
-                                                                                                       Toast.makeText(getContext(), "Transaction not successful." +
-                                                                                                                       " Please try again later",
-                                                                                                               Toast.LENGTH_LONG).show();
-                                                                                                   }
-                                                                                               }
-                                                                                           });
+                                                                                            DocumentReference ownerRef = cingleOwnersReference.document("Ownership")
+                                                                                                    .collection(mPostKey).document("Owner");
+                                                                                            ownerRef.set(transactionDetails);
+                                                                                            DocumentReference historyRef = cingleOwnersReference.document(mPostKey)
+                                                                                                    .collection("Ownership history").document();
+                                                                                            final String historyId = historyRef.getId();
+                                                                                            transactionDetails.setCingleId(historyId);
+                                                                                            historyRef.set(transactionDetails);
+                                                                                            //once cingle has been bought remove it from cingle selling
+                                                                                            ifairReference.document(mPostKey).delete();
 
-                                                                                           TransactionDetails transactionDetails = new TransactionDetails();
-                                                                                           transactionDetails.setPushId(mPostKey);
-                                                                                           transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                                           transactionDetails.setAmount(amountTransferred);
-                                                                                           transactionDetails.setWalletBalance(newWalletBalance);
-                                                                                           transactionDetails.setDate(currentDate);
+                                                                                        }else {
+                                                                                            final double newCingleBalance = amountTransferred;
+                                                                                            Log.d("new cingle balance", newCingleBalance + "");
+                                                                                            balance.setAmountDeposited(amountTransferred);
+                                                                                            cingleWalletReference.child(mPostKey).child("amount deposited")
+                                                                                                    .setValue(balance).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                                @Override
+                                                                                                public void onComplete(@NonNull Task<Void> task) {
+                                                                                                    if (task.isSuccessful()){
+                                                                                                        Toast.makeText(getContext(), "Transaction not successful." +
+                                                                                                                        " Please try again later",
+                                                                                                                Toast.LENGTH_LONG).show();
+                                                                                                    }
+                                                                                                }
+                                                                                            });
+
+                                                                                            TransactionDetails transactionDetails = new TransactionDetails();
+                                                                                            transactionDetails.setPushId(mPostKey);
+                                                                                            transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                                            transactionDetails.setAmount(amountTransferred);
+                                                                                            transactionDetails.setWalletBalance(newWalletBalance);
+                                                                                            transactionDetails.setDate(currentDate);
 
 
-                                                                                           DocumentReference ownerRef = cingleOwnersReference.document("Ownership")
-                                                                                                   .collection(mPostKey).document("Owner");
-                                                                                           ownerRef.set(transactionDetails);
-                                                                                           DocumentReference historyRef = cingleOwnersReference.document(mPostKey)
-                                                                                                   .collection("Ownership history").document();
-                                                                                           final String historyId = historyRef.getId();
-                                                                                           transactionDetails.setHistoryId(historyId);
-                                                                                           historyRef.set(transactionDetails);
+                                                                                            DocumentReference ownerRef = cingleOwnersReference.document("Ownership")
+                                                                                                    .collection(mPostKey).document("Owner");
+                                                                                            ownerRef.set(transactionDetails);
+                                                                                            DocumentReference historyRef = cingleOwnersReference.document(mPostKey)
+                                                                                                    .collection("Ownership history").document();
+                                                                                            final String historyId = historyRef.getId();
+                                                                                            transactionDetails.setCingleId(historyId);
+                                                                                            historyRef.set(transactionDetails);
 
-                                                                                           //once cingle has been bought remove it from cingle selling
-                                                                                           ifairReference.child("Cingle Selling").child(mPostKey).removeValue();
-                                                                                       }
-                                                                                   }
+                                                                                            //once cingle has been bought remove it from cingle selling
+                                                                                            ifairReference.document(mPostKey).delete();
+                                                                                        }
+                                                                                    }
 
-                                                                                   @Override
-                                                                                   public void onCancelled(DatabaseError databaseError) {
+                                                                                    @Override
+                                                                                    public void onCancelled(DatabaseError databaseError) {
 
-                                                                                   }
-                                                                               });
-                                                                   }
-                                                               }
-                                                           });
-                                               }
-                                           }
+                                                                                    }
+                                                                                });
+                                                                    }
+                                                                }
+                                                            });
+                                                }
+                                            }
 
-                                           @Override
-                                           public void onCancelled(DatabaseError databaseError) {
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
 
-                                           }
-                                       });
-                           }
-                       }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
+                                            }
+                                        });
+                            }
+                        }
                     }
                 });
-
                 //RESET THE EDITTEXT
                 mAmountEnteredEditText.setText("");
             }

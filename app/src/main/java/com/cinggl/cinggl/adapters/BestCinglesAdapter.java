@@ -1,33 +1,5 @@
 package com.cinggl.cinggl.adapters;
 
-import android.content.Context;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-
-import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.home.BestCinglesFragment;
-import com.cinggl.cinggl.models.Cingle;
-import com.cinggl.cinggl.models.CingleData;
-import com.cinggl.cinggl.viewholders.BestCinglesViewHolder;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.Transaction;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by J.EL on 7/19/2017.
  */
@@ -104,7 +76,7 @@ public class BestCinglesAdapter {
 //
 //    @Override
 //    public void onBindViewHolder(BestCinglesViewHolder holder, int position) {
-//        final CingleData currentCingle = bestCingles.get(position);
+//        final Cingle currentCingle = bestCingles.get(position);
 //        final String postKey = bestCingles.get(position).getPushId();
 //        Log.d("best cingle postkey", postKey);
 //        holder.bindBestCingle(currentCingle);
@@ -268,31 +240,31 @@ public class BestCinglesAdapter {
 ////                    });
 ////
 ////                    //SET THE TRADE METHOD TEXT ACCORDING TO THE TRADE METHOD OF THE CINGLE
-////                    ifairReference.addValueEventListener(new ValueEventListener() {
-////                        @Override
-////                        public void onDataChange(DataSnapshot dataSnapshot) {
-////
-////                            //SET CINGLE TRADE METHOD WHEN THERE ARE ALL TRADE METHODS
-////                            if (dataSnapshot.child("Cingle Lacing").hasChild(postKey)){
-////                                holder.cingleTradeMethodTextView.setText("@CingleLacing");
-////                            }else if (dataSnapshot.child("Cingle Leasing").hasChild(postKey)){
-////                                holder.cingleTradeMethodTextView.setText("@CingleLeasing");
-////
-////                            }else if (dataSnapshot.child("Cingle Selling").hasChild(postKey)){
-////                                holder.cingleTradeMethodTextView.setText("@CingleSelling");
-////                            }else if ( dataSnapshot.child("Cingle Backing").hasChild(postKey)){
-////                                holder.cingleTradeMethodTextView.setText("@CingleBacking");
-////                            }else {
-////                                holder.cingleTradeMethodTextView.setText("@NotForTrade");
-////                            }
-////
-////                        }
-////
-////                        @Override
-////                        public void onCancelled(DatabaseError databaseError) {
-////
-////                        }
-////                    });
+//                    ifairReference.addValueEventListener(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(DataSnapshot dataSnapshot) {
+//
+//                            //SET CINGLE TRADE METHOD WHEN THERE ARE ALL TRADE METHODS
+//                            if (dataSnapshot.child("Cingle Lacing").hasChild(postKey)){
+//                                holder.cingleTradeMethodTextView.setText("@CingleLacing");
+//                            }else if (dataSnapshot.child("Cingle Leasing").hasChild(postKey)){
+//                                holder.cingleTradeMethodTextView.setText("@CingleLeasing");
+//
+//                            }else if (dataSnapshot.child("Cingle Selling").hasChild(postKey)){
+//                                holder.cingleTradeMethodTextView.setText("@CingleSelling");
+//                            }else if ( dataSnapshot.child("Cingle Backing").hasChild(postKey)){
+//                                holder.cingleTradeMethodTextView.setText("@CingleBacking");
+//                            }else {
+//                                holder.cingleTradeMethodTextView.setText("@NotForTrade");
+//                            }
+//
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(DatabaseError databaseError) {
+//
+//                        }
+//                    });
 ////
 ////                    ifairReference.child("Cingle Selling").child(postKey).addValueEventListener
 ////                            (new ValueEventListener() {

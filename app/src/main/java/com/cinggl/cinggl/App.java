@@ -6,6 +6,9 @@ import android.support.multidex.MultiDex;
 
 import com.cinggl.cinggl.services.ConnectivityReceiver;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
@@ -17,11 +20,16 @@ public class App extends Application {
 
     private static App mInstance;
 
-
     @Override
     public void onCreate() {
         super.onCreate();
+
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
+        FirebaseFirestore.setLoggingEnabled(true);
 
         Picasso.Builder builder = new Picasso.Builder(this);
         builder.downloader(new OkHttpDownloader(this, Integer.MAX_VALUE));

@@ -2,7 +2,6 @@ package com.cinggl.cinggl.viewholders;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -11,12 +10,6 @@ import android.widget.TextView;
 import com.cinggl.cinggl.ProportionalImageView;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cingle;
-import com.cinggl.cinggl.models.CingleData;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
-
-import java.text.DecimalFormat;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -75,6 +68,9 @@ public class ProfileCinglesViewHolder extends RecyclerView.ViewHolder implements
 
     }
 
+    public void bindProfileCingle(final Cingle cingle){
+
+    }
 
     @Override
     public  void onClick(View v){

@@ -11,6 +11,8 @@ import com.cinggl.cinggl.models.Comment;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.cinggl.cinggl.R.id.secondNameTextView;
+
 /**
  * Created by J.EL on 6/16/2017.
  */
@@ -23,8 +25,7 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
     public TextView usernameTextView;
     public CircleImageView profileImageView;
     public Button followButton;
-    public TextView firstNameTextView;
-    public TextView secondNameTextView;
+    public TextView fullNameTextView;
 
     public CommentViewHolder(View itemView) {
         super(itemView);
@@ -34,8 +35,7 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
         commentCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.creatorImageView);
         followButton = (Button) itemView.findViewById(R.id.followButton);
-        firstNameTextView = (TextView) itemView.findViewById(R.id.firstNameTextView);
-        secondNameTextView = (TextView) itemView.findViewById(R.id.secondNameTextView);
+        fullNameTextView = (TextView) itemView.findViewById(R.id.fullNameTextView);
     }
 
     public void bindComment(final Comment comment){

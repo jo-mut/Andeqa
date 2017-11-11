@@ -12,6 +12,7 @@ import com.cinggl.cinggl.models.TransactionDetails;
 
 import java.text.DecimalFormat;
 
+
 /**
  * Created by J.EL on 9/8/2017.
  */
@@ -22,8 +23,6 @@ public class TransactionHistoryViewHolder extends RecyclerView.ViewHolder {
     Context mContext;
     public ProportionalImageView cingleImageView;
     public TextView amountTransferredTextView;
-    public TextView transactionDateTextView;
-    public TextView newWalletBalanceTextView;
     public ImageView deleteHistoryImageView;
 
 
@@ -31,7 +30,6 @@ public class TransactionHistoryViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
-        newWalletBalanceTextView = (TextView) mView.findViewById(R.id.newWalletBalanceTextView);
         cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
         deleteHistoryImageView = (ImageView) mView.findViewById(R.id.deleteHistoryImageView);
 
@@ -40,14 +38,11 @@ public class TransactionHistoryViewHolder extends RecyclerView.ViewHolder {
 
     public void bindTransactionHistory(final TransactionDetails transactionDetails){
         TextView amountTransferredTextView = (TextView) mView.findViewById(R.id.amountTransferredTextView);
-        TextView transactionDateTextView = (TextView) mView.findViewById(R.id.transactionDateTextView);
-        TextView newWalletBalanceTextView = (TextView) mView.findViewById(R.id.newWalletBalanceTextView);
 
         DecimalFormat formatter =  new DecimalFormat("0.00000000");
-        amountTransferredTextView.setText("Amount transferred:" + " " + "CSC" + " " + formatter
-                .format(transactionDetails.getAmount()));
-        transactionDateTextView.setText("Date of transaction:" + "" + transactionDetails.getDate());
-        newWalletBalanceTextView.setText("Your new wallet balance: is" + " "+ "CSC" + " " + formatter
-                .format(transactionDetails.getWalletBalance()));
+        amountTransferredTextView.setText("You have redeemed" + " CSC " + formatter.format
+                (transactionDetails.getAmount()) +  " on " +
+                transactionDetails.getDate() + ". Your new wallet balance is " +
+                "CSC " + formatter.format(transactionDetails.getWalletBalance()));
     }
 }

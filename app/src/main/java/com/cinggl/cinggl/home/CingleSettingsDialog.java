@@ -3,7 +3,6 @@ package com.cinggl.cinggl.home;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -21,23 +20,15 @@ import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.ifair.RedeemCreditsDialogFragment;
 import com.cinggl.cinggl.ifair.ListOnIfairActivity;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -59,6 +50,7 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
     private FirebaseAuth firebaseAuth;
     //firestore
     private CollectionReference cinglesReference;
+    private CollectionReference senseCreditReference;
     private CollectionReference ifairReference;
     //firebase
     private DatabaseReference cingleOwnerReference;
@@ -112,12 +104,17 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
                 throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
             }
 
-            ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
-            cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            //firebase
             cingleOwnerReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_ONWERS);
+            //firestore
+            cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
+            ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
+            // firebase storage
             storageReference = FirebaseStorage.getInstance().getReference(Constants.POSTS);
 
             cingleOwnerReference.keepSynced(true);
+
 
         }
 
@@ -149,14 +146,29 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
 //        }
 
         if (v == mTradeCingleRelativeLayout){
-            if (ifairReference.document("Cingles").collection("Cingle Selling").document(mPostKey) != null){
-                Toast.makeText(getContext(), "Sorry! This Cingle is already on sale",
-                        Toast.LENGTH_SHORT).show();
-            }else {
-                Intent intent = new Intent(getActivity(), ListOnIfairActivity.class);
-                intent.putExtra(CingleSettingsDialog.EXTRA_POST_KEY, mPostKey);
-                startActivity(intent);
-            }
+            ifairReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                    if (e != null) {
+                        Log.w(TAG, "Listen error", e);
+                        return;
+                    }
+
+                    if (documentSnapshot.exists()){
+                        try {
+                            Toast.makeText(getContext(), "This Cingle is already on sale",
+                                    Toast.LENGTH_SHORT).show();
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
+                    }else {
+                        Intent intent = new Intent(getActivity(), ListOnIfairActivity.class);
+                        intent.putExtra(CingleSettingsDialog.EXTRA_POST_KEY, mPostKey);
+                        startActivity(intent);
+                    }
+                }
+            });
 
         }
 
@@ -180,33 +192,44 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
     }
 
     public void deleteCingle(){
-        cinglesReference.document("Cingles").collection("Cingles").document(mPostKey)
+        cinglesReference.document(mPostKey)
                 .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                ifairReference.document("Cingles").addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                ifairReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                        if (documentSnapshot.getDocumentReference(mPostKey) != null){
-                            ifairReference.document("Cingles").collection("Cingle Selling")
-                                    .document(mPostKey).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Toast.makeText(getContext(), "You Cingle has been deleted",
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(getContext(), "Sorry! Seems something went wrong, please try again",
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            });
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (documentSnapshot.exists()){
+                            ifairReference.document(mPostKey).delete();
                         }
                     }
                 });
+
+                senseCreditReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (documentSnapshot.exists()){
+                            senseCreditReference.document(mPostKey).delete();
+                        }
+                    }
+                });
+
+
             }
         });
+
         dismiss();
     }
 }

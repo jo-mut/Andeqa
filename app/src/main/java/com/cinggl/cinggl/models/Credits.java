@@ -8,14 +8,12 @@ public class Credits {
     double amount;
     String uid;
     String pushId;
-    String date;
 
     public Credits() {
 
     }
 
-    public Credits(String date, double amount, String uid, String pushId) {
-        this.date = date;
+    public Credits(double amount, String uid, String pushId) {
         this.amount = amount;
         this.uid = uid;
         this.pushId = pushId;
@@ -45,11 +43,4 @@ public class Credits {
         this.pushId = pushId;
     }
 
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
 }

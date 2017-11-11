@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +53,8 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
     @Bind(R.id.updateCoverTextView)TextView mUpdateCoverTextView;
     @Bind(R.id.updateProfilePictureImageButton)ImageButton mUpdateProfilePictureImageButton;
     @Bind(R.id.submitUserInfoButton)Button mSubmitUserInfoButton;
+    @Bind(R.id.errorRelativeLayout)RelativeLayout mErrorRelativeLayout;
+    @Bind(R.id.errorTextView)TextView mErrorTextView;
 
     private static final String TAG = CreateProfileActivity.class.getSimpleName();
     private CollectionReference usersReference;
@@ -124,6 +127,10 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
                               Log.w(TAG, "signInWithEmail", task.getException());
                               Toast.makeText(CreateProfileActivity.this, "Please confirm that your email and password match",
                                       Toast.LENGTH_SHORT).show();
+                              mErrorRelativeLayout.setVisibility(View.VISIBLE);
+                              mErrorTextView.setText("Authentication failed! + " +
+                                      "\n Please confirm that your email and password match " +
+                                      "\n you are connected to the internet");
                           }else {
                               checkIfImailVerified();
                           }
@@ -162,8 +169,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
             FirebaseAuth.getInstance().signOut();
             //restart this activity
 
-            Toast.makeText(CreateProfileActivity.this, "Please check that you have confirmed your email",
-                    Toast.LENGTH_LONG).show();
+            mErrorTextView.setText("Check that you have confirmed your email");
 
             overridePendingTransition(0,0);
             finish();
@@ -221,7 +227,8 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(CreateProfileActivity.this, "Profile successfully updated", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CreateProfileActivity.this, "Profile successfully updated",
+                                Toast.LENGTH_SHORT).show();
                     }
                 });
 

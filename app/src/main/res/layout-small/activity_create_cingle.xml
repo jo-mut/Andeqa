@@ -32,12 +32,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
                     android:paddingBottom="5dp"
-                    android:paddingTop="5dp"
-                    android:background="@color/colorPrimary">
+                    android:paddingTop="5dp">
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/creatorImageView"
-                        android:background="@drawable/profle_image_background"
+                        android:background="@drawable/border_color_primary"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:layout_marginLeft="5dp"
@@ -49,8 +48,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/usernameTextView"
                         android:textStyle="normal|bold"
-                        android:textSize="10sp"
-                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
                         android:layout_marginLeft="10dp"
                         android:layout_marginStart="10dp"
                         android:layout_alignTop="@+id/postCingleImageView"
@@ -60,53 +58,16 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:srcCompat="@drawable/ic_send_black_24dp"
+                        app:srcCompat="@drawable/ic_menu_send"
                         android:id="@+id/postCingleImageView"
                         android:padding="5dp"
-                        android:tint="@android:color/white"
                         android:layout_centerVertical="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true" />
-
-                </RelativeLayout>
-
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <EditText
-                        android:layout_height="wrap_content"
-                        android:inputType="textMultiLine|textCapWords"
-                        android:ems="10"
-                        android:background="@drawable/edit_text_background"
-                        android:id="@+id/cingleTitleEditText"
-                        android:hint="Title"
-                        android:textSize="10sp"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
-                        android:freezesText="true"
-                        android:layout_width="match_parent"
-                        android:textStyle="normal|bold"
-                        android:layout_alignParentTop="false"
-                        android:layout_alignParentLeft="false"
-                        android:layout_alignParentStart="false"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/titleCountTextView"
-                        android:textSize="9sp"
                         android:layout_alignParentRight="true"
                         android:layout_alignParentEnd="true"
-                        android:layout_marginRight="10dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_below="@+id/cingleTitleEditText"/>
+                        android:tint="@color/colorPrimary" />
 
                 </RelativeLayout>
+
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -121,38 +82,39 @@
 
                 </RelativeLayout>
 
-
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <EditText
                         android:layout_height="wrap_content"
-                        android:inputType="textMultiLine|textCapSentences"
-                        android:ems="10"
+                        android:inputType="textMultiLine|textCapWords"
                         android:background="@drawable/edit_text_background"
-                        android:id="@+id/cingleDescriptionEditText"
-                        android:hint="Description note"
+                        android:id="@+id/cingleTitleEditText"
+                        android:hint=" Write a Title..."
                         android:textSize="10sp"
+                        android:paddingTop="10dp"
                         android:paddingBottom="10dp"
-                        android:paddingTop="15dp"
                         android:freezesText="true"
-                        android:layout_toStartOf="@+id/descriptionCountTextView"
-                        android:layout_toLeftOf="@+id/descriptionCountTextView"
                         android:layout_width="match_parent"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp" />
+                        android:textStyle="normal|bold"
+                        android:layout_alignParentTop="false"
+                        android:layout_alignParentLeft="false"
+                        android:layout_alignParentStart="false"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="10dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/descriptionCountTextView"
+                        android:id="@+id/titleCountTextView"
                         android:textSize="9sp"
                         android:layout_alignParentRight="true"
                         android:layout_alignParentEnd="true"
                         android:layout_marginRight="10dp"
                         android:layout_marginTop="10dp"
-                        android:layout_below="@+id/cingleDescriptionEditText"/>
+                        android:layout_below="@+id/cingleTitleEditText"/>
 
                 </RelativeLayout>
 
@@ -176,34 +138,54 @@
 
     </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine|textCapSentences"
+            android:ems="10"
+            android:background="@drawable/edit_text_background"
+            android:id="@+id/cingleDescriptionEditText"
+            android:hint="Write a description note..."
+            android:textSize="10sp"
+            android:paddingBottom="10dp"
+            android:paddingTop="15dp"
+            android:freezesText="true"
+            android:layout_toStartOf="@+id/descriptionCountTextView"
+            android:layout_toLeftOf="@+id/descriptionCountTextView"
+            android:layout_width="match_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="10dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/descriptionCountTextView"
+            android:textSize="9sp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/cingleDescriptionEditText"/>
+
+    </RelativeLayout>
 
     <RelativeLayout
+        android:background="@android:color/black"
         android:id="@+id/edit_container"
         android:layout_gravity="bottom"
         android:layout_width="match_parent"
-        android:layout_height="50dp">
-
-        <!--<ImageView-->
-            <!--android:layout_height="wrap_content"-->
-            <!--app:srcCompat="@drawable/ic_photo_black_24dp"-->
-            <!--android:layout_marginLeft="16dp"-->
-            <!--android:layout_marginStart="16dp"-->
-            <!--android:id="@+id/galleryImageView"-->
-            <!--android:padding="5dp"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_alignBottom="@+id/cameraImageView"-->
-            <!--android:layout_alignParentLeft="true"-->
-            <!--android:layout_alignParentStart="true" />-->
+        android:layout_height="105dp">
 
         <ImageView
             app:srcCompat="@drawable/camera_icon"
             android:id="@+id/cameraImageView"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="12dp"
-            android:layout_width="50dp"
-            android:layout_height="50dp" />
+            android:layout_width="37dp"
+            android:layout_height="37dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
 
     </RelativeLayout>
-
 </LinearLayout>

@@ -7,9 +7,8 @@ package com.cinggl.cinggl.models;
 public class TransactionDetails {
     String uid;
     String pushId;
-    String postId;
+    String cingleId;
     String date;
-    String historyId;
     double amount;
     double walletBalance;
 
@@ -18,13 +17,12 @@ public class TransactionDetails {
     }
 
 
-    public TransactionDetails(String uid, String pushId, String postId, String date,
-                              String historyId, double amount, double walletBalance) {
+    public TransactionDetails(String uid, String pushId, String cingleId, String date,
+                              double amount, double walletBalance) {
         this.uid = uid;
         this.pushId = pushId;
-        this.postId = postId;
+        this.cingleId = cingleId;
         this.date = date;
-        this.historyId = historyId;
         this.amount = amount;
         this.walletBalance = walletBalance;
     }
@@ -46,12 +44,12 @@ public class TransactionDetails {
         this.pushId = pushId;
     }
 
-    public String getPostId() {
-        return postId;
+    public String getCingleId() {
+        return cingleId;
     }
 
-    public void setPostId(String postId) {
-        this.postId = postId;
+    public void setCingleId(String cingleId) {
+        this.cingleId = cingleId;
     }
 
     public String getDate() {
@@ -60,14 +58,6 @@ public class TransactionDetails {
 
     public void setDate(String date) {
         this.date = date;
-    }
-
-    public String getHistoryId() {
-        return historyId;
-    }
-
-    public void setHistoryId(String historyId) {
-        this.historyId = historyId;
     }
 
     public double getAmount() {

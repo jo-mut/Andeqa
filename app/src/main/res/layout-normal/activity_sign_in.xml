@@ -17,12 +17,34 @@
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:layout_marginTop="100dp"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <RelativeLayout
+                android:background="@android:color/white"
+                android:id="@+id/errorRelativeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:visibility="gone"
+                android:layout_gravity="bottom">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textSize="15sp"
+                    android:text=""
+                    android:id="@+id/errorTextView"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingTop="5dp"
+                    android:layout_centerVertical="false"
+                    android:layout_centerInParent="true" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_marginTop="15dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 

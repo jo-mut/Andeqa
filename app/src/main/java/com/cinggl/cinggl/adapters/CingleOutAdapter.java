@@ -1,55 +1,5 @@
 package com.cinggl.cinggl.adapters;
 
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-
-import com.cinggl.cinggl.Constants;
-import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.home.CingleDetailActivity;
-import com.cinggl.cinggl.home.FullImageViewActivity;
-import com.cinggl.cinggl.home.CingleSettingsDialog;
-import com.cinggl.cinggl.home.CommentsActivity;
-import com.cinggl.cinggl.home.LikesActivity;
-import com.cinggl.cinggl.models.Balance;
-import com.cinggl.cinggl.models.Cingle;
-import com.cinggl.cinggl.models.Cingulan;
-import com.cinggl.cinggl.models.Like;
-import com.cinggl.cinggl.models.TransactionDetails;
-import com.cinggl.cinggl.people.FollowerProfileActivity;
-import com.cinggl.cinggl.profile.PersonalProfileActivity;
-import com.cinggl.cinggl.viewholders.CingleOutViewHolder;
-import com.cinggl.cinggl.viewholders.WhoLikedViewHolder;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.Transaction;
-import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by J.EL on 7/19/2017.
  */
@@ -62,7 +12,7 @@ public class CingleOutAdapter{
 //    private Query likesQueryCount;
 //    private Context mContext;
 //    private static final String EXTRA_POST_KEY = "post key";
-//    private static final String EXTRA_USER_UID = "uid";
+//    private static final String EXTRA_USER_UID =  "uid";
 //    private DatabaseReference databaseReference;
 //    private DatabaseReference commentReference;
 //    private DatabaseReference usersRef;
@@ -123,7 +73,7 @@ public class CingleOutAdapter{
 //        @Override
 //    public void onBindViewHolder(final CingleOutViewHolder holder, final int position) {
 //        final Cingle cingle = cingles.get(position);
-//        holder.bindCingle(cingle);
+//        holder.bindRandomCingles(cingle);
 //        final String postKey = cingles.get(position).getPushId();
 //        Log.d("cingle postkey", postKey);
 //        //CALL THE METHOD TO ANIMATE RECYCLERVIEW

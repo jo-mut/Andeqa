@@ -2,7 +2,6 @@ package com.cinggl.cinggl.viewholders;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -10,21 +9,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.ProportionalImageView;
-import com.cinggl.cinggl.models.CingleData;
+import com.cinggl.cinggl.models.Cingle;
 import com.google.firebase.database.DatabaseReference;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static com.cinggl.cinggl.R.id.descriptionRelativeLayout;
+import static com.cinggl.cinggl.R.id.timeTextView;
 
 /**
  * Created by J.EL on 5/26/2017.
@@ -80,7 +74,7 @@ public class CingleOutViewHolder extends RecyclerView.ViewHolder{
 
     }
 
-    public void bindRandomCingles(final CingleData cingleData){
+    public void bindRandomCingles(final Cingle cingle){
 
     }
 

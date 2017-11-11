@@ -28,9 +28,11 @@
     <application
         android:name=".App"
         android:allowBackup="true"
+        android:allowClearUserData="false"
         android:icon="@mipmap/ic_launcher"
         android:label="Cinggl"
         android:largeHeap="false"
+        android:manageSpaceActivity=".ManageSpaceActivity"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
@@ -154,10 +156,11 @@
             android:theme="@style/AppTheme" />
         <activity android:name=".profile.CreateProfileActivity" />
         <activity
+            android:name=".home.CingleDetailActivity"
             android:label="Cingle"
-            android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
-            android:name=".home.CingleDetailActivity" />
+            android:theme="@style/AppTheme" />
+        <activity android:name=".ManageSpaceActivity"></activity>
     </application>
 
 </manifest>

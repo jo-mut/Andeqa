@@ -33,14 +33,12 @@ import com.cinggl.cinggl.profile.ProfileFragment;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -71,7 +69,7 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuth firebaseAuth;
     private ImageView mProfileCover;
     private CircleImageView mProfileImageView;
-    private TextView mFirstNameTextView;
+    private TextView mFullNameTextView;
     private TextView mSecondNameTextView;
     private TextView mEmailTextView;
 
@@ -107,7 +105,7 @@ public class MainActivity extends AppCompatActivity
         View header = navigationView.getHeaderView(0);
         mProfileCover = (ImageView) header.findViewById(R.id.header_cover_image);
         mProfileImageView = (CircleImageView) header.findViewById(R.id.creatorImageView);
-        mFirstNameTextView = (TextView) header.findViewById(R.id.firstNameTextView);
+        mFullNameTextView = (TextView) header.findViewById(R.id.fullNameTextView);
         mSecondNameTextView = (TextView) header.findViewById(R.id.secondNameTextView);
         mEmailTextView = (TextView) header.findViewById(R.id.emailTextView);
 
@@ -210,9 +208,15 @@ public class MainActivity extends AppCompatActivity
 
     private void fetchData(){
         //database references
-        usersReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        usersReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
                 if (documentSnapshot.exists()){
                     final Cingulan cingulan = documentSnapshot.toObject(Cingulan.class);
                     String firstName = cingulan.getFirstName();
@@ -220,8 +224,7 @@ public class MainActivity extends AppCompatActivity
                     final String profileImage = cingulan.getProfileImage();
                     final String profileCover = cingulan.getProfileCover();
 
-                    mFirstNameTextView.setText(firstName);
-                    mSecondNameTextView.setText(secondName);
+                    mFullNameTextView.setText(firstName + " " + secondName);
 
                     Picasso.with(MainActivity.this)
                             .load(profileImage)

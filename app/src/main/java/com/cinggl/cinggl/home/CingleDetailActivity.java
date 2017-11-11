@@ -3,7 +3,6 @@ package com.cinggl.cinggl.home;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,9 +13,7 @@ import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.method.DigitsKeyListener;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -39,10 +36,6 @@ import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.viewholders.WhoLikedViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -58,7 +51,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.squareup.picasso.Callback;
@@ -68,14 +60,11 @@ import com.squareup.picasso.Picasso;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 import static com.cinggl.cinggl.R.id.cingleImageView;
 import static com.cinggl.cinggl.R.id.cingleOwnerTextView;
 import static com.cinggl.cinggl.R.id.cingleSalePriceTextView;
@@ -124,13 +113,13 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
     private CollectionReference ownerReference;
     private CollectionReference usersReference;
     private CollectionReference commentsReference;
-    private CollectionReference ifairReference;
     private CollectionReference cingleOwnerReference;
     private CollectionReference senseCreditReference;
+    private CollectionReference ifairReference;
     //firebase
     private DatabaseReference likesRef;
     private DatabaseReference cingleWalletRef;
-    private DatabaseReference cingleWalletReference;
+    private  DatabaseReference cinglesRef;
     private Query likesQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
@@ -169,7 +158,7 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
             }
         });
 
-        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseFirestore.setLoggingEnabled(true);
 
         if (firebaseAuth.getCurrentUser()!= null){
             mPostKey = getIntent().getStringExtra(EXTRA_POST_KEY);
@@ -191,19 +180,25 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
             likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
             cingleWalletRef = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_WALLET);
             likesQuery = likesRef.child(mPostKey).limitToFirst(5);
-            cingleWalletReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_WALLET);
+            cinglesRef = FirebaseDatabase.getInstance().getReference(Constants.POSTS);
+
+            cinglesRef.keepSynced(true);
+            likesQuery.keepSynced(true);
+            likesRef.keepSynced(true);
+
             //firestore
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
             cingleOwnerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
             commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
+            ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
             randomQuery = FirebaseFirestore.getInstance().collection(Constants.POSTS)
                     .orderBy("randomNumber");
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
 
             commentsCountQuery = commentsReference;
+
 
 
             //RETRIEVE DATA FROM FIREBASE
@@ -218,6 +213,44 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void setCingleData(){
+        ifairReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (documentSnapshot.exists()){
+                    final CingleSale cingleSale = documentSnapshot.toObject(CingleSale.class);
+                    DecimalFormat formatter = new DecimalFormat("0.00000000");
+                    mCingleSalePriceTextView.setText("CSC" + " " +
+                            formatter.format(cingleSale.getSalePrice()));
+                }else {
+                    mCingleSalePriceTitleRelativeLayout.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        senseCreditReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (documentSnapshot.exists()){
+                    final CingleSale cingleSale = documentSnapshot.toObject(CingleSale.class);
+                    DecimalFormat formatter = new DecimalFormat("0.00000000");
+                    mCingleSenseCreditsTextView.setText("CSC" + " " +
+                            formatter.format(cingleSale.getSalePrice()));
+                }
+
+            }
+        });
+
         commentsCountQuery.whereEqualTo("postKey", mPostKey).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -253,8 +286,8 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
             }
         });
 
-        cinglesReference.document(mPostKey)
-                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+
+        cinglesReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -264,10 +297,12 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
 
                 if (documentSnapshot.exists()){
                     final Cingle cingle = documentSnapshot.toObject(Cingle.class);
+
                     final String image = cingle.getCingleImageUrl();
                     final String uid = cingle.getUid();
                     final String title = cingle.getTitle();
                     final String description = cingle.getDescription();
+                    final String datePosted = cingle.getDatePosted();
 
                     //LAUCNH PROFILE IF ITS NOT DELETED ELSE CATCH THE EXCEPTION
                     mProfileImageView.setOnClickListener(new View.OnClickListener() {
@@ -284,7 +319,8 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
                         }
                     });
 
-//                    set the title of the cingle
+
+                    //set the title of the cingle
                     if (title.equals("")){
                         mCingleTitleRelativeLayout.setVisibility(View.GONE);
                     }else {
@@ -297,7 +333,7 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
                         mCingleDescriptionTextView.setText(description);
                     }
 
-                    mDatePostedTextView.setText(cingle.getDatePosted());
+                    mDatePostedTextView.setText(datePosted);
 
                     //set the cingle image
                     Picasso.with(CingleDetailActivity.this)
@@ -316,6 +352,7 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
                                             .into(mCingleImageView);
                                 }
                             });
+
                     usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -330,7 +367,6 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
                                 final String profileImage = cingulan.getProfileImage();
 
                                 mUsernameTextView.setText(username);
-
                                 Picasso.with(CingleDetailActivity.this)
                                         .load(profileImage)
                                         .fit()
@@ -373,7 +409,8 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
                 }
 
                 if (documentSnapshot.exists()){
-                    documentSnapshot.getDocumentReference("owner").addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    documentSnapshot.getDocumentReference("owner")
+                            .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                             TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
@@ -381,7 +418,7 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
                             Log.d("owner uid", ownerUid);
 
                             if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
-                                mTradeCingleButton.setVisibility(View.INVISIBLE);
+                                mTradeCingleButton.setVisibility(View.GONE);
                             }else {
                                 mTradeCingleButton.setVisibility(View.VISIBLE);
                             }
@@ -395,17 +432,14 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
 
     /**set the the text on buy button*/
     private void setTextOnButton(){
-        ifairReference.document("Cingles").collection("Cingle Selling")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+        ifairReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (!documentSnapshots.getDocuments().isEmpty()){
-                    mTradeCingleButton.setText("Buy");
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (documentSnapshot.exists()){
+                    mCingleTradeMethodTextView.setText("@CingleSelling");
+                }else {
+                    mCingleTradeMethodTextView.setText("@NotOnTrade");
+                    mTradeCingleButton.setVisibility(View.GONE);
                 }
             }
         });
@@ -414,44 +448,6 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
 
     /**display the price of the cingle*/
     private void setCingleInfo() {
-        cinglesReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()) {
-                    Cingle cingle = documentSnapshot.toObject(Cingle.class);
-                    final String datePosted = cingle.getDatePosted();
-                    mDatePostedTextView.setText(datePosted);
-
-                }
-            }
-        });
-
-
-        ifairReference.document("Cingles").collection("Cingle Selling")
-                .document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()) {
-                    CingleSale cingleSale = documentSnapshot.toObject(CingleSale.class);
-                    DecimalFormat formatter = new DecimalFormat("0.00000000");
-                    mCingleSalePriceTextView.setText("CSC" + " " + formatter.format(cingleSale.getSalePrice()));
-                } else {
-                    mCingleSalePriceTitleRelativeLayout.setVisibility(View.GONE);
-                }
-            }
-        });
-
         //retrieve the first users who liked
         likesRef.child(mPostKey).addValueEventListener(new ValueEventListener() {
             @Override
@@ -556,213 +552,6 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
             }
         });
 
-        ifairReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                if (!documentSnapshots.getDocuments().isEmpty()){
-                    ifairReference.document("Cingles").addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                            if (documentSnapshot.exists()){
-
-                                documentSnapshot.getDocumentReference("Cingle Selling")
-                                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                        if (documentSnapshot.exists()){
-                                            mCingleTradeMethodTextView.setText("@CingleSelling");
-                                        }else {
-                                            mCingleTradeMethodTextView.setText("@NotForTrade");
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    });
-                }
-            }
-        });
-
-        ifairReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                ifairReference.document("Cingles").addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (documentSnapshot.exists()){
-                            Log.d("Cingle Selling", mPostKey);
-                        }
-                    }
-                });
-            }
-        });
-
-//        ifairReference.document("Cingles").addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//            @Override
-//            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-//
-//                if (e != null) {
-//                    Log.w(TAG, "Listen error", e);
-//                    return;
-//                }
-//
-//                if (documentSnapshot.exists()){
-//                    if (documentSnapshot.contains("Cingle Selling")){
-//                        documentSnapshot.getDocumentReference("Cingle Selling")
-//                                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//                                    @Override
-//                                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-//                                        if (e != null) {
-//                                            Log.w(TAG, "Listen error", e);
-//                                            return;
-//                                        }
-//
-//                                        if (documentSnapshot.contains(mPostKey)){
-//                                            mCingleTradeMethodTextView.setText("@CingleSelling");
-//                                        }
-//                                    }
-//                                });
-//                    }else if (documentSnapshot.contains("Cingle Lacing")){
-//                        documentSnapshot.getDocumentReference("Cingle Lacing")
-//                                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//                                    @Override
-//                                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-//                                        if (e != null) {
-//                                            Log.w(TAG, "Listen error", e);
-//                                            return;
-//                                        }
-//
-//                                        if (documentSnapshot.contains(mPostKey)){
-//                                            mCingleTradeMethodTextView.setText("@CingleLacing");
-//                                        }
-//                                    }
-//                                });
-//
-//                    }else if (documentSnapshot.contains("Cingle Leasing")){
-//                        documentSnapshot.getDocumentReference("Cingle Leasing")
-//                                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//                                    @Override
-//                                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-//                                        if (e != null) {
-//                                            Log.w(TAG, "Listen error", e);
-//                                            return;
-//                                        }
-//
-//                                        if (documentSnapshot.contains(mPostKey)){
-//                                            mCingleTradeMethodTextView.setText("@CingleLeasing");
-//                                        }
-//                                    }
-//                                });
-//
-//                    }else if (documentSnapshot.contains("Cingle Backing")){
-//                        documentSnapshot.getDocumentReference("Cingle Backing")
-//                                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//                                    @Override
-//                                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-//                                        if (e != null) {
-//                                            Log.w(TAG, "Listen error", e);
-//                                            return;
-//                                        }
-//
-//                                        if (documentSnapshot.contains(mPostKey)){
-//                                            mCingleTradeMethodTextView.setText("@CingleBacking");
-//                                        }
-//                                    }
-//                                });
-//
-//                    }else {
-//                        mCingleTradeMethodTextView.setText("@NotForTrade");
-//                    }
-//                }
-//            }
-//        });
-//
-//        ifairReference.document("Cingles").addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//            @Override
-//            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-//                if (e != null) {
-//                    Log.w(TAG, "Listen error", e);
-//                    return;
-//                }
-//
-//                if (documentSnapshot.exists()){
-//                    if (documentSnapshot.contains("Cingle Backing")){
-//                        documentSnapshot.getDocumentReference("Cingle Backing")
-//                                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//                            @Override
-//                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-//                                if (e != null) {
-//                                    Log.w(TAG, "Listen error", e);
-//                                    return;
-//                                }
-//
-//                                if (documentSnapshot.contains(mPostKey)){
-//                                    mCingleTradeMethodTextView.setText("@CingleBacking");
-//                                }
-//                            }
-//                        });
-//                    }else if (documentSnapshot.contains("Cingle Lacing")){
-//                        documentSnapshot.getDocumentReference("Cingle Lacing")
-//                                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//                            @Override
-//                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-//                                if (e != null) {
-//                                    Log.w(TAG, "Listen error", e);
-//                                    return;
-//                                }
-//
-//                                if (documentSnapshot.contains(mPostKey)){
-//                                    mCingleTradeMethodTextView.setText("@CingleLacing");
-//                                }
-//                            }
-//                        });
-//                    }else if (documentSnapshot.contains("Cingle Leasing")){
-//                        documentSnapshot.getDocumentReference("Cingle Leasing")
-//                                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//                            @Override
-//                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-//                                if (e != null) {
-//                                    Log.w(TAG, "Listen error", e);
-//                                    return;
-//                                }
-//
-//                                if (documentSnapshot.contains(mPostKey)){
-//                                    mCingleTradeMethodTextView.setText("@CingleLeasing");
-//                                }
-//                            }
-//                        });
-//                    }else if (documentSnapshot.contains("Cingle Selling")){
-//                        documentSnapshot.getDocumentReference("Cingle Selling")
-//                                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//                            @Override
-//                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-//                                if (e != null) {
-//                                    Log.w(TAG, "Listen error", e);
-//                                    return;
-//                                }
-//
-//                                if (documentSnapshot.contains(mPostKey)){
-//                                    mCingleTradeMethodTextView.setText("@CingleSelling");
-//                                }
-//                            }
-//                        });
-//                    }else {
-//                        mCingleTradeMethodTextView.setText("@NotForTrade");
-//                    }
-//                }
-//            }
-//        });
-
 
         /**display the person who currently owns the cingle*/
         cingleOwnerReference.document("Ownership").collection(mPostKey)
@@ -820,7 +609,6 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onClick(View v){
-
 
         if (v == mCommentImageView){
             Intent intent = new Intent(CingleDetailActivity.this, CommentsActivity.class);
@@ -911,7 +699,7 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
 
                         Log.d("final points", finalPoints + "");
 
-                        cingleWalletReference.child(mPostKey).addListenerForSingleValueEvent(new ValueEventListener() {
+                        cingleWalletRef.child(mPostKey).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (dataSnapshot.exists()) {
@@ -951,7 +739,7 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
                     else{
                         final double finalPoints = 0.00;
                         Log.d("final points", finalPoints + "");
-                        cingleWalletReference.child(mPostKey).addListenerForSingleValueEvent(new ValueEventListener() {
+                        cingleWalletRef.child(mPostKey).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (dataSnapshot.exists()) {
@@ -1025,42 +813,52 @@ public class CingleDetailActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void setNewPrice(){
+        mCingleSalePriceTextView.setVisibility(View.GONE);
         final String stringSalePrice = mEditSalePriceEditText.getText().toString().trim();
         if (stringSalePrice.equals("")){
             mEditSalePriceEditText.setError("Sale price is empty!");
         }else {
             final double intSalePrice = Double.parseDouble(stringSalePrice);
 
-            senseCreditReference.document(mPostKey).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            senseCreditReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                    if (e != null) {
+                        Log.w(TAG, "Listen error", e);
+                        return;
+                    }
+
                     if (documentSnapshot.exists()){
                         final Credits credits = documentSnapshot.toObject(Credits.class);
                         final double senseCredits = credits.getAmount();
-                        DecimalFormat formatter = new DecimalFormat("0.00000000");
+                        final DecimalFormat formatter = new DecimalFormat("0.00000000");
                         mCingleSenseCreditsTextView.setText("CSC" + " " + "" + formatter.format(senseCredits));
-
 
                         if (intSalePrice < senseCredits){
                             mEditSalePriceEditText.setError("Sale price is less than Cingle Sense Crdits!");
                         }else {
                             mSalePriceProgressBar.setVisibility(View.VISIBLE);
-                            ifairReference.document("Cingles").collection("Cingle Selling").document(mPostKey)
-                                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                            if (e != null) {
-                                                Log.w(TAG, "Listen error", e);
-                                                return;
-                                            }
+                            ifairReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                @Override
+                                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
-                                            Map<String, Double> credit = new HashMap<String, Double>();
-                                            credit.put("salePrice", intSalePrice);
-                                            ifairReference.document("Cingles").collection("Cingle Seling").document(mPostKey)
-                                                    .set(credit);
+                                    if (e != null) {
+                                        Log.w(TAG, "Listen error", e);
+                                        return;
+                                    }
 
-                                        }
-                                    });
+                                    if (documentSnapshot.exists()){
+                                        final CingleSale cingleSale = documentSnapshot.toObject(CingleSale.class);
+                                        mCingleSalePriceTextView.setText("CSC" + " " + formatter
+                                                .format(cingleSale.getSalePrice()));
+                                        mSalePriceProgressBar.setVisibility(View.GONE);
+                                        mCingleSalePriceTextView.setVisibility(View.VISIBLE);
+                                        mDoneEditingImageView.setVisibility(View.GONE);
+                                        mEditSalePriceImageView.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            });
                         }
                     }
                 }

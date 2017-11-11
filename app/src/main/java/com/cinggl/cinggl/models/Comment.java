@@ -6,21 +6,17 @@ package com.cinggl.cinggl.models;
 
 public class Comment {
     String uid;
-    String username;
     String commentText;
     String pushId;
-    String postKey;
 
     public Comment() {
     }
 
-    public Comment(String uid, String username, String commentText,
-                   String pushId, String postKey) {
+    public Comment(String uid, String commentText,
+                   String pushId) {
         this.uid = uid;
-        this.username = username;
         this.commentText = commentText;
         this.pushId = pushId;
-        this.postKey = postKey;
     }
 
     public String getUid() {
@@ -29,14 +25,6 @@ public class Comment {
 
     public void setUid(String uid) {
         this.uid = uid;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getCommentText() {
@@ -55,11 +43,4 @@ public class Comment {
         this.pushId = pushId;
     }
 
-    public String getPostKey() {
-        return postKey;
-    }
-
-    public void setPostKey(String postKey) {
-        this.postKey = postKey;
-    }
 }

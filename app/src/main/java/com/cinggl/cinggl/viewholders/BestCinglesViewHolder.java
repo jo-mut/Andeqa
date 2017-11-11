@@ -9,21 +9,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.models.Cingle;
 import com.cinggl.cinggl.ProportionalImageView;
-import com.cinggl.cinggl.models.CingleData;
 import com.cinggl.cinggl.models.Credits;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
-
-import java.text.DecimalFormat;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static com.cinggl.cinggl.R.id.cingleSenseCreditsTextView;
-import static com.cinggl.cinggl.R.id.descriptionRelativeLayout;
-import static com.cinggl.cinggl.R.id.titleRelativeLayout;
 
 /**
  * Created by J.EL on 7/6/2017.
@@ -49,7 +38,7 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
     public RelativeLayout cingleToolsRelativeLayout;
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
-    public RelativeLayout titleRelativeLayout;
+    public RelativeLayout cingleTitleRelativeLayout;
     public RelativeLayout descriptionRelativeLayout;
     public TextView cingleMomentTextView;
     public RelativeLayout cingleMomentRelativeLayout;
@@ -59,6 +48,8 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
     public CircleImageView ownerImageView;
     public TextView cingleSalePriceTextView;
     public RelativeLayout cingleSalePriceTitleRelativeLayout;
+    public TextView datePostedTextView;
+
 
     public BestCinglesViewHolder(View itemView) {
         super(itemView);
@@ -74,7 +65,7 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
         usernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
         cingleSettingsImageView = (ImageView) mView.findViewById(R.id.cingleSettingsImageView);
         cingleToolsRelativeLayout = (RelativeLayout) mView.findViewById(R.id.cingleToolsRelativeLayout);
-        titleRelativeLayout = (RelativeLayout) mView.findViewById(R.id.titleRelativeLayout);
+        cingleTitleRelativeLayout = (RelativeLayout) mView.findViewById(R.id.titleRelativeLayout);
         descriptionRelativeLayout = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
         cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
         cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsCountTextView);
@@ -87,6 +78,8 @@ public class BestCinglesViewHolder extends RecyclerView.ViewHolder {
         ownerImageView = (CircleImageView) mView.findViewById(R.id.ownerImageView);
         cingleSalePriceTextView = (TextView) mView.findViewById(R.id.cingleSalePriceTextView);
         cingleSalePriceTitleRelativeLayout = (RelativeLayout) mView.findViewById(R.id.cingleSalePriceTitleRelativeLayout);
+        datePostedTextView = (TextView) mView.findViewById(R.id.datePostedTextView);
+        cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.cingleSenseCreditsTextView);
 
     }
 
