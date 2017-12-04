@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.cinggl.cinggl.home.LikesActivity">
+    tools:context="com.cinggl.cinggl.likes.LikesActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -36,7 +36,7 @@
 
 
         <TextView
-            android:text="Be the first to like this Cingle"
+            android:text="Like this post"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="false"

@@ -4,7 +4,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context="com.cinggl.cinggl.ifair.RedeemCreditsDialogFragment"
+    tools:context="com.cinggl.cinggl.market.RedeemCreditsDialogFragment"
     android:background="@android:color/white">
 
     <!-- TODO: Update blank fragment layout -->
@@ -20,7 +20,7 @@
         <TextView
             android:ems="10"
             android:id="@+id/enterAmountDescriptionTextView"
-            android:text="Enter the amount of CSC you want to redeem"
+            android:text="Enter the amount of Sense Credits you want to redeem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="28sp" />

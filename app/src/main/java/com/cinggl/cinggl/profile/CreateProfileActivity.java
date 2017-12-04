@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,7 +19,7 @@ import android.widget.Toast;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.home.MainActivity;
-import com.cinggl.cinggl.models.Cingulan;
+import com.cinggl.cinggl.models.Cinggulan;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -28,8 +27,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -49,8 +46,6 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
     @Bind(R.id.secondNameEditText)EditText mSecondNameEditText;
     @Bind(R.id.usernameEditText) EditText mUsernameEditText;
     @Bind(R.id.profilePictureImageView)CircleImageView mProfilePictureImageView;
-    @Bind(R.id.profileCoverImageView)ImageView mProfileCoverImageView;
-    @Bind(R.id.updateCoverTextView)TextView mUpdateCoverTextView;
     @Bind(R.id.updateProfilePictureImageButton)ImageButton mUpdateProfilePictureImageButton;
     @Bind(R.id.submitUserInfoButton)Button mSubmitUserInfoButton;
     @Bind(R.id.errorRelativeLayout)RelativeLayout mErrorRelativeLayout;
@@ -98,7 +93,6 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
 
            createAuthProgressDialog();
 
-           mUpdateCoverTextView.setOnClickListener(this);
            mUpdateProfilePictureImageButton.setOnClickListener(this);
            mSubmitUserInfoButton.setOnClickListener(this);
        }
@@ -125,12 +119,8 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
                           mAuthProgressDialog.dismiss();
                           if (!task.isSuccessful()) {
                               Log.w(TAG, "signInWithEmail", task.getException());
-                              Toast.makeText(CreateProfileActivity.this, "Please confirm that your email and password match",
-                                      Toast.LENGTH_SHORT).show();
                               mErrorRelativeLayout.setVisibility(View.VISIBLE);
-                              mErrorTextView.setText("Authentication failed! + " +
-                                      "\n Please confirm that your email and password match " +
-                                      "\n you are connected to the internet");
+                              mErrorTextView.setText("Please confirm that your email and password match you are connected to the internet");
                           }else {
                               checkIfImailVerified();
                           }
@@ -209,17 +199,17 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
                 final String profileImage = (downloadUrl.toString());
                 Log.d("profile image", profileImage);
 
-                Cingulan cingulan = new Cingulan();
-                cingulan.setFirstName(firstName);
-                cingulan.setSecondName(secondName);
-                cingulan.setUsername(username);
-                cingulan.setUid(uid);
-                cingulan.setProfileImage(profileImage);
+                Cinggulan cinggulan = new Cinggulan();
+                cinggulan.setFirstName(firstName);
+                cinggulan.setSecondName(secondName);
+                cinggulan.setUsername(username);
+                cinggulan.setUid(uid);
+                cinggulan.setProfileImage(profileImage);
 
                 DocumentReference pushRef = usersReference.document(uid);
                 String pushId = pushRef.getId();
-                cingulan.setPushId(pushId);
-                pushRef.set(cingulan).addOnSuccessListener(new OnSuccessListener<Void>() {
+                cinggulan.setPushId(pushId);
+                pushRef.set(cinggulan).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d("user profile created", "firstime");
@@ -266,31 +256,6 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
         super.onActivityResult(requestCode, resultCode, data);
 
         if(resultCode == RESULT_OK) {
-            //update the profile cover photo
-            if (requestCode == GALLERY_PROFILE_COVER_PHOTO){
-                imageUri = data.getData();
-
-                Picasso.with(this).load(imageUri).resize(MAX_COVER_WIDTH, MAX_COVER_HEIGHT)
-                        .onlyScaleDown().centerCrop().placeholder(R.drawable.gradient_color)
-                        .networkPolicy(NetworkPolicy.OFFLINE)
-                        .into(mProfileCoverImageView, new Callback() {
-                            @Override
-                            public void onSuccess() {
-
-                            }
-                            @Override
-                            public void onError() {
-                                Picasso.with(CreateProfileActivity.this).load(imageUri)
-                                        .resize(MAX_COVER_WIDTH, MAX_COVER_HEIGHT)
-                                        .onlyScaleDown().centerCrop()
-                                        .placeholder(R.drawable.profle_image_background)
-                                        .into(mProfileCoverImageView);
-
-                            }
-                        });
-
-            }
-
             //update the profile photo
             if (requestCode == GALLERY_PROFILE_PHOTO_REQUEST) {
                 profileUri = data.getData();
@@ -324,12 +289,6 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void onClick(View v){
-        if (v == mUpdateCoverTextView){
-            Intent intent = new Intent();
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            intent.setType("image/*");
-            startActivityForResult(intent, GALLERY_PROFILE_COVER_PHOTO);
-        }
 
         if (v == mUpdateProfilePictureImageButton){
             Intent intent = new Intent();

@@ -26,18 +26,18 @@ public class HomePagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position){
             case 0:
-                CingleOutFragment cingleOutFragment = new CingleOutFragment();
-                return cingleOutFragment;
+                SingleOutFragment singleOutFragment = new SingleOutFragment();
+                return singleOutFragment;
             case 1:
-                BestCinglesFragment bestCinglesFragment = new BestCinglesFragment();
-                return bestCinglesFragment;
+                BestPostsFragment bestPostsFragment = new BestPostsFragment();
+                return bestPostsFragment;
         }
         return null;
     }
 
     @Override
     public int getCount() {
-        // Show 3 total pages.
+        // Show 2 total pages.
         return 2;
     }
 
@@ -45,9 +45,9 @@ public class HomePagerAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return "Cingle Out";
+                return "Single Out";
             case 1:
-                return "Cingles";
+                return "Top";
         }
         return null;
     }

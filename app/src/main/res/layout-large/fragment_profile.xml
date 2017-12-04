@@ -84,7 +84,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:id="@+id/cinglesCountTextView"
+                            android:id="@+id/postsCountTextView"
                             android:textSize="21sp"
                             android:background="@drawable/border_white"
                             android:paddingTop="3dp"
@@ -103,16 +103,16 @@
                             android:textColor="@android:color/white" />
 
                         <TextView
-                            android:text="Cingles"
+                            android:text="Posts"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:id="@+id/cinglesTextView"
+                            android:id="@+id/postsTextView"
                             android:layout_alignParentBottom="false"
                             android:layout_alignParentRight="false"
                             android:layout_alignParentEnd="false"
                             android:layout_toLeftOf="@+id/followersCountTextView"
                             android:layout_toStartOf="@+id/followersCountTextView"
-                            android:layout_below="@+id/cinglesCountTextView"
+                            android:layout_below="@+id/postsCountTextView"
                             android:layout_centerInParent="false"
                             android:layout_centerVertical="false"
                             android:layout_centerHorizontal="false"
@@ -271,9 +271,8 @@
                 android:overScrollMode="never"
                 android:scrollbars="none"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"/>
 
-            </android.support.v7.widget.RecyclerView>
 
         </LinearLayout>
 

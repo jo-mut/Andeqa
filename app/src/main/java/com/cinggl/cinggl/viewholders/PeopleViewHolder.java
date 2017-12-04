@@ -7,15 +7,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.models.Cingulan;
 import com.cinggl.cinggl.models.Relation;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static com.cinggl.cinggl.R.id.secondNameTextView;
 
 /**
  * Created by J.EL on 7/3/2017.

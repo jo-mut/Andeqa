@@ -115,10 +115,11 @@ public class SignUpActivity extends AppCompatActivity implements
                             //check email exists
                             if (task.getException() instanceof FirebaseAuthUserCollisionException) {
                                 mErrorRelativeLayout.setVisibility(View.VISIBLE);
-                                mErrorTextView.setText("Sorry !" +" " + "User with this email already exists. Please use another email!");
+                                mErrorTextView.setText("Sorry !" + " " + "User with this email already " +
+                                        "exists. Please use another email!");
                             }else {
                                 mErrorRelativeLayout.setVisibility(View.VISIBLE);
-                                mErrorTextView.setText("Authentication failed !" + " " + "Check that you are connected to the internet!");
+                                mErrorTextView.setText("Check that you are connected to the internet!");
                             }
                         }else {
                             //sign up successful

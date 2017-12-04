@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:scrollbars="none"
+    android:background="#e4e4e4"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:padding="0.3dp"
+        android:layout_marginBottom="15dp"
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="1"
+        android:paddingTop="3dp">
+
+        <RelativeLayout
+            android:id="@+id/postMomentRelativeLayout"
+            android:background="@android:color/white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Cingle Of The Moment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/postMomentTextView"
+                android:textSize="36sp"
+                android:textStyle="normal|bold"
+                android:layout_alignParentLeft="false"
+                android:layout_alignParentStart="false"
+                android:textColor="@color/colorPrimary"
+                android:layout_marginBottom="10dp"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="10dp"
+                android:layout_alignParentTop="false"  />
+
+            <View
+                android:layout_below="@+id/postMomentTextView"
+                android:id="@+id/cingleMomentView"
+                android:background="#e4e4e4"
+                android:layout_width="match_parent"
+                android:layout_height="5dp">
+
+            </View>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="3dp">
+
+            <TextView
+                android:text="Cingle Creator:"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/postCreatorTextView"
+                android:textSize="28sp"
+                android:textStyle="normal|bold"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                app:srcCompat="@drawable/profle_image_background"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/creatorImageView"
+                android:layout_marginRight="5dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp" />
+
+            <TextView
+                android:text=""
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:id="@+id/usernameTextView"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/postCreatorTextView"
+                android:layout_toEndOf="@+id/postCreatorTextView"
+                android:textSize="24sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp">
+
+            <TextView
+                android:text="Date Posted:"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/dateTextView"
+                android:textSize="28sp"
+                android:textStyle="normal|bold"
+                android:layout_centerVertical="true" />
+
+            <TextView
+                android:text=""
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:id="@+id/datePostedTextView"
+                android:layout_alignBaseline="@+id/dateTextView"
+                android:layout_alignBottom="@+id/dateTextView"
+                android:layout_toRightOf="@+id/dateTextView"
+                android:layout_toEndOf="@+id/dateTextView"
+                android:textSize="24sp"
+                android:layout_centerVertical="true" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/tradingRelativeLayout"
+            android:layout_marginTop="3dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp">
+
+            <TextView
+                android:text="Listed on Ifair:"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="normal|bold"
+                android:textSize="28sp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:layout_alignParentTop="false"
+                android:id="@+id/listedOnIfairTextView" />
+
+
+            <TextView
+                android:text=""
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tradeMethodTextView"
+                android:textStyle="normal|bold"
+                android:textSize="28sp"
+                android:textColor="@color/colorPrimary"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_toRightOf="@+id/listedOnIfairTextView"
+                android:padding="5dp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/postSalePriceTitleRelativeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp">
+
+            <TextView
+                android:text="Sale Price:"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/cingleSalePriceTitleTextView"
+                android:textSize="28sp"
+                android:textStyle="normal|bold"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true" />
+
+            <TextView
+                android:text=""
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/postSalePriceTextView"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/cingleSalePriceTitleTextView"
+                android:layout_toEndOf="@+id/cingleSalePriceTitleTextView"
+                android:textSize="24sp"
+                android:layout_centerVertical="true" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Cingle Owner:"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/ownerTitleTextView"
+                android:textStyle="normal|bold"
+                android:textSize="28sp"
+                android:layout_marginRight="3dp"
+                android:layout_marginLeft="3dp"
+                android:layout_centerVertical="true" />
+
+            <TextView
+                android:text=""
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/ownerTitleTextView"
+                android:layout_toEndOf="@+id/ownerTitleTextView"
+                android:id="@+id/postOwnerTextView"
+                android:layout_marginLeft="10dp"
+                android:textSize="28sp" />
+
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                app:srcCompat="@drawable/profle_image_background"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/ownerImageView"
+                android:layout_marginRight="5dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp" />
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:id="@+id/titleRelativeLayout">
+
+            <TextView
+                android:text=""
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/titleTextView"
+                android:textSize="32sp"
+                android:textStyle="normal|bold"
+                android:textColor="@android:color/black"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.cinggl.cinggl.ProportionalImageView
+                android:id="@+id/postImageView"
+                android:layout_width="match_parent"
+                android:adjustViewBounds="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_height="500dp" />
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:id="@+id/toolsRelativeLayout">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_favorite_black_24dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/likesImageView"
+                tools:scaleType="centerCrop"
+                android:scaleType="centerCrop"
+                android:padding="10dp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_more_vert_black_24dp"
+                tools:scaleType="centerCrop"
+                android:scaleType="centerCrop"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="10dp" />
+
+            <TextView
+                android:text="0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/commentsCountTextView"
+                android:layout_toEndOf="@+id/commentsImageView"
+                android:layout_toRightOf="@+id/commentsImageView"
+                android:textSize="24sp"
+                android:layout_centerHorizontal="false"
+                android:layout_centerVertical="false"
+                android:layout_marginTop="7dp" />
+
+            <TextView
+                android:text=""
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/postSenseCreditsTextView"
+                android:textStyle="normal|bold"
+                android:background="@drawable/border_color_primary"
+                android:textSize="24sp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/commentsCountTextView"
+                android:layout_toEndOf="@+id/commentsCountTextView"
+                android:layout_marginLeft="10dp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_chat_bubble_black_24dp"
+                android:layout_marginLeft="16dp"
+                android:id="@+id/commentsImageView"
+                tools:scaleType="centerCrop"
+                android:scaleType="centerCrop"
+                android:padding="10dp"
+                android:layout_marginStart="16dp"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/likesImageView"
+                android:layout_toEndOf="@+id/likesImageView" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/likesRecyclerView"
+                android:overScrollMode="never"
+                android:nestedScrollingEnabled="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true">
+
+            </android.support.v7.widget.RecyclerView>
+
+            <TextView
+                android:id="@+id/likesCountTextView"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="false"
+                android:layout_alignParentStart="false"
+                android:background="@drawable/border_color_primary"
+                android:scaleType="centerCrop"
+                android:cropToPadding="false"
+                android:layout_toRightOf="@+id/likesRecyclerView"
+                android:layout_toEndOf="@+id/likesRecyclerView"
+                android:layout_marginLeft="5dp"
+                android:textSize="18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="5dp"
+                android:paddingLeft="5dp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="10dp"
+            android:id="@+id/descriptionRelativeLayout">
+
+            <TextView
+                android:text=""
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/descriptionTextView"
+                android:textSize="28sp"
+                android:textColor="@android:color/black"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/lacedCinglesRecyclerView"
+                android:overScrollMode="never"
+                android:nestedScrollingEnabled="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true">
+
+            </android.support.v7.widget.RecyclerView>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>

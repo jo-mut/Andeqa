@@ -9,7 +9,7 @@ import android.view.View;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.ProportionalImageView;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.models.Cingle;
+import com.cinggl.cinggl.models.Post;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -29,7 +29,7 @@ import butterknife.ButterKnife;
 
 public class FullImageViewActivity extends AppCompatActivity implements View.OnClickListener{
     private static final String TAG = FullImageViewActivity.class.getSimpleName();
-    @Bind(R.id.cingleImageView)ProportionalImageView mCingleImageView;
+    @Bind(R.id.postImageView)ProportionalImageView mCingleImageView;
 
     private FirebaseAuth firebaseAuth;
     private String mPostKey;
@@ -105,11 +105,11 @@ public class FullImageViewActivity extends AppCompatActivity implements View.OnC
                 }
 
                 if (documentSnapshot.exists()){
-                    final Cingle cingle = documentSnapshot.toObject(Cingle.class);
-                    final String image = cingle.getCingleImageUrl();
+                    final Post post = documentSnapshot.toObject(Post.class);
+                    final String image = post.getCingleImageUrl();
                     Log.d("detailed image", image);
 
-                    //set the cingle image
+                    //set the post image
                     Picasso.with(FullImageViewActivity.this)
                             .load(image)
                             .networkPolicy(NetworkPolicy.OFFLINE)

@@ -30,7 +30,7 @@ public class TransactionHistoryViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
-        cingleImageView = (ProportionalImageView) mView.findViewById(R.id.cingleImageView);
+        cingleImageView = (ProportionalImageView) mView.findViewById(R.id.postImageView);
         deleteHistoryImageView = (ImageView) mView.findViewById(R.id.deleteHistoryImageView);
 
 
@@ -40,9 +40,9 @@ public class TransactionHistoryViewHolder extends RecyclerView.ViewHolder {
         TextView amountTransferredTextView = (TextView) mView.findViewById(R.id.amountTransferredTextView);
 
         DecimalFormat formatter =  new DecimalFormat("0.00000000");
-        amountTransferredTextView.setText("You have redeemed" + " CSC " + formatter.format
+        amountTransferredTextView.setText("You have redeemed" + " SC " + formatter.format
                 (transactionDetails.getAmount()) +  " on " +
                 transactionDetails.getDate() + ". Your new wallet balance is " +
-                "CSC " + formatter.format(transactionDetails.getWalletBalance()));
+                "SC " + formatter.format(transactionDetails.getWalletBalance()));
     }
 }

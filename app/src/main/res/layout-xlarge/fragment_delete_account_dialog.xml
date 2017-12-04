@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="@android:color/white"
-    tools:context="com.cinggl.cinggl.home.DeleteAccountDialog"
+    tools:context="com.cinggl.cinggl.preferences.DeleteAccountDialog"
     android:weightSum="1">
 
     <!-- TODO: Update blank fragment layout -->
@@ -33,7 +33,7 @@
                 android:layout_alignParentStart="false"
                 android:layout_marginTop="10dp"
                 android:layout_margin="10dp"
-                android:id="@+id/deleteCingleTextView"
+                android:id="@+id/deletePostTextView"
                 android:textAlignment="center"
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"

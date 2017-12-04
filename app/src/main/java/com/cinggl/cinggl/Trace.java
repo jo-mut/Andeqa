@@ -186,7 +186,7 @@ public class Trace {
         }
     }
 //
-//    //method to count how many times the Cingle has gained impressions;
+//    //method to count how many times the Post has gained impressions;
 //    public void impressionCount(final boolean inmpressionIncreament){
 //        viewsRef.child("Data").runTransaction(new Transaction.Handler() {
 //            @Override

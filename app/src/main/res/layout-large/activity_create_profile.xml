@@ -38,7 +38,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textStyle="bold"
                         android:textSize="15sp"
                         android:text=""
                         android:id="@+id/errorTextView"
@@ -100,19 +99,6 @@
                         android:layout_alignLeft="@+id/animator"
                         android:layout_alignStart="@+id/animator" />
 
-                    <TextView
-                        android:text="Update Cover"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginBottom="12dp"
-                        android:textSize="21sp"
-                        android:id="@+id/updateCoverTextView"
-                        android:textColor="@android:color/white"
-                        android:layout_marginRight="10dp"
-                        android:padding="5dp" />
 
                 </RelativeLayout>
 

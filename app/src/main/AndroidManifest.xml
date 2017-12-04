@@ -48,7 +48,7 @@
             android:name=".profile.SignUpActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".creation.CreateCingleActivity"
+            android:name=".creation.CreatePostActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -64,12 +64,12 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".home.CommentsActivity"
+            android:name=".comments.CommentsActivity"
             android:label="Comments"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".home.LikesActivity"
+            android:name=".likes.LikesActivity"
             android:label="Cingulans who liked"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
@@ -121,13 +121,13 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".home.MainActivity"
             android:label="Cinggl"
+            android:name=".home.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".home.FullImageViewActivity"
-            android:label="Cingle" />
+            android:label="Post" />
         <activity
             android:name=".preferences.PreferencesActivity"
             android:label="Preferences"
@@ -139,28 +139,28 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".ifair.WalletActivity"
+            android:name=".market.WalletActivity"
             android:label="Wallet"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".ifair.ListOnIfairActivity"
+            android:name=".market.ListOnMarketActivity"
             android:label="Set sale price"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity android:name=".preferences.TermsOfServiceActivity" />
         <activity
-            android:name=".ifair.IfairCinglesActivity"
-            android:label="Ifair"
+            android:name=".market.MarketActivity"
+            android:label="Market"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity android:name=".profile.CreateProfileActivity" />
         <activity
-            android:name=".home.CingleDetailActivity"
+            android:name=".home.PostDetailActivity"
             android:label="Cingle"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity android:name=".ManageSpaceActivity"></activity>
+        <activity android:name=".ManageSpaceActivity" />
     </application>
 
 </manifest>

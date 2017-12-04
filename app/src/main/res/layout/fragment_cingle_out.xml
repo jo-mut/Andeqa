@@ -5,17 +5,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_height="match_parent"
-    tools:context="com.cinggl.cinggl.home.CingleOutFragment">
+    tools:context="com.cinggl.cinggl.home.SingleOutFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
-    <android.support.v7.widget.RecyclerView
-        android:overScrollMode="never"
-        android:id="@+id/cingleOutRecyclerView"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeToRefreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-    </android.support.v7.widget.RecyclerView>
+        <android.support.v7.widget.RecyclerView
+            android:overScrollMode="never"
+            android:id="@+id/singleOutRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </RelativeLayout>
+<!---->

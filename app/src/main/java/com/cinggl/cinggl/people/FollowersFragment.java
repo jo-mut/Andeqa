@@ -16,7 +16,7 @@ import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Relation;
 import com.cinggl.cinggl.viewholders.PeopleViewHolder;
-import com.cinggl.cinggl.models.Cingulan;
+import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.firebase.ui.common.ChangeEventType;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -112,12 +112,12 @@ public class FollowersFragment extends Fragment {
                             return;
                         }
 
-                        Cingulan cingulan =  documentSnapshot.toObject(Cingulan.class);
-                        final String profileImage = cingulan.getProfileImage();
-                        final String firstName = cingulan.getFirstName();
-                        final String secondName = cingulan.getSecondName();
-                        final String username = cingulan.getUsername();
-                        final String uid = cingulan.getUid();
+                        Cinggulan cinggulan =  documentSnapshot.toObject(Cinggulan.class);
+                        final String profileImage = cinggulan.getProfileImage();
+                        final String firstName = cinggulan.getFirstName();
+                        final String secondName = cinggulan.getSecondName();
+                        final String username = cinggulan.getUsername();
+                        final String uid = cinggulan.getUid();
 
 
                         holder.usernameTextView.setText(username);

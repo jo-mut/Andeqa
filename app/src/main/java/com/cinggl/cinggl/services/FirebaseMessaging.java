@@ -9,7 +9,7 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.cinggl.cinggl.creation.CreateCingleActivity;
+import com.cinggl.cinggl.creation.CreatePostActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -41,7 +41,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
 
     private void sendNotification(String body) {
         // Add custom implementation, as needed.
-        Intent intent = new Intent(this, CreateCingleActivity.class);
+        Intent intent = new Intent(this, CreatePostActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0/*request code*/, intent, PendingIntent.FLAG_ONE_SHOT);

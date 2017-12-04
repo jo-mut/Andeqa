@@ -16,7 +16,7 @@
         <item
             android:icon="@drawable/ic_business_black_24dp"
             android:id="@+id/action_ifair"
-            android:title="@string/ifair" />
+            android:title="@string/Market" />
 
         <item
             android:icon="@drawable/ic_feedback_black_24dp"
@@ -25,13 +25,24 @@
 
     </group>
 
+    <!--<item android:title="@string/extras">-->
+        <!--<menu>-->
+
+            <!--<item-->
+                <!--android:icon="@drawable/ic_info_black_24dp"-->
+                <!--android:id="@+id/action_about"-->
+                <!--android:title="@string/about" />-->
+
+        <!--</menu>-->
+    <!--</item>-->
+
     <item android:title="@string/extras">
         <menu>
 
             <item
-                android:icon="@drawable/ic_info_black_24dp"
-                android:id="@+id/action_about"
-                android:title="@string/about" />
+                android:icon="@drawable/ic_menu_share"
+                android:id="@+id/action_share_cinggl"
+                android:title="@string/share" />
 
         </menu>
     </item>

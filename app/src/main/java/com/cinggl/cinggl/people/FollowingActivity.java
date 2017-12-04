@@ -10,14 +10,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Relation;
 import com.cinggl.cinggl.viewholders.PeopleViewHolder;
-import com.cinggl.cinggl.models.Cingulan;
+import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.firebase.ui.common.ChangeEventType;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -25,7 +23,6 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -39,7 +36,6 @@ import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FollowingActivity extends AppCompatActivity {
     //firestore references
@@ -117,12 +113,12 @@ public class FollowingActivity extends AppCompatActivity {
                             return;
                         }
 
-                        Cingulan cingulan =  documentSnapshot.toObject(Cingulan.class);
-                        final String profileImage = cingulan.getProfileImage();
-                        final String firstName = cingulan.getFirstName();
-                        final String secondName = cingulan.getSecondName();
-                        final String username = cingulan.getUsername();
-                        final String uid = cingulan.getUid();
+                        Cinggulan cinggulan =  documentSnapshot.toObject(Cinggulan.class);
+                        final String profileImage = cinggulan.getProfileImage();
+                        final String firstName = cinggulan.getFirstName();
+                        final String secondName = cinggulan.getSecondName();
+                        final String username = cinggulan.getUsername();
+                        final String uid = cinggulan.getUid();
                         Log.d("following uid fa", uid);
 
                         holder.usernameTextView.setText(username);

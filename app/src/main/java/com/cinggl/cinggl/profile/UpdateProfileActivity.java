@@ -22,8 +22,7 @@ import android.widget.ViewAnimator;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.home.MainActivity;
-import com.cinggl.cinggl.models.Cingulan;
+import com.cinggl.cinggl.models.Cinggulan;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -31,11 +30,6 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -48,9 +42,6 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -313,8 +304,8 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                             if (documentSnapshot.exists()){
-                                final Cingulan cingulan = documentSnapshot.toObject(Cingulan.class);
-                                final String profileImage = cingulan.getProfileImage();
+                                final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
+                                final String profileImage = cinggulan.getProfileImage();
                                 Log.d("profile image", profileImage);
 
                                 Picasso.with(UpdateProfileActivity.this)
@@ -389,8 +380,8 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                             if (documentSnapshot.exists()){
-                                final Cingulan cingulan = documentSnapshot.toObject(Cingulan.class);
-                                final String profileCover= cingulan.getProfileCover();
+                                final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
+                                final String profileCover= cinggulan.getProfileCover();
                                 Log.d("profile image", profileCover);
 
                                 Picasso.with(UpdateProfileActivity.this)

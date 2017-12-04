@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context="com.cinggl.cinggl.ifair.SendCreditsDialogFragment"
+    tools:context="com.cinggl.cinggl.market.SendCreditsDialogFragment"
     android:background="@android:color/white">
 
     <!-- TODO: Update blank fragment layout -->

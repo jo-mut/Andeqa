@@ -7,7 +7,7 @@
     android:weightSum="1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.cinggl.cinggl.home.CommentsActivity">
+    tools:context="com.cinggl.cinggl.comments.CommentsActivity">
 
 
     <RelativeLayout
@@ -93,7 +93,7 @@
                         android:layout_centerVertical="true"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
-                        android:id="@+id/cingleTitleTextView"
+                        android:id="@+id/titleTextView"
                         android:textStyle="normal|bold"
                         android:textColor="@android:color/black"
                         android:textSize="12sp"
@@ -106,7 +106,7 @@
                     android:layout_height="wrap_content">
 
                     <com.cinggl.cinggl.ProportionalImageView
-                        android:id="@+id/cingleImageView"
+                        android:id="@+id/postImageView"
                         android:layout_width="match_parent"
                         android:layout_alignParentTop="true"
                         android:layout_centerHorizontal="true"
@@ -183,7 +183,7 @@
             android:inputType="textMultiLine"
             android:id="@+id/commentEditText"
             android:textSize="12sp"
-            android:hint="Comment on this Cingle"
+            android:hint="Comment on this post"
             android:background="@drawable/edit_text_background"
             android:paddingBottom="20dp"
             android:paddingTop="20dp"

@@ -3,7 +3,6 @@ package com.cinggl.cinggl.home;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -25,12 +24,11 @@ import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.creation.CreateCingleActivity;
-import com.cinggl.cinggl.ifair.IfairCinglesActivity;
-import com.cinggl.cinggl.models.Cingulan;
+import com.cinggl.cinggl.creation.CreatePostActivity;
+import com.cinggl.cinggl.market.MarketActivity;
+import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.profile.ProfileFragment;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -218,11 +216,11 @@ public class MainActivity extends AppCompatActivity
                 }
 
                 if (documentSnapshot.exists()){
-                    final Cingulan cingulan = documentSnapshot.toObject(Cingulan.class);
-                    String firstName = cingulan.getFirstName();
-                    String secondName = cingulan.getSecondName();
-                    final String profileImage = cingulan.getProfileImage();
-                    final String profileCover = cingulan.getProfileCover();
+                    final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
+                    String firstName = cinggulan.getFirstName();
+                    String secondName = cinggulan.getSecondName();
+                    final String profileImage = cinggulan.getProfileImage();
+                    final String profileCover = cinggulan.getProfileCover();
 
                     mFullNameTextView.setText(firstName + " " + secondName);
 
@@ -297,14 +295,24 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (id == R.id.action_ifair){
-            Intent intent = new Intent(MainActivity.this, IfairCinglesActivity.class);
+            Intent intent = new Intent(MainActivity.this, MarketActivity.class);
             startActivity(intent);
         }
 
-        if (id == R.id.action_about){
-            Intent intent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://johnmutuku628.wixsite.com/cinggl"));
-            startActivity(intent);
+//        if (id == R.id.action_about){
+//            Intent intent = new Intent(Intent.ACTION_VIEW,
+//                    Uri.parse("https://johnmutuku628.wixsite.com/cinggl"));
+//            startActivity(intent);
+//        }
+
+        if (id == R.id.action_share_cinggl){
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT,
+                    "Hey check out Cinggl and show your world to the world" +
+                            " at: https://play.google.com/store/apps/details?id=com.cinggl.cinggl");
+            sendIntent.setType("text/plain");
+            startActivity(sendIntent);
         }
 
 
@@ -334,7 +342,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onClick(View v){
         if(v == mFloatingActionButton){
-            Intent intent = new Intent(MainActivity.this, CreateCingleActivity.class);
+            Intent intent = new Intent(MainActivity.this, CreatePostActivity.class);
             startActivity(intent);
         }
     }

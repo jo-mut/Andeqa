@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.cinggl.cinggl.ifair.ListOnIfairActivity"
+    tools:context="com.cinggl.cinggl.market.ListOnMarketActivity"
     android:background="@android:color/white">
 
     <android.support.v7.widget.Toolbar
@@ -69,7 +69,7 @@
                     android:layout_below="@+id/usernameTextView"
                     android:layout_alignLeft="@+id/usernameTextView"
                     android:layout_alignStart="@+id/usernameTextView"
-                    android:id="@+id/cingleSalePriceTextView"
+                    android:id="@+id/postSalePriceTextView"
                     android:textSize="10sp" />
 
             </RelativeLayout>
@@ -87,7 +87,7 @@
                     android:layout_centerVertical="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
-                    android:id="@+id/cingleTitleTextView"
+                    android:id="@+id/titleTextView"
                     android:textStyle="normal|bold"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
@@ -100,7 +100,7 @@
                 android:layout_height="wrap_content">
 
                 <com.cinggl.cinggl.ProportionalImageView
-                    android:id="@+id/cingleImageView"
+                    android:id="@+id/postImageView"
                     android:layout_width="match_parent"
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
@@ -117,10 +117,10 @@
 
 
                 <TextView
-                    android:text="Set the sale price of your cingle and place it on ifair market"
+                    android:text="Set the sale price of your post and place it on the market"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/setCingleSalePriceTextView"
+                    android:id="@+id/setSalePriceTextView"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
@@ -140,7 +140,7 @@
                     android:background="@drawable/colour_btn_background"
                     android:minHeight="30dp"
                     android:minWidth="50dip"
-                    android:layout_below="@+id/setCingleSalePriceTextView"
+                    android:layout_below="@+id/setSalePriceTextView"
                     android:layout_alignParentBottom="false"
                     android:textSize="10sp" />
 
@@ -152,8 +152,8 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:id="@+id/setCingleSalePriceEditText"
-                    android:hint="Set Cingle sale price"
-                    android:layout_below="@+id/setCingleSalePriceTextView"
+                    android:hint="Set the sale price"
+                    android:layout_below="@+id/setSalePriceTextView"
                     android:textSize="10sp"
                     android:layout_alignParentBottom="false"
                     android:background="@drawable/input_background"
