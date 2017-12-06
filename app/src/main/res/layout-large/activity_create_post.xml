@@ -173,20 +173,4 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
-        android:background="@android:color/black"
-        android:id="@+id/edit_container"
-        android:layout_gravity="bottom"
-        android:layout_width="match_parent"
-        android:layout_height="210dp">
-
-        <ImageView
-            app:srcCompat="@drawable/camera_icon"
-            android:id="@+id/cameraImageView"
-            android:layout_width="75dp"
-            android:layout_height="75dp"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true" />
-
-    </RelativeLayout>
 </LinearLayout>

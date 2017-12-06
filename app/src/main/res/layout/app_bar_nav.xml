@@ -3,12 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_content"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.cinggl.cinggl.home.MainActivity">
+    tools:context="com.cinggl.cinggl.home.NavActivity">
+
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -33,20 +32,23 @@
     </android.support.design.widget.AppBarLayout>
 
 
-    <android.support.v4.widget.NestedScrollView
+    <include layout="@layout/content_nav" />
+
+    <FrameLayout
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:fillViewport="true"
+        android:id="@+id/home_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <FrameLayout
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:id="@+id/home_container"
+        <android.support.v7.widget.RecyclerView
+            android:overScrollMode="never"
+            android:id="@+id/singleOutRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        </FrameLayout>
+            android:layout_height="wrap_content"/>
 
-    </android.support.v4.widget.NestedScrollView>
+
+    </FrameLayout>
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -65,16 +67,16 @@
 
 
     <!--<android.support.design.widget.BottomNavigationView-->
-        <!--android:background="@color/bottomNavBackground"-->
-        <!--android:id="@+id/bottomNavigationView"-->
-        <!--app:menu="@menu/bottom_navigation_menu"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="@dimen/bottom_navigation_height"-->
-        <!--android:layout_gravity="bottom"-->
-        <!--app:itemTextColor="@android:color/white"-->
-        <!--app:itemIconTint="@color/colorIcons"-->
-        <!--android:alpha="0.9"-->
-        <!--app:itemBackground="@color/bottomNavBackground"/>-->
+    <!--android:background="@color/bottomNavBackground"-->
+    <!--android:id="@+id/bottomNavigationView"-->
+    <!--app:menu="@menu/bottom_navigation_menu"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="@dimen/bottom_navigation_height"-->
+    <!--android:layout_gravity="bottom"-->
+    <!--app:itemTextColor="@android:color/white"-->
+    <!--app:itemIconTint="@color/colorIcons"-->
+    <!--android:alpha="0.9"-->
+    <!--app:itemBackground="@color/bottomNavBackground"/>-->
 
 
 </android.support.design.widget.CoordinatorLayout>

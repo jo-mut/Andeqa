@@ -463,12 +463,14 @@ public class FollowerProfileActivity extends AppCompatActivity
     @Override
     public void onClick(View v){
         if (v == mFollowingCountTextView) {
-            Intent intent = new Intent(FollowerProfileActivity.this, FollowerProfileActivity.class);
+            Intent intent = new Intent(FollowerProfileActivity.this, FollowingActivity.class);
+            intent.putExtra(FollowerProfileActivity.EXTRA_USER_UID, mUid);
             startActivity(intent);
         }
 
         if (v == mFollowersCountTextView){
-            Intent intent = new Intent(FollowerProfileActivity.this, FollowerProfileActivity.class);
+            Intent intent = new Intent(FollowerProfileActivity.this, FollowersActivity.class);
+            intent.putExtra(FollowerProfileActivity.EXTRA_USER_UID, mUid);
             startActivity(intent);
         }
 

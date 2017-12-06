@@ -110,8 +110,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            profileCinglesQuery = cinglesReference.whereEqualTo("uid", firebaseAuth
-                    .getCurrentUser().getUid()).limit(TOTAL_ITEMS);
+            profileCinglesQuery = cinglesReference.orderBy("timeStamp", Query.Direction.DESCENDING)
+                    .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid()).limit(TOTAL_ITEMS);
             profileCinglesCountQuery = cinglesReference.whereEqualTo("uid",
                     firebaseAuth.getCurrentUser().getUid());
 
@@ -326,7 +326,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
 
     public void onScrolledToBottom() {
         setNextProfileCingles();
-        Toast.makeText(getContext(), "Reach the end", Toast.LENGTH_SHORT).show();
     }
 
     private void setTheFirstBacthProfileCingles(){
@@ -345,10 +344,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
                             onDocumentAdded(change);
                             break;
                         case MODIFIED:
-//                            onDocumentModified(change);
+                            onDocumentModified(change);
                             break;
                         case REMOVED:
-//                            onDocumentRemoved(change);
+                            onDocumentRemoved(change);
                             break;
                     }
                     onDataChanged();
@@ -362,9 +361,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
         mProfileCinglesRecyclerView.setAdapter(profilePostsAdapter);
         mProfileCinglesRecyclerView.setHasFixedSize(false);
         layoutManager = new LinearLayoutManager(getContext());
-        layoutManager.setAutoMeasureEnabled(true);
-        layoutManager.setReverseLayout(true);
-        layoutManager.setStackFromEnd(true);
         mProfileCinglesRecyclerView.setLayoutManager(layoutManager);
 
     }
@@ -372,17 +368,15 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
 
 
     private void setNextProfileCingles(){
-        cinglesReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        profileCinglesQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onEvent(final QuerySnapshot cinglesSnapshots, FirebaseFirestoreException e) {
+            public void onEvent(final QuerySnapshot profileSnapshots, FirebaseFirestoreException e) {
                 if (e != null) {
                     Log.w(TAG, "Listen error", e);
                     return;
                 }
 
-                if (cinglesSnapshots.isEmpty()){
-                    //do nothing if there are no posts
-                    Log.d("profile posts size", cinglesSnapshots.size() + "");
+                if (profileSnapshots.isEmpty()){
                 }else {
                     profileCinglesQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
                         @Override
@@ -393,17 +387,15 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
                                 return;
                             }
 
-                            if (documentSnapshots.isEmpty()){
-                                //do nothing
-                            }else {
+                            if (!documentSnapshots.isEmpty()){
                                 //get the last visible document(cingle)
                                 lastVisible = documentSnapshots.getDocuments()
                                         .get(documentSnapshots.size() - 1);
 
                                 //query starting from last retrived cingle
-                                Query nextBestCinglesQuery = profileCinglesQuery.orderBy("randomNumber")
-                                        .startAfter(lastVisible).limit(TOTAL_ITEMS);
-                                //retrive more posts if present
+                                final Query nextBestCinglesQuery = cinglesReference.orderBy("timeStamp", Query.Direction.DESCENDING)
+                                        .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid()).startAfter(lastVisible);
+                                //retrive more cingles if present
                                 nextBestCinglesQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
                                     @Override
                                     public void onEvent(final QuerySnapshot snapshots, FirebaseFirestoreException e) {
@@ -412,17 +404,34 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
                                             return;
                                         }
 
-                                        if (profilePostsAdapter.getItemCount() == cinglesSnapshots.size()){
-                                            //show there are no more posts
-                                        }else {
-                                            for (DocumentChange change : snapshots.getDocumentChanges()) {
-                                                switch (change.getType()) {
-                                                    case ADDED:
-                                                        onDocumentAdded(change);
-                                                        break;
+                                        Log.d("remaining posts", snapshots.size() + "");
 
+                                        //retrieve cingles depending on the remaining size of the list
+                                        if (!snapshots.isEmpty()){
+                                            final long lastSize = snapshots.size();
+                                            if (lastSize < TOTAL_ITEMS){
+                                                nextBestCinglesQuery.limit(lastSize);
+                                            }else {
+                                                nextBestCinglesQuery.limit(TOTAL_ITEMS);
+                                            }
+
+                                            //make sure that the size of snapshot equals item count
+                                            if (profilePostsAdapter.getItemCount() < profileSnapshots.size()){
+                                                for (DocumentChange change : snapshots.getDocumentChanges()) {
+                                                    switch (change.getType()) {
+                                                        case ADDED:
+                                                            onDocumentAdded(change);
+                                                            break;
+                                                        case MODIFIED:
+                                                            onDocumentModified(change);
+                                                            break;
+                                                        case REMOVED:
+                                                            onDocumentRemoved(change);
+                                                            break;
+
+                                                    }
+                                                    onDataChanged();
                                                 }
-                                                onDataChanged();
                                             }
 
                                         }
@@ -434,10 +443,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
 
                         }
                     });
-
                 }
-
-
 
             }
         });

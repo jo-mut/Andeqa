@@ -6,6 +6,7 @@ package com.cinggl.cinggl;
 
 public final class Constants {
     public  static  final String POSTS = "Posts";
+    public static final String PROFILE_POST = "Profile posts";
     public  static  final String FIREBASE_USERS = "Cingulans";
     public static final String COMMENTS = "Comments";
     public static final String LIKES= "Likes";

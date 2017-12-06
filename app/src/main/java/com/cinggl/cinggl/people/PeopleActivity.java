@@ -23,11 +23,6 @@ public class PeopleActivity extends AppCompatActivity {
         ft.replace(R.id.people_container, peopleFragment);
         ft.commit();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-
-
     }
 
 

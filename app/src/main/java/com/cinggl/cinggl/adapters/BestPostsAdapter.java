@@ -17,6 +17,7 @@ import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.home.PostDetailActivity;
 import com.cinggl.cinggl.models.Post;
+import com.cinggl.cinggl.preferences.BestPostsSettingsDialog;
 import com.cinggl.cinggl.preferences.CingleSettingsDialog;
 import com.cinggl.cinggl.comments.CommentsActivity;
 import com.cinggl.cinggl.home.FullImageViewActivity;
@@ -66,8 +67,8 @@ import static android.util.Log.d;
 
 //CURRENTLY NOT IN USE
 
-public class TopPostsAdapter extends RecyclerView.Adapter<BestPostsViewHolder> {
-    private static final String TAG = TopPostsAdapter.class.getSimpleName();
+public class BestPostsAdapter extends RecyclerView.Adapter<BestPostsViewHolder> {
+    private static final String TAG = BestPostsAdapter.class.getSimpleName();
     private Context mContext;
     private List<Credit> credits = new ArrayList<>();
     private static final String EXTRA_POST_KEY = "post key";
@@ -96,7 +97,7 @@ public class TopPostsAdapter extends RecyclerView.Adapter<BestPostsViewHolder> {
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
 
 
-    public TopPostsAdapter(Context mContext) {
+    public BestPostsAdapter(Context mContext) {
         this.mContext = mContext;
     }
 
@@ -170,7 +171,7 @@ public class TopPostsAdapter extends RecyclerView.Adapter<BestPostsViewHolder> {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, LikesActivity.class);
-                intent.putExtra(TopPostsAdapter.EXTRA_POST_KEY, postKey);
+                intent.putExtra(BestPostsAdapter.EXTRA_POST_KEY, postKey);
                 mContext.startActivity(intent);
             }
         });
@@ -179,7 +180,7 @@ public class TopPostsAdapter extends RecyclerView.Adapter<BestPostsViewHolder> {
             @Override
             public void onClick(View view) {
                 Intent intent =  new Intent(mContext, CommentsActivity.class);
-                intent.putExtra(TopPostsAdapter.EXTRA_POST_KEY, postKey);
+                intent.putExtra(BestPostsAdapter.EXTRA_POST_KEY, postKey);
                 mContext.startActivity(intent);
             }
         });
@@ -188,7 +189,7 @@ public class TopPostsAdapter extends RecyclerView.Adapter<BestPostsViewHolder> {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, FullImageViewActivity.class);
-                intent.putExtra(TopPostsAdapter.EXTRA_POST_KEY, postKey);
+                intent.putExtra(BestPostsAdapter.EXTRA_POST_KEY, postKey);
                 mContext.startActivity(intent);
             }
         });
@@ -197,7 +198,7 @@ public class TopPostsAdapter extends RecyclerView.Adapter<BestPostsViewHolder> {
             @Override
             public void onClick(View view) {
                 Intent intent =  new Intent(mContext, PostDetailActivity.class);
-                intent.putExtra(TopPostsAdapter.EXTRA_POST_KEY, postKey);
+                intent.putExtra(BestPostsAdapter.EXTRA_POST_KEY, postKey);
                mContext.startActivity(intent);
             }
         });
@@ -207,11 +208,12 @@ public class TopPostsAdapter extends RecyclerView.Adapter<BestPostsViewHolder> {
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
-                bundle.putString(TopPostsAdapter.EXTRA_POST_KEY, postKey);
+                bundle.putString(BestPostsAdapter.EXTRA_POST_KEY, postKey);
                 FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
-                CingleSettingsDialog cingleSettingsDialog = CingleSettingsDialog.newInstance("cingle settings");
-                cingleSettingsDialog.setArguments(bundle);
-                cingleSettingsDialog.show(fragmenManager, "cingle settings fragment");
+                BestPostsSettingsDialog bestPostsSettingsDialog = BestPostsSettingsDialog.newInstance("best posts settings");
+                bestPostsSettingsDialog.setArguments(bundle);
+                bestPostsSettingsDialog.show(fragmenManager, "best settings fragment");
+
             }
         });
 
@@ -277,12 +279,12 @@ public class TopPostsAdapter extends RecyclerView.Adapter<BestPostsViewHolder> {
                         public void onClick(View view) {
                             if ((firebaseAuth.getCurrentUser().getUid()).equals(uid)){
                                 Intent intent = new Intent(mContext, PersonalProfileActivity.class);
-                                intent.putExtra(TopPostsAdapter.EXTRA_USER_UID, uid);
+                                intent.putExtra(BestPostsAdapter.EXTRA_USER_UID, uid);
                                 mContext.startActivity(intent);
                                 d("profile uid", firebaseAuth.getCurrentUser().getUid());
                             }else {
                                 Intent intent = new Intent(mContext, FollowerProfileActivity.class);
-                                intent.putExtra(TopPostsAdapter.EXTRA_USER_UID, uid);
+                                intent.putExtra(BestPostsAdapter.EXTRA_USER_UID, uid);
                                 d("follower uid", uid);
                                 mContext.startActivity(intent);
                             }
@@ -376,12 +378,12 @@ public class TopPostsAdapter extends RecyclerView.Adapter<BestPostsViewHolder> {
                         public void onClick(View view) {
                             if ((firebaseAuth.getCurrentUser().getUid()).equals(ownerUid)){
                                 Intent intent = new Intent(mContext, PersonalProfileActivity.class);
-                                intent.putExtra(TopPostsAdapter.EXTRA_USER_UID, ownerUid);
+                                intent.putExtra(BestPostsAdapter.EXTRA_USER_UID, ownerUid);
                                 mContext.startActivity(intent);
                                 d("profile uid", firebaseAuth.getCurrentUser().getUid());
                             }else {
                                 Intent intent = new Intent(mContext, FollowerProfileActivity.class);
-                                intent.putExtra(TopPostsAdapter.EXTRA_USER_UID, ownerUid);
+                                intent.putExtra(BestPostsAdapter.EXTRA_USER_UID, ownerUid);
                                 d("follower uid", ownerUid);
                                 mContext.startActivity(intent);
                             }

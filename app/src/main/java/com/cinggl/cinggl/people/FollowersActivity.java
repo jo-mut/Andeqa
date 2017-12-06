@@ -78,7 +78,7 @@ public class FollowersActivity extends AppCompatActivity {
             }
 
             usersReference= FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            relationsReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+            relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             followersQuery = relationsReference.document("followers").collection(mUid);
 
             retrieveFollowers();

@@ -1,13 +1,12 @@
 package com.cinggl.cinggl.home;
 
-
-import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +14,7 @@ import android.view.ViewGroup;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.adapters.TopPostsAdapter;
+import com.cinggl.cinggl.adapters.BestPostsAdapter;
 import com.cinggl.cinggl.models.Credit;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -35,14 +34,9 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+public class BestPostsActivity extends AppCompatActivity {
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class BestPostsFragment extends Fragment implements
-        SwipeRefreshLayout.OnRefreshListener{
     @Bind(R.id.bestPostsRecyclerView)RecyclerView bestCinglesRecyclerView;
-    @Bind(R.id.swipeToRefreshLayout)SwipeRefreshLayout swipeRefreshLayout;
     private static final String TAG = "BestCingleFragment";
     private static final String KEY_LAYOUT_POSITION = "layout position";
     private LinearLayoutManager layoutManager;
@@ -50,7 +44,7 @@ public class BestPostsFragment extends Fragment implements
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //adapters
-    private TopPostsAdapter topPostsAdapter;
+    private BestPostsAdapter bestPostsAdapter;
     //firestore
     private CollectionReference senseCreditReference;
     private Query bestCinglesQuery;
@@ -61,13 +55,25 @@ public class BestPostsFragment extends Fragment implements
     private DocumentSnapshot lastVisible;
 
 
-    public BestPostsFragment() {
-        // Required empty public constructor
-    }
-
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_best_posts);
+        ButterKnife.bind(this);
+
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        toolbar.setNavigationIcon(R.drawable.ic_keyboard_arrow_left_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+                overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
+            }
+        });
+
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -76,51 +82,17 @@ public class BestPostsFragment extends Fragment implements
             bestCinglesQuery = senseCreditReference.orderBy("amount", Query.Direction.ASCENDING)
                     .limit(TOTAL_ITEMS);
 
-        }
+            setTheFirstBacthBestCingles();
+            recyclerViewScrolling();
+            if (savedInstanceState != null){
+                recyclerViewState = savedInstanceState.getParcelable(KEY_LAYOUT_POSITION);
+                Log.d("Best saved Instance", "Instance is not");
+            }else {
+                Log.d("Saved Instance", "Instance is completely null");
+            }
 
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_best_cingles, container, false);
-        ButterKnife.bind(this, view);
-        swipeRefreshLayout.setOnRefreshListener(this);
-        setCurrentDate();
-
-        return view;
-    }
-
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        setTheFirstBacthBestCingles();
-        if (savedInstanceState != null){
-            recyclerViewState = savedInstanceState.getParcelable(KEY_LAYOUT_POSITION);
-            Log.d("Best saved Instance", "Instance is not");
-        }else {
-            Log.d("Saved Instance", "Instance is completely null");
         }
     }
-
-    private void setCurrentDate(){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d");
-        String date = simpleDateFormat.format(new Date());
-
-        if (date.endsWith("1") && !date.endsWith("11"))
-            simpleDateFormat = new SimpleDateFormat("d'st' MMM yyyy");
-        else if (date.endsWith("2") && !date.endsWith("12"))
-            simpleDateFormat = new SimpleDateFormat("d'nd' MMM yyyy");
-        else if (date.endsWith("3") && !date.endsWith("13"))
-            simpleDateFormat = new SimpleDateFormat("d'rd' MMM yyyy");
-        else
-            simpleDateFormat = new SimpleDateFormat("d'th' MMM yyyy");
-        String currentDate = simpleDateFormat.format(new Date());
-
-    }
-
 
     private void setTheFirstBacthBestCingles(){
         bestCinglesQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -140,10 +112,10 @@ public class BestPostsFragment extends Fragment implements
                             onDocumentAdded(change);
                             break;
                         case MODIFIED:
-//                            onDocumentModified(change);
+                            onDocumentModified(change);
                             break;
                         case REMOVED:
-//                            onDocumentRemoved(change);
+                            onDocumentRemoved(change);
                             break;
                     }
                     onDataChanged();
@@ -153,74 +125,51 @@ public class BestPostsFragment extends Fragment implements
         });
 
         // RecyclerView
-        topPostsAdapter = new TopPostsAdapter(getContext());
-        bestCinglesRecyclerView.setAdapter(topPostsAdapter);
+        bestPostsAdapter = new BestPostsAdapter(this);
+        bestCinglesRecyclerView.setAdapter(bestPostsAdapter);
         bestCinglesRecyclerView.setHasFixedSize(false);
-        layoutManager = new LinearLayoutManager(getContext());
-        layoutManager.setAutoMeasureEnabled(true);
-        layoutManager.setStackFromEnd(true);
-        layoutManager.setReverseLayout(true);
+        layoutManager = new LinearLayoutManager(this);
         bestCinglesRecyclerView.setLayoutManager(layoutManager);
 
     }
 
-    private void onDocumentAdded(DocumentChange change) {
-        Credit credit = change.getDocument().toObject(Credit.class);
-        if (credit.getAmount() > 0.00){
-            creditIds.add(change.getDocument().getId());
-            credits.add(credit);
-            topPostsAdapter.setBestCingles(credits);
-            topPostsAdapter.getItemCount();
-            topPostsAdapter.notifyItemInserted(credits.size());
-        }
+    private void recyclerViewScrolling(){
+        bestCinglesRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if (!recyclerView.canScrollVertically(-1)) {
+                    onScrolledToTop();
+                } else if (!recyclerView.canScrollVertically(1)) {
+                    onScrolledToBottom();
+                } else if (dy < 0) {
+                    onScrolledUp();
+                } else if (dy > 0) {
+                    onScrolledDown();
+                }
+            }
+        });
+    }
+
+    public void onScrolledUp() {}
+
+    public void onScrolledDown() {
 
     }
 
-    private void onDocumentModified(DocumentChange change) {
-        Credit credit = change.getDocument().toObject(Credit.class);
-        if (change.getOldIndex() == change.getNewIndex()) {
-            // Item changed but remained in same position
-            creditIds.add(change.getDocument().getId());
-            credits.set(change.getNewIndex(), credit);
-            topPostsAdapter.notifyItemChanged(change.getOldIndex());
-
-        } else {
-            // Item changed and changed position
-            credits.remove(change.getOldIndex());
-            credits.add(change.getNewIndex(), credit);
-            topPostsAdapter.notifyItemMoved(change.getOldIndex(), change.getNewIndex());
-        }
+    public void onScrolledToTop() {
 
     }
 
-    private void onDocumentRemoved(DocumentChange change) {
-        String credit_key = change.getDocument().getId();
-        int credit_index = creditIds.indexOf(credit_key);
-        if (credit_index > -1){
-            //remove data from the list
-            creditIds.remove(change.getDocument().getId());
-            topPostsAdapter.removeAt(change.getOldIndex());
-            topPostsAdapter.notifyItemRemoved(change.getOldIndex());
-            topPostsAdapter.getItemCount();
-        }else {
-            Log.v(TAG, "onDocumentRemoved:" + credit_key);
-        }
-
-
-    }
-
-    private void onError(FirebaseFirestoreException e) {};
-
-    private void onDataChanged() {}
-
-
-
-    @Override
-    public void onRefresh() {
-        swipeRefreshLayout.setRefreshing(true);
+    public void onScrolledToBottom() {
         setNextBestCingles();
     }
-
 
     private void setNextBestCingles(){
         senseCreditReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -232,7 +181,6 @@ public class BestPostsFragment extends Fragment implements
                 }
 
                 if (creditsSnapshots.isEmpty()){
-                    swipeRefreshLayout.setRefreshing(false);
                 }else {
                     bestCinglesQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
                         @Override
@@ -270,21 +218,24 @@ public class BestPostsFragment extends Fragment implements
                                             }
 
                                             //make sure that the size of snapshot equals item count
-                                            if (topPostsAdapter.getItemCount() == creditsSnapshots.size()){
-                                                swipeRefreshLayout.setRefreshing(false);
-                                            }else if (topPostsAdapter.getItemCount() < creditsSnapshots.size()){
+                                            if (bestPostsAdapter.getItemCount() == creditsSnapshots.size()){
+                                            }else if (bestPostsAdapter.getItemCount() < creditsSnapshots.size()){
                                                 for (DocumentChange change : snapshots.getDocumentChanges()) {
                                                     switch (change.getType()) {
                                                         case ADDED:
                                                             onDocumentAdded(change);
                                                             break;
+                                                        case MODIFIED:
+                                                            onDocumentModified(change);
+                                                            break;
+                                                        case REMOVED:
+                                                            onDocumentRemoved(change);
+                                                            break;
 
                                                     }
                                                     onDataChanged();
                                                 }
-                                                swipeRefreshLayout.setRefreshing(false);
                                             }else {
-                                                swipeRefreshLayout.setRefreshing(false);
                                             }
 
 
@@ -303,6 +254,55 @@ public class BestPostsFragment extends Fragment implements
         });
 
     }
+
+    private void onDocumentAdded(DocumentChange change) {
+        Credit credit = change.getDocument().toObject(Credit.class);
+        if (credit.getAmount() > 0.00){
+            creditIds.add(change.getDocument().getId());
+            credits.add(credit);
+            bestPostsAdapter.setBestCingles(credits);
+            bestPostsAdapter.getItemCount();
+            bestPostsAdapter.notifyItemInserted(credits.size());
+        }
+
+    }
+
+    private void onDocumentModified(DocumentChange change) {
+        Credit credit = change.getDocument().toObject(Credit.class);
+        if (change.getOldIndex() == change.getNewIndex()) {
+            // Item changed but remained in same position
+            creditIds.add(change.getDocument().getId());
+            credits.set(change.getNewIndex(), credit);
+            bestPostsAdapter.notifyItemChanged(change.getOldIndex());
+
+        } else {
+            // Item changed and changed position
+            credits.remove(change.getOldIndex());
+            credits.add(change.getNewIndex(), credit);
+            bestPostsAdapter.notifyItemMoved(change.getOldIndex(), change.getNewIndex());
+        }
+
+    }
+
+    private void onDocumentRemoved(DocumentChange change) {
+        String credit_key = change.getDocument().getId();
+        int credit_index = creditIds.indexOf(credit_key);
+        if (credit_index > -1){
+            //remove data from the list
+            creditIds.remove(change.getDocument().getId());
+            bestPostsAdapter.removeAt(change.getOldIndex());
+            bestPostsAdapter.notifyItemRemoved(change.getOldIndex());
+            bestPostsAdapter.getItemCount();
+        }else {
+            Log.v(TAG, "onDocumentRemoved:" + credit_key);
+        }
+
+
+    }
+
+    private void onError(FirebaseFirestoreException e) {};
+
+    private void onDataChanged() {}
 
 
     @Override
@@ -324,6 +324,4 @@ public class BestPostsFragment extends Fragment implements
     public void onStop() {
         super.onStop();
     }
-
-
 }

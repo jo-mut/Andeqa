@@ -1,0 +1,105 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.cinggl.cinggl.preferences.BestPostsSettingsDialog">
+
+    <!-- TODO: Update blank fragment layout -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/deletePostRelativeLayout">
+
+            <TextView
+                android:text="Delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:textStyle="normal|bold"
+                android:layout_alignParentTop="false"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="false"
+                android:id="@+id/deletePostTextView"
+                android:layout_centerInParent="true"
+                android:paddingLeft="10dp"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp" />
+
+            <View
+                android:layout_below="@+id/deletePostTextView"
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:background="@color/colorDivider"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/redeemCreditsRelativeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Redeem Sense Credits"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:textStyle="normal|bold"
+                android:layout_alignParentTop="false"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="false"
+                android:id="@+id/redeemCreditsTextView"
+                android:layout_centerInParent="true"
+                android:paddingLeft="10dp"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp" />
+
+
+            <View
+                android:layout_below="@+id/redeemCreditsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:background="@color/colorDivider"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/tradePostRelativeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Sale this post"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:textStyle="normal|bold"
+                android:layout_alignParentTop="false"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="false"
+                android:id="@+id/chooseHouseToTradeCingleTextView"
+                android:layout_centerInParent="true"
+                android:paddingLeft="10dp"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp" />
+
+
+            <View
+                android:layout_below="@+id/chooseHouseToTradeCingleTextView"
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:background="@color/colorDivider"/>
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+</FrameLayout>

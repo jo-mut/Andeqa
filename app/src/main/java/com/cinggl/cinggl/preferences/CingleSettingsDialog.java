@@ -40,9 +40,7 @@ import butterknife.ButterKnife;
  */
 public class CingleSettingsDialog extends DialogFragment implements View.OnClickListener{
     @Bind(R.id.deletePostRelativeLayout)RelativeLayout mDeleteCingleRelativeLayout;
-//    @Bind(R.id.editCingleRelativeLayout)RelativeLayout mEditCingleRelativeLayout;
     @Bind(R.id.tradePostRelativeLayout)RelativeLayout mTradeCingleRelativeLayout;
-//    @Bind(R.id.reportCingleRelativeLayout)RelativeLayout mReportCingleRelativeLayoout;
     @Bind(R.id.redeemCreditsRelativeLayout)RelativeLayout mRedeemCreditsRelativeLayout;
     private static final String EXTRA_POST_KEY = "post key";
     private String mPostKey;
@@ -50,6 +48,7 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
     private FirebaseAuth firebaseAuth;
     //firestore
     private CollectionReference cinglesReference;
+    private CollectionReference profilePostsReference;
     private CollectionReference senseCreditReference;
     private CollectionReference ifairReference;
     //firebase
@@ -89,8 +88,6 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
 
         if (firebaseAuth.getCurrentUser() != null){
             mDeleteCingleRelativeLayout.setOnClickListener(this);
-//            mReportCingleRelativeLayoout.setOnClickListener(this);
-//            mEditCingleRelativeLayout.setOnClickListener(this);
             mTradeCingleRelativeLayout.setOnClickListener(this);
             mRedeemCreditsRelativeLayout.setOnClickListener(this);
 
@@ -108,6 +105,7 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
             cingleOwnerReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_ONWERS);
             //firestore
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            profilePostsReference = FirebaseFirestore.getInstance().collection(firebaseAuth.getCurrentUser().getUid());
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
             ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
             // firebase storage
@@ -137,13 +135,6 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
             deleteCingle();
         }
 
-//        if (v == mReportCingleRelativeLayoout){
-//
-//        }
-
-//        if (v == mEditCingleRelativeLayout){
-//            editCingle();
-//        }
 
         if (v == mTradeCingleRelativeLayout){
             ifairReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -200,7 +191,8 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                ifairReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                ifairReference.document(mPostKey)
+                                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                     @Override
                                     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -210,7 +202,13 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
                                         }
 
                                         if (documentSnapshot.exists()) {
-                                            ifairReference.document(mPostKey).delete();
+                                            ifairReference.document(mPostKey).delete()
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    profilePostsReference.document(mPostKey).delete();
+                                                }
+                                            });
                                         }
                                     }
                                 });

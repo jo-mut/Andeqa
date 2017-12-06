@@ -81,7 +81,7 @@ public class FollowingActivity extends AppCompatActivity {
             }
             Log.d("passed uid", mUid);
 
-            relationsReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+            relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             followingQuery = relationsReference.document("following").collection(mUid);
 

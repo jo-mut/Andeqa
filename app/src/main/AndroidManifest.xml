@@ -75,7 +75,6 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".people.PeopleActivity"
-            android:label="People"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
 
@@ -121,8 +120,8 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:label="Cinggl"
             android:name=".home.MainActivity"
+            android:label="Cinggl"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
@@ -161,6 +160,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity android:name=".ManageSpaceActivity" />
+        <activity
+            android:name=".home.BestPostsActivity"
+            android:label="Popular"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>
