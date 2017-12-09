@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.cinggl.cinggl.ProportionalImageView;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Post;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -31,7 +32,6 @@ public class ProfilePostsViewHolder extends RecyclerView.ViewHolder implements V
     public TextView accountUsernameTextView;
     public CircleImageView profileImageView;
     public TextView commentsCountTextView;
-    public TextView timeTextView;
     public ImageView cingleSettingsImageView;
     public RelativeLayout cingleTitleRelativeLayout;
     public RelativeLayout descriptionRelativeLayout;
@@ -53,7 +53,6 @@ public class ProfilePostsViewHolder extends RecyclerView.ViewHolder implements V
         accountUsernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.creatorImageView);
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
-        timeTextView = (TextView) itemView.findViewById(R.id.timeTextView);
         cingleSettingsImageView = (ImageView) itemView.findViewById(R.id.settingsImageView);
         cingleTitleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
         descriptionRelativeLayout  = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
@@ -69,10 +68,7 @@ public class ProfilePostsViewHolder extends RecyclerView.ViewHolder implements V
 
     }
 
-    public void bindProfileCingle(final Post post){
-        timeTextView = (TextView) itemView.findViewById(R.id.timeTextView);
-        timeTextView.setText(DateUtils.getRelativeTimeSpanString((long) post.getTimeStamp()));
-
+    public void bindProfileCingle(final DocumentSnapshot documentSnapshot){
 
 
     }

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.firestore.FirestoreAdapter;
 import com.cinggl.cinggl.home.PostDetailActivity;
 import com.cinggl.cinggl.models.Post;
 import com.cinggl.cinggl.models.PostSale;
@@ -27,6 +28,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -39,7 +41,7 @@ import java.util.List;
  * Created by J.EL on 11/13/2017.
  */
 
-public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> {
+public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
     private static final String TAG = SellingAdapter.class.getSimpleName();
     private Context mContext;
     private List<PostSale> postSales = new ArrayList<>();
@@ -63,29 +65,15 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
     private static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
 
-    public SellingAdapter(Context mContext) {
+
+    public SellingAdapter(Query query, Context mContext) {
+        super(query);
         this.mContext = mContext;
-    }
-
-    public void setSellingCingles(List<PostSale> postSales){
-        this.postSales = postSales;
-        notifyDataSetChanged();
-    }
-
-
-    public void removeAt(int position){
-        postSales.remove(postSales.get(position));
-    }
-
-
-    @Override
-    public long getItemId(int position) {
-        return super.getItemId(position);
     }
 
     @Override
     public int getItemCount() {
-        return postSales.size();
+        return super.getItemCount();
     }
 
     @Override
@@ -96,13 +84,12 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
 
     @Override
     public void onBindViewHolder(final PostSellingViewHolder holder, int position) {
-        final PostSale postSale = postSales.get(position);
+        final PostSale postSale = getSnapshot(position).toObject(PostSale.class);
         holder.bindIfairCingle(postSale);
-        final String postKey = postSales.get(position).getPushId();
-        final String uid = postSales.get(position).getUid();
-        final double salePrice = postSales.get(position).getSalePrice();
+        final String postKey = postSale.getPushId();
+        final String uid = postSale.getUid();
+        final double salePrice = postSale.getSalePrice();
         Log.d("cingle postkey", postKey);
-
 
         senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
         cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
@@ -113,7 +100,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
         sellingQuery = ifairReference.orderBy("randomNumber").limit(10);
 
         DecimalFormat formatter =  new DecimalFormat("0.00000000");
-        holder.cingleSalePriceTextView.setText("CSC" + " " + formatter.format(salePrice));
+        holder.cingleSalePriceTextView.setText("SC" + " " + formatter.format(salePrice));
 
         Log.d("best cingles postKey", postKey);
 
@@ -244,10 +231,10 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
                 if (documentSnapshot.exists()){
                     final Credit credit = documentSnapshot.toObject(Credit.class);
                     DecimalFormat formatter = new DecimalFormat("0.00000000");
-                    holder.cingleSenseCreditsTextView.setText("CSC" + " " + formatter
+                    holder.cingleSenseCreditsTextView.setText("SC" + " " + formatter
                             .format(credit.getAmount()));
                 }else {
-                    holder.cingleSenseCreditsTextView.setText("CSC 0.00000000");
+                    holder.cingleSenseCreditsTextView.setText("SC 0.00000000");
                 }
             }
         });
@@ -294,8 +281,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
             }
         });
 
-        ownerReference.document("Ownership").collection(postKey)
-                .document("Owner").addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        ownerReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {

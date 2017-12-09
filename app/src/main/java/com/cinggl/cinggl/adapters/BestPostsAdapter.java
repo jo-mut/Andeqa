@@ -15,22 +15,24 @@ import android.view.ViewGroup;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.home.PostDetailActivity;
-import com.cinggl.cinggl.models.Post;
-import com.cinggl.cinggl.preferences.BestPostsSettingsDialog;
-import com.cinggl.cinggl.preferences.CingleSettingsDialog;
 import com.cinggl.cinggl.comments.CommentsActivity;
+import com.cinggl.cinggl.firestore.FirestoreAdapter;
 import com.cinggl.cinggl.home.FullImageViewActivity;
+import com.cinggl.cinggl.home.PostDetailActivity;
 import com.cinggl.cinggl.likes.LikesActivity;
 import com.cinggl.cinggl.models.Balance;
-import com.cinggl.cinggl.models.PostSale;
 import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.models.Credit;
 import com.cinggl.cinggl.models.Like;
+import com.cinggl.cinggl.models.Post;
+import com.cinggl.cinggl.models.PostSale;
 import com.cinggl.cinggl.models.TransactionDetails;
 import com.cinggl.cinggl.people.FollowerProfileActivity;
+import com.cinggl.cinggl.preferences.BestPostsSettingsDialog;
+import com.cinggl.cinggl.preferences.CingleSettingsDialog;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.viewholders.BestPostsViewHolder;
+import com.cinggl.cinggl.viewholders.SingleOutViewHolder;
 import com.cinggl.cinggl.viewholders.WhoLikedViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -62,12 +64,10 @@ import java.util.List;
 import static android.util.Log.d;
 
 /**
- * Created by J.EL on 7/19/2017.
+ * Created by J.EL on 12/9/2017.
  */
 
-//CURRENTLY NOT IN USE
-
-public class BestPostsAdapter extends RecyclerView.Adapter<BestPostsViewHolder> {
+public class BestPostsAdapter extends FirestoreAdapter<BestPostsViewHolder> {
     private static final String TAG = BestPostsAdapter.class.getSimpleName();
     private Context mContext;
     private List<Credit> credits = new ArrayList<>();
@@ -96,28 +96,15 @@ public class BestPostsAdapter extends RecyclerView.Adapter<BestPostsViewHolder> 
     //adapters
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
 
-
-    public BestPostsAdapter(Context mContext) {
+    public BestPostsAdapter(Query query, Context mContext) {
+        super(query);
         this.mContext = mContext;
-    }
-
-    public void setBestCingles(List<Credit> credits) {
-        this.credits = credits;
-        notifyDataSetChanged();
-    }
-
-    public void removeAt(int position){
-        credits.remove(credits.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return credits.size();
-    }
+        return super.getItemCount();
 
-    @Override
-    public long getItemId(int position) {
-        return super.getItemId(position);
     }
 
     @Override
@@ -129,12 +116,11 @@ public class BestPostsAdapter extends RecyclerView.Adapter<BestPostsViewHolder> 
 
     @Override
     public void onBindViewHolder(final BestPostsViewHolder holder, int position) {
-        final Credit credit = credits.get(position);
-        holder.bindBestCingle(credit);
-        final String postKey = credits.get(position).getPushId();
-        final double senseCredits = credits.get(position).getAmount();
+        final Credit credit = getSnapshot(position).toObject(Credit.class);
+        holder.bindBestCingle(getSnapshot(position));
+        final String postKey = credit.getPushId();
+        final double senseCredits = credit.getAmount();
         Log.d("best cingle postkey", postKey);
-
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -158,12 +144,12 @@ public class BestPostsAdapter extends RecyclerView.Adapter<BestPostsViewHolder> 
 
         if (senseCredits > 0){
             DecimalFormat formatter = new DecimalFormat("0.00000000");
-            holder.senseCreditsTextView.setText("CSC" + " " + formatter.format(senseCredits));
+            holder.senseCreditsTextView.setText("SC" + " " + formatter.format(senseCredits));
         }else if (senseCredits == 0){
-            holder.senseCreditsTextView.setText("CSC 0.00000000");
+            holder.senseCreditsTextView.setText("SC 0.00000000");
         }else {
             DecimalFormat formatter = new DecimalFormat("0.00000000");
-            holder.senseCreditsTextView.setText("CSC" + " " + formatter.format(senseCredits));
+            holder.senseCreditsTextView.setText("SC" + " " + formatter.format(senseCredits));
         }
 
         //path to cingle wallet reference
@@ -199,7 +185,7 @@ public class BestPostsAdapter extends RecyclerView.Adapter<BestPostsViewHolder> 
             public void onClick(View view) {
                 Intent intent =  new Intent(mContext, PostDetailActivity.class);
                 intent.putExtra(BestPostsAdapter.EXTRA_POST_KEY, postKey);
-               mContext.startActivity(intent);
+                mContext.startActivity(intent);
             }
         });
 
@@ -348,7 +334,7 @@ public class BestPostsAdapter extends RecyclerView.Adapter<BestPostsViewHolder> 
                 if (documentSnapshot.exists()){
                     final PostSale postSale = documentSnapshot.toObject(PostSale.class);
                     DecimalFormat formatter = new DecimalFormat("0.00000000");
-                    holder.postSalePriceTextView.setText("CSC" + " " + formatter.format(postSale.getSalePrice()));
+                    holder.postSalePriceTextView.setText("SC" + " " + formatter.format(postSale.getSalePrice()));
                     holder.tradeMethodTextView.setText("@CingleSelling");
                 }else {
                     holder.postSalePriceTitleRelativeLayout.setVisibility(View.GONE);
@@ -359,8 +345,7 @@ public class BestPostsAdapter extends RecyclerView.Adapter<BestPostsViewHolder> 
             }
         });
 
-        ownerReference.document("Ownership").collection(postKey)
-                .document("Owner").addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        ownerReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -728,6 +713,7 @@ public class BestPostsAdapter extends RecyclerView.Adapter<BestPostsViewHolder> 
 
 
     }
+
 
     private void onLikeCounter(final boolean increament){
         likesRef.runTransaction(new Transaction.Handler() {

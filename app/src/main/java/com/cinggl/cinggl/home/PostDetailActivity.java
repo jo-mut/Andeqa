@@ -114,10 +114,9 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     private CollectionReference cinglesReference;
     private com.google.firebase.firestore.Query randomQuery;
     private com.google.firebase.firestore.Query commentsCountQuery;
-    private CollectionReference ownerReference;
     private CollectionReference usersReference;
     private CollectionReference commentsReference;
-    private CollectionReference cingleOwnerReference;
+    private CollectionReference ownerReference;
     private CollectionReference senseCreditReference;
     private CollectionReference ifairReference;
     //firebase
@@ -193,7 +192,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             //firestore
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
-            cingleOwnerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
+            ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
             ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
@@ -229,7 +228,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                 if (documentSnapshot.exists()){
                     final PostSale postSale = documentSnapshot.toObject(PostSale.class);
                     DecimalFormat formatter = new DecimalFormat("0.00000000");
-                    mCingleSalePriceTextView.setText("CSC" + " " +
+                    mCingleSalePriceTextView.setText("SC" + " " +
                             formatter.format(postSale.getSalePrice()));
                 }else {
                     mCingleSalePriceTitleRelativeLayout.setVisibility(View.GONE);
@@ -249,10 +248,10 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                     Credit credit = documentSnapshot.toObject(Credit.class);
                     final double senseCredits = credit.getAmount();
                     DecimalFormat formatter = new DecimalFormat("0.00000000");
-                    mCingleSenseCreditsTextView.setText("CSC" + " " + formatter.format(senseCredits));
+                    mCingleSenseCreditsTextView.setText("SC" + " " + formatter.format(senseCredits));
 
                 }else {
-                    mCingleSenseCreditsTextView.setText("CSC 0.00000000");
+                    mCingleSenseCreditsTextView.setText("SC 0.00000000");
                 }
 
             }
@@ -412,7 +411,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
     /**Post can only be bought by someone else except for the owner of that cingle*/
     private void showBuyButton(){
-        cingleOwnerReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        ownerReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -421,21 +420,17 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                 }
 
                 if (documentSnapshot.exists()){
-                    documentSnapshot.getDocumentReference("owner")
-                            .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                            TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
-                            final String ownerUid = transactionDetails.getUid();
-                            Log.d("owner uid", ownerUid);
+                    TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
+                    final String ownerUid = transactionDetails.getUid();
+                    Log.d("owner uid", ownerUid);
 
-                            if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
-                                mTradeCingleButton.setVisibility(View.GONE);
-                            }else {
-                                mTradeCingleButton.setVisibility(View.VISIBLE);
-                            }
+                    if (documentSnapshot.exists()){
+                        if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
+                            mTradeCingleButton.setVisibility(View.GONE);
+                        }else {
+                            mTradeCingleButton.setVisibility(View.VISIBLE);
                         }
-                    });
+                    }
                 }
             }
         });
@@ -566,8 +561,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
 
         /**display the person who currently owns the cingle*/
-        cingleOwnerReference.document("Ownership").collection(mPostKey)
-                .document("Owner").addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        ownerReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -816,7 +810,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void showEditImageView(){
-        cingleOwnerReference.document("Ownership").collection(mPostKey)
+        ownerReference.document("Ownership").collection(mPostKey)
                 .document("Owner").addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -862,7 +856,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                         final Credit credit = documentSnapshot.toObject(Credit.class);
                         final double senseCredits = credit.getAmount();
                         final DecimalFormat formatter = new DecimalFormat("0.00000000");
-                        mCingleSenseCreditsTextView.setText("CSC" + " " + "" + formatter.format(senseCredits));
+                        mCingleSenseCreditsTextView.setText("SC" + " " + "" + formatter.format(senseCredits));
 
                         if (intSalePrice < senseCredits){
                             mEditSalePriceEditText.setError("Sale price is less than Post Sense Crdits!");
@@ -879,7 +873,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
                                     if (documentSnapshot.exists()){
                                         final PostSale postSale = documentSnapshot.toObject(PostSale.class);
-                                        mCingleSalePriceTextView.setText("CSC" + " " + formatter
+                                        mCingleSalePriceTextView.setText("SC" + " " + formatter
                                                 .format(postSale.getSalePrice()));
                                         mSalePriceProgressBar.setVisibility(View.GONE);
                                         mCingleSalePriceTextView.setVisibility(View.VISIBLE);

@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.firestore.FirestoreAdapter;
 import com.cinggl.cinggl.home.PostDetailActivity;
 import com.cinggl.cinggl.models.Post;
 import com.cinggl.cinggl.preferences.CingleSettingsDialog;
@@ -45,6 +46,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.squareup.picasso.Callback;
@@ -61,9 +63,8 @@ import java.util.List;
  * Created by J.EL on 11/17/2017.
  */
 
-public class SingleOutAdapter extends RecyclerView.Adapter<SingleOutViewHolder> {
+public class SingleOutAdapter extends FirestoreAdapter<SingleOutViewHolder> {
     private static final String TAG =  SingleOutAdapter.class.getSimpleName();
-    private List<Post> posts = new ArrayList<>();
     private Context mContext;
     private static final String EXTRA_POST_KEY = "post key";
     private static final String EXTRA_USER_UID =  "uid";
@@ -96,27 +97,15 @@ public class SingleOutAdapter extends RecyclerView.Adapter<SingleOutViewHolder> 
     //adapters
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
 
-    public SingleOutAdapter(Context mContext) {
+
+    public SingleOutAdapter(Query query, Context mContext) {
+        super(query);
         this.mContext = mContext;
-    }
-
-    public void setRandomPosts(List<Post> posts) {
-        this.posts = posts;
-        notifyDataSetChanged();
-    }
-
-    public void removeAt(int position){
-        posts.remove(posts.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return posts.size();
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return posts.get(position).getNumber();
+        return super.getItemCount();
 
     }
 
@@ -129,11 +118,12 @@ public class SingleOutAdapter extends RecyclerView.Adapter<SingleOutViewHolder> 
 
     @Override
     public void onBindViewHolder(final SingleOutViewHolder holder, int position) {
-        final Post post = posts.get(position);
-        holder.bindRandomCingles(post);
-        final String postKey = posts.get(position).getPushId();
-        final String uid = posts.get(position).getUid();
+        final Post post = getSnapshot(position).toObject(Post.class);
+        holder.bindRandomCingles(getSnapshot(position));
+        final String postKey = post.getPushId();
+        final String uid = post.getUid();
         Log.d("post postkey", postKey);
+
 
         //firestore
         cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
@@ -232,10 +222,10 @@ public class SingleOutAdapter extends RecyclerView.Adapter<SingleOutViewHolder> 
                     Credit credit = documentSnapshot.toObject(Credit.class);
                     final double senseCredits = credit.getAmount();
                     DecimalFormat formatter = new DecimalFormat("0.00000000");
-                    holder.senseCreditsTextView.setText("CSC" + " " + formatter.format(senseCredits));
+                    holder.senseCreditsTextView.setText("SC" + " " + formatter.format(senseCredits));
 
                 }else {
-                    holder.senseCreditsTextView.setText("CSC 0.00000000");
+                    holder.senseCreditsTextView.setText("SC 0.00000000");
                 }
 
             }
@@ -302,8 +292,7 @@ public class SingleOutAdapter extends RecyclerView.Adapter<SingleOutViewHolder> 
             }
         });
 
-        ownerReference.document("Ownership").collection(postKey)
-                .document("Owner").addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        ownerReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -355,7 +344,6 @@ public class SingleOutAdapter extends RecyclerView.Adapter<SingleOutViewHolder> 
                 }
 
                 if (documentSnapshot.exists()){
-                    final PostSale postSale = documentSnapshot.toObject(PostSale.class);
                     holder.tradeMethodTextView.setText("@CingleSelling");
                 }else {
                     holder.tradeMethodTextView.setText("@NotOnTrade");

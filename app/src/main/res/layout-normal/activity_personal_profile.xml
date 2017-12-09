@@ -1,33 +1,246 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_personal_profile"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
+    android:background="#e4e4e4"
     tools:context="com.cinggl.cinggl.profile.PersonalProfileActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/colorPrimary"
-        app:titleTextColor="@android:color/white"
-        app:layout_scrollFlags="scroll|enterAlways"
-        app:titleTextAppearance="@style/toolbarTextSize"
-        app:popupTheme="@style/AppTheme.PopupOverlay"
-        app:titleMargin="0dp"
-        app:theme="@style/ToolbarColored"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        />
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            app:contentScrim="?attr/colorPrimary"
+            android:background="#e4e4e4"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-    <RelativeLayout
-        android:id="@+id/profile_container"
+            <RelativeLayout
+                android:id="@+id/header_cover_relative_layout"
+                android:layout_width="match_parent"
+                android:background="@drawable/gradient_color"
+                android:layout_marginBottom="15dp"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/header_cover_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:alpha="0.1"
+                    android:src="@drawable/gradient_color" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/creatorImageView"
+                    android:layout_height="120dp"
+                    android:background="@drawable/profile_circular_border_imageview"
+                    android:padding="10dp"
+                    android:scaleType="centerCrop"
+                    android:layout_alignParentTop="true"
+                    android:layout_width="100dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="80dp" />
+
+                <RelativeLayout
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="220dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/fullNameTextView"
+                        android:textStyle="normal|bold"
+                        android:textColor="@android:color/white"
+                        android:textSize="25sp"
+                        android:layout_alignParentTop="false"
+                        android:layout_alignParentLeft="false"
+                        android:layout_alignParentStart="false"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="1dp"
+                        android:layout_centerInParent="true" />
+
+
+                </RelativeLayout>
+
+
+                <RelativeLayout
+                    android:id="@+id/countsLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="30dp"
+                    android:layout_marginTop="280dp">
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/postsCountTextView"
+                        android:textSize="10sp"
+                        android:background="@drawable/border_white"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:textAlignment="center"
+                        android:layout_alignParentRight="false"
+                        android:layout_alignParentEnd="false"
+                        android:layout_toLeftOf="@+id/followersCountTextView"
+                        android:layout_toStartOf="@+id/followersCountTextView"
+                        android:layout_marginRight="50dp"
+                        android:layout_centerInParent="false"
+                        android:layout_marginLeft="50dp"
+                        android:layout_alignParentTop="true"
+                        android:textColor="@android:color/white" />
+
+                    <TextView
+                        android:text="Posts"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/postsTextView"
+                        android:layout_alignParentBottom="false"
+                        android:layout_alignParentRight="false"
+                        android:layout_alignParentEnd="false"
+                        android:layout_toLeftOf="@+id/followersCountTextView"
+                        android:layout_toStartOf="@+id/followersCountTextView"
+                        android:layout_below="@+id/postsCountTextView"
+                        android:layout_centerInParent="false"
+                        android:layout_centerVertical="false"
+                        android:layout_centerHorizontal="false"
+                        android:layout_marginRight="40dp"
+                        android:layout_marginTop="10dp"
+                        android:textColor="@android:color/white" />
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/followersCountTextView"
+                        android:textSize="10sp"
+                        android:background="@drawable/border_white"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:textAlignment="center"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:textColor="@android:color/white" />
+
+                    <TextView
+                        android:text="Followers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/followersTextView"
+                        android:layout_below="@+id/followersCountTextView"
+                        android:layout_alignParentBottom="false"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="10dp"
+                        android:textColor="@android:color/white" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/followingCountTextView"
+                        android:textSize="10sp"
+                        android:background="@drawable/border_white"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:layout_toRightOf="@+id/followersCountTextView"
+                        android:layout_toEndOf="@+id/followersCountTextView"
+                        android:textAlignment="center"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="false"
+                        android:layout_alignParentStart="false"
+                        android:layout_centerInParent="false"
+                        android:layout_marginLeft="50dp"
+                        android:textColor="@android:color/white" />
+
+                    <TextView
+                        android:text="Following"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/followingTextView"
+                        android:layout_below="@+id/followingCountTextView"
+                        android:layout_toRightOf="@+id/followersCountTextView"
+                        android:layout_toEndOf="@+id/followersCountTextView"
+                        android:layout_alignParentBottom="false"
+                        android:layout_alignParentLeft="false"
+                        android:layout_alignParentStart="false"
+                        android:layout_centerInParent="false"
+                        android:layout_marginLeft="40dp"
+                        android:layout_marginTop="10dp"
+                        android:textColor="@android:color/white" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/bioRelativeLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:elevation="4dp"
+                    android:layout_below="@+id/countsLayout"
+                    android:layout_marginBottom="50dp">
+
+                    <View
+                        android:id="@+id/layoutDivider"
+                        android:layout_width="match_parent"
+                        android:layout_height="0.1dp"
+                        android:background="@android:color/white"
+                        android:layout_marginLeft="150dp"
+                        android:layout_marginRight="150dp"
+                        android:layout_marginBottom="15dp" />
+
+                    <TextView
+                        android:layout_below="@+id/layoutDivider"
+                        android:id="@+id/bioTextView"
+                        android:textColor="@android:color/white"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="14sp"
+                        android:padding="10dp" />
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
+                android:title="Collapsing Toolbar"
+                app:layout_collapseMode="pin"/>
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <FrameLayout
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:id="@+id/home_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true">
+        android:layout_height="wrap_content">
 
-    </RelativeLayout>
-</LinearLayout>
+        <android.support.v7.widget.RecyclerView
+            android:numColumns="auto_fit"
+            android:id="@+id/profileCinglesRecyclerView"
+            android:overScrollMode="never"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </FrameLayout>
+
+</android.support.design.widget.CoordinatorLayout>
+

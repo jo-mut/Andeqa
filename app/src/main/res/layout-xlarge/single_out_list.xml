@@ -46,6 +46,8 @@
                     android:layout_alignParentTop="true"
                     android:layout_toRightOf="@+id/creatorImageView"
                     android:layout_toEndOf="@+id/creatorImageView"
+                    android:layout_toLeftOf="@+id/tradeMethodTextView"
+                    android:layout_toStartOf="@+id/tradeMethodTextView"
                     android:layout_marginTop="10dp" />
 
                 <TextView
@@ -54,7 +56,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/tradeMethodTextView"
                     android:textStyle="normal|bold"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/colorPrimary"
                     android:layout_alignTop="@+id/creatorImageView"
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="5dp"
@@ -62,15 +64,20 @@
                     android:textSize="28sp" />
 
                 <TextView
+                    android:text=""
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/timeTextView"
-                    android:text="8h"
-                    android:layout_alignParentEnd="false"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginRight="10dp"
+                    android:id="@+id/postSenseCreditsTextView"
+                    android:textStyle="normal|bold"
+                    android:textSize="24sp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
                     android:layout_below="@+id/usernameTextView"
-                    android:textSize="24sp" />
+                    android:layout_toRightOf="@+id/creatorImageView"
+                    android:layout_toEndOf="@+id/creatorImageView"
+                    android:layout_toLeftOf="@+id/tradeMethodTextView"
+                    android:layout_toStartOf="@+id/tradeMethodTextView"
+                    android:layout_marginLeft="10dp" />
 
 
             </RelativeLayout>
@@ -141,25 +148,6 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginRight="5dp" />
 
-                <TextView
-                    android:text=""
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/postSenseCreditsTextView"
-                    android:textStyle="normal|bold"
-                    android:background="@drawable/border_color_primary"
-                    android:textSize="24sp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginTop="8dp"
-                    android:layout_toRightOf="@+id/commentsCountTextView"
-                    android:layout_toEndOf="@+id/commentsCountTextView"
-                    android:layout_marginLeft="10dp" />
-
-
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -192,7 +180,6 @@
                     android:textSize="24sp"
                     android:paddingTop="2dp"
                     android:paddingBottom="2dp"
-                    android:layout_alignTop="@+id/postSenseCreditsTextView"
                     android:layout_toRightOf="@+id/commentsImageView"
                     android:layout_toEndOf="@+id/commentsImageView"
                     android:textStyle="normal" />

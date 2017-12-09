@@ -29,7 +29,7 @@
             android:name="com.cinggl.cinggl.market.MarketFragment"
             android:layout_height="match_parent"
             android:layout_width="match_parent"
-            tools:layout="@layout/fragment_ifair_cingles" />
+            tools:layout="@layout/fragment_market" />
 
     </FrameLayout>
 

@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.creation.CreatePostActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -50,7 +51,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
         Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-//                .setSmallIcon(R.drawable.applogo)
+                .setSmallIcon(R.drawable.ic_stat_name)
                 .setContentTitle("Cinggl notifications")
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(body))
                 .setContentText(body)

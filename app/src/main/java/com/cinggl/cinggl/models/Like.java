@@ -11,15 +11,14 @@ import java.util.Map;
 
 public class Like {
     String uid;
+    String pushId;
 
-
-
-    public Like() {
-
+    public Like(String uid, String pushId) {
+        this.uid = uid;
+        this.pushId = pushId;
     }
 
-    public Like(String uid) {
-        this.uid = uid;
+    public Like() {
     }
 
     public String getUid() {
@@ -28,6 +27,14 @@ public class Like {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public String getPushId() {
+        return pushId;
+    }
+
+    public void setPushId(String pushId) {
+        this.pushId = pushId;
     }
 }
 

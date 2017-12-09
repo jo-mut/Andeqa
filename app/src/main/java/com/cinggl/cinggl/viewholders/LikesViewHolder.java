@@ -30,7 +30,7 @@ public class LikesViewHolder extends RecyclerView.ViewHolder {
         mContext = itemView.getContext();
         usernameTextView = (TextView)itemView.findViewById(R.id.usernameTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.creatorImageView);
-        followButton = (Button) itemView.findViewById(R.id.followButton);
+        followButton = (Button) itemView.findViewById(R.id.followTextView);
         fullNameTextView = (TextView) itemView.findViewById(R.id.fullNameTextView);
     }
 

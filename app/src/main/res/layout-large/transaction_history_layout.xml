@@ -28,8 +28,8 @@
             android:layout_toEndOf="@+id/postImageView"
             android:layout_alignBottom="@+id/creatorImageView"
             android:layout_centerVertical="false"
-            android:layout_toLeftOf="@+id/followButton"
-            android:layout_toStartOf="@+id/followButton"
+            android:layout_toLeftOf="@+id/followTextView"
+            android:layout_toStartOf="@+id/followTextView"
             android:paddingTop="10dp">
 
             <TextView

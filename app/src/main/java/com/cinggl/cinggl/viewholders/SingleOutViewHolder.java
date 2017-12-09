@@ -14,6 +14,7 @@ import com.cinggl.cinggl.ProportionalImageView;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Post;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -22,6 +23,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
 
 /**
  * Created by J.EL on 11/17/2017.
@@ -40,7 +42,6 @@ public class SingleOutViewHolder extends RecyclerView.ViewHolder {
     public TextView accountUsernameTextView;
     public CircleImageView profileImageView;
     public TextView commentsCountTextView;
-    public TextView timeTextView;
     public TextView senseCreditsTextView;
     public TextView tradeMethodTextView;
     public ImageView settingsImageView;
@@ -64,7 +65,6 @@ public class SingleOutViewHolder extends RecyclerView.ViewHolder {
         accountUsernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.creatorImageView);
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
-        timeTextView = (TextView) itemView.findViewById(R.id.timeTextView);
         settingsImageView = (ImageView) itemView.findViewById(R.id.settingsImageView);
         titleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
         descriptionRelativeLayout  = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
@@ -74,11 +74,11 @@ public class SingleOutViewHolder extends RecyclerView.ViewHolder {
         likesRecyclerView = (RecyclerView) mView.findViewById(R.id.likesRecyclerView);
     }
 
-    public void bindRandomCingles(final Post post){
+    public void bindRandomCingles(final DocumentSnapshot documentSnapshot){
+        final Post post = documentSnapshot.toObject(Post.class);
         postImageView = (ProportionalImageView) mView.findViewById(R.id.postImageView);
         descriptionTextView = (TextView) itemView.findViewById(R.id.descriptionTextView);
         titleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
-        timeTextView = (TextView) itemView.findViewById(R.id.timeTextView);
         titleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
         descriptionRelativeLayout  = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
         senseCreditsTextView = (TextView) mView.findViewById(R.id.postSenseCreditsTextView);
@@ -124,8 +124,6 @@ public class SingleOutViewHolder extends RecyclerView.ViewHolder {
         }else {
             descriptionTextView.setText(post.getDescription());
         }
-
-        timeTextView.setText(DateUtils.getRelativeTimeSpanString((long) post.getTimeStamp()));
 
     }
 

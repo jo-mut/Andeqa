@@ -2,6 +2,7 @@ package com.cinggl.cinggl.people;
 
 import android.content.Intent;
 import android.os.Parcelable;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,6 +19,8 @@ import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.ProfilePostsAdapter;
 import com.cinggl.cinggl.models.Post;
 import com.cinggl.cinggl.models.Cinggulan;
+import com.cinggl.cinggl.models.Relation;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -40,6 +43,7 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.cinggl.cinggl.R.id.followButton;
+import static com.cinggl.cinggl.R.id.followTextView;
 
 public class FollowerProfileActivity extends AppCompatActivity
         implements View.OnClickListener{
@@ -54,6 +58,7 @@ public class FollowerProfileActivity extends AppCompatActivity
     @Bind(R.id.postsCountTextView)TextView mCinglesCountTextView;
     @Bind(R.id.header_cover_image)ImageView mProfileCover;
     @Bind(followButton)Button mFollowButton;
+    @Bind(R.id.collapsing_toolbar)CollapsingToolbarLayout collapsingToolbarLayout;
 
     private CollectionReference cinglesReference;
     private CollectionReference relationsReference;
@@ -76,7 +81,7 @@ public class FollowerProfileActivity extends AppCompatActivity
     private List<String> cinglesIds = new ArrayList<>();
     private int TOTAL_ITEMS = 4;
     private DocumentSnapshot lastVisible;
-    private LinearLayoutManager layoutManager;
+    private boolean processFollow = false;
 
 
     @Override
@@ -95,7 +100,6 @@ public class FollowerProfileActivity extends AppCompatActivity
             }
         });
 
-
         //FIREBASE AUTH
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -109,7 +113,7 @@ public class FollowerProfileActivity extends AppCompatActivity
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            profileCinglesQuery = cinglesReference.whereEqualTo("uid", mUid).limit(TOTAL_ITEMS);
+            profileCinglesQuery = cinglesReference.orderBy("timeStamp").whereEqualTo("uid", mUid);
             profileCinglesCountQuery = cinglesReference.whereEqualTo("uid", mUid);
             fetchData();
             setTheFirstBacthProfileCingles();
@@ -118,6 +122,7 @@ public class FollowerProfileActivity extends AppCompatActivity
             //INITIALIZE CLICK LISTENERS
             mFollowersCountTextView.setOnClickListener(this);
             mFollowingCountTextView.setOnClickListener(this);
+            mFollowButton.setOnClickListener(this);
 
         }
 
@@ -149,6 +154,13 @@ public class FollowerProfileActivity extends AppCompatActivity
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+
                         if (documentSnapshots.isEmpty()){
                             mFollowersCountTextView.setText("0");
                         }else {
@@ -163,6 +175,13 @@ public class FollowerProfileActivity extends AppCompatActivity
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+
                         if (documentSnapshots.isEmpty()){
                             mFollowingCountTextView.setText("0");
                         }else {
@@ -206,7 +225,7 @@ public class FollowerProfileActivity extends AppCompatActivity
 
                         if (documentSnapshot.exists()){
                             final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-
+                            String username = cinggulan.getUsername();
                             String firstName = cinggulan.getFirstName();
                             String secondName = cinggulan.getSecondName();
                             final String profileImage = cinggulan.getProfileImage();
@@ -215,6 +234,8 @@ public class FollowerProfileActivity extends AppCompatActivity
 
                             mFullNameTextView.setText(firstName + " " + secondName);
                             mBioTextView.setText(bio);
+
+                            collapsingToolbarLayout.setTitle(username + "'s" + " profile");
 
                             Picasso.with(FollowerProfileActivity.this)
                                     .load(profileImage)
@@ -279,74 +300,20 @@ public class FollowerProfileActivity extends AppCompatActivity
                     return;
                 }
 
-                for (DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                    switch (change.getType()) {
-                        case ADDED:
-                            onDocumentAdded(change);
-                            break;
-                        case MODIFIED:
-//                            onDocumentModified(change);
-                            break;
-                        case REMOVED:
-//                            onDocumentRemoved(change);
-                            break;
-                    }
-                    onDataChanged();
+                if (!documentSnapshots.isEmpty()){
+                    // RecyclerView
+                    profilePostsAdapter = new ProfilePostsAdapter(profileCinglesQuery, FollowerProfileActivity.this);
+                    profilePostsAdapter.startListening();
+                    mProfileCinglesRecyclerView.setAdapter(profilePostsAdapter);
+                    mProfileCinglesRecyclerView.setHasFixedSize(false);
+                    LinearLayoutManager layoutManager = new LinearLayoutManager(FollowerProfileActivity.this);
+                    layoutManager.setAutoMeasureEnabled(true);
+                    mProfileCinglesRecyclerView.setLayoutManager(layoutManager);
                 }
-
             }
         });
 
-        // RecyclerView
-        profilePostsAdapter = new ProfilePostsAdapter(this);
-        mProfileCinglesRecyclerView.setAdapter(profilePostsAdapter);
-        mProfileCinglesRecyclerView.setHasFixedSize(false);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setAutoMeasureEnabled(true);
-        layoutManager.setStackFromEnd(true);
-        layoutManager.setReverseLayout(true);
-        mProfileCinglesRecyclerView.setLayoutManager(layoutManager);
 
-    }
-
-    private void onDocumentAdded(DocumentChange change) {
-        Post post = change.getDocument().toObject(Post.class);
-        cinglesIds.add(change.getDocument().getId());
-        posts.add(post);
-        profilePostsAdapter.setPosts(posts);
-        profilePostsAdapter.getItemCount();
-        profilePostsAdapter.notifyItemInserted(posts.size());
-
-    }
-
-    private void onDocumentModified(DocumentChange change) {
-        Post post = change.getDocument().toObject(Post.class);
-        if (change.getOldIndex() == change.getNewIndex()) {
-            // Item changed but remained in same position
-            cinglesIds.add(change.getDocument().getId());
-            posts.set(change.getNewIndex(), post);
-            profilePostsAdapter.notifyItemChanged(change.getOldIndex());
-
-        } else {
-            // Item changed and changed position
-            posts.remove(change.getOldIndex());
-            posts.add(change.getNewIndex(), post);
-            profilePostsAdapter.notifyItemMoved(change.getOldIndex(), change.getNewIndex());
-        }
-    }
-
-    private void onDocumentRemoved(DocumentChange change) {
-        String cingle_key = change.getDocument().getId();
-        int cingle_index = cinglesIds.indexOf(cingle_key);
-        if (cingle_index > -1){
-            //remove data from the list
-            cinglesIds.remove(change.getDocument().getId());
-            profilePostsAdapter.removeAt(change.getOldIndex());
-            profilePostsAdapter.notifyItemRemoved(change.getOldIndex());
-            profilePostsAdapter.getItemCount();
-        }else {
-            Log.v(TAG, "onDocumentRemoved:" + cingle_key);
-        }
 
     }
 
@@ -390,75 +357,8 @@ public class FollowerProfileActivity extends AppCompatActivity
     }
 
     public void onScrolledToBottom() {
-        setNextProfileCingles();
-    }
-
-
-    private void setNextProfileCingles(){
-        cinglesReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(final QuerySnapshot cinglesSnapshots, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (cinglesSnapshots.isEmpty()){
-                    //do nothing if no posts
-                }else {
-                    profileCinglesQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                        @Override
-                        public void onEvent(final QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
-
-                            //get the last visible document(cingle)
-                            lastVisible = documentSnapshots.getDocuments()
-                                    .get(documentSnapshots.size() - 1);
-
-                            //query starting from last retrived cingle
-                            Query nextBestCinglesQuery = profileCinglesQuery.orderBy("randomNumber")
-                                    .startAfter(lastVisible).limit(TOTAL_ITEMS);
-                            //retrive more posts if present
-                            nextBestCinglesQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                @Override
-                                public void onEvent(final QuerySnapshot snapshots, FirebaseFirestoreException e) {
-                                    if (e != null) {
-                                        Log.w(TAG, "Listen error", e);
-                                        return;
-                                    }
-
-                                    if (profilePostsAdapter.getItemCount() == cinglesSnapshots.size()){
-                                        //show no more posts
-                                    }else {
-                                        for (DocumentChange change : snapshots.getDocumentChanges()) {
-                                            switch (change.getType()) {
-                                                case ADDED:
-                                                    onDocumentAdded(change);
-                                                    break;
-
-                                            }
-                                            onDataChanged();
-                                        }
-                                    }
-
-
-                                }
-                            });
-
-                        }
-                    });
-
-                }
-
-            }
-        });
 
     }
-
 
     @Override
     public void onClick(View v){
@@ -472,6 +372,47 @@ public class FollowerProfileActivity extends AppCompatActivity
             Intent intent = new Intent(FollowerProfileActivity.this, FollowersActivity.class);
             intent.putExtra(FollowerProfileActivity.EXTRA_USER_UID, mUid);
             startActivity(intent);
+        }
+
+        if (v == mFollowButton){
+            processFollow = true;
+            relationsReference.document("followers")
+                    .collection(mUid).addSnapshotListener(new EventListener<QuerySnapshot>() {
+                        @Override
+                        public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                            if (processFollow){
+                                if (documentSnapshots.isEmpty()){
+                                    Relation follower = new Relation();
+                                    follower.setUid(firebaseAuth.getCurrentUser().getUid());
+                                    relationsReference.document("followers").collection(mUid)
+                                            .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Relation following = new Relation();
+                                                    following.setUid(mUid);
+                                                    relationsReference.document("following").collection(firebaseAuth
+                                                            .getCurrentUser().getUid()).document(mUid).set(following);
+                                                }
+                                            });
+                                    processFollow = false;
+                                    mFollowButton.setText("FOLLOWING");
+                                }else {
+                                    relationsReference.document("followers").collection(mUid)
+                                            .document(firebaseAuth.getCurrentUser().getUid()).delete()
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    relationsReference.document("following").collection(firebaseAuth.getCurrentUser()
+                                                            .getUid()).document(mUid).delete();
+                                                }
+                                            });
+                                    processFollow = false;
+                                    mFollowButton.setText("FOLLOW");
+                                }
+                            }
+                        }
+                    });
         }
 
 

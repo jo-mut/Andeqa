@@ -1,35 +1,121 @@
 package com.cinggl.cinggl.profile;
 
+import android.content.Intent;
+import android.os.Parcelable;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.adapters.ProfilePostsAdapter;
+import com.cinggl.cinggl.market.WalletActivity;
+import com.cinggl.cinggl.models.Cinggulan;
+import com.cinggl.cinggl.models.Post;
+import com.cinggl.cinggl.people.PeopleActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
-public class PersonalProfileActivity extends AppCompatActivity {
-    private FragmentManager fragmentManager;
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
+
+import static java.security.AccessController.getContext;
+
+public class PersonalProfileActivity extends AppCompatActivity implements View.OnClickListener{
+    //BIND VIEWS
+    @Bind(R.id.profileCinglesRecyclerView)RecyclerView mProfileCinglesRecyclerView;
+    @Bind(R.id.creatorImageView)CircleImageView mProifleImageView;
+    @Bind(R.id.fullNameTextView)TextView mFullNameTextView;
+    @Bind(R.id.bioTextView)TextView mBioTextView;
+    @Bind(R.id.followersCountTextView) TextView mFollowersCountTextView;
+    @Bind(R.id.followingCountTextView)TextView mFollowingCountTextView;
+    @Bind(R.id.postsCountTextView)TextView mCinglesCountTextView;
+    @Bind(R.id.header_cover_image)ImageView mProfileCover;
+    @Bind(R.id.collapsing_toolbar)CollapsingToolbarLayout collapsingToolbarLayout;
+
+    private static final String TAG = PersonalProfileActivity.class.getSimpleName();
+    //firestore reference
+    private CollectionReference cinglesReference;
+    private CollectionReference relationsReference;
+    private CollectionReference usersReference;
+    private Query profileCinglesCountQuery;
+    private Query profileCinglesQuery;
+    //firebase auth
     private FirebaseAuth firebaseAuth;
-    private FirebaseUser firebaseUser;
+    //firestore adapters
+    private ProfilePostsAdapter profilePostsAdapter;
+    private static final String KEY_LAYOUT_POSITION = "layout pooition";
+    private Parcelable recyclerViewState;
+    private  static final int MAX_WIDTH = 200;
+    private static final int MAX_HEIGHT = 200;
+    //posts meber variables
+    private List<Post> posts = new ArrayList<>();
+    private List<String> cinglesIds = new ArrayList<>();
+    private int TOTAL_ITEMS = 4;
+    private DocumentSnapshot lastVisible;
+    private LinearLayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_profile);
-//        ButterKnife.bind(this);
+        ButterKnife.bind(this);
 
-        ProfileFragment profileFragment = new ProfileFragment();
-        fragmentManager = this.getSupportFragmentManager();
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.add(R.id.profile_container, profileFragment);
-        ft.commit();
 
+        collapsingToolbarLayout.setTitle("Profile");
+        //FIREBASE AUTH
         firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (firebaseAuth.getCurrentUser()!= null){
+            usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+            relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
+            cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            profileCinglesQuery = cinglesReference.orderBy("timeStamp", Query.Direction.ASCENDING)
+                    .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid());
+            profileCinglesCountQuery = cinglesReference.whereEqualTo("uid",
+                    firebaseAuth.getCurrentUser().getUid());
+
+
+            fetchData();
+            setProfileCingles();
+            if (savedInstanceState != null){
+                recyclerViewState = savedInstanceState.getParcelable(KEY_LAYOUT_POSITION);
+                Log.d("Profile saved Instance", "Instance is not null");
+            }else {
+                Log.d("Saved Instance", "Instance is completely null");
+            }
+            //INITIALIZE CLICK LISTENERS
+            mFollowersCountTextView.setOnClickListener(this);
+            mFollowingCountTextView.setOnClickListener(this);
+
+        }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -44,24 +130,283 @@ public class PersonalProfileActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.profile_menu, menu);
+        return true;
+    }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_layout, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//
-//        return super.onOptionsItemSelected(item);
-//    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action b item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
 
+        if (id == R.id.action_wallet){
+            Intent intent = new Intent(PersonalProfileActivity.this, WalletActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.action_signout){
+            firebaseAuth.signOut();
+            startActivity(new Intent(PersonalProfileActivity.this, SignInActivity.class));
+
+        }
+
+        if (id == R.id.action_account_settings){
+            Intent intent = new Intent(PersonalProfileActivity.this, UpdateProfileActivity.class);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void fetchData(){
+        profileCinglesCountQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (!documentSnapshots.isEmpty()){
+                    final int cingleCount = documentSnapshots.size();
+                    mCinglesCountTextView.setText(cingleCount + "");
+                }else {
+                    mCinglesCountTextView.setText("0");
+                }
+            }
+        });
+
+        //get followers count
+        relationsReference.document("followers")
+                .collection(firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+
+                        if (documentSnapshots.isEmpty()){
+                            mFollowersCountTextView.setText("0");
+                        }else {
+                            mFollowersCountTextView.setText(documentSnapshots.size() + "");
+                        }
+                    }
+                });
+
+        //get following count
+        relationsReference.document("following")
+                .collection(firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+
+                        if (documentSnapshots.isEmpty()){
+                            mFollowingCountTextView.setText("0");
+                        }else {
+                            mFollowingCountTextView.setText(documentSnapshots.size() + "");
+                        }
+                    }
+                });
+
+
+        usersReference.document(firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (documentSnapshot.exists()){
+                            final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
+
+                            String firstName = cinggulan.getFirstName();
+                            String secondName = cinggulan.getSecondName();
+                            final String profileImage = cinggulan.getProfileImage();
+                            String bio = cinggulan.getBio();
+                            final String profileCover = cinggulan.getProfileCover();
+
+                            mFullNameTextView.setText(firstName + " " + secondName);
+                            mBioTextView.setText(bio);
+
+                            Picasso.with(PersonalProfileActivity.this)
+                                    .load(profileImage)
+                                    .resize(MAX_WIDTH, MAX_HEIGHT)
+                                    .onlyScaleDown()
+                                    .centerCrop()
+                                    .placeholder(R.drawable.profle_image_background)
+                                    .networkPolicy(NetworkPolicy.OFFLINE)
+                                    .into(mProifleImageView, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+
+                                        }
+
+                                        @Override
+                                        public void onError() {
+                                            Picasso.with(PersonalProfileActivity.this)
+                                                    .load(profileImage)
+                                                    .resize(MAX_WIDTH, MAX_HEIGHT)
+                                                    .onlyScaleDown()
+                                                    .centerCrop()
+                                                    .placeholder(R.drawable.profle_image_background)
+                                                    .into(mProifleImageView);
+
+                                        }
+                                    });
+
+                            Picasso.with(PersonalProfileActivity.this)
+                                    .load(profileCover)
+                                    .fit()
+                                    .centerCrop()
+                                    .networkPolicy(NetworkPolicy.OFFLINE)
+                                    .into(mProfileCover, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+
+                                        }
+
+                                        @Override
+                                        public void onError() {
+                                            Picasso.with(PersonalProfileActivity.this)
+                                                    .load(profileCover)
+                                                    .fit()
+                                                    .centerCrop()
+                                                    .into(mProfileCover);
+
+
+                                        }
+                                    });
+                        }
+                    }
+                });
+    }
+
+
+    private void recyclerViewScrolling(){
+        mProfileCinglesRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if (!recyclerView.canScrollVertically(-1)) {
+                    onScrolledToTop();
+                } else if (!recyclerView.canScrollVertically(1)) {
+                    onScrolledToBottom();
+                } else if (dy < 0) {
+                    onScrolledUp();
+                } else if (dy > 0) {
+                    onScrolledDown();
+                }
+            }
+        });
+    }
+
+    public void onScrolledUp() {}
+
+    public void onScrolledDown() {}
+
+    public void onScrolledToTop() {
+
+    }
+
+    public void onScrolledToBottom() {
+    }
+
+    private void setProfileCingles(){
+        cinglesReference.orderBy("timeStamp", Query.Direction.DESCENDING)
+                .whereEqualTo("uid",firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                Log.d("profile posts", documentSnapshots.size() + "");
+
+                if (!documentSnapshots.isEmpty()){
+                    // RecyclerView
+                    profilePostsAdapter = new ProfilePostsAdapter(profileCinglesQuery, PersonalProfileActivity.this);
+                    profilePostsAdapter.startListening();
+                    mProfileCinglesRecyclerView.setAdapter(profilePostsAdapter);
+                    mProfileCinglesRecyclerView.setHasFixedSize(false);
+                    layoutManager = new LinearLayoutManager(PersonalProfileActivity.this);
+                    mProfileCinglesRecyclerView.setLayoutManager(layoutManager);
+                }
+
+            }
+        });
+
+    }
+
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (recyclerViewState != null){
+            layoutManager.onRestoreInstanceState(recyclerViewState);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+
+    @Override
+    public void onClick(View v){
+        if (v == mFollowingCountTextView) {
+            Intent intent = new Intent(PersonalProfileActivity.this, PeopleActivity.class);
+            startActivity(intent);
+        }
+
+        if (v == mFollowersCountTextView){
+            Intent intent = new Intent(PersonalProfileActivity.this, PeopleActivity.class);
+            startActivity(intent);
+        }
+
+    }
 
 }

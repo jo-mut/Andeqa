@@ -11,8 +11,11 @@ import android.widget.TextView;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.ProportionalImageView;
 import com.cinggl.cinggl.models.Credit;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.cinggl.cinggl.R.string.credit;
 
 /**
  * Created by J.EL on 7/6/2017.
@@ -82,7 +85,8 @@ public class BestPostsViewHolder extends RecyclerView.ViewHolder {
 
     }
 
-    public void bindBestCingle(final Credit credit){
+    public void bindBestCingle(final DocumentSnapshot documentSnapshot){
+        final Credit credit = documentSnapshot.toObject(Credit.class);
         senseCreditsTextView = (TextView) mView.findViewById(R.id.postSenseCreditsTextView);
         senseCreditsTextView.setText(credit.getAmount() + "");
 

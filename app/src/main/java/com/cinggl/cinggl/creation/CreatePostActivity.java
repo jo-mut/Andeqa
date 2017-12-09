@@ -99,7 +99,6 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
     private FirebaseFirestore firebaseFirestore;
     private ListenerRegistration listenerRegistration;
     private CollectionReference postsReference;
-    private CollectionReference profilePostsReference;
     private CollectionReference ownersReference;
     private CollectionReference usersReference;
 //
@@ -125,8 +124,6 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
             firebaseFirestore =  FirebaseFirestore.getInstance();
             //get the reference to posts(collection reference)
             postsReference = firebaseFirestore.collection(Constants.POSTS);
-            profilePostsReference = FirebaseFirestore.getInstance().collection(firebaseAuth
-                    .getCurrentUser().getUid());
             ownersReference = firebaseFirestore.collection(Constants.CINGLE_ONWERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             //firebase storage
@@ -336,7 +333,6 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
             final String uid = user.getUid();
 
             final DocumentReference cingleRef = postsReference.document();
-            final DocumentReference profileRef = profilePostsReference.document();
             final String pushId = cingleRef.getId();
             storageReference.child(uid).child(pushId);
 
@@ -383,12 +379,6 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                             post.setCingleIndex("Post number" + " " + currentIdex);
                             cingleRef.set(post);
 
-                            //record each post by a particular user.
-                            Map<String, String> profilePost = new HashMap<String, String>();
-                            profilePost.put("pushId", pushId);
-                            profileRef.set(profilePost);
-
-
                             //reset input fields
                             mCingleTitleEditText.setText("");
                             mCingleDescriptionEditText.setText("");
@@ -400,7 +390,6 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                             transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
                             transactionDetails.setDate(currentDate);
 
-                            ownersReference.document();
                             DocumentReference ownerRef = ownersReference.document(pushId);
                             ownerRef.set(transactionDetails);
 

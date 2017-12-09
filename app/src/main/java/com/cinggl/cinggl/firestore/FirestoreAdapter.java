@@ -38,18 +38,14 @@ public abstract class FirestoreAdapter <VH extends RecyclerView.ViewHolder>
     private ArrayList<DocumentSnapshot> mSnapshots = new ArrayList<>();
 
 
+
     public FirestoreAdapter(Query query) {
         mQuery = query;
     }
 
-    public void setRandomPosts(List<Post> posts) {
-        this.posts = posts;
-        notifyDataSetChanged();
-    }
-
-
     @Override
     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
 
         if (e != null) {
             Log.w(TAG, "onEvent:error", e);
@@ -75,6 +71,7 @@ public abstract class FirestoreAdapter <VH extends RecyclerView.ViewHolder>
 
         onDataChanged();
     }
+
 
     public void startListening() {
         if (mQuery != null && mRegistration == null) {

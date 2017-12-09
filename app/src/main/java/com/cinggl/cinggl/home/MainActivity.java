@@ -10,7 +10,6 @@ import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.ContentFrameLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -35,8 +34,8 @@ import com.cinggl.cinggl.creation.CreatePostActivity;
 import com.cinggl.cinggl.market.MarketActivity;
 import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.models.Post;
+import com.cinggl.cinggl.models.Relation;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
-import com.cinggl.cinggl.profile.ProfileFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -69,11 +68,13 @@ public class MainActivity extends AppCompatActivity
 //    @Bind(R.id.bottomNavigationView)BottomNavigationView mBottomNavigationView;
     @Bind(R.id.singleOutRecyclerView)RecyclerView singleOutRecyclerView;
 
-    private static final String KEY_LAYOUT_POSITION = "layout pooition";
+    private static final String KEY_LAYOUT_POSITION = "layout position";
     private Parcelable recyclerViewState;
     //firestore reference
     private CollectionReference cinglesReference;
+    private CollectionReference relationsReference;
     private Query randomQuery;
+    private Query randomPostsQuery;
     //firebase auth
     private SingleOutAdapter singleOutAdapter;
     private DocumentSnapshot lastVisible;
@@ -88,7 +89,6 @@ public class MainActivity extends AppCompatActivity
     private Uri photoUri;
     final FragmentManager fragmentManager = getSupportFragmentManager();
     private static final String TAG = MainActivity.class.getSimpleName();
-    final Fragment profileFragment = new ProfileFragment();
     private int mSelectedItem;
     private int orientation;
     private ContentFrameLayout mContent;
@@ -136,28 +136,17 @@ public class MainActivity extends AppCompatActivity
         if (firebaseAuth.getCurrentUser() != null){
             //firestore
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS)
                     .document(firebaseAuth.getCurrentUser().getUid());
-            randomQuery = cinglesReference.orderBy("timeStamp", Query.Direction.DESCENDING)
-                    .limit(TOTAL_ITEMS);
-
-            randomQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                    if (!documentSnapshots.isEmpty()){
-                        Log.d("posts count", documentSnapshots.size() + "");
-                    }
-                }
-            });
+            randomQuery = cinglesReference;
 
             fetchData();
             fetchUserEmail();
 
         }
 
-        setTheFirstBacthRandomCingles();
-        recyclerViewScrolling();
+        setRandomCingles();
         if (savedInstanceState != null){
             recyclerViewState = savedInstanceState.getParcelable(KEY_LAYOUT_POSITION);
             Log.d("posts saved Instance", "Instance is not null");
@@ -352,129 +341,60 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-
-    private void setTheFirstBacthRandomCingles(){
-        randomQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+    private void setRandomCingles(){
+        relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
+                .orderBy("uid").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
                 if (e != null) {
                     Log.w(TAG, "Listen error", e);
                     return;
                 }
 
-                for (DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                    switch (change.getType()) {
-                        case ADDED:
-                            onDocumentAdded(change);
-                            break;
-                        case MODIFIED:
-                            onDocumentModified(change);
-                            break;
-                        case REMOVED:
-                            onDocumentRemoved(change);
-                            break;
+                if (!documentSnapshots.isEmpty()){
+                    for (DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                        final Relation relation= change.getDocument().toObject(Relation.class);
+                        final String uid = relation.getUid();
+
+                        Log.d("relation uid", uid);
+
+                        randomPostsQuery = cinglesReference.orderBy("timeStamp").whereEqualTo("uid", uid);
+                        randomPostsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                            @Override
+                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                                if (e != null) {
+                                    Log.w(TAG, "Listen error", e);
+                                    return;
+                                }
+
+                                Log.d("following post", documentSnapshots.size() +"");
+
+                                if (!documentSnapshots.isEmpty()){
+                                    singleOutAdapter = new SingleOutAdapter(randomPostsQuery, MainActivity.this);
+                                    singleOutAdapter.startListening();
+                                    singleOutRecyclerView.setAdapter(singleOutAdapter);
+                                    singleOutRecyclerView.setHasFixedSize(false);
+                                    layoutManager = new LinearLayoutManager(MainActivity.this);
+                                    singleOutRecyclerView.setLayoutManager(layoutManager);
+                                }
+                            }
+                        });
+
+                        //show posts if the user has some poeople following
+
+
+
                     }
-                    onDataChanged();
                 }
+
 
             }
         });
 
-        //initilize the recycler view and set posts
-        singleOutAdapter = new SingleOutAdapter(this);
-        singleOutRecyclerView.setAdapter(singleOutAdapter);
-        singleOutRecyclerView.setHasFixedSize(false);
-        layoutManager = new LinearLayoutManager(this);
-        singleOutRecyclerView.setLayoutManager(layoutManager);
-    }
-
-    private void setNextRandomCingles(){
-        cinglesReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(final QuerySnapshot creditsSnapshots, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (creditsSnapshots.isEmpty()){
-                }else {
-                    randomQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                        @Override
-                        public void onEvent(final QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
-
-                            if (!documentSnapshots.isEmpty()){
-                                //get the last visible document(cingle)
-                                lastVisible = documentSnapshots.getDocuments()
-                                        .get(documentSnapshots.size() - 1);
-
-                                //query starting from last retrived cingle
-                                final Query nextBestCinglesQuery = cinglesReference.orderBy("timeStamp", Query.Direction.DESCENDING)
-                                        .startAfter(lastVisible);
-                                //retrive more cingles if present
-                                nextBestCinglesQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onEvent(final QuerySnapshot snapshots, FirebaseFirestoreException e) {
-                                        if (e != null) {
-                                            Log.w(TAG, "Listen error", e);
-                                            return;
-                                        }
-
-                                        Log.d("remaining posts", snapshots.size() + "");
-
-                                        //retrieve cingles depending on the remaining size of the list
-                                        if (!snapshots.isEmpty()){
-                                            final long lastSize = snapshots.size();
-                                            if (lastSize < TOTAL_ITEMS){
-                                                nextBestCinglesQuery.limit(lastSize);
-                                            }else {
-                                                nextBestCinglesQuery.limit(TOTAL_ITEMS);
-                                            }
-
-
-                                            //make sure that the size of snapshot equals item count
-                                            if (singleOutAdapter.getItemCount() == creditsSnapshots.size()){
-                                            }else if (singleOutAdapter.getItemCount() < creditsSnapshots.size()){
-                                                for (DocumentChange change : snapshots.getDocumentChanges()) {
-                                                    switch (change.getType()) {
-                                                        case ADDED:
-                                                            onDocumentAdded(change);
-                                                            break;
-                                                        case MODIFIED:
-                                                            onDocumentModified(change);
-                                                            break;
-                                                        case REMOVED:
-                                                            onDocumentRemoved(change);
-                                                            break;
-
-                                                    }
-                                                    onDataChanged();
-                                                }
-                                            }else {
-                                            }
-
-
-                                        }
-
-
-                                    }
-                                });
-                            }
-
-                        }
-                    });
-                }
-
-            }
-        });
 
     }
+
 
     private void recyclerViewScrolling(){
         singleOutRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -511,62 +431,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onScrolledToBottom() {
-        setNextRandomCingles();
-    }
-
-    public void delay(){
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-
-            }
-        },3000);
-    }
-
-    public void onDocumentAdded(DocumentChange change) {
-        Post post = change.getDocument().toObject(Post.class);
-        cinglesIds.add(change.getDocument().getId());
-        posts.add(post);
-        singleOutAdapter.setRandomPosts(posts);
-        singleOutAdapter.getItemCount();
-        singleOutAdapter.notifyItemInserted(posts.size());
 
     }
-
-    private void onDocumentModified(DocumentChange change) {
-        Post post = change.getDocument().toObject(Post.class);
-        if (change.getOldIndex() == change.getNewIndex()) {
-            // Item changed but remained in same position
-            cinglesIds.add(change.getDocument().getId());
-            posts.set(change.getNewIndex(), post);
-            singleOutAdapter.notifyItemChanged(change.getOldIndex());
-
-        } else {
-            // Item changed and changed position
-            posts.remove(change.getOldIndex());
-            posts.add(change.getNewIndex(), post);
-            singleOutAdapter.notifyItemMoved(change.getOldIndex(), change.getNewIndex());
-        }
-    }
-
-    private void onDocumentRemoved(DocumentChange change) {
-        String cingle_key = change.getDocument().getId();
-        int cingle_index = cinglesIds.indexOf(cingle_key);
-        if (cingle_index > -1){
-            //remove data from the list
-            cinglesIds.remove(change.getDocument().getId());
-            singleOutAdapter.removeAt(change.getOldIndex());
-            singleOutAdapter.notifyItemRemoved(change.getOldIndex());
-            singleOutAdapter.getItemCount();
-        }else {
-            Log.v(TAG, "onDocumentRemoved:" + cingle_key);
-        }
-
-    }
-
-    private void onError(FirebaseFirestoreException e) {};
-
-    private void onDataChanged() {}
 
 
     @Override

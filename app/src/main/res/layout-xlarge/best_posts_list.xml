@@ -88,6 +88,8 @@
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@+id/postCreatorTextView"
                 android:layout_toEndOf="@+id/postCreatorTextView"
+                android:layout_toLeftOf="@+id/creatorImageView"
+                android:layout_toStartOf="@+id/creatorImageView"
                 android:textSize="24sp" />
 
         </RelativeLayout>
@@ -220,6 +222,8 @@
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/ownerTitleTextView"
                 android:layout_toEndOf="@+id/ownerTitleTextView"
+                android:layout_toLeftOf="@+id/ownerImageView"
+                android:layout_toStartOf="@+id/ownerImageView"
                 android:id="@+id/postOwnerTextView"
                 android:layout_marginLeft="10dp"
                 android:textSize="28sp" />

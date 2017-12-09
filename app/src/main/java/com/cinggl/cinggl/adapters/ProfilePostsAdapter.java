@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.firestore.FirestoreAdapter;
 import com.cinggl.cinggl.home.PostDetailActivity;
 import com.cinggl.cinggl.models.Post;
 import com.cinggl.cinggl.preferences.CingleSettingsDialog;
@@ -30,6 +31,7 @@ import com.cinggl.cinggl.models.TransactionDetails;
 import com.cinggl.cinggl.viewholders.ProfilePostsViewHolder;
 import com.cinggl.cinggl.viewholders.WhoLikedViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -43,6 +45,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.squareup.picasso.Callback;
@@ -59,7 +62,7 @@ import java.util.List;
  * Created by J.EL on 11/14/2017.
  */
 
-public class ProfilePostsAdapter extends RecyclerView.Adapter<ProfilePostsViewHolder> {
+public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder> {
     private static final String TAG = ProfilePostsAdapter.class.getSimpleName();
     private Context mContext;
     private List<Post> posts = new ArrayList<>();
@@ -76,6 +79,7 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<ProfilePostsViewHo
     private CollectionReference sellingReference;
     private CollectionReference likesReference;
     private CollectionReference relationsReference;
+    private CollectionReference postWalletReference;
     //firebase adapter
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     //firebase auth
@@ -94,28 +98,15 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<ProfilePostsViewHo
     private  static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
 
-    public ProfilePostsAdapter(Context mContext) {
+
+    public ProfilePostsAdapter(Query query, Context mContext) {
+        super(query);
         this.mContext = mContext;
-    }
-
-    public void setPosts(List<Post> posts) {
-        this.posts = posts;
-        notifyDataSetChanged();
-    }
-
-
-    public void removeAt(int position){
-        posts.remove(posts.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return posts.size();
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return super.getItemId(position);
+        return super.getItemCount();
     }
 
     @Override
@@ -126,11 +117,12 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<ProfilePostsViewHo
 
     @Override
     public void onBindViewHolder(final ProfilePostsViewHolder holder, int position) {
-        final Post post = posts.get(position);
-        holder.bindProfileCingle(post);
-        final String postKey = posts.get(position).getPushId();
-        final String uid = posts.get(position).getUid();
+        final Post post = getSnapshot(position).toObject(Post.class);
+        holder.bindProfileCingle(getSnapshot(position));
+        final String postKey = post.getPushId();
+        final String uid = post.getUid();
         Log.d("post postkey", postKey);
+
 
         //initialize firebase auth
         firebaseAuth = FirebaseAuth.getInstance();
@@ -149,8 +141,6 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<ProfilePostsViewHo
         //initialize firebase
         likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
         cingleWalletRef = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_WALLET);
-
-
         likesQuery = likesRef.child(postKey).limitToFirst(5);
 
 
@@ -215,10 +205,10 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<ProfilePostsViewHo
                     Credit credit = documentSnapshot.toObject(Credit.class);
                     final double senseCredits = credit.getAmount();
                     DecimalFormat formatter = new DecimalFormat("0.00000000");
-                    holder.cingleSenseCreditsTextView.setText("CSC" + " " + formatter.format(senseCredits));
+                    holder.cingleSenseCreditsTextView.setText("SC" + " " + formatter.format(senseCredits));
 
                 }else {
-                    holder.cingleSenseCreditsTextView.setText("CSC 0.00000000");
+                    holder.cingleSenseCreditsTextView.setText("SC 0.00000000");
                 }
             }
         });
@@ -323,8 +313,7 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<ProfilePostsViewHo
             }
         });
 
-        ownerReference.document("Ownership").collection(postKey)
-                .document("Owner").addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        ownerReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -514,7 +503,6 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<ProfilePostsViewHo
             }
         });
 
-
         holder.likesImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -540,8 +528,8 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<ProfilePostsViewHo
                                 onLikeCounter(false);
                                 holder.likesImageView.setColorFilter(Color.RED);
                             }
-                        }
 
+                        }
 
                         String likesCount = dataSnapshot.child(postKey).getChildrenCount() + "";
                         Log.d(likesCount, "all the likes in one post");
@@ -594,6 +582,7 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<ProfilePostsViewHo
                                         credit.setAmount(finalPoints);
                                         credit.setUid(firebaseAuth.getCurrentUser().getUid());
                                         senseCreditReference.document(postKey).set(credit, SetOptions.merge());
+
                                     }
                                 }
 
@@ -632,6 +621,7 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<ProfilePostsViewHo
                                         credit.setAmount(finalPoints);
                                         credit.setUid(firebaseAuth.getCurrentUser().getUid());
                                         senseCreditReference.document(postKey).set(credit, SetOptions.merge());
+
                                     }
                                 }
 

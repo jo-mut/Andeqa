@@ -1,33 +1,36 @@
-<LinearLayout
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
     android:background="#e4e4e4"
-    tools:context="com.cinggl.cinggl.profile.ProfileFragment">
+    tools:context="com.cinggl.cinggl.people.FollowerProfileActivity">
 
-
-    <ScrollView
-        android:overScrollMode="never"
-        android:scrollbars="none"
-        android:fillViewport="true"
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <LinearLayout
-            android:orientation="vertical"
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            app:contentScrim="?attr/colorPrimary"
+            android:background="#e4e4e4"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <RelativeLayout
                 android:id="@+id/header_cover_relative_layout"
                 android:layout_width="match_parent"
                 android:background="@drawable/gradient_color"
                 android:layout_marginBottom="15dp"
-                android:layout_height="350dp">
-
+                android:layout_height="wrap_content">
 
                 <ImageView
                     android:id="@+id/header_cover_image"
@@ -47,6 +50,7 @@
                     android:layout_width="100dp"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="80dp" />
+
 
                 <RelativeLayout
                     android:layout_height="wrap_content"
@@ -75,7 +79,7 @@
                     android:id="@+id/countsLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="15dp"
+                    android:layout_marginBottom="10dp"
                     android:layout_marginTop="280dp">
 
 
@@ -181,87 +185,70 @@
                         android:layout_marginTop="10dp"
                         android:textColor="@android:color/white" />
 
+                    <Button
+                        android:text=""
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:id="@+id/followButton"
+                        android:layout_below="@+id/followingTextView"
+                        android:minHeight="30dp"
+                        android:minWidth="120dp"
+                        android:textSize="14sp"
+                        android:background="@drawable/colour_btn_background"
+                        android:layout_centerHorizontal="true" />
+
                 </RelativeLayout>
 
-
-            </RelativeLayout>
-
-            <RelativeLayout
-            android:id="@+id/bioRelativeLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/header_cover_image"
-            android:elevation="4dp"
-            android:padding="15dp"
-            android:layout_marginBottom="15dp"
-            android:background="@android:color/white">
-
-                <TextView
-                    android:text="About"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:id="@+id/bioTitleTextView"
-                    android:textColor="@color/colorPrimary" />
-
-                <TextView
-                    android:layout_below="@+id/bioTitleTextView"
-                    android:id="@+id/bioTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:textSize="14sp" />
-
-                <View
-                    android:layout_below="@+id/bioTextView"
-                    android:layout_marginTop="10dp"
-                    android:id="@+id/layoutDivider"
+                <RelativeLayout
+                    android:id="@+id/bioRelativeLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="0.1dp"
-                    android:background="@color/colorDivider"
-                    android:layout_marginBottom="10dp" />
-
-                <ImageView
-                    android:layout_below="@+id/editYourProfileTextView"
-                    android:id="@+id/editProfileImageView"
-                    android:src="@drawable/ic_create_white_24dp"
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:textSize="14sp"
-                    android:layout_alignParentRight="true"
-                    android:tint="@color/colorPrimary" />
+                    android:elevation="4dp"
+                    android:layout_below="@+id/countsLayout"
+                    android:layout_marginBottom="50dp">
 
-                <TextView
-                    android:textColor="@color/colorPrimary"
-                    android:layout_below="@+id/layoutDivider"
-                    android:text="Personalize your profile"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/editYourProfileTextView"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true" />
+                    <TextView
+                        android:layout_below="@+id/layoutDivider"
+                        android:id="@+id/bioTextView"
+                        android:textColor="@android:color/white"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="14sp"
+                        android:padding="10dp" />
 
-                <TextView
-                    android:text="Update your personal profile info"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:id="@+id/textView4" />
-
+                </RelativeLayout>
 
             </RelativeLayout>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/profileCinglesRecyclerView"
-                android:overScrollMode="never"
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="?attr/actionBarSize"
+                android:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
+                android:title="Collapsing Toolbar"
+                app:layout_collapseMode="pin"/>
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
 
-        </LinearLayout>
+    <FrameLayout
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:id="@+id/home_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    </ScrollView>
-</LinearLayout>
+        <android.support.v7.widget.RecyclerView
+            android:numColumns="auto_fit"
+            android:id="@+id/profileCinglesRecyclerView"
+            android:overScrollMode="never"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </FrameLayout>
+
+
+</android.support.design.widget.CoordinatorLayout>
+
+
+

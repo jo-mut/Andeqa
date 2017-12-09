@@ -20,12 +20,10 @@ import com.cinggl.cinggl.models.PostSale;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -34,15 +32,12 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-import static com.cinggl.cinggl.R.id.swipeToRefreshLayout;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MarketFragment extends Fragment implements
-        SwipeRefreshLayout.OnRefreshListener{
-    @Bind(R.id.ifairCinglesRecyclerView)RecyclerView mIfairCingleRecyclerView;
-    @Bind(swipeToRefreshLayout)SwipeRefreshLayout swipeRefreshLayout;
+public class MarketFragment extends Fragment{
+    @Bind(R.id.marketRecyclerView)RecyclerView mIfairCingleRecyclerView;
 
     private static final String TAG = "SingleOutFragment";
     private int currentPage = 0;
@@ -75,11 +70,9 @@ public class MarketFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_ifair_cingles, container, false);
+        View view = inflater.inflate(R.layout.fragment_market, container, false);
         ButterKnife.bind(this, view);
-        swipeRefreshLayout.setOnRefreshListener(this);
         firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseFirestore.setLoggingEnabled(true);
 
         if (firebaseAuth.getCurrentUser()!= null){
             //firestore
@@ -116,156 +109,20 @@ public class MarketFragment extends Fragment implements
                     return;
                 }
 
-                for (DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                    switch (change.getType()) {
-                        case ADDED:
-                            onDocumentAdded(change);
-                            break;
-                        case MODIFIED:
-//                            onDocumentModified(change);
-                            break;
-                        case REMOVED:
-//                            onDocumentRemoved(change);
-                            break;
-                    }
-                    onDataChanged();
+
+                if (!documentSnapshots.isEmpty()){
+                    // RecyclerView
+                    sellingAdapter = new SellingAdapter(sellingQuery, getContext());
+                    sellingAdapter.startListening();
+                    mIfairCingleRecyclerView.setAdapter(sellingAdapter);
+                    mIfairCingleRecyclerView.setHasFixedSize(false);
+                    LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+                    mIfairCingleRecyclerView.setLayoutManager(layoutManager);
                 }
-
-            }
-        });
-
-        // RecyclerView
-        sellingAdapter = new SellingAdapter(getContext());
-        mIfairCingleRecyclerView.setAdapter(sellingAdapter);
-        mIfairCingleRecyclerView.setHasFixedSize(false);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        layoutManager.setAutoMeasureEnabled(true);
-        layoutManager.setStackFromEnd(true);
-        layoutManager.setReverseLayout(true);
-        mIfairCingleRecyclerView.setLayoutManager(layoutManager);
-
-    }
-
-    private void onDocumentAdded(DocumentChange change) {
-        PostSale postSale = change.getDocument().toObject(PostSale.class);
-        cingleSaleIds.add(change.getDocument().getId());
-        postSales.add(postSale);
-        sellingAdapter.setSellingCingles(postSales);
-        sellingAdapter.getItemCount();
-        sellingAdapter.notifyItemInserted(postSales.size());
-
-    }
-
-    private void onDocumentModified(DocumentChange change) {
-        PostSale postSale = change.getDocument().toObject(PostSale.class);
-        if (change.getOldIndex() == change.getNewIndex()) {
-            // Item changed but remained in same position
-            cingleSaleIds.add(change.getDocument().getId());
-            postSales.set(change.getNewIndex(), postSale);
-            sellingAdapter.notifyItemChanged(change.getOldIndex());
-
-        } else {
-            // Item changed and changed position
-            postSales.remove(change.getOldIndex());
-            postSales.add(change.getNewIndex(), postSale);
-            sellingAdapter.notifyItemMoved(change.getOldIndex(), change.getNewIndex());
-        }
-    }
-
-    private void onDocumentRemoved(DocumentChange change) {
-        String cingleSale_key = change.getDocument().getId();
-        int cingle_index = cingleSaleIds.indexOf(cingleSale_key);
-        if (cingle_index > -1){
-            //remove data from the list
-            cingleSaleIds.remove(change.getDocument().getId());
-            sellingAdapter.removeAt(change.getOldIndex());
-            sellingAdapter.notifyItemRemoved(change.getOldIndex());
-            sellingAdapter.getItemCount();
-        }else {
-            Log.v(TAG, "onDocumentRemoved:" + cingleSale_key);
-        }
-
-    }
-
-    private void onError(FirebaseFirestoreException e) {};
-
-    private void onDataChanged() {}
-
-
-
-    @Override
-    public void onRefresh() {
-        swipeRefreshLayout.setRefreshing(true);
-        setNextProfileCingles();
-    }
-
-
-    private void setNextProfileCingles(){
-        ifairReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(final QuerySnapshot sellingSnapshots, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (sellingSnapshots.isEmpty()){
-                    swipeRefreshLayout.setRefreshing(false);
-                }else {
-                    sellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                        @Override
-                        public void onEvent(final QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
-
-                            //get the last visible document(cingle)
-                            lastVisible = documentSnapshots.getDocuments()
-                                    .get(documentSnapshots.size() - 1);
-
-                            //query starting from last retrived cingle
-                            Query nextBestCinglesQuery = ifairReference.orderBy("randomNumber")
-                                    .startAfter(lastVisible).limit(TOTAL_ITEMS);
-                            //retrive more cingles if present
-                            nextBestCinglesQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                @Override
-                                public void onEvent(final QuerySnapshot snapshots, FirebaseFirestoreException e) {
-                                    if (e != null) {
-                                        Log.w(TAG, "Listen error", e);
-                                        return;
-                                    }
-
-                                    if (sellingAdapter.getItemCount() == sellingSnapshots.size()){
-                                        swipeRefreshLayout.setRefreshing(false);
-                                    }else {
-                                        for (DocumentChange change : snapshots.getDocumentChanges()) {
-                                            switch (change.getType()) {
-                                                case ADDED:
-                                                    onDocumentAdded(change);
-                                                    break;
-
-                                            }
-                                            onDataChanged();
-                                        }
-                                        swipeRefreshLayout.setRefreshing(false);
-                                    }
-
-
-                                }
-                            });
-
-                        }
-                    });
-                }
-
-
             }
         });
 
     }
-
 
 
     @Override

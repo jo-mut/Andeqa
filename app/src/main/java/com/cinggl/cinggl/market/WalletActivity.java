@@ -55,9 +55,8 @@ public class WalletActivity extends AppCompatActivity {
     private CollectionReference cinglesReference;
     private Query transactionQuery;
     private CollectionReference transactionReference;
+    private CollectionReference walletReference;
     //firebase
-    private DatabaseReference walletReference;
-    private DatabaseReference cinglesRef;
     //adapters
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
@@ -91,11 +90,7 @@ public class WalletActivity extends AppCompatActivity {
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             transactionReference = FirebaseFirestore.getInstance().collection(Constants.TRANSACTION_HISTORY);
             transactionQuery = transactionReference.whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid());
-            //firebase
-            walletReference = FirebaseDatabase.getInstance().getReference(Constants.WALLET);
-            cinglesRef = FirebaseDatabase.getInstance().getReference(Constants.POSTS);
-
-            walletReference.keepSynced(true);
+            walletReference = FirebaseFirestore.getInstance().collection(Constants.WALLET);
 
             setTransactionHistory();
             setCurrentWalletBalance();
@@ -138,7 +133,8 @@ public class WalletActivity extends AppCompatActivity {
                 holder.deleteHistoryImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        transactionReference.document(postKey).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        transactionReference.document(postKey).delete()
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
                                 Toast.makeText(WalletActivity.this, "Successfully deleted", Toast.LENGTH_SHORT).show();
@@ -147,10 +143,9 @@ public class WalletActivity extends AppCompatActivity {
                     }
                 });
 
-                transactionReference.document(postKey).get()
-                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                transactionReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                         if (documentSnapshot.exists()){
                             final TransactionDetails td = documentSnapshot.toObject(TransactionDetails.class);
                             final String transactionKey = td.getCingleId();
@@ -201,6 +196,7 @@ public class WalletActivity extends AppCompatActivity {
                         }
                     }
                 });
+
             }
 
             @Override
@@ -219,26 +215,23 @@ public class WalletActivity extends AppCompatActivity {
     }
 
     public void setCurrentWalletBalance(){
-        walletReference.child("balance").child(firebaseAuth.getCurrentUser().getUid())
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()){
-                            Balance balance = dataSnapshot.getValue(Balance.class);
-                            final double walletBalance = balance.getTotalBalance();
+        walletReference.document(firebaseAuth.getCurrentUser().getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
-                            mCurrentWalletBalanceTextView.setText("CSC" + " " + formatter.format(walletBalance));
-                        }else {
-                            mCurrentWalletBalanceTextView.setText("CSC 0.00000000");
-                        }
-                    }
+                if (documentSnapshot.exists()){
+                    Balance balance = documentSnapshot.toObject(Balance.class);
+                    final double walletBalance = balance.getTotalBalance();
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                    Log.d("wallet balance", walletBalance + "");
 
-                    }
-                });
+                    mCurrentWalletBalanceTextView.setText("SC" + " " + formatter.format(walletBalance));
+                }else {
+                    mCurrentWalletBalanceTextView.setText("SC 0.00000000");
+                }
 
+            }
+        });
 
     }
 

@@ -22,7 +22,7 @@
 
         <Button
             android:text="Follow"
-            android:id="@+id/followButton"
+            android:id="@+id/followTextView"
             android:textSize="24sp"
             android:textColor="@android:color/white"
             android:background="@drawable/colour_btn_background"
@@ -42,8 +42,8 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/creatorImageView"
             android:layout_toEndOf="@+id/creatorImageView"
-            android:layout_toLeftOf="@+id/followButton"
-            android:layout_toStartOf="@+id/followButton"
+            android:layout_toLeftOf="@+id/followTextView"
+            android:layout_toStartOf="@+id/followTextView"
             android:layout_alignBottom="@+id/creatorImageView"
             android:layout_marginRight="20dp"
             android:layout_centerVertical="true">

@@ -9,8 +9,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.squareup.okhttp.Cache;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.picasso.LruCache;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
+
+import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by J.EL on 6/23/2017.
@@ -19,6 +25,7 @@ import com.squareup.picasso.Picasso;
 public class App extends Application {
 
     private static App mInstance;
+    private Context context;
 
     @Override
     public void onCreate() {
@@ -30,6 +37,7 @@ public class App extends Application {
                 .build();
         FirebaseFirestore.getInstance().setFirestoreSettings(settings);
         FirebaseFirestore.setLoggingEnabled(true);
+
 
         Picasso.Builder builder = new Picasso.Builder(this);
         builder.downloader(new OkHttpDownloader(this, Integer.MAX_VALUE));
