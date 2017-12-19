@@ -51,8 +51,7 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
     private CollectionReference profilePostsReference;
     private CollectionReference senseCreditReference;
     private CollectionReference ifairReference;
-    //firebase
-    private DatabaseReference cingleOwnerReference;
+    private CollectionReference ownerReference;
     //firebase storage
     private StorageReference storageReference;
     private static final String TAG = CingleSettingsDialog.class.getSimpleName();
@@ -101,17 +100,15 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
                 throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
             }
 
-            //firebase
-            cingleOwnerReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_ONWERS);
             //firestore
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             profilePostsReference = FirebaseFirestore.getInstance().collection(firebaseAuth.getCurrentUser().getUid());
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
             ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
+            ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
             // firebase storage
             storageReference = FirebaseStorage.getInstance().getReference(Constants.POSTS);
 
-            cingleOwnerReference.keepSynced(true);
 
 
         }
@@ -187,12 +184,27 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
                 .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                senseCreditReference.document(mPostKey).delete()
+                ownerReference.document(mPostKey).delete()
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        senseCreditReference.document(mPostKey)
+                                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                             @Override
-                            public void onSuccess(Void aVoid) {
-                                ifairReference.document(mPostKey)
-                                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                if (e != null) {
+                                    Log.w(TAG, "Listen error", e);
+                                    return;
+                                }
+
+                                if (documentSnapshot.exists()){
+                                    senseCreditReference.document(mPostKey).delete();
+                                }
+                            }
+                        });
+
+                        ifairReference.document(mPostKey)
+                                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                     @Override
                                     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -202,18 +214,13 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
                                         }
 
                                         if (documentSnapshot.exists()) {
-                                            ifairReference.document(mPostKey).delete()
-                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    profilePostsReference.document(mPostKey).delete();
-                                                }
-                                            });
+                                            ifairReference.document(mPostKey).delete();
                                         }
                                     }
                                 });
-                            }
-                        });
+
+                    }
+                });
 
             }
         });

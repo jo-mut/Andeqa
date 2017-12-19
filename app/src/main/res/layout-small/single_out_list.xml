@@ -115,7 +115,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <com.cinggl.cinggl.ProportionalImageView
+                    <com.cinggl.cinggl.utils.ProportionalImageView
                         android:id="@+id/postImageView"
                         android:layout_width="match_parent"
                         android:layout_alignParentTop="true"
@@ -178,7 +178,6 @@
                 android:textSize="10sp"
                 android:paddingTop="2dp"
                 android:paddingBottom="2dp"
-                android:layout_alignTop="@+id/postSenseCreditsTextView"
                 android:layout_toRightOf="@+id/commentsImageView"
                 android:layout_toEndOf="@+id/commentsImageView"
                 android:textStyle="normal"

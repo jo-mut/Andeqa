@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.ContentFrameLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -27,6 +26,7 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.SingleOutAdapter;
@@ -41,7 +41,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -50,12 +49,9 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -72,7 +68,6 @@ public class MainActivity extends AppCompatActivity
     private Parcelable recyclerViewState;
     //firestore reference
     private CollectionReference cinglesReference;
-    private CollectionReference relationsReference;
     private Query randomQuery;
     private Query randomPostsQuery;
     //firebase auth
@@ -94,15 +89,15 @@ public class MainActivity extends AppCompatActivity
     private ContentFrameLayout mContent;
     private ProgressDialog mProgressDialog;
     private DatabaseReference usersRef;
-    private DocumentReference usersReference;
+    private CollectionReference usersReference;
+    private CollectionReference relationsReference;
     private FirebaseAuth firebaseAuth;
+    private FirebaseAuth.AuthStateListener authStateListener;
     private ImageView mProfileCover;
     private CircleImageView mProfileImageView;
     private TextView mFullNameTextView;
     private TextView mSecondNameTextView;
     private TextView mEmailTextView;
-
-    private Fragment savedState = null;
 
 
 
@@ -114,6 +109,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
 
+        //initialize firebase authentication
         firebaseAuth = FirebaseAuth.getInstance();
 
         mFloatingActionButton.setOnClickListener(this);
@@ -127,7 +123,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         View header = navigationView.getHeaderView(0);
-        mProfileCover = (ImageView) header.findViewById(R.id.header_cover_image);
+        mProfileCover = (ImageView) header.findViewById(R.id.profileCoverImageView);
         mProfileImageView = (CircleImageView) header.findViewById(R.id.creatorImageView);
         mFullNameTextView = (TextView) header.findViewById(R.id.fullNameTextView);
         mSecondNameTextView = (TextView) header.findViewById(R.id.secondNameTextView);
@@ -136,24 +132,16 @@ public class MainActivity extends AppCompatActivity
         if (firebaseAuth.getCurrentUser() != null){
             //firestore
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
-            usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS)
-                    .document(firebaseAuth.getCurrentUser().getUid());
-            randomQuery = cinglesReference;
+            randomPostsQuery = cinglesReference;
 
             fetchData();
             fetchUserEmail();
+            setRandomCingles();
 
         }
 
-        setRandomCingles();
-        if (savedInstanceState != null){
-            recyclerViewState = savedInstanceState.getParcelable(KEY_LAYOUT_POSITION);
-            Log.d("posts saved Instance", "Instance is not null");
-            //);
-        }else {
-            Log.d("Saved Instance", "Instance is completely null");
-        }
 
 //
 //        //bottom navigation
@@ -208,7 +196,8 @@ public class MainActivity extends AppCompatActivity
 
     private void fetchData(){
         //database references
-        usersReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        usersReference.document(firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -226,7 +215,7 @@ public class MainActivity extends AppCompatActivity
 
                     mFullNameTextView.setText(firstName + " " + secondName);
 
-                    Picasso.with(MainActivity.this)
+                    App.picasso.with(MainActivity.this)
                             .load(profileImage)
                             .resize(MAX_WIDTH, MAX_HEIGHT)
                             .onlyScaleDown()
@@ -241,7 +230,7 @@ public class MainActivity extends AppCompatActivity
 
                                 @Override
                                 public void onError() {
-                                    Picasso.with(MainActivity.this)
+                                    App.picasso.with(MainActivity.this)
                                             .load(profileImage)
                                             .resize(MAX_WIDTH, MAX_HEIGHT)
                                             .onlyScaleDown()
@@ -252,7 +241,7 @@ public class MainActivity extends AppCompatActivity
                                 }
                             });
 
-                    Picasso.with(MainActivity.this)
+                    App.picasso.with(MainActivity.this)
                             .load(profileCover)
                             .fit()
                             .centerCrop()
@@ -265,7 +254,7 @@ public class MainActivity extends AppCompatActivity
 
                                 @Override
                                 public void onError() {
-                                    Picasso.with(MainActivity.this)
+                                    App.picasso.with(MainActivity.this)
                                             .load(profileCover)
                                             .fit()
                                             .centerCrop()
@@ -329,7 +318,7 @@ public class MainActivity extends AppCompatActivity
             }
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("message/rfc822");
-            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"johnngei2@gmail.com"});
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"cinggl@yahoo.com"});
             intent.putExtra(Intent.EXTRA_SUBJECT, "Query from android app");
             intent.putExtra(Intent.EXTRA_TEXT, body);
             this.startActivity(Intent.createChooser(intent, this.getString(R.string.choose_email_client)));
@@ -341,58 +330,70 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+//    private void setRandomCingles(){
+//        relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
+//                .orderBy("uid").addSnapshotListener(new EventListener<QuerySnapshot>() {
+//            @Override
+//            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+//                if (e != null) {
+//                    Log.w(TAG, "Listen error", e);
+//                    return;
+//                }
+//
+//                Log.d("following uid", documentSnapshots.size() + "");
+//
+//                if (!documentSnapshots.isEmpty()){
+//                    for (DocumentChange change : documentSnapshots.getDocumentChanges()){
+//                        Relation relation = change.getDocument().toObject(Relation.class);
+//                        final String uid = relation.getUid();
+//
+//                        Log.d("uid", uid);
+//
+//                        randomPostsQuery.whereEqualTo("uid", uid).addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                            @Override
+//                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+//
+//                                if (!documentSnapshots.isEmpty()){
+//                                    Log.d("available random posts", documentSnapshots.size() + "");
+//                                }
+//                            }
+//                        });
+//
+//                        randomPostsQuery.whereEqualTo("uid", uid);
+//                        singleOutAdapter = new SingleOutAdapter(randomPostsQuery, MainActivity.this);
+//                        singleOutAdapter.startListening();
+//                        singleOutRecyclerView.setAdapter(singleOutAdapter);
+//                        singleOutRecyclerView.setHasFixedSize(false);
+//                        layoutManager = new LinearLayoutManager(MainActivity.this);
+//                        singleOutRecyclerView.setLayoutManager(layoutManager);
+//                    }
+//                }
+//            }
+//        });
+//    }
+
     private void setRandomCingles(){
-        relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
-                .orderBy("uid").addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
+        randomPostsQuery.orderBy("timeStamp", Query.Direction.DESCENDING)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-                if (!documentSnapshots.isEmpty()){
-                    for (DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                        final Relation relation= change.getDocument().toObject(Relation.class);
-                        final String uid = relation.getUid();
-
-                        Log.d("relation uid", uid);
-
-                        randomPostsQuery = cinglesReference.orderBy("timeStamp").whereEqualTo("uid", uid);
-                        randomPostsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                            @Override
-                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                if (e != null) {
-                                    Log.w(TAG, "Listen error", e);
-                                    return;
-                                }
-
-                                Log.d("following post", documentSnapshots.size() +"");
-
-                                if (!documentSnapshots.isEmpty()){
-                                    singleOutAdapter = new SingleOutAdapter(randomPostsQuery, MainActivity.this);
-                                    singleOutAdapter.startListening();
-                                    singleOutRecyclerView.setAdapter(singleOutAdapter);
-                                    singleOutRecyclerView.setHasFixedSize(false);
-                                    layoutManager = new LinearLayoutManager(MainActivity.this);
-                                    singleOutRecyclerView.setLayoutManager(layoutManager);
-                                }
-                            }
-                        });
-
-                        //show posts if the user has some poeople following
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
 
 
-
+                        if (!documentSnapshots.isEmpty()){
+                            singleOutAdapter = new SingleOutAdapter(randomPostsQuery, MainActivity.this);
+                            singleOutAdapter.startListening();
+                            singleOutRecyclerView.setAdapter(singleOutAdapter);
+                            singleOutRecyclerView.setHasFixedSize(false);
+                            layoutManager = new LinearLayoutManager(MainActivity.this);
+                            singleOutRecyclerView.setLayoutManager(layoutManager);
+                        }
                     }
-                }
-
-
-            }
-        });
-
-
+                });
     }
 
 

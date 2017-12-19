@@ -23,4 +23,5 @@ public final class Constants {
     public static final String CINGLE_LACING = "Post Lacing";
     public static final String ASSET_TRADING = "Asset Trading";
     public static final String MAIN_MARKET ="Main Market";
+    public static final String LOGIN_KEY = "login";
 }

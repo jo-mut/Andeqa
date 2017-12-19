@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.comments.CommentsActivity;
@@ -29,10 +30,8 @@ import com.cinggl.cinggl.models.PostSale;
 import com.cinggl.cinggl.models.TransactionDetails;
 import com.cinggl.cinggl.people.FollowerProfileActivity;
 import com.cinggl.cinggl.preferences.BestPostsSettingsDialog;
-import com.cinggl.cinggl.preferences.CingleSettingsDialog;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.viewholders.BestPostsViewHolder;
-import com.cinggl.cinggl.viewholders.SingleOutViewHolder;
 import com.cinggl.cinggl.viewholders.WhoLikedViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,6 +43,7 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -216,8 +216,7 @@ public class BestPostsAdapter extends FirestoreAdapter<BestPostsViewHolder> {
                     final Post post = documentSnapshot.toObject(Post.class);
                     final String uid = post.getUid();
 
-
-                    Picasso.with(mContext)
+                    App.picasso.with(mContext)
                             .load(post.getCingleImageUrl())
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(holder.postImageView, new Callback() {
@@ -228,7 +227,7 @@ public class BestPostsAdapter extends FirestoreAdapter<BestPostsViewHolder> {
 
                                 @Override
                                 public void onError() {
-                                    Picasso.with(mContext)
+                                    App.picasso.with(mContext)
                                             .load(post.getCingleImageUrl())
                                             .into(holder.postImageView, new Callback() {
                                                 @Override
@@ -289,7 +288,7 @@ public class BestPostsAdapter extends FirestoreAdapter<BestPostsViewHolder> {
                                 final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
 
                                 holder.usernameTextView.setText(cinggulan.getUsername());
-                                Picasso.with(mContext)
+                                App.picasso.with(mContext)
                                         .load(cinggulan.getProfileImage())
                                         .resize(MAX_WIDTH, MAX_HEIGHT)
                                         .onlyScaleDown()
@@ -304,7 +303,7 @@ public class BestPostsAdapter extends FirestoreAdapter<BestPostsViewHolder> {
 
                                             @Override
                                             public void onError() {
-                                                Picasso.with(mContext)
+                                                App.picasso.with(mContext)
                                                         .load(cinggulan.getProfileImage())
                                                         .resize(MAX_WIDTH, MAX_HEIGHT)
                                                         .onlyScaleDown()
@@ -335,7 +334,7 @@ public class BestPostsAdapter extends FirestoreAdapter<BestPostsViewHolder> {
                     final PostSale postSale = documentSnapshot.toObject(PostSale.class);
                     DecimalFormat formatter = new DecimalFormat("0.00000000");
                     holder.postSalePriceTextView.setText("SC" + " " + formatter.format(postSale.getSalePrice()));
-                    holder.tradeMethodTextView.setText("@CingleSelling");
+                    holder.tradeMethodTextView.setText("@Selling");
                 }else {
                     holder.postSalePriceTitleRelativeLayout.setVisibility(View.GONE);
                     holder.tradeMethodTextView.setText("@NotOnTrade");
@@ -389,7 +388,7 @@ public class BestPostsAdapter extends FirestoreAdapter<BestPostsViewHolder> {
                                 final String profileImage = cinggulan.getProfileImage();
                                 final String username = cinggulan.getUsername();
                                 holder.postOwnerTextView.setText(username);
-                                Picasso.with(mContext)
+                                App.picasso.with(mContext)
                                         .load(profileImage)
                                         .resize(MAX_WIDTH, MAX_HEIGHT)
                                         .onlyScaleDown()
@@ -404,7 +403,7 @@ public class BestPostsAdapter extends FirestoreAdapter<BestPostsViewHolder> {
 
                                             @Override
                                             public void onError() {
-                                                Picasso.with(mContext)
+                                                App.picasso.with(mContext)
                                                         .load(profileImage)
                                                         .resize(MAX_WIDTH, MAX_HEIGHT)
                                                         .onlyScaleDown()
@@ -510,7 +509,7 @@ public class BestPostsAdapter extends FirestoreAdapter<BestPostsViewHolder> {
                                                         Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
                                                         final String profileImage = cinggulan.getProfileImage();
 
-                                                        Picasso.with(mContext)
+                                                        App.picasso.with(mContext)
                                                                 .load(profileImage)
                                                                 .resize(MAX_WIDTH, MAX_HEIGHT)
                                                                 .onlyScaleDown()
@@ -525,7 +524,7 @@ public class BestPostsAdapter extends FirestoreAdapter<BestPostsViewHolder> {
 
                                                                     @Override
                                                                     public void onError() {
-                                                                        Picasso.with(mContext)
+                                                                        App.picasso.with(mContext)
                                                                                 .load(profileImage)
                                                                                 .resize(MAX_WIDTH, MAX_HEIGHT)
                                                                                 .onlyScaleDown()
@@ -715,6 +714,13 @@ public class BestPostsAdapter extends FirestoreAdapter<BestPostsViewHolder> {
     }
 
 
+    @Override
+    protected void onDocumentRemoved(DocumentChange change) {
+        super.onDocumentRemoved(change);
+        removeAt(change.getOldIndex());
+    }
+
+
     private void onLikeCounter(final boolean increament){
         likesRef.runTransaction(new Transaction.Handler() {
             @Override
@@ -748,6 +754,5 @@ public class BestPostsAdapter extends FirestoreAdapter<BestPostsViewHolder> {
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
-
 
 }

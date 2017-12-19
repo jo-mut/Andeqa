@@ -16,6 +16,7 @@ public class Post {
     String cingleIndex;
     String datePosted;
     String uid;
+    String creatorUid;
     double rate;
     double defaultRate;
 
@@ -24,24 +25,56 @@ public class Post {
 
     }
 
-    public Post(String cingleImageUrl, String cingleIndex,
-                String datePosted, double defaultRate, String description,
-                long number, String pushId, String pushId1, double randomNumber,
-                double rate, long timeStamp, String title, String uid, String uid1) {
+    public Post(long timeStamp, long number, double randomNumber,
+                String title, String cingleImageUrl,
+                String description, String pushId, String cingleIndex,
+                String datePosted, String uid, String creatorUid,
+                double rate, double defaultRate) {
+        this.timeStamp = timeStamp;
+        this.number = number;
+        this.randomNumber = randomNumber;
+        this.title = title;
         this.cingleImageUrl = cingleImageUrl;
+        this.description = description;
+        this.pushId = pushId;
         this.cingleIndex = cingleIndex;
         this.datePosted = datePosted;
-        this.defaultRate = defaultRate;
-        this.description = description;
-        this.number = number;
-        this.pushId = pushId;
-        this.pushId = pushId1;
-        this.randomNumber = randomNumber;
-        this.rate = rate;
-        this.timeStamp = timeStamp;
-        this.title = title;
         this.uid = uid;
-        this.uid = uid1;
+        this.creatorUid = creatorUid;
+        this.rate = rate;
+        this.defaultRate = defaultRate;
+    }
+
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    public long getNumber() {
+        return number;
+    }
+
+    public void setNumber(long number) {
+        this.number = number;
+    }
+
+    public double getRandomNumber() {
+        return randomNumber;
+    }
+
+    public void setRandomNumber(double randomNumber) {
+        this.randomNumber = randomNumber;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getCingleImageUrl() {
@@ -50,6 +83,22 @@ public class Post {
 
     public void setCingleImageUrl(String cingleImageUrl) {
         this.cingleImageUrl = cingleImageUrl;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getPushId() {
+        return pushId;
+    }
+
+    public void setPushId(String pushId) {
+        this.pushId = pushId;
     }
 
     public String getCingleIndex() {
@@ -68,44 +117,20 @@ public class Post {
         this.datePosted = datePosted;
     }
 
-    public double getDefaultRate() {
-        return defaultRate;
+    public String getUid() {
+        return uid;
     }
 
-    public void setDefaultRate(double defaultRate) {
-        this.defaultRate = defaultRate;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
-    public String getDescription() {
-        return description;
+    public String getCreatorUid() {
+        return creatorUid;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public long getNumber() {
-        return number;
-    }
-
-    public void setNumber(long number) {
-        this.number = number;
-    }
-
-    public String getPushId() {
-        return pushId;
-    }
-
-    public void setPushId(String pushId) {
-        this.pushId = pushId;
-    }
-
-    public double getRandomNumber() {
-        return randomNumber;
-    }
-
-    public void setRandomNumber(double randomNumber) {
-        this.randomNumber = randomNumber;
+    public void setCreatorUid(String creatorUid) {
+        this.creatorUid = creatorUid;
     }
 
     public double getRate() {
@@ -116,27 +141,11 @@ public class Post {
         this.rate = rate;
     }
 
-    public long getTimeStamp() {
-        return timeStamp;
+    public double getDefaultRate() {
+        return defaultRate;
     }
 
-    public void setTimeStamp(long timeStamp) {
-        this.timeStamp = timeStamp;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setDefaultRate(double defaultRate) {
+        this.defaultRate = defaultRate;
     }
 }

@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.ProfilePostsAdapter;
@@ -24,7 +25,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -33,7 +33,6 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +42,6 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.cinggl.cinggl.R.id.followButton;
-import static com.cinggl.cinggl.R.id.followTextView;
 
 public class FollowerProfileActivity extends AppCompatActivity
         implements View.OnClickListener{
@@ -56,7 +54,7 @@ public class FollowerProfileActivity extends AppCompatActivity
     @Bind(R.id.followersCountTextView) TextView mFollowersCountTextView;
     @Bind(R.id.followingCountTextView)TextView mFollowingCountTextView;
     @Bind(R.id.postsCountTextView)TextView mCinglesCountTextView;
-    @Bind(R.id.header_cover_image)ImageView mProfileCover;
+    @Bind(R.id.profileCoverImageView)ImageView mProfileCover;
     @Bind(followButton)Button mFollowButton;
     @Bind(R.id.collapsing_toolbar)CollapsingToolbarLayout collapsingToolbarLayout;
 
@@ -113,7 +111,8 @@ public class FollowerProfileActivity extends AppCompatActivity
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            profileCinglesQuery = cinglesReference.orderBy("timeStamp").whereEqualTo("uid", mUid);
+            profileCinglesQuery = cinglesReference.orderBy("timeStamp", Query.Direction.DESCENDING)
+                    .whereEqualTo("uid", mUid);
             profileCinglesCountQuery = cinglesReference.whereEqualTo("uid", mUid);
             fetchData();
             setTheFirstBacthProfileCingles();
@@ -190,8 +189,9 @@ public class FollowerProfileActivity extends AppCompatActivity
                     }
                 });
 
-        relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
-                .whereEqualTo("uid", mUid).addSnapshotListener(new EventListener<QuerySnapshot>() {
+        relationsReference.document("followers").collection(mUid)
+                .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -237,7 +237,7 @@ public class FollowerProfileActivity extends AppCompatActivity
 
                             collapsingToolbarLayout.setTitle(username + "'s" + " profile");
 
-                            Picasso.with(FollowerProfileActivity.this)
+                            App.picasso.with(FollowerProfileActivity.this)
                                     .load(profileImage)
                                     .resize(MAX_WIDTH, MAX_HEIGHT)
                                     .onlyScaleDown()
@@ -252,7 +252,7 @@ public class FollowerProfileActivity extends AppCompatActivity
 
                                         @Override
                                         public void onError() {
-                                            Picasso.with(FollowerProfileActivity.this)
+                                            App.picasso.with(FollowerProfileActivity.this)
                                                     .load(profileImage)
                                                     .resize(MAX_WIDTH, MAX_HEIGHT)
                                                     .onlyScaleDown()
@@ -263,7 +263,7 @@ public class FollowerProfileActivity extends AppCompatActivity
                                         }
                                     });
 
-                            Picasso.with(FollowerProfileActivity.this)
+                            App.picasso.with(FollowerProfileActivity.this)
                                     .load(profileCover)
                                     .fit()
                                     .centerCrop()
@@ -276,7 +276,7 @@ public class FollowerProfileActivity extends AppCompatActivity
 
                                         @Override
                                         public void onError() {
-                                            Picasso.with(FollowerProfileActivity.this)
+                                            App.picasso.with(FollowerProfileActivity.this)
                                                     .load(profileCover)
                                                     .fit()
                                                     .centerCrop()
@@ -377,38 +377,38 @@ public class FollowerProfileActivity extends AppCompatActivity
         if (v == mFollowButton){
             processFollow = true;
             relationsReference.document("followers")
-                    .collection(mUid).addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    .collection(mUid)
+                    .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
                         @Override
                         public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+
+                            if (e != null) {
+                                Log.w(TAG, "Listen error", e);
+                                return;
+                            }
+
                             if (processFollow){
                                 if (documentSnapshots.isEmpty()){
+                                    //set followers and following
                                     Relation follower = new Relation();
                                     follower.setUid(firebaseAuth.getCurrentUser().getUid());
                                     relationsReference.document("followers").collection(mUid)
-                                            .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    Relation following = new Relation();
-                                                    following.setUid(mUid);
-                                                    relationsReference.document("following").collection(firebaseAuth
-                                                            .getCurrentUser().getUid()).document(mUid).set(following);
-                                                }
-                                            });
+                                            .document(firebaseAuth.getCurrentUser().getUid()).set(follower);
+                                    final Relation following = new Relation();
+                                    following.setUid(mUid);
+                                    relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
+                                            .document(mUid).set(following);
                                     processFollow = false;
-                                    mFollowButton.setText("FOLLOWING");
+                                    mFollowButton.setText("Following");
                                 }else {
                                     relationsReference.document("followers").collection(mUid)
-                                            .document(firebaseAuth.getCurrentUser().getUid()).delete()
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    relationsReference.document("following").collection(firebaseAuth.getCurrentUser()
-                                                            .getUid()).document(mUid).delete();
-                                                }
-                                            });
+                                            .document(firebaseAuth.getCurrentUser().getUid()).delete();
+                                    relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
+                                            .document(mUid).delete();
                                     processFollow = false;
-                                    mFollowButton.setText("FOLLOW");
+                                    mFollowButton.setText("Follow");
                                 }
                             }
                         }

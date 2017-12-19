@@ -13,7 +13,7 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="84dp"
         app:titleTextColor="@android:color/white"
         app:layout_scrollFlags="scroll|enterAlways"
         app:titleTextAppearance="@style/toolbarTextSize"
@@ -36,7 +36,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <com.cinggl.cinggl.ProportionalImageView
+                <com.cinggl.cinggl.utils.ProportionalImageView
                     android:id="@+id/postImageView"
                     android:layout_width="match_parent"
                     android:layout_alignParentTop="false"

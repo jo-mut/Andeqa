@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <com.cinggl.cinggl.ProportionalImageView
+        <com.cinggl.cinggl.utils.ProportionalImageView
             android:id="@+id/postImageView"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
@@ -33,7 +33,7 @@
             android:paddingTop="10dp">
 
             <TextView
-                android:text="Amount transferred: CSC 0.000345"
+                android:text=""
                 android:layout_alignParentTop="true"
                 android:textSize="28sp"
                 android:id="@+id/amountTransferredTextView"

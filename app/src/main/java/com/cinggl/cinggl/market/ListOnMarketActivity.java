@@ -18,8 +18,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
-import com.cinggl.cinggl.ProportionalImageView;
+import com.cinggl.cinggl.utils.ProportionalImageView;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Post;
 import com.cinggl.cinggl.models.PostSale;
@@ -40,7 +41,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
 
@@ -82,7 +82,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list_on_ifair);
+        setContentView(R.layout.activity_list_on_market);
         ButterKnife.bind(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -156,7 +156,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                     //set the post title
                     mCingleTitleTextView.setText(title);
                     //set the post image
-                    Picasso.with(ListOnMarketActivity.this)
+                    App.picasso.with(ListOnMarketActivity.this)
                             .load(image)
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(mCingleImageView, new Callback() {
@@ -167,7 +167,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
 
                                 @Override
                                 public void onError() {
-                                    Picasso.with(ListOnMarketActivity.this)
+                                    App.picasso.with(ListOnMarketActivity.this)
                                             .load(image)
                                             .into(mCingleImageView);
                                 }
@@ -197,7 +197,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                                 final String profileImage = cinggulan.getProfileImage();
 
                                 mAccountUsernameTextView.setText(username);
-                                Picasso.with(ListOnMarketActivity.this)
+                                App.picasso.with(ListOnMarketActivity.this)
                                         .load(profileImage)
                                         .fit()
                                         .centerCrop()
@@ -211,7 +211,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
 
                                             @Override
                                             public void onError() {
-                                                Picasso.with(ListOnMarketActivity.this)
+                                                App.picasso.with(ListOnMarketActivity.this)
                                                         .load(profileImage)
                                                         .fit()
                                                         .centerCrop()
@@ -289,6 +289,24 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                                             }
                                         }).setIcon(android.R.drawable.ic_dialog_alert).show();
                             }
+                        }else {
+                            //SET CINGLE ON SALE IN IFAIR
+                            final PostSale postSale =  new PostSale();
+                            postSale.setUid(firebaseAuth.getCurrentUser().getUid());
+                            postSale.setPushId(mPostKey);
+                            postSale.setSalePrice(intSalePrice);
+                            Log.d("set sale price", intSalePrice + "");
+
+                            ifairReference.document(mPostKey).set(postSale).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()){
+                                        Toast.makeText(ListOnMarketActivity.this, "Your cingle has been listed on Ifair",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
                         }
                     }
                 });

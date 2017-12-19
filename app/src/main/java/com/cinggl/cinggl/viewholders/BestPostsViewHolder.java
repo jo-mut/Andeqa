@@ -9,13 +9,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.ProportionalImageView;
+import com.cinggl.cinggl.utils.ProportionalImageView;
 import com.cinggl.cinggl.models.Credit;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static com.cinggl.cinggl.R.string.credit;
 
 /**
  * Created by J.EL on 7/6/2017.
@@ -44,7 +43,6 @@ public class BestPostsViewHolder extends RecyclerView.ViewHolder {
     public RelativeLayout titleRelativeLayout;
     public RelativeLayout descriptionRelativeLayout;
     public TextView postMomentTextView;
-    public RelativeLayout postMomentRelativeLayout;
     public RecyclerView likesRecyclerView;
     public RelativeLayout postTradingRelativeLayout;
     public TextView postOwnerTextView;
@@ -72,8 +70,6 @@ public class BestPostsViewHolder extends RecyclerView.ViewHolder {
         descriptionRelativeLayout = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
         postImageView = (ProportionalImageView) mView.findViewById(R.id.postImageView);
         tradeMethodTextView = (TextView) mView.findViewById(R.id.tradeMethodTextView);
-        postMomentTextView = (TextView) mView.findViewById(R.id.postMomentTextView);
-        postMomentRelativeLayout = (RelativeLayout) mView.findViewById(R.id.postMomentRelativeLayout);
         likesRecyclerView = (RecyclerView) mView.findViewById(R.id.likesRecyclerView);
         postTradingRelativeLayout = (RelativeLayout) mView.findViewById(R.id.tradingRelativeLayout);
         postOwnerTextView = (TextView) mView.findViewById(R.id.postOwnerTextView);
@@ -89,7 +85,6 @@ public class BestPostsViewHolder extends RecyclerView.ViewHolder {
         final Credit credit = documentSnapshot.toObject(Credit.class);
         senseCreditsTextView = (TextView) mView.findViewById(R.id.postSenseCreditsTextView);
         senseCreditsTextView.setText(credit.getAmount() + "");
-
 
     }
 }

@@ -13,12 +13,11 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
-import com.cinggl.cinggl.AppCompatPreferenceActivity;
+import com.cinggl.cinggl.utils.AppCompatPreferenceActivity;
 import com.cinggl.cinggl.R;
 
 public class TermsOfServiceActivity extends AppCompatPreferenceActivity{

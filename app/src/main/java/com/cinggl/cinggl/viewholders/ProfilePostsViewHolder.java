@@ -2,15 +2,13 @@ package com.cinggl.cinggl.viewholders;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.cinggl.cinggl.ProportionalImageView;
+import com.cinggl.cinggl.utils.ProportionalImageView;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.models.Post;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import de.hdodenhof.circleimageview.CircleImageView;

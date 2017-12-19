@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@drawable/gradient_color"
+    android:layout_width="match_parent"
+    android:layout_marginBottom="15dp"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/header_cover_relative_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/profileCoverImageView"
+            android:layout_width="match_parent"
+            android:layout_height="450dp"
+            android:scaleType="centerCrop"
+            android:alpha="0.1"
+            android:src="@drawable/gradient_color" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/creatorImageView"
+            android:layout_height="180dp"
+            android:background="@drawable/profile_circular_border_imageview"
+            android:padding="10dp"
+            android:scaleType="centerCrop"
+            android:layout_alignParentTop="true"
+            android:layout_width="150dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dp" />
+
+
+
+        <RelativeLayout
+            android:id="@+id/fullNameRelativeLayout"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_marginTop="250dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/fullNameTextView"
+                android:textStyle="normal|bold"
+                android:textColor="@android:color/white"
+                android:textSize="25sp"
+                android:layout_alignParentTop="false"
+                android:layout_alignParentLeft="false"
+                android:layout_alignParentStart="false"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="1dp"
+                android:layout_centerInParent="true" />
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/followButtonRelativeLayout"
+            android:layout_below="@+id/fullNameRelativeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp">
+
+
+            <Button
+                android:text=""
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:id="@+id/followButton"
+                android:layout_below="@+id/followingTextView"
+                android:minHeight="45dp"
+                android:minWidth="180dp"
+                android:textSize="21sp"
+                android:background="@drawable/colour_btn_background"
+                android:layout_centerHorizontal="false"
+                android:layout_centerInParent="true"
+                android:textColor="@android:color/white" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_below="@+id/followButtonRelativeLayout"
+        android:id="@+id/bioRelativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:ignore="UnusedAttribute">
+
+        <TextView
+            android:id="@+id/bioTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:layout_centerHorizontal="true"
+            android:textSize="14sp"
+            android:padding="10dp"
+            android:textAlignment="center" />
+
+    </RelativeLayout>
+
+
+</LinearLayout>

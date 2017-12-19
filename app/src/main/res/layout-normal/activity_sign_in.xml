@@ -5,9 +5,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.cinggl.cinggl.profile.SignInActivity"
+    tools:context="com.cinggl.cinggl.registration.SignInActivity"
     android:background="@drawable/gradient_color"
     android:weightSum="1">
+
+    <RelativeLayout
+        android:paddingLeft="1dp"
+        android:paddingRight="1dp"
+        android:visibility="gone"
+        android:id="@+id/progressBarRelativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white">
+
+        <ProgressBar
+            android:indeterminateOnly="true"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar" />
+
+    </RelativeLayout>
+
 
     <ScrollView
         android:scrollbars="none"

@@ -12,19 +12,13 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
-import com.cinggl.cinggl.AppCompatPreferenceActivity;
+import com.cinggl.cinggl.utils.AppCompatPreferenceActivity;
 import com.cinggl.cinggl.R;
-
-import java.util.prefs.Preferences;
-
-import static android.os.Build.VERSION_CODES.M;
-import static android.view.View.Y;
 
 
 public class PreferencesActivity extends AppCompatPreferenceActivity {

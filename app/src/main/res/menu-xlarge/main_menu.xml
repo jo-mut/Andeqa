@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.cinggl.cinggl.home.TestActivity">
+    <item
+        android:id="@+id/action_slide_right"
+        android:icon="@drawable/ic_keyboard_arrow_right_white_24dp"
+        app:showAsAction="always"
+        android:title="Done">
+
+    </item>
+</menu>

@@ -19,10 +19,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.home.MainActivity;
-import com.cinggl.cinggl.ProportionalImageView;
+import com.cinggl.cinggl.utils.ProportionalImageView;
 import com.cinggl.cinggl.models.Post;
 import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.models.TransactionDetails;
@@ -53,9 +54,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import butterknife.Bind;
@@ -273,7 +272,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
                     mAccountUsernameTextView.setText(username);
 
-                    Picasso.with(CreatePostActivity.this)
+                    App.picasso.with(CreatePostActivity.this)
                             .load(profileImage)
                             .fit()
                             .centerCrop()
@@ -286,7 +285,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
                                 @Override
                                 public void onError() {
-                                    Picasso.with(CreatePostActivity.this)
+                                    App.picasso.with(CreatePostActivity.this)
                                             .load(profileImage)
                                             .fit()
                                             .centerCrop()
@@ -302,7 +301,6 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
     public void onClick(View v){
         if(v == mPostCingleImageView){
             savingDataToFirebase();
-
         }
 
     }
@@ -329,6 +327,8 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
     private void savingDataToFirebase(){
         if (photoUri != null){
             progressDialog.show();
+            mPostCingleImageView.setEnabled(false);
+            mPostCingleImageView.setColorFilter(Color.GRAY);
             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             final String uid = user.getUid();
 
@@ -375,6 +375,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                             post.setCingleImageUrl(downloadUrl.toString());
                             post.setPushId(pushId);
                             post.setUid(firebaseAuth.getCurrentUser().getUid());
+                            post.setCreatorUid(firebaseAuth.getCurrentUser().getUid());
                             post.setDatePosted(currentDate);
                             post.setCingleIndex("Post number" + " " + currentIdex);
                             cingleRef.set(post);

@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.cinggl.cinggl.ProportionalImageView;
+import com.cinggl.cinggl.utils.ProportionalImageView;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.TransactionDetails;
 

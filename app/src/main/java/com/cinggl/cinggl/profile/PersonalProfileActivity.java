@@ -3,8 +3,6 @@ package com.cinggl.cinggl.profile;
 import android.content.Intent;
 import android.os.Parcelable;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,12 +10,12 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.ProfilePostsAdapter;
@@ -25,10 +23,9 @@ import com.cinggl.cinggl.market.WalletActivity;
 import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.models.Post;
 import com.cinggl.cinggl.people.PeopleActivity;
+import com.cinggl.cinggl.registration.SignInActivity;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -37,7 +34,6 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +41,6 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static java.security.AccessController.getContext;
 
 public class PersonalProfileActivity extends AppCompatActivity implements View.OnClickListener{
     //BIND VIEWS
@@ -57,7 +51,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
     @Bind(R.id.followersCountTextView) TextView mFollowersCountTextView;
     @Bind(R.id.followingCountTextView)TextView mFollowingCountTextView;
     @Bind(R.id.postsCountTextView)TextView mCinglesCountTextView;
-    @Bind(R.id.header_cover_image)ImageView mProfileCover;
+    @Bind(R.id.profileCoverImageView)ImageView mProfileCover;
     @Bind(R.id.collapsing_toolbar)CollapsingToolbarLayout collapsingToolbarLayout;
 
     private static final String TAG = PersonalProfileActivity.class.getSimpleName();
@@ -97,7 +91,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            profileCinglesQuery = cinglesReference.orderBy("timeStamp", Query.Direction.ASCENDING)
+            profileCinglesQuery = cinglesReference.orderBy("timeStamp", Query.Direction.DESCENDING)
                     .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid());
             profileCinglesCountQuery = cinglesReference.whereEqualTo("uid",
                     firebaseAuth.getCurrentUser().getUid());
@@ -151,7 +145,10 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
 
         if (id == R.id.action_signout){
             firebaseAuth.signOut();
-            startActivity(new Intent(PersonalProfileActivity.this, SignInActivity.class));
+            Intent intent = new Intent(PersonalProfileActivity.this, SignInActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
 
         }
 
@@ -236,7 +233,6 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
 
                         if (documentSnapshot.exists()){
                             final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-
                             String firstName = cinggulan.getFirstName();
                             String secondName = cinggulan.getSecondName();
                             final String profileImage = cinggulan.getProfileImage();
@@ -245,8 +241,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
 
                             mFullNameTextView.setText(firstName + " " + secondName);
                             mBioTextView.setText(bio);
-
-                            Picasso.with(PersonalProfileActivity.this)
+                            App.picasso.with(PersonalProfileActivity.this)
                                     .load(profileImage)
                                     .resize(MAX_WIDTH, MAX_HEIGHT)
                                     .onlyScaleDown()
@@ -261,7 +256,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
 
                                         @Override
                                         public void onError() {
-                                            Picasso.with(PersonalProfileActivity.this)
+                                            App.picasso.with(PersonalProfileActivity.this)
                                                     .load(profileImage)
                                                     .resize(MAX_WIDTH, MAX_HEIGHT)
                                                     .onlyScaleDown()
@@ -272,7 +267,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
                                         }
                                     });
 
-                            Picasso.with(PersonalProfileActivity.this)
+                            App.picasso.with(PersonalProfileActivity.this)
                                     .load(profileCover)
                                     .fit()
                                     .centerCrop()
@@ -285,11 +280,21 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
 
                                         @Override
                                         public void onError() {
-                                            Picasso.with(PersonalProfileActivity.this)
+                                            App.picasso.with(PersonalProfileActivity.this)
                                                     .load(profileCover)
                                                     .fit()
                                                     .centerCrop()
-                                                    .into(mProfileCover);
+                                                    .into(mProfileCover, new Callback() {
+                                                        @Override
+                                                        public void onSuccess() {
+                                                            Log.d("profile cover", "profile cover found");
+                                                        }
+
+                                                        @Override
+                                                        public void onError() {
+                                                            Log.d("prifle cover", "profile cover not found");
+                                                        }
+                                                    });
 
 
                                         }

@@ -3,6 +3,7 @@ package com.cinggl.cinggl.home;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.comments.CommentsActivity;
@@ -38,6 +40,8 @@ import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.viewholders.WhoLikedViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -347,7 +351,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                     mDatePostedTextView.setText(datePosted);
 
                     //set the post image
-                    Picasso.with(PostDetailActivity.this)
+                    App.picasso.with(PostDetailActivity.this)
                             .load(image)
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(mCingleImageView, new Callback() {
@@ -358,7 +362,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
                                 @Override
                                 public void onError() {
-                                    Picasso.with(PostDetailActivity.this)
+                                    App.picasso.with(PostDetailActivity.this)
                                             .load(image)
                                             .into(mCingleImageView);
                                 }
@@ -378,7 +382,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                 final String profileImage = cinggulan.getProfileImage();
 
                                 mUsernameTextView.setText(username);
-                                Picasso.with(PostDetailActivity.this)
+                                App.picasso.with(PostDetailActivity.this)
                                         .load(profileImage)
                                         .fit()
                                         .centerCrop()
@@ -392,7 +396,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
                                             @Override
                                             public void onError() {
-                                                Picasso.with(PostDetailActivity.this)
+                                                App.picasso.with(PostDetailActivity.this)
                                                         .load(profileImage)
                                                         .fit()
                                                         .centerCrop()
@@ -443,7 +447,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (documentSnapshot.exists()){
-                    mCingleTradeMethodTextView.setText("@CingleSelling");
+                    mCingleTradeMethodTextView.setText("@Selling");
                 }else {
                     mCingleTradeMethodTextView.setText("@NotOnTrade");
                     mTradeCingleButton.setVisibility(View.GONE);
@@ -497,7 +501,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                                         Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
                                                         final String profileImage = cinggulan.getProfileImage();
 
-                                                        Picasso.with(PostDetailActivity.this)
+                                                        App.picasso.with(PostDetailActivity.this)
                                                                 .load(profileImage)
                                                                 .resize(MAX_WIDTH, MAX_HEIGHT)
                                                                 .onlyScaleDown()
@@ -512,7 +516,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
                                                                     @Override
                                                                     public void onError() {
-                                                                        Picasso.with(PostDetailActivity.this)
+                                                                        App.picasso.with(PostDetailActivity.this)
                                                                                 .load(profileImage)
                                                                                 .resize(MAX_WIDTH, MAX_HEIGHT)
                                                                                 .onlyScaleDown()
@@ -582,7 +586,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                 final String profileImage = cinggulan.getProfileImage();
 
                                 mCingleOwnerTextView.setText(username);
-                                Picasso.with(mContext)
+                                App.picasso.with(mContext)
                                         .load(profileImage)
                                         .fit()
                                         .centerCrop()
@@ -596,7 +600,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
                                             @Override
                                             public void onError() {
-                                                Picasso.with(mContext)
+                                                App.picasso.with(mContext)
                                                         .load(profileImage)
                                                         .fit()
                                                         .centerCrop()
@@ -810,8 +814,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void showEditImageView(){
-        ownerReference.document("Ownership").collection(mPostKey)
-                .document("Owner").addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        ownerReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -864,7 +867,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                             mSalePriceProgressBar.setVisibility(View.VISIBLE);
                             ifairReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                 @Override
-                                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                public void onEvent(final DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
                                     if (e != null) {
                                         Log.w(TAG, "Listen error", e);
@@ -872,13 +875,21 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                     }
 
                                     if (documentSnapshot.exists()){
-                                        final PostSale postSale = documentSnapshot.toObject(PostSale.class);
-                                        mCingleSalePriceTextView.setText("SC" + " " + formatter
-                                                .format(postSale.getSalePrice()));
-                                        mSalePriceProgressBar.setVisibility(View.GONE);
-                                        mCingleSalePriceTextView.setVisibility(View.VISIBLE);
-                                        mDoneEditingImageView.setVisibility(View.GONE);
-                                        mEditSalePriceImageView.setVisibility(View.VISIBLE);
+                                        ifairReference.document(mPostKey).update("salePrice", intSalePrice)
+                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+
+                                                final PostSale postSale = documentSnapshot.toObject(PostSale.class);
+                                                mCingleSalePriceTextView.setText("SC" + " " + formatter
+                                                        .format(postSale.getSalePrice()));
+                                                mSalePriceProgressBar.setVisibility(View.GONE);
+                                                mCingleSalePriceTextView.setVisibility(View.VISIBLE);
+                                                mDoneEditingImageView.setVisibility(View.GONE);
+                                                mEditSalePriceImageView.setVisibility(View.VISIBLE);
+                                            }
+                                        });
+
                                     }
                                 }
                             });

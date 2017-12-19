@@ -1,22 +1,25 @@
 package com.cinggl.cinggl;
 
+
 import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDex;
 
 import com.cinggl.cinggl.services.ConnectivityReceiver;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
-import com.squareup.okhttp.Cache;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.picasso.LruCache;
+import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.util.concurrent.TimeUnit;
+
+import okhttp3.Cache;
+import okhttp3.OkHttpClient;
+
+import static com.google.firebase.firestore.FirebaseFirestore.setLoggingEnabled;
+import static com.squareup.picasso.Picasso.setSingletonInstance;
 
 /**
  * Created by J.EL on 6/23/2017.
@@ -26,6 +29,7 @@ public class App extends Application {
 
     private static App mInstance;
     private Context context;
+    public static Picasso picasso;
 
     @Override
     public void onCreate() {
@@ -36,16 +40,25 @@ public class App extends Application {
                 .setPersistenceEnabled(true)
                 .build();
         FirebaseFirestore.getInstance().setFirestoreSettings(settings);
-        FirebaseFirestore.setLoggingEnabled(true);
+        setLoggingEnabled(true);
+
+//        Picasso.Builder builder = new Picasso.Builder(this);
+//        builder.downloader(new OkHttpDownloader(this,Integer.MAX_VALUE));
+//        Picasso built = builder.build();
+//        built.setIndicatorsEnabled(false);
+//        built.setLoggingEnabled(true);
+//        Picasso.setSingletonInstance(built);
 
 
-        Picasso.Builder builder = new Picasso.Builder(this);
-        builder.downloader(new OkHttpDownloader(this, Integer.MAX_VALUE));
-        Picasso built = builder.build();
-        built.setIndicatorsEnabled(false);
-        built.setLoggingEnabled(true);
-        Picasso.setSingletonInstance(built);
-
+        //path to app specific cache
+        File httpCacheDirectory = new File(getCacheDir(), "cinggl-cache");
+        final Cache cache = new Cache(httpCacheDirectory, 15 * 1024 * 1024);
+        OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder()
+                .cache(cache);
+        picasso = new Picasso.Builder(this).downloader
+                (new OkHttp3Downloader(okHttpClientBuilder.build())).build();
+        picasso.setIndicatorsEnabled(false);
+        picasso.setLoggingEnabled(true);
         mInstance = this;
 
 

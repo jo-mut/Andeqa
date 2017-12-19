@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Post;
@@ -30,7 +31,7 @@ import com.cinggl.cinggl.viewholders.CommentViewHolder;
 import com.cinggl.cinggl.models.Comment;
 import com.cinggl.cinggl.people.FollowerProfileActivity;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
-import com.cinggl.cinggl.ProportionalImageView;
+import com.cinggl.cinggl.utils.ProportionalImageView;
 import com.firebase.ui.common.ChangeEventType;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -48,11 +49,12 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.cinggl.cinggl.R.id.followButton;
 
 public class CommentsActivity extends AppCompatActivity implements View.OnClickListener {
     @Bind(R.id.sendCommentImageView)ImageView mSendCommentImageView;
@@ -203,7 +205,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                     }
 
                     //set the post image
-                    Picasso.with(CommentsActivity.this)
+                    App.picasso.with(CommentsActivity.this)
                             .load(image)
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(mCingleImageView, new Callback() {
@@ -214,7 +216,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
                                 @Override
                                 public void onError() {
-                                    Picasso.with(CommentsActivity.this)
+                                    App.picasso.with(CommentsActivity.this)
                                             .load(image)
                                             .into(mCingleImageView);
                                 }
@@ -236,7 +238,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                                 final String username = cinggulan.getUsername();
 
                                 mAccountUsernameTextView.setText(username);
-                                Picasso.with(CommentsActivity.this)
+                                App.picasso.with(CommentsActivity.this)
                                         .load(profileImage)
                                         .fit()
                                         .centerCrop()
@@ -250,7 +252,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
                                             @Override
                                             public void onError() {
-                                                Picasso.with(CommentsActivity.this)
+                                                App.picasso.with(CommentsActivity.this)
                                                         .load(profileImage)
                                                         .fit()
                                                         .centerCrop()
@@ -318,7 +320,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                             final String username = cinggulan.getUsername();
 
                             holder.usernameTextView.setText(username);
-                            Picasso.with(CommentsActivity.this)
+                            App.picasso.with(CommentsActivity.this)
                                     .load(profileImage)
                                     .fit()
                                     .centerCrop()
@@ -332,7 +334,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
                                         @Override
                                         public void onError() {
-                                            Picasso.with(CommentsActivity.this)
+                                            App.picasso.with(CommentsActivity.this)
                                                     .load(profileImage)
                                                     .fit()
                                                     .centerCrop()
@@ -373,37 +375,35 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                         public void onClick(View view) {
                             processFollow = true;
                             relationsReference.document("followers")
-                                    .collection(postKey).whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+                                    .collection(uid).whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
                                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                         @Override
                                         public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+
+                                            if (e != null) {
+                                                Log.w(TAG, "Listen error", e);
+                                                return;
+                                            }
+
                                             if (processFollow){
                                                 if (documentSnapshots.isEmpty()){
+                                                    //set followers and following
                                                     Relation follower = new Relation();
                                                     follower.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                    relationsReference.document("followers").collection(postKey)
-                                                            .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
-                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                @Override
-                                                                public void onSuccess(Void aVoid) {
-                                                                    Relation following = new Relation();
-                                                                    following.setUid(postKey);
-                                                                    relationsReference.document("following").collection(firebaseAuth
-                                                                            .getCurrentUser().getUid()).document(postKey).set(following);
-                                                                }
-                                                            });
+                                                    relationsReference.document("followers").collection(uid)
+                                                            .document(firebaseAuth.getCurrentUser().getUid()).set(follower);
+                                                    final Relation following = new Relation();
+                                                    following.setUid(uid);
+                                                    relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
+                                                            .document(uid).set(following);
                                                     processFollow = false;
                                                     holder.followButton.setText("Following");
                                                 }else {
-                                                    relationsReference.document("followers").collection(postKey)
-                                                            .document(firebaseAuth.getCurrentUser().getUid()).delete()
-                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                @Override
-                                                                public void onSuccess(Void aVoid) {
-                                                                    relationsReference.document("following").collection(firebaseAuth.getCurrentUser()
-                                                                            .getUid()).document(postKey).delete();
-                                                                }
-                                                            });
+                                                    relationsReference.document("followers").collection(uid)
+                                                            .document(firebaseAuth.getCurrentUser().getUid()).delete();
+                                                    relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
+                                                            .document(uid).delete();
                                                     processFollow = false;
                                                     holder.followButton.setText("Follow");
                                                 }

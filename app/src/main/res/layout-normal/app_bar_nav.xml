@@ -6,14 +6,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.cinggl.cinggl.home.NavActivity">
+    tools:context="com.cinggl.cinggl.home.MainActivity">
 
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:fitsSystemWindows="true"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="56dp"
         android:theme="@style/AppTheme.AppBarOverlay"
         android:background="@color/colorPrimary">
 

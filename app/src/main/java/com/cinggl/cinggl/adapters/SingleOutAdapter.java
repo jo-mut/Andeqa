@@ -13,17 +13,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.firestore.FirestoreAdapter;
+import com.cinggl.cinggl.home.MainActivity;
 import com.cinggl.cinggl.home.PostDetailActivity;
 import com.cinggl.cinggl.models.Post;
+import com.cinggl.cinggl.models.Relation;
 import com.cinggl.cinggl.preferences.CingleSettingsDialog;
 import com.cinggl.cinggl.comments.CommentsActivity;
 import com.cinggl.cinggl.home.FullImageViewActivity;
 import com.cinggl.cinggl.likes.LikesActivity;
 import com.cinggl.cinggl.models.Balance;
-import com.cinggl.cinggl.models.PostSale;
 import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.models.Credit;
 import com.cinggl.cinggl.models.Like;
@@ -42,6 +44,7 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -56,8 +59,8 @@ import com.squareup.picasso.Picasso;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
+
+import static com.cinggl.cinggl.R.id.singleOutRecyclerView;
 
 /**
  * Created by J.EL on 11/17/2017.
@@ -84,6 +87,8 @@ public class SingleOutAdapter extends FirestoreAdapter<SingleOutViewHolder> {
     private CollectionReference ownerReference;
     private CollectionReference usersReference;
     private CollectionReference commentsReference;
+    private CollectionReference relationsReference;
+    private Query randomAddedPostsQuery;
     private CollectionReference likesReference;
     private CollectionReference senseCreditReference;
     //firebase
@@ -132,8 +137,10 @@ public class SingleOutAdapter extends FirestoreAdapter<SingleOutViewHolder> {
         ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
         commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
         senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
+        relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
         //document reference
         commentsCountQuery= commentsReference;
+        randomAddedPostsQuery = cinglesReference;
 
         //firebase
         likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
@@ -264,7 +271,8 @@ public class SingleOutAdapter extends FirestoreAdapter<SingleOutViewHolder> {
                 if (documentSnapshot.exists()){
                     final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
                     holder.accountUsernameTextView.setText(cinggulan.getUsername());
-                    Picasso.with(mContext)
+
+                    App.picasso.with(mContext)
                             .load(cinggulan.getProfileImage())
                             .resize(MAX_WIDTH, MAX_HEIGHT)
                             .onlyScaleDown()
@@ -279,7 +287,7 @@ public class SingleOutAdapter extends FirestoreAdapter<SingleOutViewHolder> {
 
                                 @Override
                                 public void onError() {
-                                    Picasso.with(mContext)
+                                    App.picasso.with(mContext)
                                             .load(cinggulan.getProfileImage())
                                             .resize(MAX_WIDTH, MAX_HEIGHT)
                                             .onlyScaleDown()
@@ -344,7 +352,7 @@ public class SingleOutAdapter extends FirestoreAdapter<SingleOutViewHolder> {
                 }
 
                 if (documentSnapshot.exists()){
-                    holder.tradeMethodTextView.setText("@CingleSelling");
+                    holder.tradeMethodTextView.setText("@Selling");
                 }else {
                     holder.tradeMethodTextView.setText("@NotOnTrade");
 
@@ -395,7 +403,7 @@ public class SingleOutAdapter extends FirestoreAdapter<SingleOutViewHolder> {
                                                         Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
                                                         final String profileImage = cinggulan.getProfileImage();
 
-                                                        Picasso.with(mContext)
+                                                        App.picasso.with(mContext)
                                                                 .load(profileImage)
                                                                 .resize(MAX_WIDTH, MAX_HEIGHT)
                                                                 .onlyScaleDown()
@@ -410,7 +418,7 @@ public class SingleOutAdapter extends FirestoreAdapter<SingleOutViewHolder> {
 
                                                                     @Override
                                                                     public void onError() {
-                                                                        Picasso.with(mContext)
+                                                                        App.picasso.with(mContext)
                                                                                 .load(profileImage)
                                                                                 .resize(MAX_WIDTH, MAX_HEIGHT)
                                                                                 .onlyScaleDown()
@@ -529,7 +537,7 @@ public class SingleOutAdapter extends FirestoreAdapter<SingleOutViewHolder> {
                                         credit.setPushId(postKey);
                                         credit.setAmount(totalSenseCredits);
                                         credit.setUid(firebaseAuth.getCurrentUser().getUid());
-                                        senseCreditReference.document(postKey).set(credit, SetOptions.merge());
+                                        senseCreditReference.document(postKey).set(credit);
 
                                     }else {
                                         Credit credit = new Credit();
@@ -599,6 +607,39 @@ public class SingleOutAdapter extends FirestoreAdapter<SingleOutViewHolder> {
 
 
     }
+
+    public SingleOutAdapter(Query query) {
+        super(query);
+    }
+
+    @Override
+    protected void onDocumentAdded(DocumentChange change) {
+        super.onDocumentAdded(change);
+
+    }
+
+    @Override
+    protected void onDocumentModified(DocumentChange change) {
+        super.onDocumentModified(change);
+    }
+
+    @Override
+    protected void onDocumentRemoved(DocumentChange change) {
+        super.onDocumentRemoved(change);
+        removeAt(change.getOldIndex());
+    }
+
+
+    @Override
+    protected void onError(FirebaseFirestoreException e) {
+        super.onError(e);
+    }
+
+    @Override
+    protected void onDataChanged() {
+        super.onDataChanged();
+    }
+
 
 
     private void onLikeCounter(final boolean increament){

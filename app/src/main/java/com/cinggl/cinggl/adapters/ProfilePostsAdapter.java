@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.firestore.FirestoreAdapter;
@@ -31,7 +32,6 @@ import com.cinggl.cinggl.models.TransactionDetails;
 import com.cinggl.cinggl.viewholders.ProfilePostsViewHolder;
 import com.cinggl.cinggl.viewholders.WhoLikedViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -41,6 +41,7 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -126,22 +127,24 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
 
         //initialize firebase auth
         firebaseAuth = FirebaseAuth.getInstance();
-        //initialize firestore
-        cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-        ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
-        usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-        ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
-        commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
-        likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
-        relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
-        commentsCountQuery = commentsReference;
-        profileCinglesQuery = cinglesReference.whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid());
-        senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
-        sellingReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
-        //initialize firebase
-        likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
-        cingleWalletRef = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_WALLET);
-        likesQuery = likesRef.child(postKey).limitToFirst(5);
+        if (firebaseAuth.getCurrentUser() != null){
+            //initialize firestore
+            cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
+            usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+            ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
+            commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
+            likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
+            relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
+            commentsCountQuery = commentsReference;
+            profileCinglesQuery = cinglesReference.whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid());
+            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
+            sellingReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
+            //initialize firebase
+            likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
+            cingleWalletRef = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_WALLET);
+            likesQuery = likesRef.child(postKey).limitToFirst(5);
+        }
 
 
         holder.likesCountTextView.setOnClickListener(new View.OnClickListener() {
@@ -231,28 +234,77 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                             .into(holder.cingleImageView, new Callback() {
                                 @Override
                                 public void onSuccess() {
-
+                                    //successfully loads from CACHE
+                                    Log.d("picasso", "successfully loaded");
                                 }
 
                                 @Override
                                 public void onError() {
-                                    Picasso.with(mContext)
+                                    // fetch online because cache is not there
+                                    App.picasso.with(mContext)
                                             .load(post.getCingleImageUrl())
-                                            .into(holder.cingleImageView, new Callback() {
+                                            .fetch(new Callback() {
                                                 @Override
                                                 public void onSuccess() {
+                                                    App.picasso.with(mContext)
+                                                            .load(post.getCingleImageUrl())
+                                                            .into(holder.cingleImageView, new com.squareup.picasso.Callback() {
+                                                                @Override
+                                                                public void onSuccess() {
+                                                                    Log.d("picasso", "successfully loaded");
+                                                                    //success..
+                                                                }
 
+                                                                @Override
+                                                                public void onError() {
+                                                                    Log.v("picasso", "Could not fetch image");
+                                                                    Log.d("picasso images", post.getCingleImageUrl() +"");
+
+
+                                                                }
+                                                            });
                                                 }
 
                                                 @Override
                                                 public void onError() {
+                                                    //NO IMAGE offline or online
                                                     Log.v("Picasso", "Could not fetch image");
+                                                    Log.d("picasso images", post.getCingleImageUrl() +"");
+
+
                                                 }
                                             });
-
-
                                 }
                             });
+
+//                    Picasso.with(mContext)
+//                            .load(post.getCingleImageUrl())
+//                            .networkPolicy(NetworkPolicy.OFFLINE)
+//                            .into(holder.cingleImageView, new Callback() {
+//                                @Override
+//                                public void onSuccess() {
+//
+//                                }
+//
+//                                @Override
+//                                public void onError() {
+//                                    Picasso.with(mContext)
+//                                            .load(post.getCingleImageUrl())
+//                                            .into(holder.cingleImageView, new Callback() {
+//                                                @Override
+//                                                public void onSuccess() {
+//
+//                                                }
+//
+//                                                @Override
+//                                                public void onError() {
+//                                                    Log.v("Picasso", "Could not fetch image");
+//                                                }
+//                                            });
+//
+//
+//                                }
+//                            });
 
                     if (post.getTitle().equals("")){
                         holder.cingleTitleRelativeLayout.setVisibility(View.GONE);
@@ -285,7 +337,7 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                     final String profileImage = cinggulan.getProfileImage();
 
                     holder.accountUsernameTextView.setText(username);
-                    Picasso.with(mContext)
+                    App.picasso.with(mContext)
                             .load(profileImage)
                             .resize(MAX_WIDTH, MAX_HEIGHT)
                             .onlyScaleDown()
@@ -300,7 +352,7 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
 
                                 @Override
                                 public void onError() {
-                                    Picasso.with(mContext)
+                                    App.picasso.with(mContext)
                                             .load(profileImage)
                                             .resize(MAX_WIDTH, MAX_HEIGHT)
                                             .onlyScaleDown()
@@ -369,7 +421,7 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
 
                 if (documentSnapshot.exists()){
                     final PostSale postSale = documentSnapshot.toObject(PostSale.class);
-                    holder.cingleTradeMethodTextView.setText("@CingleSelling");
+                    holder.cingleTradeMethodTextView.setText("@Selling");
                 }else {
                     holder.cingleTradeMethodTextView.setText("@NotOnTrade");
 
@@ -441,7 +493,7 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                                                         Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
                                                         final String profileImage = cinggulan.getProfileImage();
 
-                                                        Picasso.with(mContext)
+                                                        App.picasso.with(mContext)
                                                                 .load(profileImage)
                                                                 .resize(MAX_WIDTH, MAX_HEIGHT)
                                                                 .onlyScaleDown()
@@ -456,7 +508,7 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
 
                                                                     @Override
                                                                     public void onError() {
-                                                                        Picasso.with(mContext)
+                                                                        App.picasso.with(mContext)
                                                                                 .load(profileImage)
                                                                                 .resize(MAX_WIDTH, MAX_HEIGHT)
                                                                                 .onlyScaleDown()
@@ -645,6 +697,13 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
 
     }
 
+
+    @Override
+    protected void onDocumentRemoved(DocumentChange change) {
+        super.onDocumentRemoved(change);
+        removeAt(change.getOldIndex());
+    }
+
     private void onLikeCounter(final boolean increament){
 
         likesRef.runTransaction(new Transaction.Handler() {
@@ -680,6 +739,8 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
+
+
 }
 
 

@@ -48,7 +48,7 @@
             android:layout_toStartOf="@+id/followTextView">
 
             <TextView
-                android:text="user comment"
+                android:text=""
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/usernameTextView"
@@ -60,7 +60,7 @@
                 android:textSize="21sp" />
 
             <TextView
-                android:text="username"
+                android:text=""
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/usernameTextView"

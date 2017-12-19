@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.home.PostDetailActivity;
@@ -161,7 +162,7 @@ public class WalletActivity extends AppCompatActivity {
 
                                     if (documentSnapshot.exists()){
                                         final Post post = documentSnapshot.toObject(Post.class);
-                                        Picasso.with(WalletActivity.this)
+                                        App.picasso.with(WalletActivity.this)
                                                 .load(post.getCingleImageUrl())
                                                 .networkPolicy(NetworkPolicy.OFFLINE)
                                                 .into(holder.cingleImageView, new Callback() {
@@ -172,7 +173,7 @@ public class WalletActivity extends AppCompatActivity {
 
                                                     @Override
                                                     public void onError() {
-                                                        Picasso.with(WalletActivity.this)
+                                                        App.picasso.with(WalletActivity.this)
                                                                 .load(post.getCingleImageUrl())
                                                                 .into(holder.cingleImageView);
 

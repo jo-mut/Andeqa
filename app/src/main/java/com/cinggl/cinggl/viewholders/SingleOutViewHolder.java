@@ -2,7 +2,6 @@ package com.cinggl.cinggl.viewholders;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -10,14 +9,14 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.cinggl.cinggl.ProportionalImageView;
+import com.cinggl.cinggl.App;
+import com.cinggl.cinggl.utils.ProportionalImageView;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Post;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -53,6 +52,7 @@ public class SingleOutViewHolder extends RecyclerView.ViewHolder {
     public RelativeLayout descriptionRelativeLayout;
     public RecyclerView likesRecyclerView;
 
+
     public SingleOutViewHolder(View itemView) {
         super(itemView);
         mView = itemView;
@@ -84,7 +84,8 @@ public class SingleOutViewHolder extends RecyclerView.ViewHolder {
         senseCreditsTextView = (TextView) mView.findViewById(R.id.postSenseCreditsTextView);
         tradeMethodTextView = (TextView) mView.findViewById(R.id.tradeMethodTextView);
 
-        Picasso.with(mContext)
+
+        App.picasso.with(mContext)
                 .load(post.getCingleImageUrl())
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(postImageView, new Callback() {
@@ -95,7 +96,7 @@ public class SingleOutViewHolder extends RecyclerView.ViewHolder {
 
                     @Override
                     public void onError() {
-                        Picasso.with(mContext)
+                        App.picasso.with(mContext)
                                 .load(post.getCingleImageUrl())
                                 .into(postImageView, new Callback() {
                                     @Override

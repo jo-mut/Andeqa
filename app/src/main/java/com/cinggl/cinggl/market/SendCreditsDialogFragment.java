@@ -166,9 +166,9 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
                             Log.d("cingle sale price", salePrice + "");
 
                             if (amountTransferred < salePrice){
-                                mAmountEnteredEditText.setError("Your wallet has insufficient balance");
+                                mAmountEnteredEditText.setError("Your credits are insufficient");
                             }else if (mAmountEnteredEditText.equals("")){
-                                mAmountEnteredEditText.setError("Enter the tagged price");
+                                mAmountEnteredEditText.setError("Enter the sale price");
                             }else  if (amountTransferred > salePrice){
                                 mAmountEnteredEditText.setError("Amount is more than sale price");
                             } else{
@@ -193,7 +193,8 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
                                                                 @Override
                                                                 public void onComplete(@NonNull Task<Void> task) {
                                                                     if (task.isSuccessful()){
-                                                                        postWalletReference.document(mPostKey).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                                        postWalletReference.document(mPostKey).get()
+                                                                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                                                             @Override
                                                                             public void onSuccess(DocumentSnapshot documentSnapshot) {
                                                                                 if (documentSnapshot.exists()){
@@ -259,6 +260,8 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
                                                                 }
                                                             });
 
+                                                }else {
+                                                    mAmountEnteredEditText.setText("Your wallet has insufficient credits");
                                                 }
                                             }
                                         });

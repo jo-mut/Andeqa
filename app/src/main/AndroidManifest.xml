@@ -36,16 +36,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".profile.SignInActivity"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:name=".registration.SignInActivity"
+            android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".profile.SignUpActivity"
+            android:name=".registration.SignUpActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".creation.CreatePostActivity"
@@ -94,7 +88,7 @@
             android:label="Profile"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity android:name=".profile.ResetPasswordActivity" />
+        <activity android:name=".registration.ResetPasswordActivity" />
 
         <receiver
             android:name=".services.ConnectivityReceiver"
@@ -123,7 +117,7 @@
             android:name=".home.MainActivity"
             android:label="Cinggl"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"/>
         <activity
             android:name=".home.FullImageViewActivity"
             android:label="Post" />
@@ -153,7 +147,7 @@
             android:label="Market"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity android:name=".profile.CreateProfileActivity" />
+        <activity android:name=".registration.CreateProfileActivity" />
         <activity
             android:name=".home.PostDetailActivity"
             android:label="Post"
@@ -165,6 +159,22 @@
             android:label="Popular"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".registration.FollowCinggulans"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
+            android:name=".home.InitializationActivity">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
     </application>
 
 </manifest>

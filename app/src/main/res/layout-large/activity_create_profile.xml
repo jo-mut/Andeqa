@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout 
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_create_profile"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.cinggl.cinggl.profile.CreateProfileActivity"
-    android:background="@drawable/gradient_color">
+    tools:context="com.cinggl.cinggl.registration.CreateProfileActivity">
 
     <ScrollView
         android:scrollbars="none"
@@ -21,6 +20,26 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <RelativeLayout
+                android:background="@android:color/white"
+                android:id="@+id/errorRelativeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:visibility="gone"
+                android:layout_gravity="bottom">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:text=""
+                    android:id="@+id/errorTextView"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingTop="5dp"
+                    android:layout_centerVertical="false"
+                    android:layout_centerInParent="true" />
+
+            </RelativeLayout>
 
             <LinearLayout
                 android:orientation="vertical"
@@ -28,80 +47,31 @@
                 android:layout_height="wrap_content">
 
                 <RelativeLayout
-                    android:background="@android:color/white"
-                    android:id="@+id/errorRelativeLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="150dp"
-                    android:visibility="gone"
-                    android:layout_gravity="bottom">
+                    android:layout_height="334dp"
+                  >
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="15sp"
-                        android:text=""
-                        android:id="@+id/errorTextView"
-                        android:layout_gravity="center_horizontal"
-                        android:paddingTop="5dp"
-                        android:layout_centerVertical="false"
-                        android:layout_centerInParent="true" />
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_weight="0.07"
-                    android:layout_marginBottom="15dp"
-                    android:layout_height="450dp">
-
-                    <ImageView
-                        android:id="@+id/profileCoverImageView"
-                        android:src="@drawable/gradient_color"
-                        android:alpha="0.1"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop" />
-
-
-                    <ViewAnimator
-                        android:id="@+id/animator"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:animateFirstView="false"
-                        android:layout_centerInParent="true">
-
-
-                        <de.hdodenhof.circleimageview.CircleImageView
-                            android:id="@+id/profilePictureImageView"
-                            android:layout_centerHorizontal="true"
-                            android:layout_alignParentTop="true"
-                            android:layout_gravity="center"
-                            android:background="@drawable/profile_circular_border_imageview"
-                            android:layout_width="150dp"
-                            android:layout_height="180dp" />
-
-                        <ProgressBar
-                            android:id="@+id/progress"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"/>
-
-                    </ViewAnimator>
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/profilePictureImageView"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="30dp"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginTop="30dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/border_color_primary"
+                        android:layout_width="200dp"
+                        android:layout_height="240dp" />
 
                     <ImageButton
-                        android:layout_height="40dp"
                         android:src="@drawable/ic_menu_camera"
-                        android:layout_width="40dp"
-                        android:layout_marginLeft="100dp"
-                        android:layout_marginStart="100dp"
+                        android:layout_marginLeft="140dp"
+                        android:layout_marginStart="140dp"
+                        android:layout_marginTop="200dp"
                         android:id="@+id/updateProfilePictureImageButton"
-                        android:layout_alignBottom="@+id/animator"
-                        android:layout_alignLeft="@+id/animator"
-                        android:layout_alignStart="@+id/animator" />
-
+                        android:layout_width="80dp"
+                        android:layout_height="80dp" />
 
                 </RelativeLayout>
-
 
             </LinearLayout>
 
@@ -126,15 +96,14 @@
                         android:layout_toStartOf="@+id/nameDivider"
                         android:textSize="21sp"
                         android:id="@+id/fisrtNameEditText"
-                        android:layout_centerInParent="false"
                         android:layout_centerVertical="false"
                         android:layout_alignParentRight="false"
                         android:layout_alignParentLeft="true"
                         android:layout_width="150sp"
                         android:layout_centerHorizontal="false"
-                        android:padding="20dp"
-                        android:background="@drawable/input_background"
-                        android:layout_marginRight="3dp" />
+                        android:padding="15dp"
+                        android:layout_marginRight="3dp"
+                        android:layout_centerInParent="false" />
 
                     <View
                         android:id="@+id/nameDivider"
@@ -151,20 +120,19 @@
                     <EditText
                         android:inputType="textCapWords"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/input_background"
                         android:hint="Second Name"
                         android:nextFocusDown="@+id/passwordEditText"
-                        android:padding="20dp"
+                        android:padding="15dp"
                         android:textColor="@android:color/black"
                         android:textSize="21sp"
                         android:layout_toRightOf="@+id/nameDivider"
                         android:layout_toEndOf="@+id/nameDivider"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="false"
+                        android:layout_alignParentEnd="false"
                         android:id="@+id/secondNameEditText"
-                        android:layout_alignParentLeft="true"
-                        android:layout_width="150sp"
-                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="false"
+                        android:layout_width="match_parent"
+                        android:layout_alignParentTop="false"
                         android:layout_marginLeft="3dp" />
 
 
@@ -185,12 +153,12 @@
                         android:freezesText="true"
                         android:textSize="21sp"
                         android:layout_width="match_parent"
-                        android:background="@drawable/input_background"
                         android:hint="Username"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:padding="20dp" />
+                        android:layout_alignParentTop="false"
+                        android:layout_alignParentLeft="false"
+                        android:layout_alignParentStart="false"
+                        android:padding="15dp"
+                        android:layout_centerInParent="true" />
 
 
                 </RelativeLayout>
@@ -199,13 +167,14 @@
                     android:id="@+id/submitRelativeLayout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:paddingBottom="5dp">
+                    android:paddingBottom="5dp"
+                    android:layout_marginTop="20dp">
 
                     <Button
                         android:id="@+id/submitUserInfoButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="20dp"
+                        android:padding="25dp"
                         android:text="Done"
                         android:background="@drawable/colour_btn_background"
                         android:textSize="21sp"
@@ -216,12 +185,33 @@
 
                 </RelativeLayout>
 
-            </LinearLayout>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="5dp"
+                    android:id="@+id/resendLinkRelativeLayout">
 
+
+                    <TextView
+                        android:text="Resend confirmation link"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="15dp"
+                        android:paddingBottom="15dp"
+                        android:textColor="@color/colorPrimary"
+                        android:id="@+id/resendLinkTextView"
+                        android:textAllCaps="true"
+                        android:textStyle="normal|bold"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:textSize="21sp" />
+                </RelativeLayout>
+
+            </LinearLayout>
 
         </LinearLayout>
 
     </ScrollView>
 
-    
 </LinearLayout>

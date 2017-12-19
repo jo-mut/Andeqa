@@ -6,8 +6,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
+import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
-import com.cinggl.cinggl.ProportionalImageView;
+import com.cinggl.cinggl.utils.ProportionalImageView;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Post;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -22,7 +23,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -110,7 +110,7 @@ public class FullImageViewActivity extends AppCompatActivity implements View.OnC
                     Log.d("detailed image", image);
 
                     //set the post image
-                    Picasso.with(FullImageViewActivity.this)
+                    App.picasso.with(FullImageViewActivity.this)
                             .load(image)
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(mCingleImageView, new Callback() {
@@ -121,7 +121,7 @@ public class FullImageViewActivity extends AppCompatActivity implements View.OnC
 
                                 @Override
                                 public void onError() {
-                                    Picasso.with(FullImageViewActivity.this)
+                                    App.picasso.with(FullImageViewActivity.this)
                                             .load(image)
                                             .into(mCingleImageView);
                                 }

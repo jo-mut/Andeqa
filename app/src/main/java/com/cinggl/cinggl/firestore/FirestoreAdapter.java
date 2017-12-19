@@ -38,10 +38,14 @@ public abstract class FirestoreAdapter <VH extends RecyclerView.ViewHolder>
     private ArrayList<DocumentSnapshot> mSnapshots = new ArrayList<>();
 
 
-
     public FirestoreAdapter(Query query) {
         mQuery = query;
     }
+
+    public void removeAt(int position){
+        mSnapshots.get(position);
+    }
+
 
     @Override
     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {

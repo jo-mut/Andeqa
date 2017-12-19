@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
+import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cinggulan;
@@ -160,7 +161,7 @@ public class LikesActivity extends AppCompatActivity {
                                         viewHolder.usernameTextView.setText(username);
                                         viewHolder.fullNameTextView.setText(firstName + " " + secondName);
 
-                                        Picasso.with(LikesActivity.this)
+                                        App.picasso.with(LikesActivity.this)
                                                 .load(profileImage)
                                                 .fit()
                                                 .centerCrop()
@@ -174,7 +175,7 @@ public class LikesActivity extends AppCompatActivity {
 
                                                     @Override
                                                     public void onError() {
-                                                        Picasso.with(LikesActivity.this)
+                                                        App.picasso.with(LikesActivity.this)
                                                                 .load(profileImage)
                                                                 .fit()
                                                                 .centerCrop()
@@ -229,37 +230,35 @@ public class LikesActivity extends AppCompatActivity {
                                     public void onClick(View view) {
                                         processFollow = true;
                                         relationsReference.document("followers")
-                                                .collection(postKey).whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+                                                .collection(uid).whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
                                                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                                     @Override
                                                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+
+                                                        if (e != null) {
+                                                            Log.w(TAG, "Listen error", e);
+                                                            return;
+                                                        }
+
                                                         if (processFollow){
                                                             if (documentSnapshots.isEmpty()){
+                                                                //set followers and following
                                                                 Relation follower = new Relation();
                                                                 follower.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                relationsReference.document("followers").collection(postKey)
-                                                                        .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
-                                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                            @Override
-                                                                            public void onSuccess(Void aVoid) {
-                                                                                Relation following = new Relation();
-                                                                                following.setUid(postKey);
-                                                                                relationsReference.document("following").collection(firebaseAuth
-                                                                                        .getCurrentUser().getUid()).document(postKey).set(following);
-                                                                            }
-                                                                        });
+                                                                relationsReference.document("followers").collection(uid)
+                                                                        .document(firebaseAuth.getCurrentUser().getUid()).set(follower);
+                                                                final Relation following = new Relation();
+                                                                following.setUid(uid);
+                                                                relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
+                                                                        .document(uid).set(following);
                                                                 processFollow = false;
                                                                 viewHolder.followButton.setText("Following");
                                                             }else {
-                                                                relationsReference.document("followers").collection(postKey)
-                                                                        .document(firebaseAuth.getCurrentUser().getUid()).delete()
-                                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                            @Override
-                                                                            public void onSuccess(Void aVoid) {
-                                                                                relationsReference.document("following").collection(firebaseAuth.getCurrentUser()
-                                                                                        .getUid()).document(postKey).delete();
-                                                                            }
-                                                                        });
+                                                                relationsReference.document("followers").collection(uid)
+                                                                        .document(firebaseAuth.getCurrentUser().getUid()).delete();
+                                                                relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
+                                                                        .document(uid).delete();
                                                                 processFollow = false;
                                                                 viewHolder.followButton.setText("Follow");
                                                             }

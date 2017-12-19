@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_gravity="top"
         app:titleTextAppearance="@style/toolbarTextSize"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="56dp"
         android:background="@color/colorPrimary"
         app:layout_scrollFlags="scroll|enterAlways"
         app:popupTheme="@style/AppTheme.PopupOverlay"
@@ -125,6 +125,8 @@
                     android:layout_centerVertical="true"
                     android:layout_toRightOf="@+id/postCreatorTextView"
                     android:layout_toEndOf="@+id/postCreatorTextView"
+                    android:layout_toLeftOf="@+id/creatorImageView"
+                    android:layout_toStartOf="@+id/creatorImageView"
                     android:textSize="14sp" />
 
             </RelativeLayout>
@@ -210,17 +212,6 @@
                 android:paddingRight="3dp">
 
                 <TextView
-                    android:text="Sale Price:"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/cingleSalePriceTitleTextView"
-                    android:textSize="14sp"
-                    android:textStyle="normal|bold"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true" />
-
-                <TextView
                     android:text=""
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -282,6 +273,20 @@
                     android:visibility="invisible"
                     android:id="@+id/editSalePriceEditText" />
 
+                <TextView
+                    android:text="Sale Price:"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cingleSalePriceTitleTextView"
+                    android:textSize="14sp"
+                    android:textStyle="normal|bold"
+                    android:layout_alignBaseline="@+id/postSalePriceTextView"
+                    android:layout_alignBottom="@+id/postSalePriceTextView"
+                    android:layout_toLeftOf="@+id/editSalePriceImageView"
+                    android:layout_toStartOf="@+id/editSalePriceImageView"
+                    android:layout_toRightOf="@+id/doneEditingImageView"
+                    android:layout_toEndOf="@+id/doneEditingImageView" />
+
             </RelativeLayout>
 
 
@@ -309,6 +314,8 @@
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@+id/ownerTitleTextView"
                     android:layout_toEndOf="@+id/ownerTitleTextView"
+                    android:layout_toLeftOf="@+id/ownerImageView"
+                    android:layout_toStartOf="@+id/ownerImageView"
                     android:id="@+id/postOwnerTextView"
                     android:layout_marginTop="5dp"
                     android:layout_marginLeft="10dp"
@@ -377,7 +384,6 @@
                             android:layout_height="wrap_content"
                             android:id="@+id/postSenseCreditsTextView"
                             android:textStyle="normal|bold"
-                            android:background="@drawable/border_color_primary"
                             android:textSize="12sp"
                             android:paddingTop="3dp"
                             android:paddingBottom="3dp"
@@ -386,6 +392,8 @@
                             android:layout_alignParentTop="true"
                             android:layout_toRightOf="@+id/commentsCountTextView"
                             android:layout_toEndOf="@+id/commentsCountTextView"
+                            android:layout_toLeftOf="@+id/tradeCingleButton"
+                            android:layout_toStartOf="@+id/tradeCingleButton"
                             android:layout_marginLeft="10dp"
                             android:layout_centerVertical="true" />
 

@@ -30,10 +30,10 @@
                 android:layout_width="match_parent"
                 android:background="@drawable/gradient_color"
                 android:layout_marginBottom="15dp"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent">
 
                 <ImageView
-                    android:id="@+id/header_cover_image"
+                    android:id="@+id/profileCoverImageView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
@@ -216,7 +216,8 @@
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
                         android:textSize="14sp"
-                        android:padding="10dp" />
+                        android:padding="10dp"
+                        android:textAlignment="center" />
 
                 </RelativeLayout>
 

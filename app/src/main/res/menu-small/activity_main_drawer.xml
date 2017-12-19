@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:icon="@drawable/ic_home_white_24dp"
+            android:id="@+id/action_home"
+            android:title="@string/home" />
+
+        <item
+            android:icon="@drawable/ic_person_black_24dp"
+            android:id="@+id/action_profile"
+            android:title="@string/profile" />
+
+        <item
+            android:icon="@drawable/ic_business_black_24dp"
+            android:id="@+id/action_ifair"
+            android:title="@string/Market" />
+
+        <item
+            android:icon="@drawable/ic_feedback_black_24dp"
+            android:id="@+id/action_send_feedback"
+            android:title="@string/sendfeedback" />
+
+    </group>
+
+    <!--<item android:title="@string/extras">-->
+        <!--<menu>-->
+
+            <!--<item-->
+                <!--android:icon="@drawable/ic_info_black_24dp"-->
+                <!--android:id="@+id/action_about"-->
+                <!--android:title="@string/about" />-->
+
+        <!--</menu>-->
+    <!--</item>-->
+
+    <item android:title="@string/extras">
+        <menu>
+
+            <item
+                android:icon="@drawable/ic_menu_share"
+                android:id="@+id/action_share_cinggl"
+                android:title="@string/share" />
+
+        </menu>
+    </item>
+
+</menu>

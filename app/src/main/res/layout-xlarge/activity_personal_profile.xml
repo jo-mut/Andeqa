@@ -30,11 +30,11 @@
                 android:layout_width="match_parent"
                 android:background="@drawable/gradient_color"
                 android:layout_marginBottom="15dp"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent">
 
 
                 <ImageView
-                    android:id="@+id/header_cover_image"
+                    android:id="@+id/profileCoverImageView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
@@ -220,7 +220,8 @@
                         android:textSize="14sp"
                         android:textColor="@android:color/white"
                         android:layout_marginTop="5dp"
-                        android:layout_marginBottom="5dp" />
+                        android:layout_marginBottom="5dp"
+                        android:textAlignment="center" />
 
                 </RelativeLayout>
 
@@ -228,11 +229,17 @@
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
+                android:layout_gravity="top"
+                android:background="@color/colorPrimary"
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:titleTextAppearance="@style/toolbarTextSize"
+                app:titleMarginStart="-50sp"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
+                android:layout_height="112dp"
+                app:popupTheme="@style/AppTheme.PopupOverlay"
+                app:titleTextColor="@android:color/white"
                 android:title="Collapsing Toolbar"
-                app:layout_collapseMode="pin" />
+                app:layout_collapseMode="pin"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>

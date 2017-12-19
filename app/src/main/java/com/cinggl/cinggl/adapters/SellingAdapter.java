@@ -2,12 +2,17 @@ package com.cinggl.cinggl.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.data.DataFetcher;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.model.stream.StreamModelLoader;
+import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.firestore.FirestoreAdapter;
@@ -24,6 +29,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -33,6 +39,8 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +86,7 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
 
     @Override
     public PostSellingViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.ifair_cingles_layout, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.market_posts_layout, parent, false);
         return new PostSellingViewHolder(view);
     }
 
@@ -165,7 +173,7 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
                 if (documentSnapshot.exists()){
                     final Post post = documentSnapshot.toObject(Post.class);
 
-                    Picasso.with(mContext)
+                    App.picasso.with(mContext)
                             .load(post.getCingleImageUrl())
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(holder.cingleImageView, new Callback() {
@@ -176,7 +184,7 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
 
                                 @Override
                                 public void onError() {
-                                    Picasso.with(mContext)
+                                    App.picasso.with(mContext)
                                             .load(post.getCingleImageUrl())
                                             .into(holder.cingleImageView, new Callback() {
                                                 @Override
@@ -210,7 +218,7 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
                 }
 
                 if (documentSnapshot.exists()){
-                    holder.cingleTradeMethodTextView.setText("@CingleSelling");
+                    holder.cingleTradeMethodTextView.setText("@Selling");
                 }else {
                     holder.cingleTradeMethodTextView.setText("@NotOnTrade");
 
@@ -253,7 +261,7 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
                     final String profileImage = cinggulan.getProfileImage();
                     final String username = cinggulan.getUsername();
                     holder.usernameTextView.setText(username);
-                    Picasso.with(mContext)
+                    App.picasso.with(mContext)
                             .load(profileImage)
                             .resize(MAX_WIDTH, MAX_HEIGHT)
                             .onlyScaleDown()
@@ -268,7 +276,7 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
 
                                 @Override
                                 public void onError() {
-                                    Picasso.with(mContext)
+                                    App.picasso.with(mContext)
                                             .load(profileImage)
                                             .resize(MAX_WIDTH, MAX_HEIGHT)
                                             .onlyScaleDown()
@@ -308,7 +316,7 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
                                 final String profileImage = cinggulan.getProfileImage();
                                 final String username = cinggulan.getUsername();
                                 holder.cingleOwnerTextView.setText(username);
-                                Picasso.with(mContext)
+                                App.picasso.with(mContext)
                                         .load(profileImage)
                                         .resize(MAX_WIDTH, MAX_HEIGHT)
                                         .onlyScaleDown()
@@ -323,7 +331,7 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
 
                                             @Override
                                             public void onError() {
-                                                Picasso.with(mContext)
+                                                App.picasso.with(mContext)
                                                         .load(profileImage)
                                                         .resize(MAX_WIDTH, MAX_HEIGHT)
                                                         .onlyScaleDown()
@@ -341,4 +349,14 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
 
 
     }
+
+
+    @Override
+    protected void onDocumentRemoved(DocumentChange change) {
+        super.onDocumentRemoved(change);
+        removeAt(change.getOldIndex());
+    }
+
+
+
 }

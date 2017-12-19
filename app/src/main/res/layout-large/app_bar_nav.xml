@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.cinggl.cinggl.home.NavActivity">
+    tools:context="com.cinggl.cinggl.home.MainActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             app:titleTextAppearance="@style/nameToolbarTextSize"
             android:titleTextColor="@android:color/white"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="84dp"
             android:background="@color/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/AppTheme.PopupOverlay">

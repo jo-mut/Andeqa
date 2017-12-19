@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_gravity="top"
             app:titleTextAppearance="@style/toolbarTextSize"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="56dp"
             android:background="@color/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/AppTheme.PopupOverlay"
@@ -105,7 +105,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <com.cinggl.cinggl.ProportionalImageView
+                    <com.cinggl.cinggl.utils.ProportionalImageView
                         android:id="@+id/postImageView"
                         android:layout_width="match_parent"
                         android:layout_alignParentTop="true"

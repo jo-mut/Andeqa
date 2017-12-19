@@ -13,7 +13,7 @@
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:fitsSystemWindows="true"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="56dp"
         android:theme="@style/AppTheme.AppBarOverlay"
         android:background="@color/colorPrimary">
 
@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             app:titleTextAppearance="@style/nameToolbarTextSize"
             android:titleTextColor="@android:color/white"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="56dp"
             android:background="@color/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/AppTheme.PopupOverlay">

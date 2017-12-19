@@ -19,7 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.profile.SignUpActivity;
+import com.cinggl.cinggl.registration.SignUpActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
