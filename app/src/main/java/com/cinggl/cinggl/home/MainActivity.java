@@ -26,7 +26,6 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.SingleOutAdapter;
@@ -34,13 +33,11 @@ import com.cinggl.cinggl.creation.CreatePostActivity;
 import com.cinggl.cinggl.market.MarketActivity;
 import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.models.Post;
-import com.cinggl.cinggl.models.Relation;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -49,6 +46,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -138,7 +136,7 @@ public class MainActivity extends AppCompatActivity
 
             fetchData();
             fetchUserEmail();
-            setRandomCingles();
+            latestPosts();
 
         }
 
@@ -215,7 +213,7 @@ public class MainActivity extends AppCompatActivity
 
                     mFullNameTextView.setText(firstName + " " + secondName);
 
-                    App.picasso.with(MainActivity.this)
+                    Picasso.with(MainActivity.this)
                             .load(profileImage)
                             .resize(MAX_WIDTH, MAX_HEIGHT)
                             .onlyScaleDown()
@@ -230,7 +228,7 @@ public class MainActivity extends AppCompatActivity
 
                                 @Override
                                 public void onError() {
-                                    App.picasso.with(MainActivity.this)
+                                    Picasso.with(MainActivity.this)
                                             .load(profileImage)
                                             .resize(MAX_WIDTH, MAX_HEIGHT)
                                             .onlyScaleDown()
@@ -241,7 +239,7 @@ public class MainActivity extends AppCompatActivity
                                 }
                             });
 
-                    App.picasso.with(MainActivity.this)
+                    Picasso.with(MainActivity.this)
                             .load(profileCover)
                             .fit()
                             .centerCrop()
@@ -254,7 +252,7 @@ public class MainActivity extends AppCompatActivity
 
                                 @Override
                                 public void onError() {
-                                    App.picasso.with(MainActivity.this)
+                                    Picasso.with(MainActivity.this)
                                             .load(profileCover)
                                             .fit()
                                             .centerCrop()
@@ -330,70 +328,28 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-//    private void setRandomCingles(){
-//        relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
-//                .orderBy("uid").addSnapshotListener(new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-//                if (e != null) {
-//                    Log.w(TAG, "Listen error", e);
-//                    return;
-//                }
-//
-//                Log.d("following uid", documentSnapshots.size() + "");
-//
-//                if (!documentSnapshots.isEmpty()){
-//                    for (DocumentChange change : documentSnapshots.getDocumentChanges()){
-//                        Relation relation = change.getDocument().toObject(Relation.class);
-//                        final String uid = relation.getUid();
-//
-//                        Log.d("uid", uid);
-//
-//                        randomPostsQuery.whereEqualTo("uid", uid).addSnapshotListener(new EventListener<QuerySnapshot>() {
-//                            @Override
-//                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-//
-//                                if (!documentSnapshots.isEmpty()){
-//                                    Log.d("available random posts", documentSnapshots.size() + "");
-//                                }
-//                            }
-//                        });
-//
-//                        randomPostsQuery.whereEqualTo("uid", uid);
-//                        singleOutAdapter = new SingleOutAdapter(randomPostsQuery, MainActivity.this);
-//                        singleOutAdapter.startListening();
-//                        singleOutRecyclerView.setAdapter(singleOutAdapter);
-//                        singleOutRecyclerView.setHasFixedSize(false);
-//                        layoutManager = new LinearLayoutManager(MainActivity.this);
-//                        singleOutRecyclerView.setLayoutManager(layoutManager);
-//                    }
-//                }
-//            }
-//        });
-//    }
-
-    private void setRandomCingles(){
+    private void latestPosts(){
         randomPostsQuery.orderBy("timeStamp", Query.Direction.DESCENDING)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                .limit(50).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
 
 
-                        if (!documentSnapshots.isEmpty()){
-                            singleOutAdapter = new SingleOutAdapter(randomPostsQuery, MainActivity.this);
-                            singleOutAdapter.startListening();
-                            singleOutRecyclerView.setAdapter(singleOutAdapter);
-                            singleOutRecyclerView.setHasFixedSize(false);
-                            layoutManager = new LinearLayoutManager(MainActivity.this);
-                            singleOutRecyclerView.setLayoutManager(layoutManager);
-                        }
-                    }
-                });
+                if (!documentSnapshots.isEmpty()){
+                    singleOutAdapter = new SingleOutAdapter(randomPostsQuery, MainActivity.this);
+                    singleOutAdapter.startListening();
+                    singleOutRecyclerView.setAdapter(singleOutAdapter);
+                    singleOutRecyclerView.setHasFixedSize(false);
+                    layoutManager = new LinearLayoutManager(MainActivity.this);
+                    singleOutRecyclerView.setLayoutManager(layoutManager);
+                }
+            }
+        });
     }
 
 

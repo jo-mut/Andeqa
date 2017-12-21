@@ -61,7 +61,7 @@ public class FollowCinggulansViewHolder extends RecyclerView.ViewHolder{
         mBioRelativeLayout = (RelativeLayout) mView.findViewById(R.id.bioRelativeLayout);
         mFollowButtonRelativeLayout = (RelativeLayout) mView.findViewById(R.id.followButtonRelativeLayout);
 
-        App.picasso.with(mContext)
+        Picasso.with(mContext)
                 .load(cinggulan.getProfileImage())
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(mCinggulanImageView, new Callback() {
@@ -72,7 +72,7 @@ public class FollowCinggulansViewHolder extends RecyclerView.ViewHolder{
 
                     @Override
                     public void onError() {
-                        App.picasso.with(mContext)
+                        Picasso.with(mContext)
                                 .load(cinggulan.getProfileImage())
                                 .into(mCinggulanImageView, new Callback() {
                                     @Override
@@ -91,7 +91,7 @@ public class FollowCinggulansViewHolder extends RecyclerView.ViewHolder{
                 });
 
         if (cinggulan.getProfileCover() != null){
-            App.picasso.with(mContext)
+            Picasso.with(mContext)
                     .load(cinggulan.getProfileCover())
                     .networkPolicy(NetworkPolicy.OFFLINE)
                     .into(mProfileCoverImageView, new Callback() {
@@ -102,7 +102,7 @@ public class FollowCinggulansViewHolder extends RecyclerView.ViewHolder{
 
                         @Override
                         public void onError() {
-                            App.picasso.with(mContext)
+                            Picasso.with(mContext)
                                     .load(cinggulan.getProfileCover())
                                     .into(mProfileCoverImageView, new Callback() {
                                         @Override

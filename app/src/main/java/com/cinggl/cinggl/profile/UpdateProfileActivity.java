@@ -180,7 +180,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
             if (requestCode == GALLERY_PROFILE_COVER_PHOTO){
                 imageUri = data.getData();
 
-                App.picasso.with(this).load(imageUri)
+                Picasso.with(this).load(imageUri)
                         .resize(MAX_COVER_WIDTH, MAX_COVER_HEIGHT)
                         .onlyScaleDown().centerCrop()
                         .placeholder(R.drawable.gradient_color)
@@ -192,7 +192,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                             }
                             @Override
                             public void onError() {
-                                App.picasso.with(UpdateProfileActivity.this).load(imageUri)
+                                Picasso.with(UpdateProfileActivity.this).load(imageUri)
                                         .resize(MAX_COVER_WIDTH, MAX_COVER_HEIGHT)
                                         .onlyScaleDown().centerCrop()
                                         .placeholder(R.drawable.profle_image_background)
@@ -207,7 +207,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
             if (requestCode == GALLERY_PROFILE_PHOTO_REQUEST) {
                 profileUri = data.getData();
 
-                App.picasso.with(this)
+                Picasso.with(this)
                         .load(profileUri).resize(MAX_WIDTH, MAX_HEIGHT).onlyScaleDown()
                         .centerCrop().placeholder(R.drawable.profle_image_background)
                         .networkPolicy(NetworkPolicy.OFFLINE)
@@ -219,7 +219,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 
                             @Override
                             public void onError() {
-                                App.picasso.with(UpdateProfileActivity.this)
+                                Picasso.with(UpdateProfileActivity.this)
                                         .load(profileUri).resize(MAX_WIDTH, MAX_HEIGHT)
                                         .onlyScaleDown().centerCrop().placeholder(R.drawable.profle_image_background)
                                         .into(mProfilePictureImageView);
@@ -311,7 +311,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                                 final String profileImage = cinggulan.getProfileImage();
                                 Log.d("profile image", profileImage);
 
-                                App.picasso.with(UpdateProfileActivity.this)
+                                Picasso.with(UpdateProfileActivity.this)
                                         .load(profileImage)
                                         .resize(MAX_WIDTH, MAX_HEIGHT)
                                         .onlyScaleDown()
@@ -326,7 +326,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 
                                             @Override
                                             public void onError() {
-                                                App.picasso.with(UpdateProfileActivity.this)
+                                                Picasso.with(UpdateProfileActivity.this)
                                                         .load(profileImage)
                                                         .resize(MAX_WIDTH, MAX_HEIGHT)
                                                         .onlyScaleDown()
@@ -387,7 +387,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                                 final String profileCover= cinggulan.getProfileCover();
                                 Log.d("profile image", profileCover);
 
-                                App.picasso.with(UpdateProfileActivity.this)
+                                Picasso.with(UpdateProfileActivity.this)
                                         .load(profileCover).resize(MAX_WIDTH, MAX_HEIGHT)
                                         .onlyScaleDown().centerCrop().placeholder(R.drawable.gradient_color)
                                         .networkPolicy(NetworkPolicy.OFFLINE)
@@ -399,7 +399,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 
                                             @Override
                                             public void onError() {
-                                                App.picasso.with(UpdateProfileActivity.this)
+                                                Picasso.with(UpdateProfileActivity.this)
                                                         .load(profileCover).resize(MAX_WIDTH, MAX_HEIGHT)
                                                         .onlyScaleDown().centerCrop()
                                                         .placeholder(R.drawable.gradient_color)

@@ -316,7 +316,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
                 profileUri = data.getData();
 //                mProfilePictureImageView.setImageURI(imageUri);
 
-                App.picasso.with(this)
+                Picasso.with(this)
                         .load(profileUri).resize(MAX_WIDTH, MAX_HEIGHT).onlyScaleDown()
                         .centerCrop().placeholder(R.drawable.profle_image_background)
                         .networkPolicy(NetworkPolicy.OFFLINE)
@@ -328,7 +328,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
 
                             @Override
                             public void onError() {
-                                App.picasso.with(CreateProfileActivity.this)
+                                Picasso.with(CreateProfileActivity.this)
                                         .load(profileUri).resize(MAX_WIDTH, MAX_HEIGHT)
                                         .onlyScaleDown().centerCrop().placeholder(R.drawable.profle_image_background)
                                         .into(mProfilePictureImageView);

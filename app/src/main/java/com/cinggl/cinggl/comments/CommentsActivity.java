@@ -49,6 +49,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -205,7 +206,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                     }
 
                     //set the post image
-                    App.picasso.with(CommentsActivity.this)
+                    Picasso.with(CommentsActivity.this)
                             .load(image)
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(mCingleImageView, new Callback() {
@@ -216,7 +217,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
                                 @Override
                                 public void onError() {
-                                    App.picasso.with(CommentsActivity.this)
+                                    Picasso.with(CommentsActivity.this)
                                             .load(image)
                                             .into(mCingleImageView);
                                 }
@@ -238,7 +239,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                                 final String username = cinggulan.getUsername();
 
                                 mAccountUsernameTextView.setText(username);
-                                App.picasso.with(CommentsActivity.this)
+                                Picasso.with(CommentsActivity.this)
                                         .load(profileImage)
                                         .fit()
                                         .centerCrop()
@@ -252,7 +253,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
                                             @Override
                                             public void onError() {
-                                                App.picasso.with(CommentsActivity.this)
+                                                Picasso.with(CommentsActivity.this)
                                                         .load(profileImage)
                                                         .fit()
                                                         .centerCrop()
@@ -320,7 +321,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                             final String username = cinggulan.getUsername();
 
                             holder.usernameTextView.setText(username);
-                            App.picasso.with(CommentsActivity.this)
+                            Picasso.with(CommentsActivity.this)
                                     .load(profileImage)
                                     .fit()
                                     .centerCrop()
@@ -334,7 +335,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
                                         @Override
                                         public void onError() {
-                                            App.picasso.with(CommentsActivity.this)
+                                            Picasso.with(CommentsActivity.this)
                                                     .load(profileImage)
                                                     .fit()
                                                     .centerCrop()

@@ -23,6 +23,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -110,7 +111,7 @@ public class FullImageViewActivity extends AppCompatActivity implements View.OnC
                     Log.d("detailed image", image);
 
                     //set the post image
-                    App.picasso.with(FullImageViewActivity.this)
+                    Picasso.with(FullImageViewActivity.this)
                             .load(image)
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(mCingleImageView, new Callback() {
@@ -121,7 +122,7 @@ public class FullImageViewActivity extends AppCompatActivity implements View.OnC
 
                                 @Override
                                 public void onError() {
-                                    App.picasso.with(FullImageViewActivity.this)
+                                    Picasso.with(FullImageViewActivity.this)
                                             .load(image)
                                             .into(mCingleImageView);
                                 }

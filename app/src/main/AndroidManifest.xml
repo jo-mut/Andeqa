@@ -10,6 +10,7 @@
         android:xlargeScreens="true" />
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -32,7 +33,6 @@
         android:icon="@mipmap/ic_launcher"
         android:label="Cinggl"
         android:largeHeap="false"
-        android:manageSpaceActivity=".ManageSpaceActivity"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
@@ -64,7 +64,7 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".likes.LikesActivity"
-            android:label="Cingulans who liked"
+            android:label="Cinggulans who liked"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
@@ -153,7 +153,6 @@
             android:label="Post"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity android:name=".ManageSpaceActivity" />
         <activity
             android:name=".home.BestPostsActivity"
             android:label="Popular"

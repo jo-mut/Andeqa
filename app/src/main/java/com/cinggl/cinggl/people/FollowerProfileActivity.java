@@ -33,6 +33,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -237,7 +238,7 @@ public class FollowerProfileActivity extends AppCompatActivity
 
                             collapsingToolbarLayout.setTitle(username + "'s" + " profile");
 
-                            App.picasso.with(FollowerProfileActivity.this)
+                            Picasso.with(FollowerProfileActivity.this)
                                     .load(profileImage)
                                     .resize(MAX_WIDTH, MAX_HEIGHT)
                                     .onlyScaleDown()
@@ -252,7 +253,7 @@ public class FollowerProfileActivity extends AppCompatActivity
 
                                         @Override
                                         public void onError() {
-                                            App.picasso.with(FollowerProfileActivity.this)
+                                            Picasso.with(FollowerProfileActivity.this)
                                                     .load(profileImage)
                                                     .resize(MAX_WIDTH, MAX_HEIGHT)
                                                     .onlyScaleDown()
@@ -263,7 +264,7 @@ public class FollowerProfileActivity extends AppCompatActivity
                                         }
                                     });
 
-                            App.picasso.with(FollowerProfileActivity.this)
+                            Picasso.with(FollowerProfileActivity.this)
                                     .load(profileCover)
                                     .fit()
                                     .centerCrop()
@@ -276,7 +277,7 @@ public class FollowerProfileActivity extends AppCompatActivity
 
                                         @Override
                                         public void onError() {
-                                            App.picasso.with(FollowerProfileActivity.this)
+                                            Picasso.with(FollowerProfileActivity.this)
                                                     .load(profileCover)
                                                     .fit()
                                                     .centerCrop()

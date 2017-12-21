@@ -34,6 +34,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -241,7 +242,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
 
                             mFullNameTextView.setText(firstName + " " + secondName);
                             mBioTextView.setText(bio);
-                            App.picasso.with(PersonalProfileActivity.this)
+                            Picasso.with(PersonalProfileActivity.this)
                                     .load(profileImage)
                                     .resize(MAX_WIDTH, MAX_HEIGHT)
                                     .onlyScaleDown()
@@ -256,7 +257,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
 
                                         @Override
                                         public void onError() {
-                                            App.picasso.with(PersonalProfileActivity.this)
+                                            Picasso.with(PersonalProfileActivity.this)
                                                     .load(profileImage)
                                                     .resize(MAX_WIDTH, MAX_HEIGHT)
                                                     .onlyScaleDown()
@@ -267,7 +268,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
                                         }
                                     });
 
-                            App.picasso.with(PersonalProfileActivity.this)
+                            Picasso.with(PersonalProfileActivity.this)
                                     .load(profileCover)
                                     .fit()
                                     .centerCrop()
@@ -280,7 +281,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
 
                                         @Override
                                         public void onError() {
-                                            App.picasso.with(PersonalProfileActivity.this)
+                                            Picasso.with(PersonalProfileActivity.this)
                                                     .load(profileCover)
                                                     .fit()
                                                     .centerCrop()
@@ -352,7 +353,6 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
                     return;
                 }
 
-                Log.d("profile posts", documentSnapshots.size() + "");
 
                 if (!documentSnapshots.isEmpty()){
                     // RecyclerView

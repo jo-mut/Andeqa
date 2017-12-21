@@ -124,7 +124,7 @@ public class FollowingFragment extends Fragment {
 
                             holder.usernameTextView.setText(username);
                             holder.fullNameTextView.setText(firstName + " " + secondName);
-                            App.picasso.with(getContext())
+                            Picasso.with(getContext())
                                     .load(profileImage)
                                     .fit()
                                     .centerCrop()
@@ -138,7 +138,7 @@ public class FollowingFragment extends Fragment {
 
                                         @Override
                                         public void onError() {
-                                            App.picasso.with(getContext())
+                                            Picasso.with(getContext())
                                                     .load(profileImage)
                                                     .fit()
                                                     .centerCrop()
@@ -170,7 +170,7 @@ public class FollowingFragment extends Fragment {
                                         @Override
                                         public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
                                             if (documentSnapshots.isEmpty()){
-                                                holder.followButton.setText("Follow");
+                                                holder.followButton.setText("Unfollow");
                                             }else {
                                                 holder.followButton.setText("Following");
                                             }
@@ -219,7 +219,7 @@ public class FollowingFragment extends Fragment {
                                                                 relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
                                                                         .document(postKey).delete();
                                                                 processFollow = false;
-                                                                holder.followButton.setText("Follow");
+                                                                holder.followButton.setText("Unfollow");
                                                             }
                                                         }
                                                     }

@@ -3,20 +3,20 @@ package com.cinggl.cinggl;
 
 import android.app.Application;
 import android.content.Context;
+import android.net.Uri;
 import android.support.multidex.MultiDex;
+import android.util.Log;
 
 import com.cinggl.cinggl.services.ConnectivityReceiver;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
-import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
-import okhttp3.Cache;
-import okhttp3.OkHttpClient;
+
 
 import static com.google.firebase.firestore.FirebaseFirestore.setLoggingEnabled;
 import static com.squareup.picasso.Picasso.setSingletonInstance;
@@ -40,25 +40,31 @@ public class App extends Application {
                 .setPersistenceEnabled(true)
                 .build();
         FirebaseFirestore.getInstance().setFirestoreSettings(settings);
-        setLoggingEnabled(true);
+        FirebaseFirestore.setLoggingEnabled(true);
 
-//        Picasso.Builder builder = new Picasso.Builder(this);
-//        builder.downloader(new OkHttpDownloader(this,Integer.MAX_VALUE));
-//        Picasso built = builder.build();
-//        built.setIndicatorsEnabled(false);
-//        built.setLoggingEnabled(true);
-//        Picasso.setSingletonInstance(built);
+        Picasso.Builder builder = new Picasso.Builder(this).listener(new Picasso.Listener() {
+            @Override
+            public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
+                exception.printStackTrace();
+                Log.i("Cinggl image load" + uri.toString(), "exception msg" + exception.getMessage());
+            }
+        });
+        builder.downloader(new OkHttpDownloader(this,Integer.MAX_VALUE));
+        Picasso built = builder.build();
+        built.setIndicatorsEnabled(false);
+        built.setLoggingEnabled(true);
+        Picasso.setSingletonInstance(built);
 
 
-        //path to app specific cache
-        File httpCacheDirectory = new File(getCacheDir(), "cinggl-cache");
-        final Cache cache = new Cache(httpCacheDirectory, 15 * 1024 * 1024);
-        OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder()
-                .cache(cache);
-        picasso = new Picasso.Builder(this).downloader
-                (new OkHttp3Downloader(okHttpClientBuilder.build())).build();
-        picasso.setIndicatorsEnabled(false);
-        picasso.setLoggingEnabled(true);
+//        //path to app specific cache
+//        File httpCacheDirectory = new File(getCacheDir(), "cinggl-cache");
+//        final Cache cache = new Cache(httpCacheDirectory, 15 * 1024 * 1024);
+//        OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder()
+//                .cache(cache);
+//        picasso = new Picasso.Builder(this).downloader
+//                (new OkHttp3Downloader(okHttpClientBuilder.build())).build();
+//        picasso.setIndicatorsEnabled(false);
+//        picasso.setLoggingEnabled(true);
         mInstance = this;
 
 

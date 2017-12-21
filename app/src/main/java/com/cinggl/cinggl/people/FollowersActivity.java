@@ -124,7 +124,7 @@ public class FollowersActivity extends AppCompatActivity {
 
                             holder.usernameTextView.setText(username);
                             holder.fullNameTextView.setText(firstName + " " + secondName);
-                            App.picasso.with(FollowersActivity.this)
+                            Picasso.with(FollowersActivity.this)
                                     .load(profileImage)
                                     .fit()
                                     .centerCrop()
@@ -138,7 +138,7 @@ public class FollowersActivity extends AppCompatActivity {
 
                                         @Override
                                         public void onError() {
-                                            App.picasso.with(FollowersActivity.this)
+                                            Picasso.with(FollowersActivity.this)
                                                     .load(profileImage)
                                                     .fit()
                                                     .centerCrop()

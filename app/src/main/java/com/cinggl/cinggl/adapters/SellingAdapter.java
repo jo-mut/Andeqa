@@ -173,7 +173,7 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
                 if (documentSnapshot.exists()){
                     final Post post = documentSnapshot.toObject(Post.class);
 
-                    App.picasso.with(mContext)
+                    Picasso.with(mContext)
                             .load(post.getCingleImageUrl())
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(holder.cingleImageView, new Callback() {
@@ -184,7 +184,7 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
 
                                 @Override
                                 public void onError() {
-                                    App.picasso.with(mContext)
+                                    Picasso.with(mContext)
                                             .load(post.getCingleImageUrl())
                                             .into(holder.cingleImageView, new Callback() {
                                                 @Override
@@ -261,7 +261,7 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
                     final String profileImage = cinggulan.getProfileImage();
                     final String username = cinggulan.getUsername();
                     holder.usernameTextView.setText(username);
-                    App.picasso.with(mContext)
+                    Picasso.with(mContext)
                             .load(profileImage)
                             .resize(MAX_WIDTH, MAX_HEIGHT)
                             .onlyScaleDown()
@@ -276,7 +276,7 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
 
                                 @Override
                                 public void onError() {
-                                    App.picasso.with(mContext)
+                                    Picasso.with(mContext)
                                             .load(profileImage)
                                             .resize(MAX_WIDTH, MAX_HEIGHT)
                                             .onlyScaleDown()
@@ -316,7 +316,7 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
                                 final String profileImage = cinggulan.getProfileImage();
                                 final String username = cinggulan.getUsername();
                                 holder.cingleOwnerTextView.setText(username);
-                                App.picasso.with(mContext)
+                                Picasso.with(mContext)
                                         .load(profileImage)
                                         .resize(MAX_WIDTH, MAX_HEIGHT)
                                         .onlyScaleDown()
@@ -331,7 +331,7 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
 
                                             @Override
                                             public void onError() {
-                                                App.picasso.with(mContext)
+                                                Picasso.with(mContext)
                                                         .load(profileImage)
                                                         .resize(MAX_WIDTH, MAX_HEIGHT)
                                                         .onlyScaleDown()

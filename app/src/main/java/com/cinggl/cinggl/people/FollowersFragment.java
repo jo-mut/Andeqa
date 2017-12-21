@@ -125,7 +125,7 @@ public class FollowersFragment extends Fragment {
 
                             holder.usernameTextView.setText(username);
                             holder.fullNameTextView.setText(firstName + " " + secondName);
-                            App.picasso.with(getContext())
+                            Picasso.with(getContext())
                                     .load(profileImage)
                                     .fit()
                                     .centerCrop()
@@ -139,7 +139,7 @@ public class FollowersFragment extends Fragment {
 
                                         @Override
                                         public void onError() {
-                                            App.picasso.with(getContext())
+                                            Picasso.with(getContext())
                                                     .load(profileImage)
                                                     .fit()
                                                     .centerCrop()

@@ -126,7 +126,7 @@ public class FollowingActivity extends AppCompatActivity {
 
                             holder.usernameTextView.setText(username);
                             holder.fullNameTextView.setText(firstName + " " + secondName);
-                            App.picasso.with(FollowingActivity.this)
+                            Picasso.with(FollowingActivity.this)
                                     .load(profileImage)
                                     .fit()
                                     .centerCrop()
@@ -140,7 +140,7 @@ public class FollowingActivity extends AppCompatActivity {
 
                                         @Override
                                         public void onError() {
-                                            App.picasso.with(FollowingActivity.this)
+                                            Picasso.with(FollowingActivity.this)
                                                     .load(profileImage)
                                                     .fit()
                                                     .centerCrop()
@@ -173,7 +173,7 @@ public class FollowingActivity extends AppCompatActivity {
                                         @Override
                                         public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
                                             if (documentSnapshots.isEmpty()){
-                                                holder.followButton.setText("Follow");
+                                                holder.followButton.setText("Unfollow");
                                             }else {
                                                 holder.followButton.setText("Following");
                                             }
@@ -221,7 +221,7 @@ public class FollowingActivity extends AppCompatActivity {
                                                                 relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
                                                                         .document(postKey).delete();
                                                                 processFollow = false;
-                                                                holder.followButton.setText("Follow");
+                                                                holder.followButton.setText("Unfollow");
                                                             }
                                                         }
                                                     }

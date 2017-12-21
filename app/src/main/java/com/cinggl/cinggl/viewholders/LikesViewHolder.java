@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Like;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -34,8 +35,8 @@ public class LikesViewHolder extends RecyclerView.ViewHolder {
         fullNameTextView = (TextView) itemView.findViewById(R.id.fullNameTextView);
     }
 
-    public void bindLikes(final Like like){
-        final CircleImageView profileImageView = (CircleImageView) mView.findViewById(R.id.creatorImageView);
+    public void bindLikes(final DocumentSnapshot documentSnapshot){
+        profileImageView = (CircleImageView) mView.findViewById(R.id.creatorImageView);
 
     }
 

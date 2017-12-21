@@ -272,7 +272,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
                     mAccountUsernameTextView.setText(username);
 
-                    App.picasso.with(CreatePostActivity.this)
+                    Picasso.with(CreatePostActivity.this)
                             .load(profileImage)
                             .fit()
                             .centerCrop()
@@ -285,7 +285,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
                                 @Override
                                 public void onError() {
-                                    App.picasso.with(CreatePostActivity.this)
+                                    Picasso.with(CreatePostActivity.this)
                                             .load(profileImage)
                                             .fit()
                                             .centerCrop()

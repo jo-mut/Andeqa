@@ -190,11 +190,8 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
 
                                 Log.d("amount of sensecredits", finalCredits + "");
 
-                                final Credit credit = new Credit();
-                                credit.setAmount(finalCredits);
-                                credit.setPushId(mPostKey);
-                                credit.setUid(firebaseAuth.getCurrentUser().getUid());
-                                senseCreditReference.document(mPostKey).set(credit).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                senseCreditReference.document(mPostKey).update("amount", finalCredits)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()){
@@ -224,13 +221,12 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
 
                                                         final Balance balance = new Balance();
                                                         balance.setTotalBalance(newAmount);
+                                                        balance.setAmountRedeemed(amountTransferred);
                                                         postWalletReference.document(mPostKey).set(balance).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                             @Override
                                                             public void onComplete(@NonNull Task<Void> task) {
                                                                 if (task.isSuccessful()){
                                                                     //RECORD THE REDEEMED AMOUNT TRANSFERRED TO THE USE WALLET
-                                                                    final Balance balance = new Balance();
-                                                                    balance.setAmountRedeemed(amountTransferred);
                                                                     walletReference.document(firebaseAuth.getCurrentUser().getUid()).get()
                                                                             .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                                                         @Override

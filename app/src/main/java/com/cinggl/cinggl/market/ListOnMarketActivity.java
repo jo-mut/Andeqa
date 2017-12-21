@@ -41,6 +41,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
 
@@ -72,9 +73,6 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
     private CollectionReference senseCreditReference;
     private CollectionReference ifairReference;
 
-    //firebase
-    private DatabaseReference ifairRef;
-    private DatabaseReference cinglesRef;
     //REMOVE SCIENTIFIC NOATATION
     private DecimalFormat formatter =  new DecimalFormat("0.00000000");
 
@@ -114,13 +112,6 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
             ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
 
-            //firebase
-            ifairRef = FirebaseDatabase.getInstance().getReference(Constants.IFAIR);
-            cinglesRef = FirebaseDatabase.getInstance().getReference(Constants.POSTS);
-
-            ifairRef.keepSynced(true);
-            cinglesRef.keepSynced(true);
-
             //initialize input filter
             setEditTextFilter();
             //initialize click listeners
@@ -156,7 +147,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                     //set the post title
                     mCingleTitleTextView.setText(title);
                     //set the post image
-                    App.picasso.with(ListOnMarketActivity.this)
+                    Picasso.with(ListOnMarketActivity.this)
                             .load(image)
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(mCingleImageView, new Callback() {
@@ -167,7 +158,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
 
                                 @Override
                                 public void onError() {
-                                    App.picasso.with(ListOnMarketActivity.this)
+                                    Picasso.with(ListOnMarketActivity.this)
                                             .load(image)
                                             .into(mCingleImageView);
                                 }
@@ -197,7 +188,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                                 final String profileImage = cinggulan.getProfileImage();
 
                                 mAccountUsernameTextView.setText(username);
-                                App.picasso.with(ListOnMarketActivity.this)
+                                Picasso.with(ListOnMarketActivity.this)
                                         .load(profileImage)
                                         .fit()
                                         .centerCrop()
@@ -211,7 +202,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
 
                                             @Override
                                             public void onError() {
-                                                App.picasso.with(ListOnMarketActivity.this)
+                                                Picasso.with(ListOnMarketActivity.this)
                                                         .load(profileImage)
                                                         .fit()
                                                         .centerCrop()

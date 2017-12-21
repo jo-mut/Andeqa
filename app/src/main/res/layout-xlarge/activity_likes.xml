@@ -29,6 +29,7 @@
 
 
     <RelativeLayout
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:id="@+id/emptyLikesRelativeLayout"
         android:background="#e4e4e4"

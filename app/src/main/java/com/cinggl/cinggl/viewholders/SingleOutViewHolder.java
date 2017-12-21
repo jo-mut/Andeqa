@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -85,7 +86,7 @@ public class SingleOutViewHolder extends RecyclerView.ViewHolder {
         tradeMethodTextView = (TextView) mView.findViewById(R.id.tradeMethodTextView);
 
 
-        App.picasso.with(mContext)
+        Picasso.with(mContext)
                 .load(post.getCingleImageUrl())
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(postImageView, new Callback() {
@@ -96,7 +97,7 @@ public class SingleOutViewHolder extends RecyclerView.ViewHolder {
 
                     @Override
                     public void onError() {
-                        App.picasso.with(mContext)
+                        Picasso.with(mContext)
                                 .load(post.getCingleImageUrl())
                                 .into(postImageView, new Callback() {
                                     @Override

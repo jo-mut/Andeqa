@@ -6,6 +6,7 @@ import android.view.View;
 
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Like;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
@@ -28,7 +29,7 @@ public class WhoLikedViewHolder extends RecyclerView.ViewHolder {
 
     }
 
-    public void bindWhoLiked(final Like like){
+    public void bindWhoLiked(final DocumentSnapshot documentSnapshot){
 
     }
 

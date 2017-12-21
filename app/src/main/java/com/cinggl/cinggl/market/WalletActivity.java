@@ -162,7 +162,7 @@ public class WalletActivity extends AppCompatActivity {
 
                                     if (documentSnapshot.exists()){
                                         final Post post = documentSnapshot.toObject(Post.class);
-                                        App.picasso.with(WalletActivity.this)
+                                        Picasso.with(WalletActivity.this)
                                                 .load(post.getCingleImageUrl())
                                                 .networkPolicy(NetworkPolicy.OFFLINE)
                                                 .into(holder.cingleImageView, new Callback() {
@@ -173,7 +173,7 @@ public class WalletActivity extends AppCompatActivity {
 
                                                     @Override
                                                     public void onError() {
-                                                        App.picasso.with(WalletActivity.this)
+                                                        Picasso.with(WalletActivity.this)
                                                                 .load(post.getCingleImageUrl())
                                                                 .into(holder.cingleImageView);
 
