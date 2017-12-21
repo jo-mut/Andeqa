@@ -55,16 +55,6 @@ public class App extends Application {
         built.setLoggingEnabled(true);
         Picasso.setSingletonInstance(built);
 
-
-//        //path to app specific cache
-//        File httpCacheDirectory = new File(getCacheDir(), "cinggl-cache");
-//        final Cache cache = new Cache(httpCacheDirectory, 15 * 1024 * 1024);
-//        OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder()
-//                .cache(cache);
-//        picasso = new Picasso.Builder(this).downloader
-//                (new OkHttp3Downloader(okHttpClientBuilder.build())).build();
-//        picasso.setIndicatorsEnabled(false);
-//        picasso.setLoggingEnabled(true);
         mInstance = this;
 
 

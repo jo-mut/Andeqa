@@ -6,7 +6,6 @@ package com.cinggl.cinggl;
 
 public final class Constants {
     public  static  final String POSTS = "Posts";
-    public static final String PROFILE_POST = "Profile posts";
     public  static  final String FIREBASE_USERS = "Cingulans";
     public static final String COMMENTS = "Comments";
     public static final String LIKES= "Likes";
@@ -15,13 +14,7 @@ public final class Constants {
     public static final String CINGLE_WALLET = "Post Wallet";
     public static final String TRANSACTION_HISTORY = "Transaction History";
     public static final String CINGLE_ONWERS = "Post Owners";
-    public static final String TIMELINE = "Timeline";
     public static final String SENSECREDITS = "Sense Credit";
     public static final String IFAIR = "Ifair";
-    public static final String CINGLE_BACKING = "Post Backing";
-    public static final String CINGLE_LEASING ="Post Leasing";
-    public static final String CINGLE_LACING = "Post Lacing";
-    public static final String ASSET_TRADING = "Asset Trading";
-    public static final String MAIN_MARKET ="Main Market";
-    public static final String LOGIN_KEY = "login";
+
 }

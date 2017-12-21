@@ -34,6 +34,9 @@ import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.viewholders.BestPostsViewHolder;
 import com.cinggl.cinggl.viewholders.WhoLikedViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.firebase.ui.firestore.ObservableSnapshotArray;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -89,10 +92,11 @@ public class BestPostsAdapter extends FirestoreAdapter<BestPostsViewHolder> {
     private CollectionReference senseCreditReference;
     private CollectionReference postWalletReference;
     private CollectionReference likesReference;
+    private Query likesQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //adapters
-    private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
+    private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
 
     public BestPostsAdapter(Query query, Context mContext) {
         super(query);
@@ -459,110 +463,113 @@ public class BestPostsAdapter extends FirestoreAdapter<BestPostsViewHolder> {
 
 
 
+        likesReference.document(postKey).collection("likes").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-//        //retrieve the first users who liked
-//        likesRef.child(postKey).addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                if (dataSnapshot.exists()){
-//                    Log.d("likes count", dataSnapshot.getChildrenCount() + "");
-//                    if (dataSnapshot.getChildrenCount()>0){
-//                        holder.likesRecyclerView.setVisibility(View.VISIBLE);
-//                        //SETUP USERS WHO LIKED THE CINGLE
-//                        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Like, WhoLikedViewHolder>
-//                                (Like.class, R.layout.who_liked_count, WhoLikedViewHolder.class, likesQuery) {
-//                            @Override
-//                            public int getItemCount() {
-//                                return super.getItemCount();
-//
-//                            }
-//
-//                            @Override
-//                            public long getItemId(int position) {
-//                                return super.getItemId(position);
-//                            }
-//
-//                            @Override
-//                            protected void populateViewHolder(final WhoLikedViewHolder viewHolder, final Like model, final int position) {
-//                                DatabaseReference userRef = getRef(position);
-//                                final String likesPostKey = userRef.getKey();
-//                                Log.d(TAG, "likes post key" + likesPostKey);
-//
-//                                likesRef.child(postKey).child(likesPostKey).addValueEventListener(new ValueEventListener() {
-//                                    @Override
-//                                    public void onDataChange(DataSnapshot dataSnapshot) {
-//                                        if (dataSnapshot.child("uid").exists()){
-//                                            final String uid = (String) dataSnapshot.child("uid").getValue();
-//                                            Log.d(TAG, "uid in likes post" + uid);
-//
-//                                            usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//                                                @Override
-//                                                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-//                                                    if (documentSnapshot.exists()) {
-//                                                        Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-//                                                        final String profileImage = cinggulan.getProfileImage();
-//
-//                                                        Picasso.with(mContext)
-//                                                                .load(profileImage)
-//                                                                .resize(MAX_WIDTH, MAX_HEIGHT)
-//                                                                .onlyScaleDown()
-//                                                                .centerCrop()
-//                                                                .placeholder(R.drawable.profle_image_background)
-//                                                                .networkPolicy(NetworkPolicy.OFFLINE)
-//                                                                .into(viewHolder.whoLikedImageView, new Callback() {
-//                                                                    @Override
-//                                                                    public void onSuccess() {
-//
-//                                                                    }
-//
-//                                                                    @Override
-//                                                                    public void onError() {
-//                                                                        Picasso.with(mContext)
-//                                                                                .load(profileImage)
-//                                                                                .resize(MAX_WIDTH, MAX_HEIGHT)
-//                                                                                .onlyScaleDown()
-//                                                                                .centerCrop()
-//                                                                                .placeholder(R.drawable.profle_image_background)
-//                                                                                .into(viewHolder.whoLikedImageView);
-//
-//
-//                                                                    }
-//                                                                });
-//                                                    }
-//                                                }
-//                                            });
-//                                        }
-//                                    }
-//
-//                                    @Override
-//                                    public void onCancelled(DatabaseError databaseError) {
-//
-//                                    }
-//                                });
-//
-//                            }
-//                        };
-//
-//                        holder.likesRecyclerView.setAdapter(firebaseRecyclerAdapter);
-//                        holder.likesRecyclerView.setHasFixedSize(false);
-//                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext,
-//                                LinearLayoutManager.HORIZONTAL, true);
-//                        layoutManager.setAutoMeasureEnabled(true);
-//                        holder.likesRecyclerView.setNestedScrollingEnabled(false);
-//                        holder.likesRecyclerView.setLayoutManager(layoutManager);
-//
-//                    }else {
-//                        holder.likesRecyclerView.setVisibility(View.GONE);
-//                    }
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (!documentSnapshots.isEmpty()){
+                    if (documentSnapshots.size() > 0){
+                        holder.likesRecyclerView.setVisibility(View.VISIBLE);
+                        likesQuery = likesReference.document(postKey).collection("likes").orderBy("uid");
+                        FirestoreRecyclerOptions<Like> options = new FirestoreRecyclerOptions.Builder<Like>()
+                                .setQuery(likesQuery, Like.class)
+                                .build();
+
+                        firestoreRecyclerAdapter = new FirestoreRecyclerAdapter<Like, WhoLikedViewHolder>(options) {
+
+                            @Override
+                            protected void onBindViewHolder(final WhoLikedViewHolder holder, int position, Like model) {
+                                holder.bindWhoLiked(getSnapshots().getSnapshot(position));
+                                Like like = getSnapshots().getSnapshot(position).toObject(Like.class);
+                                final String postKey = like.getPushId();
+                                final String uid = like.getUid();
+
+                                //get the profile of the user who just liked
+                                usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                                        if (e != null) {
+                                            Log.w(TAG, "Listen error", e);
+                                            return;
+                                        }
+
+                                        if (documentSnapshot.exists()){
+                                            final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
+                                            final String profileImage = cinggulan.getProfileImage();
+
+                                            Picasso.with(mContext)
+                                                    .load(profileImage)
+                                                    .fit()
+                                                    .centerCrop()
+                                                    .placeholder(R.drawable.profle_image_background)
+                                                    .networkPolicy(NetworkPolicy.OFFLINE)
+                                                    .into(holder.whoLikedImageView, new Callback() {
+                                                        @Override
+                                                        public void onSuccess() {
+
+                                                        }
+
+                                                        @Override
+                                                        public void onError() {
+                                                            Picasso.with(mContext)
+                                                                    .load(profileImage)
+                                                                    .fit()
+                                                                    .centerCrop()
+                                                                    .placeholder(R.drawable.profle_image_background)
+                                                                    .into(holder.whoLikedImageView);
+
+
+                                                        }
+                                                    });
+
+                                        }
+                                    }
+                                });
+
+
+                            }
+
+                            @Override
+                            public ObservableSnapshotArray<Like> getSnapshots() {
+                                return super.getSnapshots();
+                            }
+
+                            @Override
+                            public WhoLikedViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                                View view = LayoutInflater.from(parent.getContext()).inflate
+                                        (R.layout.who_liked_count, parent, false);
+                                return new WhoLikedViewHolder(view);
+
+                            }
+
+                            @Override
+                            public int getItemCount() {
+                                return super.getItemCount();
+                            }
+                        };
+
+                        holder.likesRecyclerView.setAdapter(firestoreRecyclerAdapter);
+                        firestoreRecyclerAdapter.startListening();
+                        holder.likesRecyclerView.setHasFixedSize(false);
+                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext,
+                                LinearLayoutManager.HORIZONTAL, true);
+                        layoutManager.setAutoMeasureEnabled(true);
+                        holder.likesRecyclerView.setNestedScrollingEnabled(false);
+                        holder.likesRecyclerView.setLayoutManager(layoutManager);
+
+                    }else {
+                        holder.likesRecyclerView.setVisibility(View.GONE);
+                    }
+                }
+            }
+        });
+
 
 
         holder.likesImageView.setOnClickListener(new View.OnClickListener() {

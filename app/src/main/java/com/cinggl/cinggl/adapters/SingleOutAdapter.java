@@ -34,6 +34,7 @@ import com.cinggl.cinggl.models.TransactionDetails;
 import com.cinggl.cinggl.people.FollowerProfileActivity;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.viewholders.CommentViewHolder;
+import com.cinggl.cinggl.viewholders.LikesViewHolder;
 import com.cinggl.cinggl.viewholders.SingleOutViewHolder;
 import com.cinggl.cinggl.viewholders.WhoLikedViewHolder;
 import com.firebase.ui.common.ChangeEventType;
@@ -66,6 +67,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 import static com.cinggl.cinggl.R.id.singleOutRecyclerView;
 
 /**
@@ -354,6 +356,8 @@ public class SingleOutAdapter extends FirestoreAdapter<SingleOutViewHolder> {
                     }
                 });
 
+
+
         likesReference.document(postKey).collection("likes").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -366,7 +370,7 @@ public class SingleOutAdapter extends FirestoreAdapter<SingleOutViewHolder> {
                 if (!documentSnapshots.isEmpty()){
                     if (documentSnapshots.size() > 0){
                         holder.likesRecyclerView.setVisibility(View.VISIBLE);
-                        likesQuery = likesReference.document(postKey).collection("likes").orderBy("uid").limit(5);
+                        likesQuery = likesReference.document(postKey).collection("likes").orderBy("uid");
                         FirestoreRecyclerOptions<Like> options = new FirestoreRecyclerOptions.Builder<Like>()
                                 .setQuery(likesQuery, Like.class)
                                 .build();
@@ -375,13 +379,12 @@ public class SingleOutAdapter extends FirestoreAdapter<SingleOutViewHolder> {
 
                             @Override
                             protected void onBindViewHolder(final WhoLikedViewHolder holder, int position, Like model) {
-                                holder.bindWhoLiked(getSnapshot(position));
-                                final Like like = getSnapshot(position).toObject(Like.class);
+                                holder.bindWhoLiked(getSnapshots().getSnapshot(position));
+                                Like like = getSnapshots().getSnapshot(position).toObject(Like.class);
                                 final String postKey = like.getPushId();
                                 final String uid = like.getUid();
 
-                                Log.d("who liked uid", uid);
-
+                                //get the profile of the user who just liked
                                 usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                     @Override
                                     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -391,14 +394,13 @@ public class SingleOutAdapter extends FirestoreAdapter<SingleOutViewHolder> {
                                             return;
                                         }
 
-                                        if (documentSnapshot.exists()) {
-                                            Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
+                                        if (documentSnapshot.exists()){
+                                            final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
                                             final String profileImage = cinggulan.getProfileImage();
 
                                             Picasso.with(mContext)
                                                     .load(profileImage)
-                                                    .resize(MAX_WIDTH, MAX_HEIGHT)
-                                                    .onlyScaleDown()
+                                                    .fit()
                                                     .centerCrop()
                                                     .placeholder(R.drawable.profle_image_background)
                                                     .networkPolicy(NetworkPolicy.OFFLINE)
@@ -412,8 +414,7 @@ public class SingleOutAdapter extends FirestoreAdapter<SingleOutViewHolder> {
                                                         public void onError() {
                                                             Picasso.with(mContext)
                                                                     .load(profileImage)
-                                                                    .resize(MAX_WIDTH, MAX_HEIGHT)
-                                                                    .onlyScaleDown()
+                                                                    .fit()
                                                                     .centerCrop()
                                                                     .placeholder(R.drawable.profle_image_background)
                                                                     .into(holder.whoLikedImageView);
@@ -421,10 +422,17 @@ public class SingleOutAdapter extends FirestoreAdapter<SingleOutViewHolder> {
 
                                                         }
                                                     });
+
                                         }
                                     }
                                 });
 
+
+                            }
+
+                            @Override
+                            public ObservableSnapshotArray<Like> getSnapshots() {
+                                return super.getSnapshots();
                             }
 
                             @Override
