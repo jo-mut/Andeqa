@@ -347,9 +347,28 @@ public class SingleOutAdapter extends FirestoreAdapter<SingleOutViewHolder> {
 
                         if (!documentSnapshots.isEmpty()){
                             holder.likesCountTextView.setText(documentSnapshots.size() + " " + "Likes");
-                            holder.likesImageView.setColorFilter(Color.RED);
                         }else {
                             holder.likesCountTextView.setText("0" + " " + "Likes");
+                        }
+
+                    }
+                });
+
+
+        likesReference.document(postKey).collection("likes")
+                .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!documentSnapshots.isEmpty()){
+                            holder.likesImageView.setColorFilter(Color.RED);
+                        }else {
                             holder.likesImageView.setColorFilter(Color.BLACK);
                         }
 

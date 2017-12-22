@@ -415,6 +415,26 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         });
 
         likesReference.document(mPostKey).collection("likes")
+                .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!documentSnapshots.isEmpty()){
+                            mLikesImageView.setColorFilter(Color.RED);
+                        }else {
+                            mLikesImageView.setColorFilter(Color.BLACK);
+                        }
+
+                    }
+                });
+
+        likesReference.document(mPostKey).collection("likes")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -426,10 +446,8 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
                         if (!documentSnapshots.isEmpty()){
                             mLikesCountTextView.setText(documentSnapshots.size() + " " + "Likes");
-                            mLikesImageView.setColorFilter(Color.RED);
                         }else {
                             mLikesCountTextView.setText("0" + " " + "Likes");
-                            mLikesImageView.setColorFilter(Color.BLACK);
                         }
 
                     }

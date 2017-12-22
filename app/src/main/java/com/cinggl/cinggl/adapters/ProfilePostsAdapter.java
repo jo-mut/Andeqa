@@ -406,7 +406,7 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
         });
 
 
-        likesReference.document(postKey).collection(firebaseAuth.getCurrentUser().getUid())
+        likesReference.document(postKey).collection("likes")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -418,9 +418,28 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
 
                         if (!documentSnapshots.isEmpty()){
                             holder.likesCountTextView.setText(documentSnapshots.size() + " " + "Likes");
-                            holder.likesImageView.setColorFilter(Color.RED);
                         }else {
                             holder.likesCountTextView.setText("0" + " " + "Likes");
+                        }
+
+                    }
+                });
+
+
+        likesReference.document(postKey).collection("likes")
+                .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!documentSnapshots.isEmpty()){
+                            holder.likesImageView.setColorFilter(Color.RED);
+                        }else {
                             holder.likesImageView.setColorFilter(Color.BLACK);
                         }
 
@@ -428,27 +447,6 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                 });
 
 
-
-        likesReference.document(postKey).collection("likes")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (!documentSnapshots.isEmpty()){
-                    holder.likesCountTextView.setText(documentSnapshots.size() + " " + "Likes");
-                    holder.likesImageView.setColorFilter(Color.RED);
-                }else {
-                    holder.likesCountTextView.setText("0" + " " + "Likes");
-                    holder.likesImageView.setColorFilter(Color.BLACK);
-                }
-
-            }
-        });
 
         likesReference.document(postKey).collection("likes").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override

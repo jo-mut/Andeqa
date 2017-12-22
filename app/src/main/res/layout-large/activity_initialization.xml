@@ -39,7 +39,7 @@
             app:srcCompat="@drawable/cinggl_logo"
             android:layout_centerHorizontal="true"
             android:id="@+id/cingglLogoImageView"
-            android:padding="180dp" />
+            android:padding="210dp" />
 
         <TextView
             android:text="Cinggl"
@@ -50,12 +50,11 @@
             android:id="@+id/appNameTextView"
             android:textColor="@android:color/white"
             android:layout_above="@+id/mottoTextView"
-            android:layout_marginBottom="10dp"
             android:layout_centerVertical="false"
             android:layout_centerHorizontal="true" />
 
         <TextView
-            android:text="A world of inspiration"
+            android:text="A world of value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="false"
