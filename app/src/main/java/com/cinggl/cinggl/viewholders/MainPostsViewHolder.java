@@ -9,7 +9,6 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.utils.ProportionalImageView;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Post;
@@ -29,7 +28,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * Created by J.EL on 11/17/2017.
  */
 
-public class SingleOutViewHolder extends RecyclerView.ViewHolder {
+public class MainPostsViewHolder extends RecyclerView.ViewHolder {
 
     View mView;
     Context mContext;
@@ -54,7 +53,7 @@ public class SingleOutViewHolder extends RecyclerView.ViewHolder {
     public RecyclerView likesRecyclerView;
 
 
-    public SingleOutViewHolder(View itemView) {
+    public MainPostsViewHolder(View itemView) {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
@@ -87,7 +86,7 @@ public class SingleOutViewHolder extends RecyclerView.ViewHolder {
 
 
         Picasso.with(mContext)
-                .load(post.getCingleImageUrl())
+                .load(post.getImage())
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(postImageView, new Callback() {
                     @Override
@@ -98,7 +97,7 @@ public class SingleOutViewHolder extends RecyclerView.ViewHolder {
                     @Override
                     public void onError() {
                         Picasso.with(mContext)
-                                .load(post.getCingleImageUrl())
+                                .load(post.getImage())
                                 .into(postImageView, new Callback() {
                                     @Override
                                     public void onSuccess() {
@@ -114,6 +113,7 @@ public class SingleOutViewHolder extends RecyclerView.ViewHolder {
 
                     }
                 });
+
 
         if (post.getTitle().equals("")){
             titleRelativeLayout.setVisibility(View.GONE);

@@ -35,6 +35,11 @@ public abstract class FirestoreRecyclerAdapter<T, VH extends RecyclerView.ViewHo
         }
     }
 
+    public void removeAt(int position){
+        mSnapshots.get(position);
+    }
+
+
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     public void startListening() {
         if (!mSnapshots.isListening(this)) {

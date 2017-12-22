@@ -18,7 +18,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.utils.ProportionalImageView;
 import com.cinggl.cinggl.R;
@@ -32,8 +31,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -136,7 +133,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                     final Post post = documentSnapshot.toObject(Post.class);
                     final String uid = post.getUid();
                     final String title = post.getTitle();
-                    final String image = post.getCingleImageUrl();
+                    final String image = post.getImage();
 
                     if (post.getTitle().equals("")){
                         mCingleTitleRelativeLayout.setVisibility(View.GONE);

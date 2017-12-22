@@ -14,7 +14,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.home.PostDetailActivity;
@@ -27,11 +26,6 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -163,7 +157,7 @@ public class WalletActivity extends AppCompatActivity {
                                     if (documentSnapshot.exists()){
                                         final Post post = documentSnapshot.toObject(Post.class);
                                         Picasso.with(WalletActivity.this)
-                                                .load(post.getCingleImageUrl())
+                                                .load(post.getImage())
                                                 .networkPolicy(NetworkPolicy.OFFLINE)
                                                 .into(holder.cingleImageView, new Callback() {
                                                     @Override
@@ -174,7 +168,7 @@ public class WalletActivity extends AppCompatActivity {
                                                     @Override
                                                     public void onError() {
                                                         Picasso.with(WalletActivity.this)
-                                                                .load(post.getCingleImageUrl())
+                                                                .load(post.getImage())
                                                                 .into(holder.cingleImageView);
 
 

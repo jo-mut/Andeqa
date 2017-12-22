@@ -11,9 +11,12 @@ import android.widget.TextView;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.utils.ProportionalImageView;
 import com.cinggl.cinggl.models.Credit;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.cinggl.cinggl.R.id.postImageView;
 
 
 /**
@@ -36,13 +39,11 @@ public class BestPostsViewHolder extends RecyclerView.ViewHolder {
     public ImageView settingsImageView;
     public TextView tradeMethodTextView;
     public TextView senseCreditsTextView;
-    public ProportionalImageView postImageView;
     public RelativeLayout toolsRelativeLayout;
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
     public RelativeLayout titleRelativeLayout;
     public RelativeLayout descriptionRelativeLayout;
-    public TextView postMomentTextView;
     public RecyclerView likesRecyclerView;
     public RelativeLayout postTradingRelativeLayout;
     public TextView postOwnerTextView;
@@ -50,6 +51,7 @@ public class BestPostsViewHolder extends RecyclerView.ViewHolder {
     public TextView postSalePriceTextView;
     public RelativeLayout postSalePriceTitleRelativeLayout;
     public TextView datePostedTextView;
+    public ProportionalImageView postImageView;
 
 
     public BestPostsViewHolder(View itemView) {

@@ -21,7 +21,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Post;
@@ -36,7 +35,6 @@ import com.firebase.ui.common.ChangeEventType;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -54,8 +52,6 @@ import com.squareup.picasso.Picasso;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static com.cinggl.cinggl.R.id.followButton;
 
 public class CommentsActivity extends AppCompatActivity implements View.OnClickListener {
     @Bind(R.id.sendCommentImageView)ImageView mSendCommentImageView;
@@ -179,7 +175,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                     final Post post = documentSnapshot.toObject(Post.class);
 
                     final String uid = post.getUid();
-                    final String image = post.getCingleImageUrl();
+                    final String image = post.getImage();
                     final String title = post.getTitle();
 
 

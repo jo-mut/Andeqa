@@ -1,18 +1,41 @@
 package com.cinggl.cinggl.home;
 
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Parcelable;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.adapters.BestPostsAdapter;
+import com.cinggl.cinggl.comments.CommentsActivity;
+import com.cinggl.cinggl.likes.LikesActivity;
+import com.cinggl.cinggl.models.Balance;
+import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.models.Credit;
+import com.cinggl.cinggl.models.Like;
+import com.cinggl.cinggl.models.Post;
+import com.cinggl.cinggl.models.PostSale;
+import com.cinggl.cinggl.models.TransactionDetails;
+import com.cinggl.cinggl.people.FollowerProfileActivity;
+import com.cinggl.cinggl.preferences.BestPostsSettingsDialog;
+import com.cinggl.cinggl.profile.PersonalProfileActivity;
+import com.cinggl.cinggl.viewholders.BestPostsViewHolder;
+import com.cinggl.cinggl.viewholders.WhoLikedViewHolder;
+import com.facebook.drawee.view.SimpleDraweeView;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.firebase.ui.firestore.ObservableSnapshotArray;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -21,12 +44,20 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+
+import static android.util.Log.d;
 
 public class BestPostsActivity extends AppCompatActivity {
     @Bind(R.id.bestPostsRecyclerView)RecyclerView bestCinglesRecyclerView;
@@ -34,19 +65,17 @@ public class BestPostsActivity extends AppCompatActivity {
     private static final String KEY_LAYOUT_POSITION = "layout position";
     private LinearLayoutManager layoutManager;
     private Parcelable recyclerViewState;
+    //cingles member variables
+    private int TOTAL_ITEMS = 4;
+    //firestore reference
+    private CollectionReference commentsReference;
+    private CollectionReference senseCreditReference;
+    private Query bestCinglesQuery;
+    private Query likesQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //adapters
     private BestPostsAdapter bestPostsAdapter;
-    //firestore
-    private CollectionReference senseCreditReference;
-    private Query bestCinglesQuery;
-    //cingles member variables
-    private List<Credit> credits = new ArrayList<>();
-    private List<String> creditIds = new ArrayList<>();
-    private int TOTAL_ITEMS = 4;
-    private DocumentSnapshot lastVisible;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +102,9 @@ public class BestPostsActivity extends AppCompatActivity {
         if (firebaseAuth.getCurrentUser() != null){
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
             bestCinglesQuery = senseCreditReference.orderBy("amount", Query.Direction.DESCENDING);
+            commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
+            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
+
 
             setBestCingles();
             if (savedInstanceState != null){
@@ -85,8 +117,9 @@ public class BestPostsActivity extends AppCompatActivity {
         }
     }
 
+
     private void setBestCingles(){
-        bestCinglesQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        bestCinglesQuery.limit(50).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -167,4 +200,14 @@ public class BestPostsActivity extends AppCompatActivity {
     public void onStop() {
         super.onStop();
     }
+
+    //region listeners
+    private static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+
 }

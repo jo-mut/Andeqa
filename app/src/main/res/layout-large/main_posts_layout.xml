@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fresco="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:scrollbars="none"
     android:background="#e4e4e4"
@@ -20,27 +20,27 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="65dp"
-                android:layout_marginTop="5dp">
+                android:layout_height="100dp"
+                android:padding="5dp">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/creatorImageView"
                     android:layout_centerVertical="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
-                    android:layout_width="55dp"
-                    android:layout_height="55dp"
                     android:background="@drawable/profle_image_background"
                     android:scaleType="centerCrop"
-                    android:cropToPadding="false" />
+                    android:cropToPadding="false"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginStart="12dp"
                     android:id="@+id/usernameTextView"
-                    android:textSize="14sp"
+                    android:textSize="21sp"
                     android:textColor="@android:color/black"
                     android:textStyle="normal|bold"
                     android:layout_alignParentTop="true"
@@ -48,8 +48,7 @@
                     android:layout_toEndOf="@+id/creatorImageView"
                     android:layout_toLeftOf="@+id/tradeMethodTextView"
                     android:layout_toStartOf="@+id/tradeMethodTextView"
-                    android:layout_marginTop="10dp"
-                    android:text="" />
+                    android:layout_marginTop="10dp" />
 
                 <TextView
                     android:text=""
@@ -61,7 +60,8 @@
                     android:layout_alignTop="@+id/creatorImageView"
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="5dp"
-                    android:padding="5dp" />
+                    android:padding="5dp"
+                    android:textSize="21sp" />
 
                 <TextView
                     android:text=""
@@ -69,7 +69,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/postSenseCreditsTextView"
                     android:textStyle="normal|bold"
-                    android:textSize="12sp"
+                    android:textSize="18sp"
                     android:paddingTop="3dp"
                     android:paddingBottom="3dp"
                     android:layout_below="@+id/usernameTextView"
@@ -105,7 +105,7 @@
                             android:id="@+id/titleTextView"
                             android:textStyle="normal|bold"
                             android:textColor="@android:color/black"
-                            android:textSize="16sp"
+                            android:textSize="24sp"
                             android:layout_marginLeft="3dp"
                             android:paddingBottom="5dp" />
 
@@ -121,7 +121,7 @@
                             android:layout_alignParentTop="true"
                             android:layout_centerHorizontal="true"
                             android:adjustViewBounds="true"
-                            android:layout_height="300dp" />
+                            android:layout_height="600dp" />
 
                     </RelativeLayout>
 
@@ -146,50 +146,50 @@
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true" />
 
-
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/ic_chat_bubble_black_24dp"
                     android:id="@+id/commentsImageView"
                     android:tint="@android:color/black"
-                    android:padding="5dp"
                     android:layout_marginLeft="14dp"
                     android:layout_marginStart="14dp"
                     android:layout_alignParentTop="true"
                     android:layout_toRightOf="@+id/likesImageView"
-                    android:layout_toEndOf="@+id/likesImageView" />
+                    android:layout_toEndOf="@+id/likesImageView"
+                    android:padding="10dp" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/ic_favorite_black_24dp"
                     android:id="@+id/likesImageView"
-                    android:padding="5dp"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true" />
+                    android:layout_alignParentStart="true"
+                    android:padding="10dp" />
 
                 <TextView
                     android:text="0"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/commentsCountTextView"
-                    android:textSize="12sp"
+                    android:textSize="18sp"
                     android:paddingTop="2dp"
                     android:paddingBottom="2dp"
                     android:layout_toRightOf="@+id/commentsImageView"
                     android:layout_toEndOf="@+id/commentsImageView"
-                    android:textStyle="normal|bold"
+                    android:textStyle="normal"
                     android:layout_centerInParent="true" />
 
 
             </RelativeLayout>
 
-            <RelativeLayout
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:paddingLeft="5dp"
-                android:layout_height="20dp"
+                android:layout_height="35dp"
                 android:layout_marginBottom="5dp">
 
                 <RelativeLayout
@@ -214,20 +214,21 @@
                         android:background="@drawable/border_color_primary"
                         android:scaleType="centerCrop"
                         android:cropToPadding="false"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
                         android:layout_toRightOf="@+id/likesRecyclerView"
                         android:layout_toEndOf="@+id/likesRecyclerView"
                         android:layout_marginLeft="5dp"
-                        android:textSize="9sp"
+                        android:textSize="16sp"
                         android:text=""
-                        android:paddingLeft="4dp"
-                        android:paddingRight="4dp" />
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp" />
+
+
 
                 </RelativeLayout>
 
-            </RelativeLayout>
-
+            </LinearLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -241,7 +242,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/descriptionTextView"
                     android:textColor="@android:color/black"
-                    android:textSize="14sp"
+                    android:textSize="18sp"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"

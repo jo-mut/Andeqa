@@ -7,12 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.Priority;
-import com.bumptech.glide.load.data.DataFetcher;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.model.stream.StreamModelLoader;
-import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.firestore.FirestoreAdapter;
@@ -39,8 +33,6 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -174,7 +166,7 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
                     final Post post = documentSnapshot.toObject(Post.class);
 
                     Picasso.with(mContext)
-                            .load(post.getCingleImageUrl())
+                            .load(post.getImage())
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(holder.cingleImageView, new Callback() {
                                 @Override
@@ -185,7 +177,7 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
                                 @Override
                                 public void onError() {
                                     Picasso.with(mContext)
-                                            .load(post.getCingleImageUrl())
+                                            .load(post.getImage())
                                             .into(holder.cingleImageView, new Callback() {
                                                 @Override
                                                 public void onSuccess() {

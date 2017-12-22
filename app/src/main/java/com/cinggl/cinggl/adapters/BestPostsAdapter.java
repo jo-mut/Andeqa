@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.comments.CommentsActivity;
@@ -33,18 +32,10 @@ import com.cinggl.cinggl.preferences.BestPostsSettingsDialog;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.viewholders.BestPostsViewHolder;
 import com.cinggl.cinggl.viewholders.WhoLikedViewHolder;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -53,7 +44,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.SetOptions;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -103,6 +93,7 @@ public class BestPostsAdapter extends FirestoreAdapter<BestPostsViewHolder> {
         this.mContext = mContext;
     }
 
+
     @Override
     public int getItemCount() {
         return super.getItemCount();
@@ -115,7 +106,6 @@ public class BestPostsAdapter extends FirestoreAdapter<BestPostsViewHolder> {
         return new BestPostsViewHolder(inflater.inflate(R.layout.best_posts_list, parent, false));
     }
 
-
     @Override
     public void onBindViewHolder(final BestPostsViewHolder holder, int position) {
         final Credit credit = getSnapshot(position).toObject(Credit.class);
@@ -123,6 +113,7 @@ public class BestPostsAdapter extends FirestoreAdapter<BestPostsViewHolder> {
         final String postKey = credit.getPushId();
         final double senseCredits = credit.getAmount();
         Log.d("best cingle postkey", postKey);
+
 
         firebaseAuth = FirebaseAuth.getInstance();
         //firestore
@@ -211,19 +202,20 @@ public class BestPostsAdapter extends FirestoreAdapter<BestPostsViewHolder> {
                     final Post post = documentSnapshot.toObject(Post.class);
                     final String uid = post.getUid();
 
+
                     Picasso.with(mContext)
-                            .load(post.getCingleImageUrl())
+                            .load(post.getImage())
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(holder.postImageView, new Callback() {
                                 @Override
                                 public void onSuccess() {
-                                    Log.v("Picasso", "Fetched image");
+                                    Log.v("Picasso", "Fetched best image");
                                 }
 
                                 @Override
                                 public void onError() {
                                     Picasso.with(mContext)
-                                            .load(post.getCingleImageUrl())
+                                            .load(post.getImage())
                                             .into(holder.postImageView, new Callback() {
                                                 @Override
                                                 public void onSuccess() {
@@ -232,7 +224,7 @@ public class BestPostsAdapter extends FirestoreAdapter<BestPostsViewHolder> {
 
                                                 @Override
                                                 public void onError() {
-                                                    Log.v("Picasso", "Could not fetch image");
+                                                    Log.v("Picasso", "Could not best fetch image");
                                                 }
                                             });
 
@@ -521,6 +513,7 @@ public class BestPostsAdapter extends FirestoreAdapter<BestPostsViewHolder> {
                                         if (documentSnapshot.exists()){
                                             final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
                                             final String profileImage = cinggulan.getProfileImage();
+                                            Log.d("Picasso like image", profileImage);
 
                                             Picasso.with(mContext)
                                                     .load(profileImage)
@@ -733,7 +726,6 @@ public class BestPostsAdapter extends FirestoreAdapter<BestPostsViewHolder> {
                         });
             }
         });
-
 
 
     }

@@ -6,7 +6,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
-import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.utils.ProportionalImageView;
 import com.cinggl.cinggl.R;
@@ -107,7 +106,7 @@ public class FullImageViewActivity extends AppCompatActivity implements View.OnC
 
                 if (documentSnapshot.exists()){
                     final Post post = documentSnapshot.toObject(Post.class);
-                    final String image = post.getCingleImageUrl();
+                    final String image = post.getImage();
                     Log.d("detailed image", image);
 
                     //set the post image

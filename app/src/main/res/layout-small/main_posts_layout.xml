@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fresco="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:scrollbars="none"
     android:background="#e4e4e4"
@@ -20,19 +20,18 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="65dp"
-            android:layout_marginTop="5dp">
+            android:layout_height="50dp">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/creatorImageView"
                 android:layout_centerVertical="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:layout_width="55dp"
-                android:layout_height="55dp"
                 android:background="@drawable/profle_image_background"
                 android:scaleType="centerCrop"
-                android:cropToPadding="false" />
+                android:cropToPadding="false"
+                android:layout_width="40dp"
+                android:layout_height="40dp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -40,7 +39,7 @@
                 android:layout_marginLeft="12dp"
                 android:layout_marginStart="12dp"
                 android:id="@+id/usernameTextView"
-                android:textSize="14sp"
+                android:textSize="10sp"
                 android:textColor="@android:color/black"
                 android:textStyle="normal|bold"
                 android:layout_alignParentTop="true"
@@ -60,7 +59,8 @@
                 android:layout_alignTop="@+id/creatorImageView"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="5dp"
-                android:padding="5dp" />
+                android:padding="5dp"
+                android:textSize="10sp" />
 
             <TextView
                 android:text=""
@@ -68,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/postSenseCreditsTextView"
                 android:textStyle="normal|bold"
-                android:textSize="12sp"
+                android:textSize="9sp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:layout_below="@+id/usernameTextView"
@@ -94,7 +94,6 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="5dp"
                     android:id="@+id/cingleTitleRelativeLayout">
 
                     <TextView
@@ -106,7 +105,7 @@
                         android:id="@+id/titleTextView"
                         android:textStyle="normal|bold"
                         android:textColor="@android:color/black"
-                        android:textSize="16sp"
+                        android:textSize="12sp"
                         android:layout_marginLeft="3dp"
                         android:paddingBottom="5dp" />
 
@@ -122,7 +121,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_centerHorizontal="true"
                         android:adjustViewBounds="true"
-                        android:layout_height="300dp" />
+                        android:layout_height="200dp" />
 
                 </RelativeLayout>
 
@@ -176,13 +175,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/commentsCountTextView"
-                android:textSize="12sp"
+                android:textSize="10sp"
                 android:paddingTop="2dp"
                 android:paddingBottom="2dp"
                 android:layout_toRightOf="@+id/commentsImageView"
                 android:layout_toEndOf="@+id/commentsImageView"
-                android:layout_centerInParent="true"
-                android:layout_centerVertical="true" />
+                android:textStyle="normal"
+                android:layout_centerInParent="true" />
 
 
         </RelativeLayout>
@@ -191,7 +190,7 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:paddingLeft="5dp"
-            android:layout_height="20dp"
+            android:layout_height="15dp"
             android:layout_marginBottom="5dp">
 
             <RelativeLayout
@@ -216,19 +215,20 @@
                     android:background="@drawable/border_color_primary"
                     android:scaleType="centerCrop"
                     android:cropToPadding="false"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:layout_toRightOf="@+id/likesRecyclerView"
                     android:layout_toEndOf="@+id/likesRecyclerView"
                     android:layout_marginLeft="5dp"
-                    android:textSize="9sp"
+                    android:textSize="6sp"
                     android:text=""
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp" />
 
             </RelativeLayout>
 
         </LinearLayout>
+
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -242,11 +242,11 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/descriptionTextView"
                 android:textColor="@android:color/black"
-                android:textSize="14sp"
+                android:textSize="10sp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:paddingBottom="10dp" />
+                android:paddingBottom="5dp" />
 
         </RelativeLayout>
 

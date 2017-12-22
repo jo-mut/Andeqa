@@ -19,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.home.MainActivity;
@@ -83,7 +82,6 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
     private Bitmap bitmap;
     private Post post;
     private File file;
-    private StorageReference storageReference;
     private DatabaseReference databaseReference;
     private ProgressDialog progressDialog;
     private FirebaseUser firebaseUser;
@@ -93,14 +91,13 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
     private static final int DEFAULT_TITLE_LENGTH_LIMIT = 100;
     private static final int DEFAULT_DESCRIPTION_LENGTH_LIMIT = 500;
-
     //FIRESTORE
     private FirebaseFirestore firebaseFirestore;
     private ListenerRegistration listenerRegistration;
     private CollectionReference postsReference;
     private CollectionReference ownersReference;
     private CollectionReference usersReference;
-//
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,8 +122,6 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
             postsReference = firebaseFirestore.collection(Constants.POSTS);
             ownersReference = firebaseFirestore.collection(Constants.CINGLE_ONWERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            //firebase storage
-            storageReference = FirebaseStorage.getInstance().getReference(Constants.POSTS);
             //firebase database
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.POSTS);
             postOwnersReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_ONWERS);
@@ -334,7 +329,10 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
             final DocumentReference cingleRef = postsReference.document();
             final String pushId = cingleRef.getId();
-            storageReference.child(uid).child(pushId);
+            StorageReference storageReference = FirebaseStorage
+                    .getInstance().getReference()
+                    .child(Constants.POSTS)
+                    .child(pushId);
 
             UploadTask uploadTask = storageReference.putFile(photoUri);
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -364,6 +362,8 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
                             final long currentIdex = index + 1;
 
+                            Log.d("downloadUrl post image", downloadUrl.toString());
+
                             //record all the post data
                             post.setNumber(currentIdex);
                             post.setRandomNumber((double) new Random().nextDouble());
@@ -372,7 +372,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                             post.setPushId(pushId);
                             post.setTitle(mCingleTitleEditText.getText().toString());
                             post.setDescription(mCingleDescriptionEditText.getText().toString());
-                            post.setCingleImageUrl(downloadUrl.toString());
+                            post.setImage(downloadUrl.toString());
                             post.setPushId(pushId);
                             post.setUid(firebaseAuth.getCurrentUser().getUid());
                             post.setCreatorUid(firebaseAuth.getCurrentUser().getUid());

@@ -8,6 +8,7 @@ import android.support.multidex.MultiDex;
 import android.util.Log;
 
 import com.cinggl.cinggl.services.ConnectivityReceiver;
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
@@ -56,6 +57,8 @@ public class App extends Application {
         Picasso.setSingletonInstance(built);
 
         mInstance = this;
+        Fresco.initialize(this);
+
 
 
     }

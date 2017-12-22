@@ -13,13 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.firestore.FirestoreAdapter;
 import com.cinggl.cinggl.home.PostDetailActivity;
 import com.cinggl.cinggl.models.Post;
-import com.cinggl.cinggl.models.Relation;
 import com.cinggl.cinggl.preferences.CingleSettingsDialog;
 import com.cinggl.cinggl.comments.CommentsActivity;
 import com.cinggl.cinggl.home.FullImageViewActivity;
@@ -32,18 +30,10 @@ import com.cinggl.cinggl.models.Like;
 import com.cinggl.cinggl.models.TransactionDetails;
 import com.cinggl.cinggl.viewholders.ProfilePostsViewHolder;
 import com.cinggl.cinggl.viewholders.WhoLikedViewHolder;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -52,7 +42,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.SetOptions;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -61,12 +50,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static android.R.attr.x;
-import static java.lang.System.load;
 
 /**
  * Created by J.EL on 11/14/2017.
@@ -117,7 +101,7 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
 
     @Override
     public ProfilePostsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_out_list, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.main_posts_layout, parent, false);
         return new ProfilePostsViewHolder(view);
     }
 
@@ -232,7 +216,7 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                     final Post post = documentSnapshot.toObject(Post.class);
 
                     Picasso.with(mContext)
-                            .load(post.getCingleImageUrl())
+                            .load(post.getImage())
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(holder.cingleImageView, new Callback() {
                                 @Override
@@ -245,12 +229,12 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                                 public void onError() {
                                     // fetch online because cache is not there
                                     Picasso.with(mContext)
-                                            .load(post.getCingleImageUrl())
+                                            .load(post.getImage())
                                             .fetch(new Callback() {
                                                 @Override
                                                 public void onSuccess() {
                                                     Picasso.with(mContext)
-                                                            .load(post.getCingleImageUrl())
+                                                            .load(post.getImage())
                                                             .into(holder.cingleImageView, new com.squareup.picasso.Callback() {
                                                                 @Override
                                                                 public void onSuccess() {
@@ -261,7 +245,7 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                                                                 @Override
                                                                 public void onError() {
                                                                     Log.v("picasso", "Could not fetch image");
-                                                                    Log.d("picasso images", post.getCingleImageUrl() +"");
+                                                                    Log.d("picasso images", post.getImage() +"");
 
 
                                                                 }
@@ -272,7 +256,7 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                                                 public void onError() {
                                                     //NO IMAGE offline or online
                                                     Log.v("Picasso", "Could not fetch image");
-                                                    Log.d("picasso images", post.getCingleImageUrl() +"");
+                                                    Log.d("picasso images", post.getImage() +"");
 
 
                                                 }

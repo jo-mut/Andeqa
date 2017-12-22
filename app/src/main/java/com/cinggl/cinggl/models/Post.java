@@ -10,7 +10,7 @@ public class Post {
     long number;
     double randomNumber;
     String title;
-    String cingleImageUrl;
+    String image;
     String description;
     String pushId;
     String cingleIndex;
@@ -26,7 +26,7 @@ public class Post {
     }
 
     public Post(long timeStamp, long number, double randomNumber,
-                String title, String cingleImageUrl,
+                String title, String image,
                 String description, String pushId, String cingleIndex,
                 String datePosted, String uid, String creatorUid,
                 double rate, double defaultRate) {
@@ -34,7 +34,7 @@ public class Post {
         this.number = number;
         this.randomNumber = randomNumber;
         this.title = title;
-        this.cingleImageUrl = cingleImageUrl;
+        this.image = image;
         this.description = description;
         this.pushId = pushId;
         this.cingleIndex = cingleIndex;
@@ -77,12 +77,12 @@ public class Post {
         this.title = title;
     }
 
-    public String getCingleImageUrl() {
-        return cingleImageUrl;
+    public String getImage() {
+        return image;
     }
 
-    public void setCingleImageUrl(String cingleImageUrl) {
-        this.cingleImageUrl = cingleImageUrl;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public String getDescription() {
