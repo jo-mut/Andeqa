@@ -513,7 +513,6 @@ public class BestPostsAdapter extends FirestoreAdapter<BestPostsViewHolder> {
                                         if (documentSnapshot.exists()){
                                             final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
                                             final String profileImage = cinggulan.getProfileImage();
-                                            Log.d("Picasso like image", profileImage);
 
                                             Picasso.with(mContext)
                                                     .load(profileImage)

@@ -62,7 +62,7 @@
                 android:scaleType="centerCrop"
                 android:layout_width="100dp"
                 android:padding="10dp"
-                android:layout_marginTop="-80dp"
+                android:layout_marginTop="-100dp"
                 android:layout_gravity="center_horizontal" />
 
 
@@ -212,6 +212,17 @@
                 android:paddingRight="3dp">
 
                 <TextView
+                    android:text="Sale Price:"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cingleSalePriceTitleTextView"
+                    android:textSize="14sp"
+                    android:textStyle="normal|bold"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true" />
+
+                <TextView
                     android:text=""
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -221,6 +232,8 @@
                     android:layout_alignParentTop="true"
                     android:layout_toRightOf="@+id/cingleSalePriceTitleTextView"
                     android:layout_toEndOf="@+id/cingleSalePriceTitleTextView"
+                    android:layout_toLeftOf="@+id/editSalePriceImageView"
+                    android:layout_toStartOf="@+id/editSalePriceImageView"
                     android:textSize="14sp"
                     android:layout_centerVertical="true" />
 
@@ -272,20 +285,6 @@
                     android:textSize="14sp"
                     android:visibility="invisible"
                     android:id="@+id/editSalePriceEditText" />
-
-                <TextView
-                    android:text="Sale Price:"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/cingleSalePriceTitleTextView"
-                    android:textSize="14sp"
-                    android:textStyle="normal|bold"
-                    android:layout_alignBaseline="@+id/postSalePriceTextView"
-                    android:layout_alignBottom="@+id/postSalePriceTextView"
-                    android:layout_toLeftOf="@+id/editSalePriceImageView"
-                    android:layout_toStartOf="@+id/editSalePriceImageView"
-                    android:layout_toRightOf="@+id/doneEditingImageView"
-                    android:layout_toEndOf="@+id/doneEditingImageView" />
 
             </RelativeLayout>
 
