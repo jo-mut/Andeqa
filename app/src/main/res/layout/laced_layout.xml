@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="120dp"
+        android:layout_height="200dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            app:srcCompat="@drawable/test"
+            android:id="@+id/lacedImageView"
+            android:scaleType="centerCrop"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_height="150dp" />
+
+        <RelativeLayout
+            android:layout_below="@+id/lacedImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:padding="5dp"
+                android:layout_width="wrap_content"
+                app:srcCompat="@drawable/ic_more_vert_black_24dp"
+                android:id="@+id/lacedSettingsImageView"
+                android:layout_height="150dp"
+                android:layout_alignParentRight="true" />
+
+            <ImageView
+                android:padding="5dp"
+                android:layout_width="wrap_content"
+                app:srcCompat="@drawable/ic_thumb_up_black_24dp"
+                android:id="@+id/likesImageView"
+                android:layout_height="150dp" />
+
+            <ImageView
+                android:padding="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_width="wrap_content"
+                app:srcCompat="@drawable/ic_thumb_down_black_24dp"
+                android:id="@+id/dislikesImageView"
+                android:layout_toRightOf="@+id/likesImageView"
+                android:layout_toEndOf="@+id/likesImageView"
+                android:layout_height="150dp" />
+
+
+
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+</LinearLayout>
