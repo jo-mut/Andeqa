@@ -30,21 +30,12 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_nav" />
 
     <FrameLayout
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:id="@+id/home_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <android.support.v7.widget.RecyclerView
-            android:overScrollMode="never"
-            android:id="@+id/singleOutRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-
     </FrameLayout>
 
 
@@ -57,22 +48,22 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="90dp"
         android:layout_marginRight="16dp"
         android:layout_height="wrap_content"
         app:elevation="0dp" />
 
 
 
-    <!--<android.support.design.widget.BottomNavigationView-->
-    <!--android:background="@color/bottomNavBackground"-->
-    <!--android:id="@+id/bottomNavigationView"-->
-    <!--app:menu="@menu/bottom_navigation_menu"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="@dimen/bottom_navigation_height"-->
-    <!--android:layout_gravity="bottom"-->
-    <!--app:itemTextColor="@android:color/white"-->
-    <!--app:itemIconTint="@color/colorIcons"-->
-    <!--android:alpha="0.9"-->
-    <!--app:itemBackground="@color/bottomNavBackground"/>-->
+    <android.support.design.widget.BottomNavigationView
+    android:background="@color/bottomNavBackground"
+    android:id="@+id/bottomNavigationView"
+    app:menu="@menu/bottom_navigation_menu"
+    android:layout_width="match_parent"
+    android:layout_height="84dp"
+    android:layout_gravity="bottom"
+    app:itemTextColor="@android:color/white"
+    app:itemIconTint="@color/colorIcons"
+    android:alpha="0.9"
+    app:itemBackground="@drawable/default_gradient_color"/>
 </android.support.design.widget.CoordinatorLayout>

@@ -20,7 +20,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
 
-import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cinggulan;
@@ -183,7 +182,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                 Picasso.with(this).load(imageUri)
                         .resize(MAX_COVER_WIDTH, MAX_COVER_HEIGHT)
                         .onlyScaleDown().centerCrop()
-                        .placeholder(R.drawable.gradient_color)
+                        .placeholder(R.drawable.default_gradient_color)
                         .networkPolicy(NetworkPolicy.OFFLINE)
                         .into(mProfileCoverImageView, new Callback() {
                             @Override
@@ -389,7 +388,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 
                                 Picasso.with(UpdateProfileActivity.this)
                                         .load(profileCover).resize(MAX_WIDTH, MAX_HEIGHT)
-                                        .onlyScaleDown().centerCrop().placeholder(R.drawable.gradient_color)
+                                        .onlyScaleDown().centerCrop().placeholder(R.drawable.default_gradient_color)
                                         .networkPolicy(NetworkPolicy.OFFLINE)
                                         .into(mProfileCoverImageView, new Callback() {
                                             @Override
@@ -402,7 +401,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                                                 Picasso.with(UpdateProfileActivity.this)
                                                         .load(profileCover).resize(MAX_WIDTH, MAX_HEIGHT)
                                                         .onlyScaleDown().centerCrop()
-                                                        .placeholder(R.drawable.gradient_color)
+                                                        .placeholder(R.drawable.default_gradient_color)
                                                         .into(mProfileCoverImageView);
 
                                             }

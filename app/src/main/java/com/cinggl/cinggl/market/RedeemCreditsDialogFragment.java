@@ -177,7 +177,6 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
                             final Credit cingleCredit = documentSnapshot.toObject(Credit.class);
                             final double senseCredits = cingleCredit.getAmount();
 
-                            Log.d("amount of sensepoint", senseCredits + "");
 
                             if (mAmountEnteredEditText.getText().equals("")) {
                                 mAmountEnteredEditText.setError("Amount cannot be empty");
@@ -188,7 +187,6 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
                             }else {
                                 final double finalCredits = senseCredits - amountTransferred;
 
-                                Log.d("amount of sensecredits", finalCredits + "");
 
                                 senseCreditReference.document(mPostKey).update("amount", finalCredits)
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -215,9 +213,7 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
                                                     if (documentSnapshot.exists()){
                                                         final Balance cingleBalance = documentSnapshot.toObject(Balance.class);
                                                         final double currentAmount = cingleBalance.getTotalBalance();
-                                                        Log.d("before redeemption", currentAmount + "");
                                                         final double newAmount = currentAmount + amountTransferred;
-                                                        Log.d("after redeemed", newAmount + "");
 
                                                         final Balance balance = new Balance();
                                                         balance.setTotalBalance(newAmount);
@@ -235,7 +231,6 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
                                                                                 Balance walletBalance = documentSnapshot.toObject(Balance.class);
                                                                                 final double currentBalance = walletBalance.getTotalBalance();
                                                                                 final double newBalance = currentBalance + amountTransferred;
-                                                                                Log.d("new balance", newBalance + "");
 
                                                                                 //set transaction details
                                                                                 final TransactionDetails transactionDetails = new TransactionDetails();
@@ -247,7 +242,6 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
                                                                                 //get the push id
                                                                                 DocumentReference ref = transactionReference.document();
                                                                                 String pushId = ref.getId();
-                                                                                Log.d("transaction push id", pushId);
                                                                                 //set the push id
                                                                                 transactionDetails.setPushId(pushId);
                                                                                 ref.set(transactionDetails);
@@ -284,7 +278,6 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
                                                                                 //get the push id
                                                                                 DocumentReference ref = transactionReference.document();
                                                                                 String pushId = ref.getId();
-                                                                                Log.d("transaction push id", pushId);
                                                                                 //set the push id
                                                                                 transactionDetails.setPushId(pushId);
                                                                                 ref.set(transactionDetails);
@@ -314,7 +307,6 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
                                                                                         Balance walletBalance = documentSnapshot.toObject(Balance.class);
                                                                                         final double currentBalance = walletBalance.getTotalBalance();
                                                                                         final double newBalance = currentBalance + amountTransferred;
-                                                                                        Log.d("new balance", newBalance + "");
 
                                                                                         final Balance newWalletBalance = new Balance();
                                                                                         newWalletBalance.setTotalBalance(newBalance);
@@ -329,7 +321,6 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
                                                                                         //get the push id
                                                                                         DocumentReference ref = transactionReference.document();
                                                                                         String pushId = ref.getId();
-                                                                                        Log.d("transaction push id", pushId);
                                                                                         //set the push id
                                                                                         transactionDetails.setPushId(pushId);
                                                                                         ref.set(transactionDetails);
@@ -364,7 +355,6 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
                                                                                         //get the push id
                                                                                         DocumentReference ref = transactionReference.document();
                                                                                         String pushId = ref.getId();
-                                                                                        Log.d("transaction push id", pushId);
                                                                                         //set the push id
                                                                                         transactionDetails.setPushId(pushId);
                                                                                         ref.set(transactionDetails);

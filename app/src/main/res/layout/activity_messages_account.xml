@@ -1,0 +1,78 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.cinggl.cinggl.message.MessagesAccountActivity">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_gravity="top"
+        android:layout_height="56dp"
+        android:background="@color/colorPrimary"
+        app:layout_scrollFlags="scroll|enterAlways"
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+        app:titleTextColor="@android:color/white"
+        app:titleTextAppearance="@style/toolbarTextSize"
+        app:titleMarginStart="-50sp">
+
+    </android.support.v7.widget.Toolbar>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_below="@+id/toolbar"
+        android:id="@+id/massagesRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <RelativeLayout
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:srcCompat="@drawable/border_color_primary"
+            android:id="@+id/profileImageView"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="textPersonName"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/messageEditText"
+            android:hint="Write a message"
+            android:padding="10dp"
+            android:textSize="14sp"
+            android:layout_toRightOf="@+id/profileImageView"
+            android:layout_toEndOf="@+id/profileImageView"
+            android:layout_toLeftOf="@+id/sendMessageImageView"
+            android:layout_toStartOf="@+id/sendMessageImageView" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_menu_send"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentEnd="false"
+            android:id="@+id/sendMessageImageView"
+            android:tint="@color/colorPrimary"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:padding="10dp" />
+    </RelativeLayout>
+
+
+</RelativeLayout>

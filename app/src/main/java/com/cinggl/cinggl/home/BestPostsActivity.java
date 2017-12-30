@@ -1,66 +1,37 @@
 package com.cinggl.cinggl.home;
 
-import android.content.Intent;
-import android.graphics.Color;
-import android.net.Uri;
 import android.os.Parcelable;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.adapters.BestPostsAdapter;
-import com.cinggl.cinggl.comments.CommentsActivity;
-import com.cinggl.cinggl.likes.LikesActivity;
-import com.cinggl.cinggl.models.Balance;
-import com.cinggl.cinggl.models.Cinggulan;
-import com.cinggl.cinggl.models.Credit;
-import com.cinggl.cinggl.models.Like;
-import com.cinggl.cinggl.models.Post;
-import com.cinggl.cinggl.models.PostSale;
-import com.cinggl.cinggl.models.TransactionDetails;
-import com.cinggl.cinggl.people.FollowerProfileActivity;
-import com.cinggl.cinggl.preferences.BestPostsSettingsDialog;
-import com.cinggl.cinggl.profile.PersonalProfileActivity;
-import com.cinggl.cinggl.viewholders.BestPostsViewHolder;
-import com.cinggl.cinggl.viewholders.WhoLikedViewHolder;
-import com.facebook.drawee.view.SimpleDraweeView;
+import com.cinggl.cinggl.adapters.OtherPostAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.firebase.ui.firestore.ObservableSnapshotArray;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
 import static android.util.Log.d;
 
 public class BestPostsActivity extends AppCompatActivity {
-    @Bind(R.id.bestPostsRecyclerView)RecyclerView bestCinglesRecyclerView;
+    @Bind(R.id.otherPostsRecyclerView)RecyclerView otherPostsRecyclerView;
     private static final String TAG = "BestCingleFragment";
     private static final String KEY_LAYOUT_POSITION = "layout position";
     private LinearLayoutManager layoutManager;
@@ -75,7 +46,8 @@ public class BestPostsActivity extends AppCompatActivity {
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //adapters
-    private BestPostsAdapter bestPostsAdapter;
+    private OtherPostAdapter otherPostAdapter;
+    private FirestoreRecyclerAdapter dayPostRecyclerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,54 +102,16 @@ public class BestPostsActivity extends AppCompatActivity {
                 Log.d("best post", documentSnapshots.size() + "");
 
                 if (!documentSnapshots.isEmpty()){
-                    bestPostsAdapter = new BestPostsAdapter(bestCinglesQuery, BestPostsActivity.this);
-                    bestPostsAdapter.startListening();
-                    bestCinglesRecyclerView.setAdapter(bestPostsAdapter);
-                    bestCinglesRecyclerView.setHasFixedSize(false);
+                    otherPostAdapter = new OtherPostAdapter(bestCinglesQuery, BestPostsActivity.this);
+                    otherPostAdapter.startListening();
+                    otherPostsRecyclerView.setAdapter(otherPostAdapter);
+                    otherPostsRecyclerView.setHasFixedSize(false);
                     layoutManager = new LinearLayoutManager(BestPostsActivity.this);
-                    bestCinglesRecyclerView.setLayoutManager(layoutManager);
+                    otherPostsRecyclerView.setLayoutManager(layoutManager);
                 }
             }
         });
 
-
-    }
-
-    private void recyclerViewScrolling(){
-        bestCinglesRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                if (!recyclerView.canScrollVertically(-1)) {
-                    onScrolledToTop();
-                } else if (!recyclerView.canScrollVertically(1)) {
-                    onScrolledToBottom();
-                } else if (dy < 0) {
-                    onScrolledUp();
-                } else if (dy > 0) {
-                    onScrolledDown();
-                }
-            }
-        });
-    }
-
-    public void onScrolledUp() {}
-
-    public void onScrolledDown() {
-
-    }
-
-    public void onScrolledToTop() {
-
-    }
-
-    public void onScrolledToBottom() {
 
     }
 

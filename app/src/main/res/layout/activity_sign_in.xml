@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.cinggl.cinggl.registration.SignInActivity"
-    android:background="@drawable/gradient_color"
+    android:background="@drawable/default_gradient_color"
     android:weightSum="1">
 
     <RelativeLayout
@@ -173,7 +173,6 @@
                 </LinearLayout>
 
             </RelativeLayout>
-
 
 
             <!--<RelativeLayout-->

@@ -1,6 +1,7 @@
 package com.cinggl.cinggl.home;
 
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -30,6 +31,7 @@ import butterknife.ButterKnife;
 public class FullImageViewActivity extends AppCompatActivity implements View.OnClickListener{
     private static final String TAG = FullImageViewActivity.class.getSimpleName();
     @Bind(R.id.postImageView)ProportionalImageView mCingleImageView;
+    @Bind(R.id.app_bar_layout)AppBarLayout mAppBarLayoutView;
 
     private FirebaseAuth firebaseAuth;
     private String mPostKey;
@@ -137,11 +139,11 @@ public class FullImageViewActivity extends AppCompatActivity implements View.OnC
     public void onClick(View v){
         if (v == mCingleImageView){
             if (showOnClick){
-                toolbar.setVisibility(View.GONE);
+                mAppBarLayoutView.setVisibility(View.GONE);
                 showOnClick = false;
             }else {
                 showOnClick = true;
-                toolbar.setVisibility(View.VISIBLE);
+                mAppBarLayoutView.setVisibility(View.VISIBLE);
             }
         }
 

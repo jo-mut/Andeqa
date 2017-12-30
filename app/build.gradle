@@ -7,8 +7,8 @@ android {
         applicationId "com.cinggl.cinggl"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 8
-        versionName "1.1.1"
+        versionCode 9
+        versionName "1.4.1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
@@ -90,14 +90,12 @@ dependencies {
     compile 'com.google.firebase:firebase-firestore:11.4.2'
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.firebaseui:firebase-ui-firestore:3.0.0'
+    compile 'com.facebook.fresco:fresco:1.7.1'
+    compile 'com.facebook.fresco:animated-gif:1.7.1'
     testCompile 'junit:junit:4.12'
     testCompile 'org.robolectric:robolectric:3.0'
     testCompile 'org.robolectric:shadows-support-v4:3.0'
     annotationProcessor 'org.parceler:parceler:1.1.6'
-    compile 'com.facebook.fresco:fresco:1.7.1'
-    compile 'com.facebook.fresco:animated-gif:1.7.1'
-
-
 }
 apply plugin: 'com.google.gms.google-services'
 

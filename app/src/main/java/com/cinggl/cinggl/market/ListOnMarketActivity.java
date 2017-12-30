@@ -230,7 +230,6 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                 mSetCingleSalePriceEditText.setError("Sale price is empty!");
             }else {
                 final double intSalePrice = Double.parseDouble(stringSalePrice);
-                Log.d("amount entered", intSalePrice + "");
                 final String formattedString = formatter.format(intSalePrice);
 
                 senseCreditReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -245,7 +244,6 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                         if (documentSnapshot.exists()){
                             final Credit credit = documentSnapshot.toObject(Credit.class);
                             final double senseCredits = credit.getAmount();
-                            Log.d("seanse credit", senseCredits + "");
 
                             if (intSalePrice < senseCredits){
                                 mSetCingleSalePriceEditText.setError("Sale price is less than Post Sense Credit!");
@@ -255,13 +253,12 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                                 postSale.setUid(firebaseAuth.getCurrentUser().getUid());
                                 postSale.setPushId(mPostKey);
                                 postSale.setSalePrice(intSalePrice);
-                                Log.d("set sale price", intSalePrice + "");
 
                                 ifairReference.document(mPostKey).set(postSale).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()){
-                                            Toast.makeText(ListOnMarketActivity.this, "Your cingle has been listed on Ifair",
+                                            Toast.makeText(ListOnMarketActivity.this, "Your post has been listed on Ifair",
                                                     Toast.LENGTH_SHORT).show();
                                         }
                                     }
@@ -283,7 +280,6 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                             postSale.setUid(firebaseAuth.getCurrentUser().getUid());
                             postSale.setPushId(mPostKey);
                             postSale.setSalePrice(intSalePrice);
-                            Log.d("set sale price", intSalePrice + "");
 
                             ifairReference.document(mPostKey).set(postSale).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override

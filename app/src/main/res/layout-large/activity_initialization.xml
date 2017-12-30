@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/gradient_color"
+    android:background="@drawable/default_gradient_color"
     tools:context="com.cinggl.cinggl.home.InitializationActivity">
 
     <RelativeLayout
@@ -33,13 +33,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/cinggl_logo"
+            app:srcCompat="@mipmap/ic_launcher"
             android:layout_centerHorizontal="true"
             android:id="@+id/cingglLogoImageView"
-            android:padding="210dp" />
+            android:layout_centerInParent="true" />
+
 
         <TextView
             android:text="Cinggl"

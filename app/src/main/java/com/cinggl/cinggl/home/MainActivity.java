@@ -1,17 +1,18 @@
 package com.cinggl.cinggl.home;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.ContentFrameLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,28 +29,25 @@ import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.adapters.SingleOutAdapter;
 import com.cinggl.cinggl.creation.CreatePostActivity;
-import com.cinggl.cinggl.market.MarketActivity;
+import com.cinggl.cinggl.market.MarketFragment;
+import com.cinggl.cinggl.message.MessagesFragment;
 import com.cinggl.cinggl.models.Cinggulan;
-import com.cinggl.cinggl.models.Post;
+import com.cinggl.cinggl.preferences.PreferencesActivity;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
+import com.cinggl.cinggl.timeline.TimelineFragment;
+import com.cinggl.cinggl.utils.BottomNavigationViewBehavior;
+import com.cinggl.cinggl.utils.BottomNavigationViewHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -59,36 +57,14 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     @Bind(R.id.fab)FloatingActionButton mFloatingActionButton;
-//    @Bind(R.id.bottomNavigationView)BottomNavigationView mBottomNavigationView;
-    @Bind(R.id.singleOutRecyclerView)RecyclerView singleOutRecyclerView;
-
-    private static final String KEY_LAYOUT_POSITION = "layout position";
-    private Parcelable recyclerViewState;
-    //firestore reference
-    private CollectionReference cinglesReference;
-    private Query randomQuery;
-    private Query randomPostsQuery;
-    //firebase auth
-    private SingleOutAdapter singleOutAdapter;
-    private DocumentSnapshot lastVisible;
-    private List<Post> posts = new ArrayList<>();
-    private List<String> cinglesIds = new ArrayList<>();
-    private LinearLayoutManager layoutManager;
-    private int TOTAL_ITEMS = 4;
-
+    @Bind(R.id.bottomNavigationView)BottomNavigationView mBottomNavigationView;
     private static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
     private static final int IMAGE_GALLERY_REQUEST = 112;
     private Uri photoUri;
-    final FragmentManager fragmentManager = getSupportFragmentManager();
     private static final String TAG = MainActivity.class.getSimpleName();
     private int mSelectedItem;
-    private int orientation;
-    private ContentFrameLayout mContent;
-    private ProgressDialog mProgressDialog;
-    private DatabaseReference usersRef;
     private CollectionReference usersReference;
-    private CollectionReference relationsReference;
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private ImageView mProfileCover;
@@ -97,7 +73,12 @@ public class MainActivity extends AppCompatActivity
     private TextView mSecondNameTextView;
     private TextView mEmailTextView;
 
-
+    //bottom navigation fragments
+    final FragmentManager fragmentManager = getSupportFragmentManager();
+    final Fragment homeFragment = new HomeFragment();
+    final Fragment marketFragment = new MarketFragment();
+    final Fragment messagesFragment = new MessagesFragment();
+    final Fragment timelineFragment = new TimelineFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,37 +110,34 @@ public class MainActivity extends AppCompatActivity
 
         if (firebaseAuth.getCurrentUser() != null){
             //firestore
-            cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
-            randomPostsQuery = cinglesReference;
+
 
             fetchData();
             fetchUserEmail();
-            latestPosts();
 
         }
 
 
-//
-//        //bottom navigation
-//        BottomNavigationViewHelper.disableShiftMode(mBottomNavigationView);
-//        mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView
-//                .OnNavigationItemSelectedListener() {
-//            @Override
-//            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-//                selectFragment(item);
-//                return true;
-//            }
-//        });
-//
-//        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams)
-//                mBottomNavigationView.getLayoutParams();
-//        layoutParams.setBehavior(new BottomNavigationViewBehavior());
-//
-//        MenuItem selectedItem;
-//        selectedItem = mBottomNavigationView.getMenu().getItem(0);
-//        selectFragment(selectedItem);
+
+        //bottom navigation
+        BottomNavigationViewHelper.disableShiftMode(mBottomNavigationView);
+        mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView
+                .OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                selectFragment(item);
+                return true;
+            }
+        });
+
+        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams)
+                mBottomNavigationView.getLayoutParams();
+        layoutParams.setBehavior(new BottomNavigationViewBehavior());
+
+        MenuItem selectedItem;
+        selectedItem = mBottomNavigationView.getMenu().getItem(0);
+        selectFragment(selectedItem);
 
     }
 
@@ -174,12 +152,12 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_slide_right){
-            Intent intent = new Intent(MainActivity.this, BestPostsActivity.class);
-            startActivity(intent);
-            overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
-
-        }
+//        if (id == R.id.action_slide_right){
+//            Intent intent = new Intent(MainActivity.this, BestPostsActivity.class);
+//            startActivity(intent);
+//            overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
+//
+//        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -274,25 +252,21 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.action_home){
-            Intent intent = new Intent(MainActivity.this, MainActivity.class);
-        }
-
         if (id == R.id.action_profile){
             Intent intent = new Intent(MainActivity.this, PersonalProfileActivity.class);
             startActivity(intent);
         }
 
-        if (id == R.id.action_ifair){
-            Intent intent = new Intent(MainActivity.this, MarketActivity.class);
+        if (id == R.id.action_preferences){
+            Intent intent = new Intent(MainActivity.this, PreferencesActivity.class);
             startActivity(intent);
         }
 
-//        if (id == R.id.action_about){
-//            Intent intent = new Intent(Intent.ACTION_VIEW,
-//                    Uri.parse("https://johnmutuku628.wixsite.com/cinggl"));
-//            startActivity(intent);
-//        }
+        if (id == R.id.action_about){
+            Intent intent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://johnmutuku628.wixsite.com/cinggl"));
+            startActivity(intent);
+        }
 
         if (id == R.id.action_share_cinggl){
             Intent sendIntent = new Intent();
@@ -328,69 +302,6 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void latestPosts(){
-        randomPostsQuery.orderBy("timeStamp", Query.Direction.DESCENDING)
-                .limit(50).addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-
-                if (!documentSnapshots.isEmpty()){
-                    singleOutAdapter = new SingleOutAdapter(randomPostsQuery, MainActivity.this);
-                    singleOutAdapter.startListening();
-                    singleOutRecyclerView.setAdapter(singleOutAdapter);
-                    singleOutRecyclerView.setHasFixedSize(false);
-                    layoutManager = new LinearLayoutManager(MainActivity.this);
-                    singleOutRecyclerView.setLayoutManager(layoutManager);
-                }
-            }
-        });
-    }
-
-
-    private void recyclerViewScrolling(){
-        singleOutRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                if (!recyclerView.canScrollVertically(-1)) {
-                    onScrolledToTop();
-                } else if (!recyclerView.canScrollVertically(1)) {
-                    onScrolledToBottom();
-                } else if (dy < 0) {
-                    onScrolledUp();
-                } else if (dy > 0) {
-                    onScrolledDown();
-                }
-            }
-        });
-    }
-
-    public void onScrolledUp() {}
-
-    public void onScrolledDown() {
-
-    }
-
-    public void onScrolledToTop() {
-
-    }
-
-    public void onScrolledToBottom() {
-
-    }
-
 
     @Override
     public void onStart() {
@@ -404,55 +315,57 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    @Override
+    public void onBackPressed() {
+        MenuItem defaulItem = mBottomNavigationView.getMenu().getItem(0);
+        if(mSelectedItem != defaulItem.getItemId()){
+            selectFragment(defaulItem);
+        }else {
+            super.onBackPressed();
+        }
+    }
 
-//
-//    @Override
-//    public void onBackPressed() {
-//        MenuItem defaulItem = mBottomNavigationView.getMenu().getItem(0);
-//        if(mSelectedItem != defaulItem.getItemId()){
-//            selectFragment(defaulItem);
-//        }else {
-//            super.onBackPressed();
-//        }
-//    }
-//
-//    private void updateToolbarText(CharSequence text){
-//        ActionBar actionBar = getSupportActionBar();
-//        if(actionBar != null){
-//            actionBar.setTitle(text);
-//        }
-//    }
+    private void updateToolbarText(CharSequence text){
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null){
+            actionBar.setTitle(text);
+        }
+    }
 
-//    private void selectFragment(MenuItem item){
-//        //initialize each corresponding fragment
-//        switch (item.getItemId()){
-//            case R.id.action_home:
-//                FragmentTransaction ft = fragmentManager.beginTransaction();
-//                ft.replace(R.id.home_container, homeFragment);
-//                ft.commit();
-//                break;
-//            case R.id.action_timeline:
-//                FragmentTransaction timelineTransaction = fragmentManager.beginTransaction();
-//                timelineTransaction.replace(R.id.home_container, timelineFragment).commit();
-//                break;
-//
-//            case R.id.action_profile:
-//                FragmentTransaction profileTransaction = fragmentManager.beginTransaction();
-//                profileTransaction.replace(R.id.home_container, profileFragment).commit();
-//                break;
-//        }
-//
-//        //update selected item
-//        mSelectedItem = item.getItemId();
-//
-//        updateToolbarText(item.getTitle());
-//
-//        //uncheck the other items
-//        for(int i = 0; i < mBottomNavigationView.getMenu().size(); i++){
-//            MenuItem menuItem = mBottomNavigationView.getMenu().getItem(i);
-//            menuItem.setChecked(menuItem.getItemId() ==item.getItemId());
-//        }
-//    }
+    private void selectFragment(MenuItem item){
+        //initialize each corresponding fragment
+        switch (item.getItemId()){
+            case R.id.action_home:
+                FragmentTransaction ft = fragmentManager.beginTransaction();
+                ft.replace(R.id.home_container, homeFragment);
+                ft.commit();
+                break;
+            case R.id.action_timeline:
+                FragmentTransaction timelineTransaction = fragmentManager.beginTransaction();
+                timelineTransaction.replace(R.id.home_container, timelineFragment).commit();
+                break;
+            case R.id.action_messages:
+                FragmentTransaction messagesTransaction = fragmentManager.beginTransaction();
+                messagesTransaction.replace(R.id.home_container, messagesFragment).commit();
+                break;
+            case R.id.action_market:
+                FragmentTransaction profileTransaction = fragmentManager.beginTransaction();
+                profileTransaction.replace(R.id.home_container, marketFragment).commit();
+                break;
+
+        }
+
+        //update selected item
+        mSelectedItem = item.getItemId();
+
+        updateToolbarText(item.getTitle());
+
+        //uncheck the other items
+        for(int i = 0; i < mBottomNavigationView.getMenu().size(); i++){
+            MenuItem menuItem = mBottomNavigationView.getMenu().getItem(i);
+            menuItem.setChecked(menuItem.getItemId() ==item.getItemId());
+        }
+    }
 
 
 

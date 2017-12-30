@@ -10,11 +10,8 @@ import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.firestore.FirestoreAdapter;
 import com.cinggl.cinggl.models.Cinggulan;
-import com.cinggl.cinggl.models.Credit;
 import com.cinggl.cinggl.models.Relation;
 import com.cinggl.cinggl.viewholders.FollowCinggulansViewHolder;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -25,8 +22,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-
-import java.util.ArrayList;
 
 
 /**

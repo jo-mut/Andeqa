@@ -78,7 +78,7 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
 
     @Override
     public PostSellingViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.market_posts_layout, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.posts_market_layout, parent, false);
         return new PostSellingViewHolder(view);
     }
 
@@ -212,7 +212,7 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
                 if (documentSnapshot.exists()){
                     holder.cingleTradeMethodTextView.setText("@Selling");
                 }else {
-                    holder.cingleTradeMethodTextView.setText("@NotOnTrade");
+                    holder.cingleTradeMethodTextView.setText("@NotOnSale");
 
                 }
 

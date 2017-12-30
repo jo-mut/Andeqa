@@ -10,14 +10,6 @@
         android:title="Home">
     </item>
 
-    <!--<item-->
-        <!--android:id="@+id/action_chat"-->
-        <!--android:icon="@drawable/ic_chat_white_24dp"-->
-        <!--app:showAsAction="ifRoom"-->
-        <!--android:enabled="true"-->
-        <!--android:title="Chats">-->
-    <!--</item>-->
-
     <item
         android:id="@+id/action_timeline"
         android:icon="@drawable/ic_access_time_black_24dp"
@@ -27,12 +19,19 @@
     </item>
 
     <item
-        android:id="@+id/action_profile"
+        android:id="@+id/action_messages"
         android:icon="@drawable/ic_person_black_24dp"
         app:showAsAction="ifRoom"
         android:enabled="true"
-        android:title="Profile">
+        android:title="Messages">
     </item>
 
+    <item
+        android:id="@+id/action_market"
+        android:icon="@drawable/ic_business_black_24dp"
+        app:showAsAction="ifRoom"
+        android:enabled="true"
+        android:title="Market">
+    </item>
 
 </menu>

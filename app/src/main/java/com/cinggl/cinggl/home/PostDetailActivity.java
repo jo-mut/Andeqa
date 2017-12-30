@@ -1,6 +1,5 @@
 package com.cinggl.cinggl.home;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -12,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.adapters.MainPostsAdapter;
 import com.cinggl.cinggl.comments.CommentsActivity;
 import com.cinggl.cinggl.market.SendCreditsDialogFragment;
 import com.cinggl.cinggl.likes.LikesActivity;
@@ -38,8 +39,8 @@ import com.cinggl.cinggl.models.Like;
 import com.cinggl.cinggl.models.TransactionDetails;
 import com.cinggl.cinggl.people.FollowerProfileActivity;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
+import com.cinggl.cinggl.utils.ProportionalImageView;
 import com.cinggl.cinggl.viewholders.WhoLikedViewHolder;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
@@ -66,45 +67,36 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.util.Log.d;
-import static com.cinggl.cinggl.R.id.postImageView;
-import static com.cinggl.cinggl.R.id.postOwnerTextView;
-import static com.cinggl.cinggl.R.id.postSalePriceTextView;
-import static com.cinggl.cinggl.R.id.postSenseCreditsTextView;
-import static com.cinggl.cinggl.R.id.tradeMethodTextView;
-import static com.cinggl.cinggl.R.id.commentsCountTextView;
-import static com.cinggl.cinggl.R.id.likesCountTextView;
-import static com.cinggl.cinggl.R.id.likesImageView;
-import static com.cinggl.cinggl.R.id.likesRecyclerView;
-import static com.cinggl.cinggl.R.id.ownerImageView;
 
 public class PostDetailActivity extends AppCompatActivity implements View.OnClickListener{
 
     @Bind(R.id.usernameTextView)TextView mUsernameTextView;
-    @Bind(postImageView)CircleImageView mCingleImageView;
+    @Bind(R.id.postImageView)ProportionalImageView mPostImageView;
     @Bind(R.id.creatorImageView)ImageView mProfileImageView;
-    @Bind(R.id.lacedCingleImageView)ImageView mLacedCingleImageView;
     @Bind(R.id.titleTextView)TextView mCingleTitleTextView;
     @Bind(R.id.cingleTitleRelativeLayout)RelativeLayout mCingleTitleRelativeLayout;
-    @Bind(R.id.cingleDescriptionRelativeLayout)RelativeLayout mCingleDescriptionRelatvieLayout;
-    @Bind(R.id.descriptionTextView)TextView mCingleDescriptionTextView;
-    @Bind(tradeMethodTextView)TextView mCingleTradeMethodTextView;
-    @Bind(postOwnerTextView)TextView mCingleOwnerTextView;
-    @Bind(likesImageView)ImageView mLikesImageView;
-    @Bind(likesCountTextView)TextView mLikesCountTextView;
+    @Bind(R.id.descriptionRelativeLayout)RelativeLayout mDescriptionRelativeLayout;
+    @Bind(R.id.descriptionTextView)TextView mDescriptionTextView;
+    @Bind(R.id.tradeMethodTextView)TextView mTradeMethodTextView;
+    @Bind(R.id.postOwnerTextView)TextView mPostOwnerTextView;
+    @Bind(R.id.totalLikesCountTextView)TextView mTotalLikesCountTextView;
+    @Bind(R.id.likesImageView)ImageView mLikesImageView;
+    @Bind(R.id.dislikesImageView)ImageView mDislikeImageView;
+    @Bind(R.id.likesPercentageTextView)TextView mLikesPercentageTextView;
+    @Bind(R.id.dislikesPercentageTextView) TextView mDislikePercentageTextView;
     @Bind(R.id.commentsImageView)ImageView mCommentImageView;
-    @Bind(commentsCountTextView)TextView mCommentCountTextView;
-    @Bind(likesRecyclerView)RecyclerView mLikesRecyclerView;
-    @Bind(R.id.lacedCinglesRecyclerView)RecyclerView mLacedCinglesReyclerView;
-    @Bind(postSenseCreditsTextView)TextView mCingleSenseCreditsTextView;
-    @Bind(R.id.tradeCingleButton)Button mTradeCingleButton;
-    @Bind(postSalePriceTextView)TextView mCingleSalePriceTextView;
+    @Bind(R.id.commentsCountTextView)TextView mCommentCountTextView;
+    @Bind(R.id.likesRecyclerView)RecyclerView mLikesRecyclerView;
+    @Bind(R.id.buyPostButton)Button mBuyPostButton;
+    @Bind(R.id.postSalePriceTextView)TextView mSalePriceTextView;
     @Bind(R.id.datePostedTextView)TextView mDatePostedTextView;
-    @Bind(ownerImageView)CircleImageView mOwnerImageView;
+    @Bind(R.id.ownerImageView)CircleImageView mOwnerImageView;
     @Bind(R.id.editSalePriceImageView)ImageView mEditSalePriceImageView;
     @Bind(R.id.editSalePriceEditText)EditText mEditSalePriceEditText;
     @Bind(R.id.doneEditingImageView)ImageView mDoneEditingImageView;
     @Bind(R.id.salePriceProgressbar)ProgressBar mSalePriceProgressBar;
-    @Bind(R.id.postSalePriceTitleRelativeLayout)RelativeLayout mCingleSalePriceTitleRelativeLayout;
+    @Bind(R.id.postSenseCreditsTextView)TextView mPoseSenseCreditsTextView;
+    @Bind(R.id.postSalePriceRelativeLayout)RelativeLayout mPostSalePriceRelativeLayout;
 
 
     //firestore reference
@@ -125,12 +117,11 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     private FirebaseUser firebaseUser;
     //firestore adapter
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
-    private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     //process likes
     private boolean processLikes = false;
+    private boolean processDislikes = false;
     private static final double DEFAULT_PRICE = 1.5;
     private static final double GOLDEN_RATIO = 1.618;
-    private Context mContext;
     private String mPostKey;
     private static final String EXTRA_POST_KEY = "post key";
     private static final String EXTRA_USER_UID = "uid";
@@ -169,11 +160,13 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             mLikesImageView.setOnClickListener(this);
             mLikesRecyclerView.setOnClickListener(this);
             mCommentImageView.setOnClickListener(this);
-            mLikesCountTextView.setOnClickListener(this);
-            mTradeCingleButton.setOnClickListener(this);
-            mCingleImageView.setOnClickListener(this);
+            mLikesPercentageTextView.setOnClickListener(this);
+            mBuyPostButton.setOnClickListener(this);
+            mPostImageView.setOnClickListener(this);
             mEditSalePriceImageView.setOnClickListener(this);
             mDoneEditingImageView.setOnClickListener(this);
+            mDislikeImageView.setOnClickListener(this);
+            mTotalLikesCountTextView.setOnClickListener(this);
 
             //firestore
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
@@ -216,12 +209,12 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                 if (documentSnapshot.exists()){
                     final PostSale postSale = documentSnapshot.toObject(PostSale.class);
                     DecimalFormat formatter = new DecimalFormat("0.00000000");
-                    mCingleSalePriceTextView.setText("SC" + " " +
+                    mSalePriceTextView.setText("SC" + " " +
                             formatter.format(postSale.getSalePrice()));
-                    mTradeCingleButton.setVisibility(View.VISIBLE);
+                    mBuyPostButton.setVisibility(View.VISIBLE);
                 }else {
-                    mCingleSalePriceTitleRelativeLayout.setVisibility(View.GONE);
-                    mTradeCingleButton.setVisibility(View.GONE);
+                    mPostSalePriceRelativeLayout.setVisibility(View.GONE);
+                    mBuyPostButton.setVisibility(View.GONE);
                 }
             }
         });
@@ -238,10 +231,9 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                     Credit credit = documentSnapshot.toObject(Credit.class);
                     final double senseCredits = credit.getAmount();
                     DecimalFormat formatter = new DecimalFormat("0.00000000");
-                    mCingleSenseCreditsTextView.setText("SC" + " " + formatter.format(senseCredits));
-
+                    mPoseSenseCreditsTextView.setText("SC" + " " + formatter.format(senseCredits));
                 }else {
-                    mCingleSenseCreditsTextView.setText("SC 0.00000000");
+                    mPoseSenseCreditsTextView.setText("SC 0.00000000");
                 }
 
             }
@@ -307,10 +299,9 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                         mCingleTitleTextView.setText(title);
                     }
 
-                    if (description.equals("")){
-                        mCingleDescriptionRelatvieLayout.setVisibility(View.GONE);
-                    }else {
-                        mCingleDescriptionTextView.setText(description);
+                    if (!TextUtils.isEmpty(post.getDescription())){
+                        mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
+                        mDescriptionTextView.setText(description);
                     }
 
                     mDatePostedTextView.setText(datePosted);
@@ -319,7 +310,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                     Picasso.with(PostDetailActivity.this)
                             .load(image)
                             .networkPolicy(NetworkPolicy.OFFLINE)
-                            .into(mCingleImageView, new Callback() {
+                            .into(mPostImageView, new Callback() {
                                 @Override
                                 public void onSuccess() {
 
@@ -329,7 +320,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                 public void onError() {
                                     Picasso.with(PostDetailActivity.this)
                                             .load(image)
-                                            .into(mCingleImageView);
+                                            .into(mPostImageView);
                                 }
                             });
 
@@ -395,9 +386,9 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
                     if (documentSnapshot.exists()){
                         if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
-                            mTradeCingleButton.setVisibility(View.GONE);
+                            mBuyPostButton.setVisibility(View.GONE);
                         }else {
-                            mTradeCingleButton.setVisibility(View.VISIBLE);
+                            mBuyPostButton.setVisibility(View.VISIBLE);
                         }
                     }
                 }
@@ -435,13 +426,204 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                         }
 
                         if (!documentSnapshots.isEmpty()){
-                            mLikesCountTextView.setText(documentSnapshots.size() + " " + "Likes");
+                            mTotalLikesCountTextView.setText(documentSnapshots.size() + " " + "Likes");
                         }else {
-                            mLikesCountTextView.setText("0" + " " + "Likes");
+                            mTotalLikesCountTextView.setText("0" + " " + "Likes");
                         }
 
                     }
                 });
+
+
+        //calculate the percentage of likes to dislikes
+        likesReference.document(mPostKey).collection("dislikes")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot dislikesSnapshots, FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!dislikesSnapshots.isEmpty()){
+                            final int dislikes = dislikesSnapshots.size();
+                            Log.d("dislikes count", dislikes + "");
+                            likesReference.document(mPostKey).collection("likes")
+                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onEvent(QuerySnapshot likesSnapshots, FirebaseFirestoreException e) {
+                                            if (e != null) {
+                                                Log.w(TAG, "Listen error", e);
+                                                return;
+                                            }
+
+                                            if (!likesSnapshots.isEmpty()){
+                                                //calculate likes in percentage
+                                                final int likes = likesSnapshots.size();
+                                                Log.d("likes size", likes + "");
+                                                final int likesPlusDislikes = likes + dislikes;
+                                                Log.d("likes plus dislikes", likesPlusDislikes + "");
+                                                final int percentLikes = 100 * likes/likesPlusDislikes;
+                                                Log.d("likes percentage", percentLikes + "");
+                                                final int roundedPercent = roundPercentage(percentLikes, 2);
+                                                mLikesPercentageTextView.setText(roundedPercent + "%" + " " + "Likes");
+                                            }else {
+//                                        //calculate likes in percentage
+                                                mLikesPercentageTextView.setText("0%" + " " + "Likes");
+                                            }
+                                        }
+                                    });
+                        }else {
+                            final int dislikes = dislikesSnapshots.size();
+                            Log.d("dislikes count", dislikes + "");
+                            likesReference.document(mPostKey).collection("likes")
+                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onEvent(QuerySnapshot likesSnapshots, FirebaseFirestoreException e) {
+                                            if (e != null) {
+                                                Log.w(TAG, "Listen error", e);
+                                                return;
+                                            }
+
+                                            if (!likesSnapshots.isEmpty()){
+                                                //calculate likes in percentage
+                                                final int likes = likesSnapshots.size();
+                                                Log.d("likes size", likes + "");
+                                                final int likesPlusDislikes = likes + dislikes;
+                                                Log.d("likes plus dislikes", likesPlusDislikes + "");
+                                                final int percentLikes = 100 * likes/likesPlusDislikes;
+                                                Log.d("likes percentage", percentLikes + "");
+                                                final int roundedPercent = roundPercentage(percentLikes, 2);
+                                                mLikesPercentageTextView.setText(roundedPercent + "%" + " " + "Likes");
+                                            }else {
+                                                mLikesPercentageTextView.setText("0%" + " " + "Likes");
+                                            }
+                                        }
+                                    });
+                        }
+
+
+                    }
+                });
+
+        //calculate the percentage of likes to dislikes
+        likesReference.document(mPostKey).collection("likes")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot likesSnapshots, FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!likesSnapshots.isEmpty()){
+                            final int likes = likesSnapshots.size();
+                            Log.d("likes count size", likes + "");
+                            likesReference.document(mPostKey).collection("dislikes")
+                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onEvent(QuerySnapshot dislikesSnapshots, FirebaseFirestoreException e) {
+                                            if (e != null) {
+                                                Log.w(TAG, "Listen error", e);
+                                                return;
+                                            }
+
+                                            if (!dislikesSnapshots.isEmpty()){
+                                                //calculate likes in percentage
+                                                final int dislikes = dislikesSnapshots.size();
+                                                Log.d("dislikes size", dislikes + "");
+                                                final int likesPlusDislikes = likes + dislikes;
+                                                Log.d("disikes plus dislikes", likesPlusDislikes + "");
+                                                final int percentDislikes = 100 * dislikes/likesPlusDislikes;
+                                                Log.d("dislikes percentage", percentDislikes + "");
+                                                final int roundedPercent = roundPercentage(percentDislikes, 2);
+                                                mDislikePercentageTextView.setText(roundedPercent + "%" + " " + "  Dislikes");
+                                            }else {
+                                                //calculate likes in percentage
+                                                final int dislikes = dislikesSnapshots.size();
+                                                Log.d("dislikes size", dislikes + "");
+                                                final int likesPlusDislikes = likes + dislikes;
+                                                Log.d("disikes plus dislikes", likesPlusDislikes + "");
+                                                final int percentDislikes = 100 * dislikes/likesPlusDislikes;
+                                                Log.d("dislikes percentage", percentDislikes + "");
+                                                final int roundedPercent = roundPercentage(percentDislikes, 2);
+                                                mDislikePercentageTextView.setText(roundedPercent + "%" + " " + "Dislikes");                                            }
+
+                                        }
+                                    });
+                        }else {
+                            final int likes = likesSnapshots.size();
+                            Log.d("likes count size", likes + "");
+                            likesReference.document(mPostKey).collection("dislikes")
+                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onEvent(QuerySnapshot dislikesSnapshots, FirebaseFirestoreException e) {
+                                            if (e != null) {
+                                                Log.w(TAG, "Listen error", e);
+                                                return;
+                                            }
+
+                                            if (!dislikesSnapshots.isEmpty()){
+                                                //calculate likes in percentage
+                                                final int dislikes = dislikesSnapshots.size();
+                                                Log.d("dislikes size", dislikes + "");
+                                                final int likesPlusDislikes = likes + dislikes;
+                                                Log.d("disikes plus dislikes", likesPlusDislikes + "");
+                                                final int percentDislikes = 100 * dislikes/likesPlusDislikes;
+                                                Log.d("dislikes percentage", percentDislikes + "");
+                                                final int roundedPercent = roundPercentage(percentDislikes, 2);
+                                                mDislikePercentageTextView.setText(roundedPercent + "%" + " " + "Dislikes");
+                                            }else {
+                                                mDislikePercentageTextView.setText("0%" + " " + "Dislikes");                                            }
+
+                                        }
+                                    });
+                        }
+
+
+                    }
+                });
+
+        mDislikeImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                processDislikes = true;
+                likesReference.document(mPostKey).collection("dislikes")
+                        .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                            @Override
+                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                                if (e != null) {
+                                    Log.w(TAG, "Listen error", e);
+                                    return;
+                                }
+
+
+                                if (processDislikes){
+                                    if (documentSnapshots.isEmpty()){
+                                        Like like = new Like();
+                                        like.setUid(firebaseAuth.getCurrentUser().getUid());
+                                        like.setPushId(firebaseAuth.getCurrentUser().getUid());
+                                        likesReference.document(mPostKey).collection("dislikes")
+                                                .document(firebaseAuth.getCurrentUser().getUid()).set(like);
+                                        processDislikes = false;
+                                        mDislikeImageView.setColorFilter(Color.RED);
+
+                                    }else {
+                                        likesReference.document(mPostKey).collection("dislikes")
+                                                .document(firebaseAuth.getCurrentUser().getUid()).delete();
+                                        processDislikes = false;
+                                        mDislikeImageView.setColorFilter(Color.BLACK);
+
+                                    }
+                                }
+
+                            }
+                        });
+            }
+        });
+
 
 
         likesReference.document(mPostKey).collection("likes").addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -467,8 +649,16 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                             protected void onBindViewHolder(final WhoLikedViewHolder holder, int position, Like model) {
                                 holder.bindWhoLiked(getSnapshots().getSnapshot(position));
                                 Like like = getSnapshots().getSnapshot(position).toObject(Like.class);
-                                final String postKey = like.getPushId();
                                 final String uid = like.getUid();
+
+                                holder.whoLikedImageView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent intent = new Intent(PostDetailActivity.this, LikesActivity.class);
+                                        intent.putExtra(PostDetailActivity.EXTRA_POST_KEY, mPostKey);
+                                        startActivity(intent);
+                                    }
+                                });
 
                                 //get the profile of the user who just liked
                                 usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -484,7 +674,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                             final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
                                             final String profileImage = cinggulan.getProfileImage();
 
-                                            Picasso.with(mContext)
+                                            Picasso.with(PostDetailActivity.this)
                                                     .load(profileImage)
                                                     .fit()
                                                     .centerCrop()
@@ -498,7 +688,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
                                                         @Override
                                                         public void onError() {
-                                                            Picasso.with(mContext)
+                                                            Picasso.with(PostDetailActivity.this)
                                                                     .load(profileImage)
                                                                     .fit()
                                                                     .centerCrop()
@@ -538,7 +728,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                         mLikesRecyclerView.setAdapter(firestoreRecyclerAdapter);
                         firestoreRecyclerAdapter.startListening();
                         mLikesRecyclerView.setHasFixedSize(false);
-                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext,
+                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(PostDetailActivity.this,
                                 LinearLayoutManager.HORIZONTAL, true);
                         layoutManager.setAutoMeasureEnabled(true);
                         mLikesRecyclerView.setNestedScrollingEnabled(false);
@@ -560,10 +750,10 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (documentSnapshot.exists()){
-                    mCingleTradeMethodTextView.setText("@Selling");
+                    mTradeMethodTextView.setText("@Selling");
                 }else {
-                    mCingleTradeMethodTextView.setText("@NotOnTrade");
-                    mTradeCingleButton.setVisibility(View.GONE);
+                    mTradeMethodTextView.setText("@NotOnSale");
+                    mBuyPostButton.setVisibility(View.GONE);
                 }
             }
         });
@@ -593,8 +783,8 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                 final String username = cinggulan.getUsername();
                                 final String profileImage = cinggulan.getProfileImage();
 
-                                mCingleOwnerTextView.setText(username);
-                                Picasso.with(mContext)
+                                mPostOwnerTextView.setText(username);
+                                Picasso.with(PostDetailActivity.this)
                                         .load(profileImage)
                                         .fit()
                                         .centerCrop()
@@ -608,7 +798,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
                                             @Override
                                             public void onError() {
-                                                Picasso.with(mContext)
+                                                Picasso.with(PostDetailActivity.this)
                                                         .load(profileImage)
                                                         .fit()
                                                         .centerCrop()
@@ -624,15 +814,15 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                         @Override
                         public void onClick(View view) {
                             if ((firebaseAuth.getCurrentUser().getUid()).equals(ownerUid)){
-                                Intent intent = new Intent(mContext, PersonalProfileActivity.class);
+                                Intent intent = new Intent(PostDetailActivity.this, PersonalProfileActivity.class);
                                 intent.putExtra(PostDetailActivity.EXTRA_USER_UID, ownerUid);
-                                mContext.startActivity(intent);
+                                startActivity(intent);
                                 d("profile uid", firebaseAuth.getCurrentUser().getUid());
                             }else {
-                                Intent intent = new Intent(mContext, FollowerProfileActivity.class);
+                                Intent intent = new Intent(PostDetailActivity.this, FollowerProfileActivity.class);
                                 intent.putExtra(PostDetailActivity.EXTRA_USER_UID, ownerUid);
                                 d("follower uid", ownerUid);
-                                mContext.startActivity(intent);
+                                startActivity(intent);
                             }
                         }
                     });
@@ -651,19 +841,19 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             startActivity(intent);
         }
 
-        if (v == mLikesCountTextView){
+        if (v == mTotalLikesCountTextView){
             Intent intent = new Intent(PostDetailActivity.this, LikesActivity.class);
             intent.putExtra(PostDetailActivity.EXTRA_POST_KEY, mPostKey);
             startActivity(intent);
         }
 
-        if (v == mCingleImageView){
+        if (v == mPostImageView){
             Intent intent = new Intent(PostDetailActivity.this, FullImageViewActivity.class);
             intent.putExtra(PostDetailActivity.EXTRA_POST_KEY, mPostKey);
             startActivity(intent);
         }
 
-        if (v == mTradeCingleButton){
+        if (v == mBuyPostButton){
             Bundle bundle = new Bundle();
             bundle.putString(PostDetailActivity.EXTRA_POST_KEY, mPostKey);
             FragmentManager fragmenManager = getSupportFragmentManager();
@@ -678,7 +868,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
         if (v == mEditSalePriceImageView){
             mEditSalePriceEditText.setVisibility(View.VISIBLE);
-            mCingleSalePriceTextView.setVisibility(View.GONE);
+            mSalePriceTextView.setVisibility(View.GONE);
             mEditSalePriceImageView.setVisibility(View.GONE);
             mDoneEditingImageView.setVisibility(View.VISIBLE);
         }
@@ -857,7 +1047,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void setNewPrice(){
-        mCingleSalePriceTextView.setVisibility(View.GONE);
+        mSalePriceTextView.setVisibility(View.GONE);
         final String stringSalePrice = mEditSalePriceEditText.getText().toString().trim();
         if (stringSalePrice.equals("")){
             mEditSalePriceEditText.setError("Sale price is empty!");
@@ -877,7 +1067,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                         final Credit credit = documentSnapshot.toObject(Credit.class);
                         final double senseCredits = credit.getAmount();
                         final DecimalFormat formatter = new DecimalFormat("0.00000000");
-                        mCingleSenseCreditsTextView.setText("SC" + " " + "" + formatter.format(senseCredits));
+                        mPoseSenseCreditsTextView.setText("SC" + " " + formatter.format(senseCredits));
 
                         if (intSalePrice < senseCredits){
                             mEditSalePriceEditText.setError("Sale price is less than Post Sense Crdits!");
@@ -899,10 +1089,10 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                             public void onComplete(@NonNull Task<Void> task) {
 
                                                 final PostSale postSale = documentSnapshot.toObject(PostSale.class);
-                                                mCingleSalePriceTextView.setText("SC" + " " + formatter
+                                                mSalePriceTextView.setText("SC" + " " + formatter
                                                         .format(postSale.getSalePrice()));
                                                 mSalePriceProgressBar.setVisibility(View.GONE);
-                                                mCingleSalePriceTextView.setVisibility(View.VISIBLE);
+                                                mSalePriceTextView.setVisibility(View.VISIBLE);
                                                 mDoneEditingImageView.setVisibility(View.GONE);
                                                 mEditSalePriceImageView.setVisibility(View.VISIBLE);
                                             }
@@ -963,4 +1153,13 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         });
 
     }
+
+    private static int roundPercentage(int value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.intValue();
+    }
+
 }

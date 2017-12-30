@@ -169,6 +169,12 @@ public class FollowingFragment extends Fragment {
                                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                         @Override
                                         public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                                            if (e != null) {
+                                                Log.w(TAG, "Listen error", e);
+                                                return;
+                                            }
+
                                             if (documentSnapshots.isEmpty()){
                                                 holder.followButton.setText("Unfollow");
                                             }else {

@@ -163,7 +163,6 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
                             final PostSale postSale = documentSnapshot.toObject(PostSale.class);
 
                             final double salePrice = postSale.getSalePrice();
-                            Log.d("cingle sale price", salePrice + "");
 
                             if (amountTransferred < salePrice){
                                 mAmountEnteredEditText.setError("Your credits are insufficient");
@@ -179,10 +178,8 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
                                                 if (documentSnapshot.exists()){
                                                     Balance walletBalance = documentSnapshot.toObject(Balance.class);
                                                     final double currentBalance = walletBalance.getTotalBalance();
-                                                    Log.d("old wallet balance", currentBalance + "");
 
                                                     final double newWalletBalance = currentBalance - amountTransferred;
-                                                    Log.d("new wallet balance", newWalletBalance + "");
 
                                                     //record new wallet balance
                                                     final Balance balance = new Balance();
@@ -200,9 +197,7 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
                                                                                 if (documentSnapshot.exists()){
                                                                                     Balance cingleWalletBalance = documentSnapshot.toObject(Balance.class);
                                                                                     final double currentBalance = cingleWalletBalance.getTotalBalance();
-                                                                                    Log.d("old cingle balance", currentBalance + "");
                                                                                     final double newCingleBalance = currentBalance + amountTransferred;
-                                                                                    Log.d("new cingle balance", newCingleBalance + "");
 
                                                                                     postWalletReference.document(mPostKey).update("amound deposited", newCingleBalance)
                                                                                             .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -228,7 +223,6 @@ public class SendCreditsDialogFragment extends DialogFragment implements View.On
                                                                                     ifairReference.document(mPostKey).delete();
                                                                                 }else {
                                                                                     final double newCingleBalance = amountTransferred;
-                                                                                    Log.d("new cingle balance", newCingleBalance + "");
                                                                                     postWalletReference.document(mPostKey).update("amount deposited", newCingleBalance)
                                                                                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                                                 @Override

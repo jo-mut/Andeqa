@@ -191,4 +191,6 @@ This privacy policy page was created at privacypolicytemplate.net and modified/g
     <string name="title_activity_tabbed">TabbedActivity</string>
     <string name="title_activity_test">TestActivity</string>
     <string name="title_activity_nav">NavActivity</string>
+    <string name="following">Following</string>
+    <string name="posts">Posts</string>
 </resources>

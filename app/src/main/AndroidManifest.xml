@@ -10,7 +10,7 @@
         android:xlargeScreens="true" />
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -37,7 +37,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".registration.SignInActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".registration.SignUpActivity"
             android:screenOrientation="portrait" />
@@ -117,18 +117,13 @@
             android:name=".home.MainActivity"
             android:label="Cinggl"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".home.FullImageViewActivity"
             android:label="Post" />
         <activity
             android:name=".preferences.PreferencesActivity"
             android:label="Preferences"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".preferences.AboutActivity"
-            android:label="About"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
@@ -141,7 +136,6 @@
             android:label="Set sale price"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity android:name=".preferences.TermsOfServiceActivity" />
         <activity
             android:name=".market.MarketActivity"
             android:label="Market"
@@ -161,19 +155,19 @@
         <activity
             android:name=".registration.FollowCinggulans"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme" />
         <activity
+            android:name=".home.InitializationActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"
-            android:name=".home.InitializationActivity">
-
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
+        <activity android:name=".preferences.TermsActivity" />
+        <activity android:name=".message.MessagesAccountActivity"></activity>
     </application>
 
 </manifest>

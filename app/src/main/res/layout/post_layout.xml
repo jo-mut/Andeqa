@@ -1,295 +1,308 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:fresco="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:scrollbars="none"
-    android:background="#e4e4e4"
+    android:layout_marginBottom="15dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@android:color/white">
 
-    <LinearLayout
-        android:padding="0.3dp"
-        android:layout_marginBottom="15dp"
-        android:background="@android:color/white"
-        android:orientation="vertical"
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:soundEffectsEnabled="false"
-        android:weightSum="1">
+        android:layout_height="wrap_content"
+        app:cardPreventCornerOverlap="false"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="0dp"
+        app:cardMaxElevation="1dp">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="65dp"
-            android:layout_marginTop="5dp">
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/creatorImageView"
-                android:layout_centerVertical="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_width="55dp"
-                android:layout_height="55dp"
-                android:background="@drawable/profle_image_background"
-                android:scaleType="centerCrop"
-                android:cropToPadding="false" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="10dp"
-                android:id="@+id/usernameTextView"
-                android:textSize="14sp"
-                android:textColor="@android:color/black"
-                android:textStyle="normal|bold"
-                android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/creatorImageView"
-                android:layout_toEndOf="@+id/creatorImageView"
-                android:layout_toLeftOf="@+id/tradeMethodTextView"
-                android:layout_toStartOf="@+id/tradeMethodTextView"
-                android:layout_marginTop="10dp"
-                android:text="" />
-
-            <TextView
-                android:text=""
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/tradeMethodTextView"
-                android:textStyle="normal|bold"
-                android:textColor="@color/colorPrimary"
-                android:layout_alignTop="@+id/creatorImageView"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="5dp"
-                android:padding="5dp" />
-
-            <TextView
-                android:text=""
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/postSenseCreditsTextView"
-                android:textStyle="normal|bold"
-                android:textSize="12sp"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
-                android:layout_below="@+id/usernameTextView"
-                android:layout_toRightOf="@+id/creatorImageView"
-                android:layout_toEndOf="@+id/creatorImageView"
-                android:layout_toLeftOf="@+id/tradeMethodTextView"
-                android:layout_toStartOf="@+id/tradeMethodTextView"
-                android:layout_marginLeft="10dp" />
-
-        </RelativeLayout>
-
-
-        <RelativeLayout
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:layout_height="wrap_content">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/cingleTitleRelativeLayout">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:id="@+id/titleTextView"
-                        android:textStyle="normal|bold"
-                        android:textColor="@android:color/black"
-                        android:textSize="16sp"
-                        android:layout_marginLeft="3dp"
-                        android:paddingBottom="5dp" />
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <com.cinggl.cinggl.utils.ProportionalImageView
-                        android:id="@+id/postImageView"
-                        android:layout_width="match_parent"
-                        android:layout_alignParentTop="true"
-                        android:layout_centerHorizontal="true"
-                        android:adjustViewBounds="true"
-                        android:layout_height="200dp" />
-
-                </RelativeLayout>
-
-            </LinearLayout>
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:paddingTop="5dp"
-            android:id="@+id/toolsRelativeLayout">
-
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_more_vert_black_24dp"
-                android:id="@+id/settingsImageView"
-                android:padding="5dp"
-                android:layout_alignParentTop="false"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true" />
-
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_chat_bubble_black_24dp"
-                android:id="@+id/commentsImageView"
-                android:tint="@android:color/black"
-                android:padding="5dp"
-                android:layout_marginLeft="14dp"
-                android:layout_marginStart="14dp"
-                android:layout_toRightOf="@+id/dislikesImageView"
-                android:layout_toEndOf="@+id/dislikesImageView"
-                android:layout_centerVertical="true" />
-
             <RelativeLayout
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginEnd="10dp"
-                android:id="@+id/likeAndDislikeCardView"
-                android:layout_toRightOf="@+id/likesImageView"
-                android:layout_toEndOf="@+id/likesImageView"
-                android:layout_width="100dp"
-                android:layout_height="match_parent">
+                android:layout_width="match_parent"
+                android:layout_height="65dp"
+                android:layout_marginTop="5dp">
 
-                <RelativeLayout
-                    android:layout_toStartOf="@+id/likeAndDislikesDividerView"
-                    android:layout_toLeftOf="@+id/likeAndDislikesDividerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/creatorImageView"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:background="@drawable/profle_image_background"
+                    android:scaleType="centerCrop"
+                    android:cropToPadding="false" />
 
-                   <android.support.v7.widget.CardView
-                       android:layout_width="match_parent"
-                       android:layout_height="match_parent">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:id="@+id/usernameTextView"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/black"
+                    android:textStyle="normal|bold"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/creatorImageView"
+                    android:layout_toEndOf="@+id/creatorImageView"
+                    android:layout_toLeftOf="@+id/tradeMethodTextView"
+                    android:layout_toStartOf="@+id/tradeMethodTextView"
+                    android:layout_marginTop="10dp"
+                    android:text="" />
 
-                       <TextView
-                           android:layout_width="wrap_content"
-                           android:layout_height="wrap_content"
-                           android:id="@+id/likesPercentTextView"
-                           android:textColor="@android:color/black"
-                           android:textSize="14sp"
-                           android:layout_centerInParent="false"
-                           android:layout_marginRight="10dp"
-                           android:layout_centerVertical="false"
-                           android:layout_centerHorizontal="false"
-                           android:layout_gravity="center" />
+                <TextView
+                    android:text=""
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tradeMethodTextView"
+                    android:textStyle="normal|bold"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_alignTop="@+id/creatorImageView"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="5dp"
+                    android:padding="5dp" />
 
-                   </android.support.v7.widget.CardView>
-
-
-                </RelativeLayout>
-
-                <View
-                    android:id="@+id/likeAndDislikesDividerView"
-                    android:layout_width="0.3dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_centerInParent="true" />
-
-
-                <RelativeLayout
-                    android:layout_toEndOf="@+id/likeAndDislikesDividerView"
-                    android:layout_toRightOf="@+id/likeAndDislikesDividerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-
-                    <android.support.v7.widget.CardView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/dislikesPercentTextView"
-                            android:textColor="@android:color/black"
-                            android:textSize="12sp"
-                            android:layout_centerInParent="false"
-                            android:layout_marginLeft="10dp"
-                            android:layout_centerVertical="false"
-                            android:layout_centerHorizontal="false"
-                            android:layout_gravity="center" />
-
-                    </android.support.v7.widget.CardView>
-
-
-                </RelativeLayout>
+                <TextView
+                    android:text=""
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/postSenseCreditsTextView"
+                    android:textStyle="normal|bold"
+                    android:textSize="12sp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
+                    android:layout_below="@+id/usernameTextView"
+                    android:layout_toRightOf="@+id/creatorImageView"
+                    android:layout_toEndOf="@+id/creatorImageView"
+                    android:layout_toLeftOf="@+id/tradeMethodTextView"
+                    android:layout_toStartOf="@+id/tradeMethodTextView"
+                    android:layout_marginLeft="10dp" />
 
             </RelativeLayout>
 
-
-            <ImageView
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:visibility="gone"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_thumb_up_black_24dp"
-                android:id="@+id/likesImageView"
-                android:padding="5dp"
-                android:layout_alignParentTop="false"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_centerVertical="true" />
+                android:id="@+id/cingleTitleRelativeLayout">
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_thumb_down_black_24dp"
-                android:id="@+id/dislikesImageView"
-                android:layout_toRightOf="@+id/likeAndDislikeCardView"
-                android:layout_toEndOf="@+id/likeAndDislikeCardView"
-                android:padding="5dp"
-                android:layout_alignParentTop="false"
-                android:layout_centerInParent="false"
-                android:layout_centerVertical="true" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:id="@+id/titleTextView"
+                    android:textStyle="normal|bold"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:layout_marginLeft="3dp"
+                    android:paddingBottom="5dp" />
 
-            <TextView
-                android:text="0"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/commentsCountTextView"
-                android:textSize="12sp"
-                android:paddingTop="2dp"
-                android:paddingBottom="2dp"
-                android:layout_toRightOf="@+id/commentsImageView"
-                android:layout_toEndOf="@+id/commentsImageView"
-                android:textStyle="normal|bold"
-                android:layout_centerInParent="true" />
+            </RelativeLayout>
 
+        </LinearLayout>
 
-        </RelativeLayout>
+    </android.support.v7.widget.CardView>
 
+    <RelativeLayout
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        android:padding="0.3dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-
-        <RelativeLayout
+        <com.cinggl.cinggl.utils.ProportionalImageView
+            android:id="@+id/postImageView"
             android:layout_width="match_parent"
-            android:paddingLeft="5dp"
-            android:layout_height="20dp"
-            android:layout_marginTop="10dp">
+            android:adjustViewBounds="false"
+            android:layout_height="400dp" />
+
+    </RelativeLayout>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardPreventCornerOverlap="false"
+        app:cardCornerRadius="0dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:paddingTop="5dp"
+                android:id="@+id/toolsRelativeLayout"
+                android:layout_height="50dp">
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_more_vert_black_24dp"
+                    android:id="@+id/settingsImageView"
+                    android:padding="5dp"
+                    android:layout_alignParentTop="false"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true" />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_chat_bubble_black_24dp"
+                    android:id="@+id/commentsImageView"
+                    android:tint="@android:color/black"
+                    android:padding="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_toRightOf="@+id/dislikesImageView"
+                    android:layout_toEndOf="@+id/dislikesImageView"
+                    android:layout_centerVertical="true" />
+
+                <RelativeLayout
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:id="@+id/likeAndDislikeCardView"
+                    android:layout_toRightOf="@+id/likesImageView"
+                    android:layout_toEndOf="@+id/likesImageView"
+                    android:layout_height="match_parent"
+                    android:layout_width="120dp">
+
+                    <RelativeLayout
+                        android:layout_toStartOf="@+id/likeAndDislikesDividerView"
+                        android:layout_toLeftOf="@+id/likeAndDislikesDividerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <android.support.v7.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:cardCornerRadius="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/likesPercentageTextView"
+                                android:textColor="@android:color/black"
+                                android:textSize="12sp"
+                                android:layout_centerInParent="false"
+                                android:layout_centerVertical="false"
+                                android:layout_centerHorizontal="false"
+                                android:layout_gravity="center"
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginEnd="5dp"
+                                android:layout_marginRight="5dp"
+                                android:layout_marginStart="5dp"
+                                android:textAlignment="center" />
+
+                        </android.support.v7.widget.CardView>
+
+
+                    </RelativeLayout>
+
+                    <View
+                        android:id="@+id/likeAndDislikesDividerView"
+                        android:layout_width="0.3dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_centerInParent="true" />
+
+
+                    <RelativeLayout
+                        android:layout_toEndOf="@+id/likeAndDislikesDividerView"
+                        android:layout_toRightOf="@+id/likeAndDislikesDividerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+
+                        <android.support.v7.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:cardCornerRadius="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/dislikesPercentageTextView"
+                                android:textColor="@android:color/black"
+                                android:textSize="12sp"
+                                android:layout_centerInParent="false"
+                                android:layout_centerVertical="false"
+                                android:layout_centerHorizontal="false"
+                                android:layout_gravity="center"
+                                android:layout_marginEnd="5dp"
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginRight="5dp"
+                                android:layout_marginStart="5dp"
+                                android:textAlignment="center" />
+
+                        </android.support.v7.widget.CardView>
+
+
+                    </RelativeLayout>
+
+                </RelativeLayout>
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_thumb_up_black_24dp"
+                    android:id="@+id/likesImageView"
+                    android:padding="5dp"
+                    android:layout_alignParentTop="false"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_centerVertical="true" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_thumb_down_black_24dp"
+                    android:id="@+id/dislikesImageView"
+                    android:layout_toRightOf="@+id/likeAndDislikeCardView"
+                    android:layout_toEndOf="@+id/likeAndDislikeCardView"
+                    android:padding="5dp"
+                    android:layout_alignParentTop="false"
+                    android:layout_centerInParent="false"
+                    android:layout_centerVertical="true" />
+
+                <TextView
+                    android:text="0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/commentsCountTextView"
+                    android:textSize="12sp"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp"
+                    android:layout_toRightOf="@+id/commentsImageView"
+                    android:layout_toEndOf="@+id/commentsImageView"
+                    android:textStyle="normal|bold"
+                    android:layout_centerInParent="false"
+                    android:layout_centerVertical="true" />
+
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_width="match_parent"
+                android:padding="5dp"
+                android:layout_height="30dp">
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/likesRecyclerView"
@@ -303,7 +316,7 @@
 
 
                 <TextView
-                    android:id="@+id/likesCountTextView"
+                    android:id="@+id/totalLikesCountTextView"
                     android:layout_centerVertical="true"
                     android:layout_alignParentLeft="false"
                     android:layout_alignParentStart="false"
@@ -318,110 +331,35 @@
                     android:textSize="9sp"
                     android:text=""
                     android:paddingLeft="4dp"
-                    android:paddingRight="4dp" />
+                    android:paddingRight="4dp"
+                    android:textStyle="normal|bold" />
 
             </RelativeLayout>
 
-        </RelativeLayout>
+            <RelativeLayout
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="3dp"
+                android:id="@+id/descriptionRelativeLayout">
+
+                <TextView
+                    android:text=""
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/descriptionTextView"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:paddingBottom="10dp" />
+
+            </RelativeLayout>
 
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="3dp"
-            android:id="@+id/descriptionRelativeLayout"
-            android:layout_marginTop="10dp">
+        </LinearLayout>
 
-            <TextView
-                android:text=""
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/descriptionTextView"
-                android:textColor="@android:color/black"
-                android:textSize="14sp"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:paddingBottom="10dp" />
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp"
-            android:background="#e4e4e4"
-            android:orientation="horizontal"
-            android:id="@+id/ratingRelativeLayout">
-
-
-            <TextView
-                android:text="Bad"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/badRateTextView"
-                android:textColor="@android:color/black"
-                android:textSize="14sp"
-                android:layout_marginLeft="50dp"
-                android:layout_marginStart="50dp" />
-
-            <TextView
-                android:text="Fair"
-                android:layout_toEndOf="@+id/badRateTextView"
-                android:layout_toRightOf="@+id/badRateTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/fairTextView"
-                android:textColor="@android:color/black"
-                android:textSize="14sp"
-                android:layout_marginLeft="50dp"
-                android:layout_marginStart="50dp" />
-
-            <TextView
-                android:text="Good"
-                android:layout_toEndOf="@+id/fairTextView"
-                android:layout_toRightOf="@+id/fairTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/goodRateTextView"
-                android:textColor="@android:color/black"
-                android:layout_marginLeft="50dp"
-                android:layout_marginStart="50dp"
-                android:textSize="14sp" />
-
-            <TextView
-                android:text="Excellent"
-                android:layout_toEndOf="@+id/goodRateTextView"
-                android:layout_toRightOf="@+id/goodRateTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/excellentRateTextView"
-                android:textColor="@android:color/black"
-                android:textSize="14sp"
-                android:layout_marginLeft="50dp"
-                android:layout_marginStart="50dp" />
-
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/lacedCinglesRecyclerView"
-                android:overScrollMode="never"
-                android:nestedScrollingEnabled="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true">
-
-            </android.support.v7.widget.RecyclerView>
-
-        </RelativeLayout>
-
-
-    </LinearLayout>
+    </android.support.v7.widget.CardView>
 
 </LinearLayout>

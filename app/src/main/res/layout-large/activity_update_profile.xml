@@ -44,13 +44,13 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_weight="0.07"
-                    android:background="@drawable/gradient_color"
+                    android:background="@drawable/default_gradient_color"
                     android:layout_marginBottom="15dp"
                     android:layout_height="450dp">
 
                     <ImageView
                         android:id="@+id/profileCoverImageView"
-                        android:src="@drawable/gradient_color"
+                        android:src="@drawable/default_gradient_color"
                         android:alpha="0.1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"

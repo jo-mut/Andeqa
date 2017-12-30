@@ -2,6 +2,7 @@ package com.cinggl.cinggl.viewholders;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -34,6 +35,8 @@ public class MainPostsViewHolder extends RecyclerView.ViewHolder {
     Context mContext;
     ProgressBar progressBar;
     public ImageView likesImageView;
+    public ImageView dislikeImageView;
+    public TextView dislikeCountTextView;
     public ImageView commentsImageView;
     public TextView likesCountTextView;
     public TextView titleTextView;
@@ -51,6 +54,7 @@ public class MainPostsViewHolder extends RecyclerView.ViewHolder {
     private DatabaseReference cinglesReference;
     public RelativeLayout descriptionRelativeLayout;
     public RecyclerView likesRecyclerView;
+    public TextView totalLikesCountTextView;
 
 
     public MainPostsViewHolder(View itemView) {
@@ -58,7 +62,9 @@ public class MainPostsViewHolder extends RecyclerView.ViewHolder {
         mView = itemView;
         mContext = itemView.getContext();
         likesImageView = (ImageView) itemView.findViewById(R.id.likesImageView);
-        likesCountTextView =(TextView)itemView.findViewById(R.id.likesCountTextView);
+        dislikeImageView = (ImageView) itemView.findViewById(R.id.dislikesImageView);
+        dislikeCountTextView = (TextView) itemView.findViewById(R.id.dislikesPercentageTextView);
+        likesCountTextView =(TextView)itemView.findViewById(R.id.likesPercentageTextView);
         commentsImageView = (ImageView) itemView.findViewById(R.id.commentsImageView);
         descriptionTextView = (TextView) itemView.findViewById(R.id.descriptionTextView);
         titleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
@@ -72,6 +78,7 @@ public class MainPostsViewHolder extends RecyclerView.ViewHolder {
         senseCreditsTextView = (TextView) mView.findViewById(R.id.postSenseCreditsTextView);
         tradeMethodTextView = (TextView) mView.findViewById(R.id.tradeMethodTextView);
         likesRecyclerView = (RecyclerView) mView.findViewById(R.id.likesRecyclerView);
+        totalLikesCountTextView = (TextView) mView.findViewById(R.id.totalLikesCountTextView);
     }
 
     public void bindRandomCingles(final DocumentSnapshot documentSnapshot){
@@ -115,16 +122,15 @@ public class MainPostsViewHolder extends RecyclerView.ViewHolder {
                 });
 
 
-        if (post.getTitle().equals("")){
-            titleRelativeLayout.setVisibility(View.GONE);
-        }else {
+        if (!TextUtils.isEmpty(post.getTitle())){
             titleTextView.setText(post.getTitle());
+            titleRelativeLayout.setVisibility(View.VISIBLE);
+
         }
 
-        if (post.getDescription().equals("")){
-            descriptionRelativeLayout.setVisibility(View.GONE);
-        }else {
+        if (!TextUtils.isEmpty(post.getDescription())){
             descriptionTextView.setText(post.getDescription());
+            descriptionRelativeLayout.setVisibility(View.VISIBLE);
         }
 
     }

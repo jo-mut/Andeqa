@@ -24,7 +24,8 @@ public class ProfilePostsViewHolder extends RecyclerView.ViewHolder implements V
     Context mContext;
     public ImageView likesImageView;
     public ImageView commentsImageView;
-    public TextView likesCountTextView;
+    public TextView likesPercentageTextView;
+    public TextView dislikePercentageTextView;
     public TextView cingleTitleTextView;
     public TextView cingleDescriptionTextView;
     public TextView accountUsernameTextView;
@@ -37,6 +38,8 @@ public class ProfilePostsViewHolder extends RecyclerView.ViewHolder implements V
     public TextView cingleTradeMethodTextView;
     public TextView cingleSenseCreditsTextView;
     public RecyclerView likesRecyclerView;
+    public TextView totalLikesCountTextView;
+    public ImageView dislikeImageView;
 
 
     public ProfilePostsViewHolder(View itemView){
@@ -44,7 +47,9 @@ public class ProfilePostsViewHolder extends RecyclerView.ViewHolder implements V
         mView = itemView;
         mContext = itemView.getContext();
         likesImageView = (ImageView) itemView.findViewById(R.id.likesImageView);
-        likesCountTextView =(TextView)itemView.findViewById(R.id.likesCountTextView);
+        dislikeImageView = (ImageView) itemView.findViewById(R.id.dislikesImageView);
+        likesPercentageTextView =(TextView)itemView.findViewById(R.id.likesPercentageTextView);
+        dislikePercentageTextView = (TextView) itemView.findViewById(R.id.dislikesPercentageTextView);
         commentsImageView = (ImageView) itemView.findViewById(R.id.commentsImageView);
         cingleDescriptionTextView = (TextView) itemView.findViewById(R.id.descriptionTextView);
         cingleTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
@@ -58,11 +63,7 @@ public class ProfilePostsViewHolder extends RecyclerView.ViewHolder implements V
         cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.postSenseCreditsTextView);
         cingleTradeMethodTextView = (TextView) mView.findViewById(R.id.tradeMethodTextView);
         likesRecyclerView = (RecyclerView) mView.findViewById(R.id.likesRecyclerView);
-
-        likesImageView.setOnClickListener(this);
-        commentsImageView.setOnClickListener(this);
-        likesCountTextView.setOnClickListener(this);
-
+        totalLikesCountTextView = (TextView) mView.findViewById(R.id.totalLikesCountTextView);
 
     }
 

@@ -31,7 +31,10 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // load settings fragment
-        getFragmentManager().beginTransaction().replace(android.R.id.content, new MainPreferenceFragment()).commit();
+        getFragmentManager().beginTransaction().replace(android.R.id.content,
+                new MainPreferenceFragment()).commit();
+
+
     }
 
     public static class MainPreferenceFragment extends PreferenceFragment {
@@ -72,7 +75,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
         Preference preference = findPreference("terms");
         preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(getApplicationContext(), TermsOfServiceActivity.class);
+                Intent intent = new Intent(getApplicationContext(), TermsActivity.class);
                 startActivity(intent);
                 return true;
             }

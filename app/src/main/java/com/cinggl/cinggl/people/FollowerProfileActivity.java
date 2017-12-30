@@ -236,7 +236,7 @@ public class FollowerProfileActivity extends AppCompatActivity
                             mFullNameTextView.setText(firstName + " " + secondName);
                             mBioTextView.setText(bio);
 
-                            collapsingToolbarLayout.setTitle(username + "'s" + " profile");
+                            collapsingToolbarLayout.setTitle(username);
 
                             Picasso.with(FollowerProfileActivity.this)
                                     .load(profileImage)

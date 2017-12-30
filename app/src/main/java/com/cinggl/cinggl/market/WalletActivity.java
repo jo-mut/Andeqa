@@ -122,7 +122,6 @@ public class WalletActivity extends AppCompatActivity {
             protected void onBindViewHolder(final TransactionHistoryViewHolder holder, int position, TransactionDetails model) {
                 holder.bindTransactionHistory(model);
                 final String postKey = getSnapshots().get(position).getPushId();
-                Log.d("transaction postKey", postKey);
 
 
                 holder.deleteHistoryImageView.setOnClickListener(new View.OnClickListener() {
@@ -217,8 +216,6 @@ public class WalletActivity extends AppCompatActivity {
                 if (documentSnapshot.exists()){
                     Balance balance = documentSnapshot.toObject(Balance.class);
                     final double walletBalance = balance.getTotalBalance();
-
-                    Log.d("wallet balance", walletBalance + "");
 
                     mCurrentWalletBalanceTextView.setText("SC" + " " + formatter.format(walletBalance));
                 }else {
