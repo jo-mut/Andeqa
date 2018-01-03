@@ -24,7 +24,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="65dp"
+                android:layout_height="100dp"
                 android:layout_marginTop="5dp">
 
                 <de.hdodenhof.circleimageview.CircleImageView
@@ -32,8 +32,8 @@
                     android:layout_centerVertical="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
-                    android:layout_width="55dp"
-                    android:layout_height="55dp"
+                    android:layout_width="82dp"
+                    android:layout_height="82dp"
                     android:background="@drawable/profle_image_background"
                     android:scaleType="centerCrop"
                     android:cropToPadding="false" />
@@ -44,7 +44,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginStart="10dp"
                     android:id="@+id/usernameTextView"
-                    android:textSize="14sp"
+                    android:textSize="21sp"
                     android:textColor="@android:color/black"
                     android:textStyle="normal|bold"
                     android:layout_alignParentTop="true"
@@ -61,10 +61,12 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/tradeMethodTextView"
                     android:textStyle="normal|bold"
+                    android:textSize="21sp"
                     android:textColor="@color/colorPrimary"
                     android:layout_alignTop="@+id/creatorImageView"
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="5dp"
+                    android:layout_marginEnd="5dp"
                     android:padding="5dp" />
 
                 <TextView
@@ -73,7 +75,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/postSenseCreditsTextView"
                     android:textStyle="normal|bold"
-                    android:textSize="12sp"
+                    android:textSize="18sp"
                     android:paddingTop="3dp"
                     android:paddingBottom="3dp"
                     android:layout_below="@+id/usernameTextView"
@@ -81,6 +83,7 @@
                     android:layout_toEndOf="@+id/creatorImageView"
                     android:layout_toLeftOf="@+id/tradeMethodTextView"
                     android:layout_toStartOf="@+id/tradeMethodTextView"
+                    android:layout_marginStart="10dp"
                     android:layout_marginLeft="10dp" />
 
             </RelativeLayout>
@@ -100,8 +103,9 @@
                     android:id="@+id/titleTextView"
                     android:textStyle="normal|bold"
                     android:textColor="@android:color/black"
-                    android:textSize="16sp"
+                    android:textSize="24sp"
                     android:layout_marginLeft="3dp"
+                    android:layout_marginStart="3dp"
                     android:paddingBottom="5dp" />
 
             </RelativeLayout>
@@ -121,7 +125,7 @@
             android:id="@+id/postImageView"
             android:layout_width="match_parent"
             android:adjustViewBounds="false"
-            android:layout_height="400dp" />
+            android:layout_height="600dp" />
 
     </RelativeLayout>
 
@@ -177,7 +181,7 @@
                     android:layout_toRightOf="@+id/likesImageView"
                     android:layout_toEndOf="@+id/likesImageView"
                     android:layout_height="match_parent"
-                    android:layout_width="120dp">
+                    android:layout_width="180dp">
 
                     <RelativeLayout
                         android:layout_toStartOf="@+id/likeAndDislikesDividerView"
@@ -195,7 +199,7 @@
                                 android:layout_height="wrap_content"
                                 android:id="@+id/likesPercentageTextView"
                                 android:textColor="@android:color/black"
-                                android:textSize="12sp"
+                                android:textSize="18sp"
                                 android:layout_centerInParent="false"
                                 android:layout_centerVertical="false"
                                 android:layout_centerHorizontal="false"
@@ -236,7 +240,7 @@
                                 android:layout_height="wrap_content"
                                 android:id="@+id/dislikesPercentageTextView"
                                 android:textColor="@android:color/black"
-                                android:textSize="12sp"
+                                android:textSize="18sp"
                                 android:layout_centerInParent="false"
                                 android:layout_centerVertical="false"
                                 android:layout_centerHorizontal="false"
@@ -285,7 +289,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/commentsCountTextView"
-                    android:textSize="12sp"
+                    android:textSize="18sp"
                     android:paddingTop="2dp"
                     android:paddingBottom="2dp"
                     android:layout_toRightOf="@+id/commentsImageView"
@@ -328,7 +332,8 @@
                     android:layout_toRightOf="@+id/likesRecyclerView"
                     android:layout_toEndOf="@+id/likesRecyclerView"
                     android:layout_marginLeft="5dp"
-                    android:textSize="12sp"
+                    android:layout_marginStart="5dp"
+                    android:textSize="18sp"
                     android:text=""
                     android:paddingLeft="4dp"
                     android:paddingRight="4dp"
@@ -349,7 +354,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/descriptionTextView"
                     android:textColor="@android:color/black"
-                    android:textSize="14sp"
+                    android:textSize="21sp"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"

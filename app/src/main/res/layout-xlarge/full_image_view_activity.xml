@@ -43,7 +43,7 @@ tools:context="com.cinggl.cinggl.home.FullImageViewActivity">
             app:layout_scrollFlags="scroll|enterAlways"
             app:titleTextAppearance="@style/toolbarTextSize"
             app:popupTheme="@style/AppTheme.PopupOverlay"
-            android:background="@android:color/transparent"
+            android:src="@color/transparentColor"
             />
 
     </android.support.design.widget.AppBarLayout>

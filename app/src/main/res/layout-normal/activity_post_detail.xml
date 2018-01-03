@@ -554,7 +554,7 @@
                             android:layout_toEndOf="@+id/likesRecyclerView"
                             android:layout_marginLeft="5dp"
                             android:layout_marginStart="5dp"
-                            android:textSize="12sp"
+                            android:textSize="18sp"
                             android:text=""
                             android:paddingLeft="4dp"
                             android:paddingRight="4dp"

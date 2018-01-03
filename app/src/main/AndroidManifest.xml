@@ -167,7 +167,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".preferences.TermsActivity" />
-        <activity android:name=".message.MessagesAccountActivity"></activity>
+        <activity android:name=".message.MessagesAccountActivity" />
     </application>
 
 </manifest>

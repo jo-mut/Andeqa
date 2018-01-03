@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_gravity="top"
         app:titleTextAppearance="@style/toolbarTextSize"
-        android:layout_height="56dp"
+        android:layout_height="112dp"
         android:background="@color/colorPrimary"
         app:layout_scrollFlags="scroll|enterAlways"
         app:popupTheme="@style/AppTheme.PopupOverlay"
@@ -72,8 +72,9 @@
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/white"
                     android:layout_marginLeft="10dp"
-                    android:minHeight="26dp"
-                    android:minWidth="50dip"
+                    android:minHeight="50dp"
+                    android:minWidth="100dip"
+                    android:textSize="28dp"
                     android:layout_centerVertical="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
@@ -89,7 +90,7 @@
                     android:layout_alignParentEnd="false"
                     android:id="@+id/postSalePriceTextView"
                     android:layout_centerInParent="true"
-                    android:textSize="16sp"
+                    android:textSize="32sp"
                     android:textColor="@android:color/black"
                     android:textStyle="normal|bold" />
 
@@ -139,7 +140,7 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginRight="10dp"
                     android:layout_marginEnd="10dp"
-                    android:textSize="14sp"
+                    android:textSize="28sp"
                     android:visibility="invisible"
                     android:id="@+id/editSalePriceEditText" />
 
@@ -173,7 +174,7 @@
                             android:textColor="@android:color/black"
                             android:textStyle="normal|bold"
                             android:layout_marginTop="5dp"
-                            android:textSize="16sp" />
+                            android:textSize="32sp" />
 
                     </RelativeLayout>
 
@@ -191,7 +192,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/postCreatorTextView"
-                            android:textSize="14sp"
+                            android:textSize="28sp"
                             android:textStyle="normal|bold"
                             android:layout_centerVertical="true"
                             android:layout_alignParentLeft="true"
@@ -202,6 +203,7 @@
                             android:layout_width="30dp"
                             android:layout_height="30dp"
                             android:layout_marginRight="5dp"
+                            android:layout_marginEnd="5dp"
                             android:layout_centerVertical="true"
                             android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true"
@@ -219,7 +221,7 @@
                             android:layout_toEndOf="@+id/postCreatorTextView"
                             android:layout_toLeftOf="@+id/creatorImageView"
                             android:layout_toStartOf="@+id/creatorImageView"
-                            android:textSize="14sp" />
+                            android:textSize="28sp" />
 
                     </RelativeLayout>
 
@@ -236,7 +238,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/dateTextView"
-                            android:textSize="14sp"
+                            android:textSize="28sp"
                             android:textStyle="normal|bold"
                             android:layout_centerVertical="true" />
 
@@ -251,7 +253,7 @@
                             android:layout_alignBottom="@+id/dateTextView"
                             android:layout_toRightOf="@+id/dateTextView"
                             android:layout_toEndOf="@+id/dateTextView"
-                            android:textSize="14sp"
+                            android:textSize="28sp"
                             android:layout_centerVertical="true" />
 
                     </RelativeLayout>
@@ -270,7 +272,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textStyle="normal|bold"
-                            android:textSize="14sp"
+                            android:textSize="28sp"
                             android:paddingTop="3dp"
                             android:paddingBottom="3dp"
                             android:layout_alignParentTop="false"
@@ -284,7 +286,7 @@
                             android:layout_height="wrap_content"
                             android:id="@+id/tradeMethodTextView"
                             android:textStyle="normal|bold"
-                            android:textSize="14sp"
+                            android:textSize="28sp"
                             android:textColor="@color/colorPrimary"
                             android:layout_marginLeft="10dp"
                             android:layout_marginStart="10dp"
@@ -308,7 +310,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/senseCreditsTitleTextView"
-                            android:textSize="14sp"
+                            android:textSize="28sp"
                             android:textStyle="normal|bold"
                             android:layout_alignParentLeft="true"
                             android:layout_alignParentStart="true"
@@ -321,7 +323,7 @@
                             android:layout_toEndOf="@+id/senseCreditsTitleTextView"
                             android:layout_toRightOf="@+id/senseCreditsTitleTextView"
                             android:id="@+id/postSenseCreditsTextView"
-                            android:textSize="14sp"
+                            android:textSize="28sp"
                             android:layout_marginLeft="10dp"
                             android:layout_marginStart="10dp"
                             android:layout_centerVertical="true" />
@@ -341,7 +343,7 @@
                             android:layout_height="wrap_content"
                             android:id="@+id/ownerTitleTextView"
                             android:textStyle="normal|bold"
-                            android:textSize="14sp"
+                            android:textSize="28sp"
                             android:layout_marginTop="5dp"
                             android:layout_marginRight="3dp"
                             android:layout_marginLeft="3dp"
@@ -358,7 +360,7 @@
                             android:id="@+id/postOwnerTextView"
                             android:layout_marginTop="5dp"
                             android:layout_marginLeft="10dp"
-                            android:textSize="14sp"
+                            android:textSize="28sp"
                             android:layout_centerVertical="true" />
 
                         <de.hdodenhof.circleimageview.CircleImageView
@@ -366,6 +368,7 @@
                             android:layout_width="30dp"
                             android:layout_height="30dp"
                             android:layout_marginRight="5dp"
+                            android:layout_marginEnd="5dp"
                             android:layout_centerVertical="true"
                             android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true"
@@ -378,7 +381,6 @@
                         android:paddingTop="5dp"
                         android:id="@+id/toolsRelativeLayout"
                         android:layout_height="50dp">
-
 
                         <ImageView
                             android:layout_width="wrap_content"
@@ -402,7 +404,7 @@
                             android:layout_toRightOf="@+id/likesImageView"
                             android:layout_toEndOf="@+id/likesImageView"
                             android:layout_height="match_parent"
-                            android:layout_width="120dp">
+                            android:layout_width="240dp">
 
                             <RelativeLayout
                                 android:layout_toStartOf="@+id/likeAndDislikesDividerView"
@@ -420,7 +422,7 @@
                                         android:layout_height="wrap_content"
                                         android:id="@+id/likesPercentageTextView"
                                         android:textColor="@android:color/black"
-                                        android:textSize="12sp"
+                                        android:textSize="24sp"
                                         android:layout_centerInParent="false"
                                         android:layout_centerVertical="false"
                                         android:layout_centerHorizontal="false"
@@ -461,7 +463,7 @@
                                         android:layout_height="wrap_content"
                                         android:id="@+id/dislikesPercentageTextView"
                                         android:textColor="@android:color/black"
-                                        android:textSize="12sp"
+                                        android:textSize="24sp"
                                         android:layout_centerInParent="false"
                                         android:layout_centerVertical="false"
                                         android:layout_centerHorizontal="false"
@@ -510,7 +512,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/commentsCountTextView"
-                            android:textSize="12sp"
+                            android:textSize="24sp"
                             android:paddingTop="2dp"
                             android:paddingBottom="2dp"
                             android:layout_toRightOf="@+id/commentsImageView"
@@ -554,7 +556,7 @@
                             android:layout_toEndOf="@+id/likesRecyclerView"
                             android:layout_marginLeft="5dp"
                             android:layout_marginStart="5dp"
-                            android:textSize="12sp"
+                            android:textSize="18sp"
                             android:text=""
                             android:paddingLeft="4dp"
                             android:paddingRight="4dp"
@@ -575,7 +577,7 @@
                             android:layout_height="wrap_content"
                             android:id="@+id/descriptionTextView"
                             android:textColor="@android:color/black"
-                            android:textSize="14sp"
+                            android:textSize="28sp"
                             android:layout_alignParentTop="true"
                             android:layout_alignParentLeft="true"
                             android:layout_alignParentStart="true"
