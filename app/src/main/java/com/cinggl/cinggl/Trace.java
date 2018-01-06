@@ -171,6 +171,10 @@ public class Trace {
             }
         });
 
+//        if (dumpDataAfterInterval){
+//            dumpDataAfterSpecifiedInterval();
+//        }
+
         try{
             if(dumpDataAfterInterval)
                 dumpDataAfterSpecifiedInterval();
@@ -253,7 +257,6 @@ public class Trace {
     public boolean clearAllTraceData() {
 
         try {
-
             traceData.clear();
             traceData = null;
             return true;
@@ -288,8 +291,6 @@ public class Trace {
         for (int viewPosition = firstVisibleItemPosition;
              viewPosition <= lastVisibleItemPosition; viewPosition++) {
 
-            Log.i("View being considered", String.valueOf(viewPosition));
-
             // Get the view from its position.
             View itemView = cingleOutRecyclerView.getLayoutManager()
                     .findViewByPosition(viewPosition);
@@ -307,8 +308,6 @@ public class Trace {
             }
         }
     }
-
-    //calaculate how many times the itemView has been viewed above the minimum threshold time
 
 
     //calculate how much height of the view is visible on the screen
@@ -336,8 +335,6 @@ public class Trace {
         traceRef = FirebaseDatabase.getInstance().getReference("Data");
         traceRef.setValue(traceData);
 
-
-        Log.d("Traced data", traceData.getViewId());
         return traceData;
     }
 

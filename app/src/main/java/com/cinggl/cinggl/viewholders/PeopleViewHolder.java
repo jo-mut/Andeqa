@@ -28,7 +28,7 @@ public class PeopleViewHolder extends RecyclerView.ViewHolder {
         mView = itemView;
         mContext = itemView.getContext();
         fullNameTextView = (TextView) itemView.findViewById(R.id.fullNameTextView);
-        profileImageView = (CircleImageView) itemView.findViewById(R.id.creatorImageView);
+        profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         followButton = (Button) itemView.findViewById(R.id.followTextView);
         usernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
     }

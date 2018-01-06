@@ -1,4 +1,4 @@
-package com.cinggl.cinggl.adapters;
+package com.cinggl.cinggl.profile;
 
 import android.content.Context;
 import android.content.Intent;
@@ -51,9 +51,6 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.os.Build.VERSION_CODES.M;
-import static com.cinggl.cinggl.home.PostDetailActivity.round;
 
 /**
  * Created by J.EL on 11/14/2017.

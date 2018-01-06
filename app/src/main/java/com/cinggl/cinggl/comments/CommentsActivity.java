@@ -59,7 +59,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     @Bind(R.id.commentsRecyclerView)RecyclerView mCommentsRecyclerView;
     @Bind(R.id.postImageView)ProportionalImageView mCingleImageView;
     @Bind(R.id.usernameTextView)TextView mAccountUsernameTextView;
-    @Bind(R.id.creatorImageView)CircleImageView mUserProfileImageView;
+    @Bind(R.id.profileImageView)CircleImageView mUserProfileImageView;
     @Bind(R.id.saySomethingRelativeLayout)RelativeLayout mSaySomethingRelativeLayout;
     @Bind(R.id.titleTextView)TextView mCingleTitleTextView;
     @Bind(R.id.cingleTitleRelativeLayout)RelativeLayout mCingleTitleRelativeLayout;

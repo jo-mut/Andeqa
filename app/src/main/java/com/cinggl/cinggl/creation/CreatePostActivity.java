@@ -64,7 +64,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
     @Bind(R.id.cingleTitleEditText)EditText mCingleTitleEditText;
     @Bind(R.id.cingleDescriptionEditText)EditText mCingleDescriptionEditText;
     @Bind(R.id.postCingleImageView)ImageView mPostCingleImageView;
-    @Bind(R.id.creatorImageView)CircleImageView mProfileImageView;
+    @Bind(R.id.profileImageView)CircleImageView mProfileImageView;
     @Bind(R.id.usernameTextView)TextView mAccountUsernameTextView;
     @Bind(R.id.img)ProportionalImageView mProportionalImageView;
     @Bind(R.id.descriptionCountTextView)TextView mDescriptionCountTextView;

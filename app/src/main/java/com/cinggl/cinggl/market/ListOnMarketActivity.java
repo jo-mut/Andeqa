@@ -49,7 +49,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ListOnMarketActivity extends AppCompatActivity implements View.OnClickListener{
     @Bind(R.id.postImageView)ProportionalImageView mCingleImageView;
     @Bind(R.id.usernameTextView)TextView mAccountUsernameTextView;
-    @Bind(R.id.creatorImageView)CircleImageView mUserProfileImageView;
+    @Bind(R.id.profileImageView)CircleImageView mUserProfileImageView;
     @Bind(R.id.titleTextView)TextView mCingleTitleTextView;
     @Bind(R.id.cingleTitleRelativeLayout)RelativeLayout mCingleTitleRelativeLayout;
     @Bind(R.id.postSalePriceTextView)TextView mCingleSalePriceTextView;

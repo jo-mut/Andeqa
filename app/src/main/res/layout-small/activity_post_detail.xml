@@ -7,7 +7,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_marginBottom="15dp"
     tools:context="com.cinggl.cinggl.home.PostDetailActivity">
 
     <android.support.v7.widget.Toolbar
@@ -207,7 +206,7 @@
                             android:layout_centerVertical="true"
                             android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true"
-                            android:id="@+id/creatorImageView" />
+                            android:id="@+id/profileImageView" />
 
                         <TextView
                             android:text=""
@@ -219,8 +218,8 @@
                             android:layout_centerVertical="true"
                             android:layout_toRightOf="@+id/postCreatorTextView"
                             android:layout_toEndOf="@+id/postCreatorTextView"
-                            android:layout_toLeftOf="@+id/creatorImageView"
-                            android:layout_toStartOf="@+id/creatorImageView"
+                            android:layout_toLeftOf="@+id/profileImageView"
+                            android:layout_toStartOf="@+id/profileImageView"
                             android:textSize="10sp" />
 
                     </RelativeLayout>

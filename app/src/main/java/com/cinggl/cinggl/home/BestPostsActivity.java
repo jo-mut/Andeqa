@@ -11,7 +11,6 @@ import android.view.View;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.adapters.OtherPostAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -27,7 +26,6 @@ import java.math.RoundingMode;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
 import static android.util.Log.d;
 
 public class BestPostsActivity extends AppCompatActivity {

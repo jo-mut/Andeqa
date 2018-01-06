@@ -136,11 +136,6 @@
             android:label="Set sale price"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name=".market.MarketActivity"
-            android:label="Market"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
         <activity android:name=".registration.CreateProfileActivity" />
         <activity
             android:name=".home.PostDetailActivity"

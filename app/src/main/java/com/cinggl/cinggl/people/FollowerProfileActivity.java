@@ -14,14 +14,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.adapters.ProfilePostsAdapter;
+import com.cinggl.cinggl.profile.ProfilePostsAdapter;
+import com.cinggl.cinggl.message.MessagesAccountActivity;
 import com.cinggl.cinggl.models.Post;
 import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.models.Relation;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -49,7 +48,7 @@ public class FollowerProfileActivity extends AppCompatActivity
     private static final String TAG = FollowerProfileActivity.class.getSimpleName();
 
     @Bind(R.id.profileCinglesRecyclerView)RecyclerView mProfileCinglesRecyclerView;
-    @Bind(R.id.creatorImageView)CircleImageView mProifleImageView;
+    @Bind(R.id.profileImageView)CircleImageView mProifleImageView;
     @Bind(R.id.fullNameTextView)TextView mFullNameTextView;
     @Bind(R.id.bioTextView)TextView mBioTextView;
     @Bind(R.id.followersCountTextView) TextView mFollowersCountTextView;
@@ -58,6 +57,7 @@ public class FollowerProfileActivity extends AppCompatActivity
     @Bind(R.id.profileCoverImageView)ImageView mProfileCover;
     @Bind(followButton)Button mFollowButton;
     @Bind(R.id.collapsing_toolbar)CollapsingToolbarLayout collapsingToolbarLayout;
+    @Bind(R.id.sendMessageImageView)ImageView mSendMessageImageView;
 
     private CollectionReference cinglesReference;
     private CollectionReference relationsReference;
@@ -106,7 +106,7 @@ public class FollowerProfileActivity extends AppCompatActivity
 
             mUid = getIntent().getStringExtra(EXTRA_USER_UID);
             if(mUid == null){
-                throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
+                throw new IllegalArgumentException("pass an EXTRA_UID");
             }
 
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
@@ -122,6 +122,7 @@ public class FollowerProfileActivity extends AppCompatActivity
             //INITIALIZE CLICK LISTENERS
             mFollowersCountTextView.setOnClickListener(this);
             mFollowingCountTextView.setOnClickListener(this);
+            mSendMessageImageView.setOnClickListener(this);
             mFollowButton.setOnClickListener(this);
 
         }
@@ -365,6 +366,12 @@ public class FollowerProfileActivity extends AppCompatActivity
     public void onClick(View v){
         if (v == mFollowingCountTextView) {
             Intent intent = new Intent(FollowerProfileActivity.this, FollowingActivity.class);
+            intent.putExtra(FollowerProfileActivity.EXTRA_USER_UID, mUid);
+            startActivity(intent);
+        }
+
+        if (v == mSendMessageImageView){
+            Intent intent = new Intent(FollowerProfileActivity.this, MessagesAccountActivity.class);
             intent.putExtra(FollowerProfileActivity.EXTRA_USER_UID, mUid);
             startActivity(intent);
         }

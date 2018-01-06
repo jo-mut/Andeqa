@@ -11,14 +11,6 @@
     </item>
 
     <item
-        android:id="@+id/action_timeline"
-        android:icon="@drawable/ic_access_time_black_24dp"
-        app:showAsAction="ifRoom"
-        android:enabled="true"
-        android:title="Timeline">
-    </item>
-
-    <item
         android:id="@+id/action_messages"
         android:icon="@drawable/ic_person_black_24dp"
         app:showAsAction="ifRoom"
@@ -32,6 +24,14 @@
         app:showAsAction="ifRoom"
         android:enabled="true"
         android:title="Market">
+    </item>
+
+    <item
+        android:id="@+id/action_timeline"
+        android:icon="@drawable/ic_access_time_black_24dp"
+        app:showAsAction="ifRoom"
+        android:enabled="true"
+        android:title="Timeline">
     </item>
 
 </menu>

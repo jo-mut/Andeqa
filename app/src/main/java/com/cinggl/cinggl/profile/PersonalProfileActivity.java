@@ -15,10 +15,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.adapters.ProfilePostsAdapter;
 import com.cinggl.cinggl.market.WalletActivity;
 import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.models.Post;
@@ -46,7 +44,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class PersonalProfileActivity extends AppCompatActivity implements View.OnClickListener{
     //BIND VIEWS
     @Bind(R.id.profileCinglesRecyclerView)RecyclerView mProfileCinglesRecyclerView;
-    @Bind(R.id.creatorImageView)CircleImageView mProifleImageView;
+    @Bind(R.id.profileImageView)CircleImageView mProifleImageView;
     @Bind(R.id.fullNameTextView)TextView mFullNameTextView;
     @Bind(R.id.bioTextView)TextView mBioTextView;
     @Bind(R.id.followersCountTextView) TextView mFollowersCountTextView;
@@ -82,7 +80,6 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_profile);
         ButterKnife.bind(this);
-
 
         collapsingToolbarLayout.setTitle("Profile");
         //FIREBASE AUTH

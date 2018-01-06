@@ -60,7 +60,7 @@ public class OtherPostViewHolder extends RecyclerView.ViewHolder {
         commentsImageView = (ImageView) itemView.findViewById(R.id.commentsImageView);
         descriptionTextView = (TextView) itemView.findViewById(R.id.descriptionTextView);
         titleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
-        profileImageView = (CircleImageView) itemView.findViewById(R.id.creatorImageView);
+        profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
         usernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
         settingsImageView = (ImageView) mView.findViewById(R.id.settingsImageView);

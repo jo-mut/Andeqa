@@ -1,4 +1,4 @@
-package com.cinggl.cinggl.adapters;
+package com.cinggl.cinggl.market;
 
 import android.content.Context;
 import android.content.Intent;

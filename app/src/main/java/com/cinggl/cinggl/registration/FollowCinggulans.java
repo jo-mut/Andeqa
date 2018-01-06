@@ -14,7 +14,6 @@ import android.widget.ProgressBar;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.adapters.CinggulansAdapter;
 import com.cinggl.cinggl.home.MainActivity;
 import com.cinggl.cinggl.models.Cinggulan;
 import com.google.android.gms.tasks.OnSuccessListener;

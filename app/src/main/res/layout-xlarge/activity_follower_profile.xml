@@ -39,7 +39,7 @@
                     android:alpha="0.1" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/creatorImageView"
+                    android:id="@+id/profileImageView"
                     android:background="@drawable/profile_circular_border_imageview"
                     android:padding="10dp"
                     android:scaleType="centerCrop"
@@ -50,8 +50,8 @@
                     android:layout_height="240dp" />
 
                 <ImageView
-                    android:layout_toRightOf="@+id/creatorImageView"
-                    android:layout_toEndOf="@+id/creatorImageView"
+                    android:layout_toRightOf="@+id/profileImageView"
+                    android:layout_toEndOf="@+id/profileImageView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="200dp"

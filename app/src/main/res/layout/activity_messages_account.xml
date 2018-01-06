@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/transparent_background"
     android:orientation="vertical"
     tools:context="com.cinggl.cinggl.message.MessagesAccountActivity">
 
@@ -34,45 +35,54 @@
     <RelativeLayout
         android:paddingRight="5dp"
         android:paddingLeft="5dp"
-        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="5dp"
         android:layout_width="match_parent"
-        android:layout_height="60dp">
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            app:srcCompat="@drawable/border_color_primary"
-            android:id="@+id/profileImageView"
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:background="@drawable/white_rounded_background"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:id="@+id/senderImageView"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"/>
 
         <EditText
+            android:background="@drawable/message_edittext_background"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:inputType="textPersonName"
-            android:layout_alignParentBottom="true"
-            android:id="@+id/messageEditText"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:layout_alignParentBottom="false"
+            android:id="@+id/sendMessageEditText"
             android:hint="Write a message"
-            android:padding="10dp"
+            android:padding="15dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:textSize="14sp"
-            android:layout_toRightOf="@+id/profileImageView"
-            android:layout_toEndOf="@+id/profileImageView"
+            android:layout_toRightOf="@+id/senderImageView"
+            android:layout_toEndOf="@+id/senderImageView"
             android:layout_toLeftOf="@+id/sendMessageImageView"
-            android:layout_toStartOf="@+id/sendMessageImageView" />
+            android:layout_toStartOf="@+id/sendMessageImageView"
+            android:layout_centerInParent="true" />
 
         <ImageView
+            android:background="@drawable/white_rounded_background"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/ic_menu_send"
             android:layout_alignParentBottom="false"
-            android:layout_alignParentEnd="false"
             android:id="@+id/sendMessageImageView"
             android:tint="@color/colorPrimary"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
-            android:padding="10dp" />
+            android:padding="10dp"
+            android:layout_alignParentEnd="true" />
     </RelativeLayout>
-
 
 </RelativeLayout>

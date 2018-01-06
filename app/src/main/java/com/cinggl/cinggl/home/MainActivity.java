@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity
 
         View header = navigationView.getHeaderView(0);
         mProfileCover = (ImageView) header.findViewById(R.id.profileCoverImageView);
-        mProfileImageView = (CircleImageView) header.findViewById(R.id.creatorImageView);
+        mProfileImageView = (CircleImageView) header.findViewById(R.id.profileImageView);
         mFullNameTextView = (TextView) header.findViewById(R.id.fullNameTextView);
         mSecondNameTextView = (TextView) header.findViewById(R.id.secondNameTextView);
         mEmailTextView = (TextView) header.findViewById(R.id.emailTextView);

@@ -51,11 +51,11 @@
                     android:textColor="@android:color/black"
                     android:textStyle="normal|bold"
                     android:layout_alignParentTop="true"
-                    android:layout_toRightOf="@+id/creatorImageView"
-                    android:layout_toEndOf="@+id/creatorImageView" />
+                    android:layout_toRightOf="@+id/profileImageView"
+                    android:layout_toEndOf="@+id/profileImageView" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/creatorImageView"
+                    android:id="@+id/profileImageView"
                     android:background="@drawable/profle_image_background"
                     android:layout_centerVertical="true"
                     android:layout_alignParentLeft="true"

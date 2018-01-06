@@ -10,24 +10,14 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cinggulan;
-import com.cinggl.cinggl.models.Relation;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
-import static com.cinggl.cinggl.R.id.bioRelativeLayout;
-import static com.cinggl.cinggl.R.id.descriptionRelativeLayout;
-import static com.cinggl.cinggl.R.id.descriptionTextView;
-import static com.cinggl.cinggl.R.id.postImageView;
-import static com.cinggl.cinggl.R.id.titleRelativeLayout;
-import static com.cinggl.cinggl.R.id.titleTextView;
 
 /**
  * Created by J.EL on 12/12/2017.
@@ -53,7 +43,7 @@ public class FollowCinggulansViewHolder extends RecyclerView.ViewHolder{
 
     public void bindCinggulans(final DocumentSnapshot documentSnapshot){
         final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-        mCinggulanImageView = (CircleImageView) mView.findViewById(R.id.creatorImageView);
+        mCinggulanImageView = (CircleImageView) mView.findViewById(R.id.profileImageView);
         mBioTextView = (TextView) mView.findViewById(R.id.bioTextView);
         mFullNameTextView = (TextView) mView.findViewById(R.id.fullNameTextView);
         mProfileCoverImageView = (ImageView) mView.findViewById(R.id.profileCoverImageView);

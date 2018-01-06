@@ -4,7 +4,6 @@ package com.cinggl.cinggl.home;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,7 +13,6 @@ import android.view.ViewGroup;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.adapters.MainPostsAdapter;
 import com.cinggl.cinggl.models.Post;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -30,9 +28,6 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-
-import static android.os.Build.VERSION_CODES.M;
-import static com.cinggl.cinggl.R.id.singleOutRecyclerView;
 
 /**
  * A simple {@link Fragment} subclass.

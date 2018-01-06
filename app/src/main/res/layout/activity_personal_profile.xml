@@ -54,7 +54,7 @@
                     android:src="@color/transparentColor" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/creatorImageView"
+                    android:id="@+id/profileImageView"
                     android:layout_height="120dp"
                     android:background="@drawable/profile_circular_border_imageview"
                     android:padding="10dp"

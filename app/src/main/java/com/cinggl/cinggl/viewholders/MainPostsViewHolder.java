@@ -69,7 +69,7 @@ public class MainPostsViewHolder extends RecyclerView.ViewHolder {
         descriptionTextView = (TextView) itemView.findViewById(R.id.descriptionTextView);
         titleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         accountUsernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
-        profileImageView = (CircleImageView) itemView.findViewById(R.id.creatorImageView);
+        profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
         settingsImageView = (ImageView) itemView.findViewById(R.id.settingsImageView);
         titleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);

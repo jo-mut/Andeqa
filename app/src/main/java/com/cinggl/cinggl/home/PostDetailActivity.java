@@ -26,7 +26,6 @@ import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.adapters.MainPostsAdapter;
 import com.cinggl.cinggl.comments.CommentsActivity;
 import com.cinggl.cinggl.market.SendCreditsDialogFragment;
 import com.cinggl.cinggl.likes.LikesActivity;
@@ -72,7 +71,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
     @Bind(R.id.usernameTextView)TextView mUsernameTextView;
     @Bind(R.id.postImageView)ProportionalImageView mPostImageView;
-    @Bind(R.id.creatorImageView)ImageView mProfileImageView;
+    @Bind(R.id.profileImageView)ImageView mProfileImageView;
     @Bind(R.id.titleTextView)TextView mCingleTitleTextView;
     @Bind(R.id.cingleTitleRelativeLayout)RelativeLayout mCingleTitleRelativeLayout;
     @Bind(R.id.descriptionRelativeLayout)RelativeLayout mDescriptionRelativeLayout;
@@ -752,7 +751,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                 if (documentSnapshot.exists()){
                     mTradeMethodTextView.setText("@Selling");
                 }else {
-                    mTradeMethodTextView.setText("@NotOnSale");
+                    mTradeMethodTextView.setText("@NotListed");
                     mBuyPostButton.setVisibility(View.GONE);
                 }
             }

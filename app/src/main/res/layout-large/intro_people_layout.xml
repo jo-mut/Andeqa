@@ -21,7 +21,7 @@
             android:src="@drawable/default_gradient_color" />
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/creatorImageView"
+            android:id="@+id/profileImageView"
             android:layout_height="180dp"
             android:background="@drawable/profile_circular_border_imageview"
             android:padding="10dp"

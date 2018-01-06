@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/postImageView"
             android:layout_toEndOf="@+id/postImageView"
-            android:layout_alignBottom="@+id/creatorImageView"
+            android:layout_alignBottom="@+id/profileImageView"
             android:layout_centerVertical="false"
             android:layout_toLeftOf="@+id/followTextView"
             android:layout_toStartOf="@+id/followTextView"
