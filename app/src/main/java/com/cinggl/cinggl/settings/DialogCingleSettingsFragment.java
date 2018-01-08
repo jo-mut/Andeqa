@@ -1,4 +1,4 @@
-package com.cinggl.cinggl.preferences;
+package com.cinggl.cinggl.settings;
 
 
 import android.content.Intent;
@@ -18,12 +18,10 @@ import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.market.RedeemCreditsDialogFragment;
+import com.cinggl.cinggl.market.DialogRedeemCredits;
 import com.cinggl.cinggl.market.ListOnMarketActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -38,7 +36,7 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CingleSettingsDialog extends DialogFragment implements View.OnClickListener{
+public class DialogCingleSettingsFragment extends DialogFragment implements View.OnClickListener{
     @Bind(R.id.deletePostRelativeLayout)RelativeLayout mDeleteCingleRelativeLayout;
     @Bind(R.id.tradePostRelativeLayout)RelativeLayout mTradeCingleRelativeLayout;
     @Bind(R.id.redeemCreditsRelativeLayout)RelativeLayout mRedeemCreditsRelativeLayout;
@@ -54,18 +52,18 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
     private CollectionReference ownerReference;
     //firebase storage
     private StorageReference storageReference;
-    private static final String TAG = CingleSettingsDialog.class.getSimpleName();
+    private static final String TAG = DialogCingleSettingsFragment.class.getSimpleName();
 
-    public static CingleSettingsDialog newInstance(String title){
-        CingleSettingsDialog cingleSettingsDialog = new CingleSettingsDialog();
+    public static DialogCingleSettingsFragment newInstance(String title){
+        DialogCingleSettingsFragment dialogCingleSettingsFragment = new DialogCingleSettingsFragment();
         Bundle args = new Bundle();
         args.putString("title", title);
-        cingleSettingsDialog.setArguments(args);
-        return cingleSettingsDialog;
+        dialogCingleSettingsFragment.setArguments(args);
+        return dialogCingleSettingsFragment;
     }
 
 
-    public CingleSettingsDialog() {
+    public DialogCingleSettingsFragment() {
         // Required empty public constructor
     }
 
@@ -92,7 +90,7 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
 
             Bundle bundle = getArguments();
             if (bundle != null){
-                mPostKey = bundle.getString(CingleSettingsDialog.EXTRA_POST_KEY);
+                mPostKey = bundle.getString(DialogCingleSettingsFragment.EXTRA_POST_KEY);
 
                 Log.d("the passed poskey", mPostKey);
 
@@ -104,7 +102,7 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             profilePostsReference = FirebaseFirestore.getInstance().collection(firebaseAuth.getCurrentUser().getUid());
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
-            ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
+            ifairReference = FirebaseFirestore.getInstance().collection(Constants.MARKET);
             ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
             // firebase storage
             storageReference = FirebaseStorage.getInstance().getReference(Constants.POSTS);
@@ -152,7 +150,7 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
                         }
                     }else {
                         Intent intent = new Intent(getActivity(), ListOnMarketActivity.class);
-                        intent.putExtra(CingleSettingsDialog.EXTRA_POST_KEY, mPostKey);
+                        intent.putExtra(DialogCingleSettingsFragment.EXTRA_POST_KEY, mPostKey);
                         startActivity(intent);
                     }
                 }
@@ -163,12 +161,12 @@ public class CingleSettingsDialog extends DialogFragment implements View.OnClick
         if (v == mRedeemCreditsRelativeLayout){
             //LAUCH THE DIALOG TO REDEEM CREDITS
             Bundle bundle = new Bundle();
-            bundle.putString(CingleSettingsDialog.EXTRA_POST_KEY, mPostKey);
+            bundle.putString(DialogCingleSettingsFragment.EXTRA_POST_KEY, mPostKey);
             FragmentManager fragmenManager = getChildFragmentManager();
-            RedeemCreditsDialogFragment redeemCreditsDialogFragment = RedeemCreditsDialogFragment
+            DialogRedeemCredits dialogRedeemCredits = DialogRedeemCredits
                     .newInstance("redeem credits");
-            redeemCreditsDialogFragment.setArguments(bundle);
-            redeemCreditsDialogFragment.show(fragmenManager, "redeem cingle cscs");
+            dialogRedeemCredits.setArguments(bundle);
+            dialogRedeemCredits.show(fragmenManager, "redeem cingle cscs");
         }
 
     }

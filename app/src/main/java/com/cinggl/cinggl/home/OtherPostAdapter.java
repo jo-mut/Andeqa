@@ -26,7 +26,7 @@ import com.cinggl.cinggl.models.Post;
 import com.cinggl.cinggl.models.PostSale;
 import com.cinggl.cinggl.models.TransactionDetails;
 import com.cinggl.cinggl.people.FollowerProfileActivity;
-import com.cinggl.cinggl.preferences.BestPostsSettingsDialog;
+import com.cinggl.cinggl.settings.BestPostsSettingsDialog;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.viewholders.OtherPostViewHolder;
 import com.cinggl.cinggl.viewholders.WhoLikedViewHolder;
@@ -118,7 +118,7 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
         cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
         ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
         usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-        ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
+        ifairReference = FirebaseFirestore.getInstance().collection(Constants.MARKET);
         commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
         senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
         //document reference

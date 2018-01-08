@@ -7,6 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:paddingBottom="20dp"
     tools:context="com.cinggl.cinggl.market.ListOnMarketActivity"
     android:background="@android:color/white">
 
@@ -76,6 +77,59 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="10dp">
+
+
+                <TextView
+                    android:paddingTop="20dp"
+                    android:text="Set the sale price of your post and place it on the market"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/setSalePriceTextView"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:paddingBottom="20dp"
+                    android:textSize="28sp" />
+
+                <Button
+                    android:text="Set"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="false"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:id="@+id/setCinglePriceButton"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:background="@drawable/colour_btn_background"
+                    android:minHeight="60dp"
+                    android:layout_below="@+id/setSalePriceTextView"
+                    android:layout_alignParentBottom="true"
+                    android:textSize="28sp" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal|number"
+                    android:ems="10"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:id="@+id/setCingleSalePriceEditText"
+                    android:hint="Set the sale price"
+                    android:layout_below="@+id/setSalePriceTextView"
+                    android:textSize="28sp"
+                    android:layout_alignParentBottom="false"
+                    android:layout_toLeftOf="@+id/setCinglePriceButton"
+                    android:layout_toStartOf="@+id/setCinglePriceButton"
+                    android:paddingTop="30dp"
+                    android:paddingBottom="30dp" />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
@@ -96,6 +150,7 @@
             </RelativeLayout>
 
             <RelativeLayout
+                android:padding="0.1dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -108,62 +163,6 @@
                     android:layout_height="600dp" />
 
             </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="20dp"
-                android:padding="10dp">
-
-
-                <TextView
-                    android:text="Set the sale price of your post and place it on the market"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/setSalePriceTextView"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:paddingBottom="5dp"
-                    android:textSize="28sp" />
-
-                <Button
-                    android:text="Set"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="false"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:id="@+id/setCinglePriceButton"
-                    android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    android:background="@drawable/colour_btn_background"
-                    android:minHeight="47dp"
-                    android:layout_below="@+id/setSalePriceTextView"
-                    android:layout_alignParentBottom="false"
-                    android:textSize="28sp" />
-
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal|number"
-                    android:ems="10"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:id="@+id/setCingleSalePriceEditText"
-                    android:hint="Set the sale price"
-                    android:layout_below="@+id/setSalePriceTextView"
-                    android:textSize="28sp"
-                    android:layout_alignParentBottom="false"
-                    android:background="@drawable/input_background"
-                    android:layout_toLeftOf="@+id/setCinglePriceButton"
-                    android:layout_toStartOf="@+id/setCinglePriceButton"
-                    android:layout_marginRight="10dp"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="5dp" />
-            </RelativeLayout>
-
 
         </LinearLayout>
 

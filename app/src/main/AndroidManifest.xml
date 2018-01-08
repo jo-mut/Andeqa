@@ -122,11 +122,6 @@
             android:name=".home.FullImageViewActivity"
             android:label="Post" />
         <activity
-            android:name=".preferences.PreferencesActivity"
-            android:label="Preferences"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
             android:name=".market.WalletActivity"
             android:label="Wallet"
             android:screenOrientation="portrait"
@@ -161,8 +156,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".preferences.TermsActivity" />
-        <activity android:name=".message.MessagesAccountActivity" />
+        <activity
+            android:name=".settings.TermsActivity"
+            android:label="Term of service"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".message.MessagesAccountActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".AppInfoActivity"
+            android:label="@string/about"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:theme="@style/AppTheme"
+            android:label="Settings"
+            android:screenOrientation="portrait"
+            android:name=".settings.SettingsActivity"/>
     </application>
 
 </manifest>

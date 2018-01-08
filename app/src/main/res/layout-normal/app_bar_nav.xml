@@ -56,14 +56,14 @@
 
 
     <android.support.design.widget.BottomNavigationView
-    android:id="@+id/bottomNavigationView"
-    app:menu="@menu/bottom_navigation_menu"
-    android:layout_width="match_parent"
-    android:layout_height="56dp"
-    android:layout_gravity="bottom"
-    app:itemTextColor="@android:color/white"
-    app:itemIconTint="@color/colorIcons"
-    android:alpha="0.9"
-    app:itemBackground="@drawable/default_gradient_color"/>
+        android:background="@drawable/default_gradient_color"
+        android:id="@+id/bottomNavigationView"
+        app:menu="@menu/bottom_navigation_menu"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom"
+        app:itemTextColor="@android:color/white"
+        app:itemIconTint="@color/colorIcons"
+        android:alpha="0.9"/>
 
 </android.support.design.widget.CoordinatorLayout>

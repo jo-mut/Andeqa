@@ -3,6 +3,7 @@ package com.cinggl.cinggl.profile;
 import android.content.Intent;
 import android.os.Parcelable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,7 +22,6 @@ import com.cinggl.cinggl.market.WalletActivity;
 import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.models.Post;
 import com.cinggl.cinggl.people.PeopleActivity;
-import com.cinggl.cinggl.registration.SignInActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -142,12 +142,9 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
         }
 
         if (id == R.id.action_signout){
-            firebaseAuth.signOut();
-            Intent intent = new Intent(PersonalProfileActivity.this, SignInActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
-
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            DialogConfirmSingOutFragment dialogConfirmSingOutFragment = DialogConfirmSingOutFragment.newInstance("sing out");
+            dialogConfirmSingOutFragment.show(fragmentManager, "delete account fragment");
         }
 
         if (id == R.id.action_account_settings){

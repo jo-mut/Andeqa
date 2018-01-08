@@ -1,15 +1,13 @@
-package com.cinggl.cinggl.preferences;
+package com.cinggl.cinggl;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.cinggl.cinggl.R;
-
-public class TermsActivity extends AppCompatActivity {
+public class AppInfoActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_terms);
+        setContentView(R.layout.activity_app_info);
     }
 }

@@ -74,7 +74,7 @@ public class MarketFragment extends Fragment{
 
         if (firebaseAuth.getCurrentUser()!= null){
             //firestore
-            ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
+            ifairReference = FirebaseFirestore.getInstance().collection(Constants.MARKET);
             sellingQuery = ifairReference.orderBy("randomNumber").limit(TOTAL_ITEMS);
 
         }

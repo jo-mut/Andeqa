@@ -17,7 +17,7 @@ import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.firestore.FirestoreAdapter;
 import com.cinggl.cinggl.models.Post;
-import com.cinggl.cinggl.preferences.CingleSettingsDialog;
+import com.cinggl.cinggl.settings.DialogCingleSettingsFragment;
 import com.cinggl.cinggl.comments.CommentsActivity;
 import com.cinggl.cinggl.likes.LikesActivity;
 import com.cinggl.cinggl.models.Balance;
@@ -117,7 +117,7 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
         cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
         ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
         usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-        ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
+        ifairReference = FirebaseFirestore.getInstance().collection(Constants.MARKET);
         commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
         senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
         relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
@@ -170,9 +170,9 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
                 Bundle bundle = new Bundle();
                 bundle.putString(MainPostsAdapter.EXTRA_POST_KEY, postKey);
                 FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
-                CingleSettingsDialog cingleSettingsDialog = CingleSettingsDialog.newInstance("post settings");
-                cingleSettingsDialog.setArguments(bundle);
-                cingleSettingsDialog.show(fragmenManager, "post settings fragment");
+                DialogCingleSettingsFragment dialogCingleSettingsFragment = DialogCingleSettingsFragment.newInstance("post settings");
+                dialogCingleSettingsFragment.setArguments(bundle);
+                dialogCingleSettingsFragment.show(fragmenManager, "post settings fragment");
             }
         });
 

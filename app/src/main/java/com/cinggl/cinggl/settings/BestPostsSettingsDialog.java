@@ -1,4 +1,4 @@
-package com.cinggl.cinggl.preferences;
+package com.cinggl.cinggl.settings;
 
 
 import android.support.v4.app.DialogFragment;
@@ -19,8 +19,7 @@ import android.widget.Toast;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.market.ListOnMarketActivity;
-import com.cinggl.cinggl.market.RedeemCreditsDialogFragment;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.cinggl.cinggl.market.DialogRedeemCredits;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -106,7 +105,7 @@ public class BestPostsSettingsDialog extends DialogFragment implements View.OnCl
             //firestore
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
-            ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
+            ifairReference = FirebaseFirestore.getInstance().collection(Constants.MARKET);
             // firebase storage
             storageReference = FirebaseStorage.getInstance().getReference(Constants.POSTS);
 
@@ -166,10 +165,10 @@ public class BestPostsSettingsDialog extends DialogFragment implements View.OnCl
             Bundle bundle = new Bundle();
             bundle.putString(BestPostsSettingsDialog.EXTRA_POST_KEY, mPostKey);
             FragmentManager fragmentManager = getChildFragmentManager();
-            RedeemCreditsDialogFragment redeemCreditsDialogFragment = RedeemCreditsDialogFragment
+            DialogRedeemCredits dialogRedeemCredits = DialogRedeemCredits
                     .newInstance("redeem credits");
-            redeemCreditsDialogFragment.setArguments(bundle);
-            redeemCreditsDialogFragment.show(fragmentManager, "redeem cingle cscs");
+            dialogRedeemCredits.setArguments(bundle);
+            dialogRedeemCredits.show(fragmentManager, "redeem cingle cscs");
         }
 
     }

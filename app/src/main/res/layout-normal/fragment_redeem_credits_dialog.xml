@@ -4,7 +4,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context="com.cinggl.cinggl.market.RedeemCreditsDialogFragment"
+    tools:context="com.cinggl.cinggl.market.DialogRedeemCredits"
     android:background="@android:color/white">
 
     <!-- TODO: Update blank fragment layout -->
@@ -18,7 +18,8 @@
         android:layout_marginTop="10dp">
 
         <TextView
-            android:ems="10"
+            android:padding="5dp"
+            android:textSize="16sp"
             android:id="@+id/enterAmountDescriptionTextView"
             android:text="Enter the amount of Sense Credits you want to redeem"
             android:layout_width="match_parent"
@@ -40,13 +41,26 @@
             android:inputType="numberDecimal|number"
             android:ems="10"
             android:id="@+id/amountEnteredEditText"
-            android:background="@drawable/input_background"
-            android:padding="10dp"
+            android:paddingRight="5dp"
+            android:paddingEnd="5dp"
+            android:paddingLeft="5dp"
+            android:paddingStart="5dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:hint="Enter amount"
-            android:textSize="14sp" />
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingRight="20dp"
+        android:paddingLeft="20dp"
+        android:layout_marginTop="10dp">
+
     </RelativeLayout>
 
     <RelativeLayout
@@ -67,7 +81,7 @@
             android:textAllCaps="false"
             android:textColor="@android:color/white"
             android:layout_marginBottom="10dp"
-            android:minHeight="30dip" />
+            android:minHeight="40dip" />
     </RelativeLayout>
 
 </LinearLayout>

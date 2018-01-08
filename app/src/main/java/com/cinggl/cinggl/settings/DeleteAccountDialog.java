@@ -1,4 +1,4 @@
-package com.cinggl.cinggl.preferences;
+package com.cinggl.cinggl.settings;
 
 
 ;

@@ -27,7 +27,7 @@ import android.widget.TextView;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.comments.CommentsActivity;
-import com.cinggl.cinggl.market.SendCreditsDialogFragment;
+import com.cinggl.cinggl.market.DialogSendCredits;
 import com.cinggl.cinggl.likes.LikesActivity;
 import com.cinggl.cinggl.models.Balance;
 import com.cinggl.cinggl.models.Post;
@@ -173,7 +173,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
-            ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
+            ifairReference = FirebaseFirestore.getInstance().collection(Constants.MARKET);
             randomQuery = FirebaseFirestore.getInstance().collection(Constants.POSTS)
                     .orderBy("randomNumber");
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
@@ -181,8 +181,6 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             commentsCountQuery = commentsReference;
             likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
             postWalletReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_WALLET);
-
-
 
             //RETRIEVE DATA FROM FIREBASE
             setCingleData();
@@ -856,9 +854,9 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             Bundle bundle = new Bundle();
             bundle.putString(PostDetailActivity.EXTRA_POST_KEY, mPostKey);
             FragmentManager fragmenManager = getSupportFragmentManager();
-            SendCreditsDialogFragment sendCreditsDialogFragment = SendCreditsDialogFragment.newInstance("sens credits");
-            sendCreditsDialogFragment.setArguments(bundle);
-            sendCreditsDialogFragment.show(fragmenManager, "send credits fragment");
+            DialogSendCredits dialogSendCredits = DialogSendCredits.newInstance("sens credits");
+            dialogSendCredits.setArguments(bundle);
+            dialogSendCredits.show(fragmenManager, "send credits fragment");
         }
 
         if (v == mDoneEditingImageView){

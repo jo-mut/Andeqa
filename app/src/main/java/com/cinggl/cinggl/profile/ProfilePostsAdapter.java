@@ -18,7 +18,7 @@ import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.firestore.FirestoreAdapter;
 import com.cinggl.cinggl.home.PostDetailActivity;
 import com.cinggl.cinggl.models.Post;
-import com.cinggl.cinggl.preferences.CingleSettingsDialog;
+import com.cinggl.cinggl.settings.DialogCingleSettingsFragment;
 import com.cinggl.cinggl.comments.CommentsActivity;
 import com.cinggl.cinggl.home.FullImageViewActivity;
 import com.cinggl.cinggl.likes.LikesActivity;
@@ -122,14 +122,14 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
+            ifairReference = FirebaseFirestore.getInstance().collection(Constants.MARKET);
             commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
             likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             commentsCountQuery = commentsReference;
             profileCinglesQuery = cinglesReference.whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid());
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
-            sellingReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
+            sellingReference = FirebaseFirestore.getInstance().collection(Constants.MARKET);
             postWalletReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_WALLET);
 
         }
@@ -177,9 +177,9 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                 Bundle bundle = new Bundle();
                 bundle.putString(ProfilePostsAdapter.EXTRA_POST_KEY, postKey);
                 FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
-                CingleSettingsDialog cingleSettingsDialog = CingleSettingsDialog.newInstance("post settings");
-                cingleSettingsDialog.setArguments(bundle);
-                cingleSettingsDialog.show(fragmenManager, "post settings fragment");
+                DialogCingleSettingsFragment dialogCingleSettingsFragment = DialogCingleSettingsFragment.newInstance("post settings");
+                dialogCingleSettingsFragment.setArguments(bundle);
+                dialogCingleSettingsFragment.show(fragmenManager, "post settings fragment");
             }
         });
 

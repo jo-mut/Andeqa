@@ -3,6 +3,7 @@ package com.cinggl.cinggl.viewholders;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -34,6 +35,7 @@ public class PostSellingViewHolder extends RecyclerView.ViewHolder {
     public TextView cingleSalePriceTextView;
     public LinearLayout ifairCinglesLinearLayout;
     public TextView timeTextView;
+    public ImageView settingsImageView;
 
     public PostSellingViewHolder(View itemView) {
         super(itemView);
@@ -49,6 +51,7 @@ public class PostSellingViewHolder extends RecyclerView.ViewHolder {
         datePostedTextView = (TextView) mView.findViewById(R.id.datePostedTextView);
         usernameTextView = (TextView) mView.findViewById(R.id.usernameTextView);
         cingleSalePriceTextView = (TextView) mView.findViewById(R.id.postSalePriceTextView);
+        settingsImageView = (ImageView) mView.findViewById(R.id.settingsImageView);
         ifairCinglesLinearLayout = (LinearLayout) mView.findViewById(R.id.ifair_cingles_linear_layout);
 
 

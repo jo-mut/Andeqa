@@ -7,6 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:paddingBottom="20dp"
     tools:context="com.cinggl.cinggl.market.ListOnMarketActivity"
     android:background="@android:color/white">
 
@@ -15,11 +16,11 @@
         android:layout_width="match_parent"
         android:layout_gravity="top"
         app:titleTextAppearance="@style/toolbarTextSize"
-        android:layout_height="84dp"
         android:background="@color/colorPrimary"
         app:layout_scrollFlags="scroll|enterAlways"
         app:popupTheme="@style/AppTheme.PopupOverlay"
-        app:titleTextColor="@android:color/white">
+        app:titleTextColor="@android:color/white"
+        android:layout_height="84dp">
 
     </android.support.v7.widget.Toolbar>
 
@@ -70,9 +71,62 @@
                     android:layout_alignLeft="@+id/usernameTextView"
                     android:layout_alignStart="@+id/usernameTextView"
                     android:id="@+id/postSalePriceTextView"
-                    android:textSize="21sp" />
+                    android:textSize="15sp" />
 
             </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="10dp">
+
+
+                <TextView
+                    android:paddingTop="20dp"
+                    android:text="Set the sale price of your post and place it on the market"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/setSalePriceTextView"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:paddingBottom="20dp"
+                    android:textSize="21sp" />
+
+                <Button
+                    android:text="Set"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="false"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:id="@+id/setCinglePriceButton"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:background="@drawable/colour_btn_background"
+                    android:minHeight="60dp"
+                    android:layout_below="@+id/setSalePriceTextView"
+                    android:layout_alignParentBottom="true"
+                    android:textSize="21sp" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal|number"
+                    android:ems="10"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:id="@+id/setCingleSalePriceEditText"
+                    android:hint="Set the sale price"
+                    android:layout_below="@+id/setSalePriceTextView"
+                    android:textSize="21sp"
+                    android:layout_alignParentBottom="false"
+                    android:layout_toLeftOf="@+id/setCinglePriceButton"
+                    android:layout_toStartOf="@+id/setCinglePriceButton"
+                    android:paddingTop="30dp"
+                    android:paddingBottom="30dp" />
+            </RelativeLayout>
+
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -90,12 +144,13 @@
                     android:id="@+id/titleTextView"
                     android:textStyle="normal|bold"
                     android:textColor="@android:color/black"
-                    android:textSize="16sp"
+                    android:textSize="32sp"
                     android:layout_marginLeft="3dp" />
 
             </RelativeLayout>
 
             <RelativeLayout
+                android:padding="0.1dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -105,66 +160,9 @@
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
                     android:adjustViewBounds="true"
-                    android:layout_height="350dp" />
+                    android:layout_height="600dp" />
 
             </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="20dp"
-                android:padding="10dp">
-
-
-                <TextView
-                    android:text="Set the sale price of your post and place it on the market"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/setSalePriceTextView"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:paddingBottom="5dp"
-                    android:textSize="21sp" />
-
-                <Button
-                    android:text="Set"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="false"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:id="@+id/setCinglePriceButton"
-                    android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    android:background="@drawable/colour_btn_background"
-                    android:minHeight="39dp"
-                    android:minWidth="50dip"
-                    android:layout_below="@+id/setSalePriceTextView"
-                    android:layout_alignParentBottom="false"
-                    android:textSize="21sp" />
-
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal|number"
-                    android:ems="10"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:id="@+id/setCingleSalePriceEditText"
-                    android:hint="Set the sale price"
-                    android:layout_below="@+id/setSalePriceTextView"
-                    android:textSize="21sp"
-                    android:layout_alignParentBottom="false"
-                    android:background="@drawable/input_background"
-                    android:layout_toLeftOf="@+id/setCinglePriceButton"
-                    android:layout_toStartOf="@+id/setCinglePriceButton"
-                    android:layout_marginRight="10dp"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="5dp" />
-            </RelativeLayout>
-
 
         </LinearLayout>
 

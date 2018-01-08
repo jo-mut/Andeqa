@@ -1,6 +1,7 @@
 package com.cinggl.cinggl.profile;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -151,15 +152,15 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 //            deleteAccountDialog.show(fragmenManager, "new post fragment");
 //
 //
-////            new AlertDialog.Builder(UpdateProfileActivity.this)
-////                    .setTitle("Confirm account deletion")
-////                    .setMessage("You will not be able to sign in once you confirm your account deletion")
-////                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-////                        public void onClick(DialogInterface dialog, int which) {
-////                            deleteAccount();
-////                        }
-////                    });
-//
+//            new AlertDialog.Builder(UpdateProfileActivity.this)
+//                    .setTitle("Confirm account deletion")
+//                    .setMessage("You will not be able to sign in once you confirm your account deletion")
+//                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            deleteAccount();
+//                        }
+//                    });
+
 //        }
 
         if (v == mUpdateCoverTextView){
@@ -238,42 +239,6 @@ public class UpdateProfileActivity extends AppCompatActivity implements
         progressDialog.getWindow().setLayout(100, 150);
     }
 
-    private void deleteAccount(){
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        progressDialog.show();
-        // Get auth credentials from the user for re-authentication. The example below shows
-        // email and password credentials but there are multiple possible providers,
-        // such as GoogleAuthProvider or FacebookAuthProvider.
-        AuthCredential credential = EmailAuthProvider
-                .getCredential("user@example.com", "password1234");
-
-        // Prompt the user to re-provide their sign-in credentials
-        try {
-            user.reauthenticate(credential)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            user.delete()
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                Log.d(TAG, "User account deleted.");
-                                                progressDialog.dismiss();
-                                            }
-                                        }
-                                    });
-
-                        }
-                    });
-        }catch (Exception e){
-            Toast.makeText(UpdateProfileActivity.this, "Sorry! You dont have an active account.Create a new account",
-                    Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(UpdateProfileActivity.this, SignUpActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-        }
-    }
 
     public void updateProfilePhoto(){
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();

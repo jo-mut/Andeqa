@@ -62,12 +62,12 @@
                         android:id="@+id/emailEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/input_background"
                         android:hint="Email"
                         android:inputType="textEmailAddress"
                         android:nextFocusDown="@+id/passwordEditText"
                         android:padding="15dp"
-                        android:textColor="@android:color/black"
+                        android:textColor="@android:color/white"
+                        android:textColorHint="@android:color/darker_gray"
                         android:textSize="14sp" />
 
                 </RelativeLayout>
@@ -82,12 +82,12 @@
                         android:id="@+id/passwordEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/input_background"
                         android:hint="Password"
                         android:inputType="textPassword"
                         android:nextFocusDown="@+id/passwordEditText"
                         android:padding="15dp"
-                        android:textColor="@android:color/black"
+                        android:textColor="@android:color/white"
+                        android:textColorHint="@android:color/darker_gray"
                         android:textSize="14sp" />
 
                 </RelativeLayout>
@@ -104,12 +104,12 @@
                         android:id="@+id/confirmPasswordEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/input_background"
                         android:hint="Confirm Password"
                         android:inputType="textPassword"
                         android:nextFocusDown="@+id/passwordEditText"
                         android:padding="15dp"
-                        android:textColor="@android:color/black"
+                        android:textColor="@android:color/white"
+                        android:textColorHint="@android:color/darker_gray"
                         android:textSize="14sp" />
 
 

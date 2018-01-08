@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="@android:color/white"
-    tools:context="com.cinggl.cinggl.preferences.DeleteAccountDialog"
+    tools:context="com.cinggl.cinggl.settings.DeleteAccountDialog"
     android:weightSum="1">
 
     <!-- TODO: Update blank fragment layout -->

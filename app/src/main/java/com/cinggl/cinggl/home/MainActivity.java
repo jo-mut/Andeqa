@@ -33,8 +33,8 @@ import com.cinggl.cinggl.creation.CreatePostActivity;
 import com.cinggl.cinggl.market.MarketFragment;
 import com.cinggl.cinggl.message.MessagesFragment;
 import com.cinggl.cinggl.models.Cinggulan;
-import com.cinggl.cinggl.preferences.PreferencesActivity;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
+import com.cinggl.cinggl.settings.SettingsActivity;
 import com.cinggl.cinggl.timeline.TimelineFragment;
 import com.cinggl.cinggl.utils.BottomNavigationViewBehavior;
 import com.cinggl.cinggl.utils.BottomNavigationViewHelper;
@@ -257,8 +257,8 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
         }
 
-        if (id == R.id.action_preferences){
-            Intent intent = new Intent(MainActivity.this, PreferencesActivity.class);
+        if (id == R.id.action_settings){
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
         }
 

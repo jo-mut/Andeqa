@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context="com.cinggl.cinggl.market.SendCreditsDialogFragment"
+    tools:context="com.cinggl.cinggl.market.DialogSendCredits"
     android:background="@android:color/white">
 
     <!-- TODO: Update blank fragment layout -->
@@ -17,7 +17,8 @@
         android:layout_marginTop="10dp">
 
         <TextView
-            android:ems="10"
+            android:textSize="16dp"
+            android:padding="5dp"
             android:id="@+id/enterAmountDescription"
             android:text="Enter the exact amount of the sale price"
             android:layout_width="match_parent"
@@ -39,13 +40,17 @@
             android:inputType="number|numberDecimal"
             android:ems="10"
             android:id="@+id/amountEnteredEditText"
-            android:background="@drawable/input_background"
-            android:padding="10dp"
+            android:paddingRight="5dp"
+            android:paddingEnd="5dp"
+            android:paddingLeft="5dp"
+            android:paddingStart="5dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:hint="Enter amount"
-            android:textSize="14sp" />
+            android:textSize="16sp" />
     </RelativeLayout>
 
 
@@ -67,7 +72,7 @@
             android:textAllCaps="false"
             android:textColor="@android:color/white"
             android:layout_marginBottom="10dp"
-            android:minHeight="30dp"
-            android:minWidth="60dip" />
+            android:minHeight="40dp"
+            android:minWidth="70dip" />
     </RelativeLayout>
 </LinearLayout>

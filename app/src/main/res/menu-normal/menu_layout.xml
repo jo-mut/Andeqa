@@ -4,8 +4,9 @@
 
     <item
         android:icon="@drawable/ic_settings_black_24dp"
-        android:id="@+id/action_preferences"
-        android:title="@string/preferences" />
+        android:id="@+id/action_settings"
+        android:title="@string/settings" />
+
 
     <item
         android:id="@+id/action_account_settings"

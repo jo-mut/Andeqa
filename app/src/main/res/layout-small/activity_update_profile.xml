@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -9,26 +9,6 @@
     android:orientation="vertical"
     tools:context="com.cinggl.cinggl.profile.UpdateProfileActivity"
     android:weightSum="1">
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_gravity="top"
-            android:layout_height="42dp"
-            android:background="@color/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:titleTextColor="@android:color/white"
-            app:titleTextAppearance="@style/toolbarTextSize"
-            app:titleMarginStart="-50sp">
-
-        </android.support.v7.widget.Toolbar>
-
-    </RelativeLayout>
 
     <ScrollView
         android:fillViewport="true"
@@ -41,12 +21,34 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+
+            <android.support.design.widget.AppBarLayout
+                android:id="@+id/app_bar_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="true"
+                android:background="@drawable/default_gradient_color"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_gravity="top"
+                    app:layout_scrollFlags="scroll|enterAlways"
+                    app:titleTextAppearance="@style/toolbarTextSize"
+                    app:titleMarginStart="-50sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="42dp"
+                    app:popupTheme="@style/AppTheme.PopupOverlay"
+                    app:titleTextColor="@android:color/white"
+                    android:title="Collapsing Toolbar"
+                    app:layout_collapseMode="pin"
+                    tools:ignore="HardcodedText" />
+
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
                     android:layout_weight="0.07"
-                    android:background="@drawable/default_gradient_color"
-                    android:layout_marginBottom="15dp">
+                    android:background="@drawable/default_gradient_color">
 
                     <ImageView
                         android:id="@+id/profileCoverImageView"
@@ -107,6 +109,7 @@
 
                 </RelativeLayout>
 
+            </android.support.design.widget.AppBarLayout>
 
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
@@ -127,7 +130,10 @@
                         <RelativeLayout
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:padding="10sp">
+                            android:paddingLeft="10dp"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
+                            android:paddingRight="10dp">
 
                             <ImageView
                                 app:srcCompat="@drawable/ic_person_black_24dp"
@@ -144,17 +150,22 @@
 
                         <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:padding="10sp">
+                            android:layout_height="match_parent">
 
                             <EditText
                                 android:layout_height="wrap_content"
                                 android:inputType="textMultiLine"
                                 android:ems="10"
+                                android:paddingRight="5dp"
+                                android:paddingEnd="5dp"
+                                android:paddingLeft="5dp"
+                                android:paddingStart="5dp"
+                                android:paddingTop="10dp"
+                                android:paddingBottom="10dp"
                                 android:id="@+id/usernameEditText"
                                 android:hint="Username"
                                 android:freezesText="true"
-                                android:textSize="14sp"
+                                android:textSize="10sp"
                                 android:layout_width="250dp"
                                 android:background="@drawable/edit_text_background"
                                 android:layout_alignParentTop="true"
@@ -193,17 +204,22 @@
 
                         <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:padding="10sp">
+                            android:layout_height="match_parent">
 
                             <EditText
                                 android:layout_height="wrap_content"
                                 android:ems="10"
+                                android:paddingRight="5dp"
+                                android:paddingEnd="5dp"
+                                android:paddingLeft="5dp"
+                                android:paddingStart="5dp"
+                                android:paddingTop="10dp"
+                                android:paddingBottom="10dp"
                                 android:inputType="textMultiLine"
                                 android:id="@+id/bioEditText"
                                 android:hint="Bio line"
                                 android:freezesText="true"
-                                android:textSize="14sp"
+                                android:textSize="10sp"
                                 android:layout_width="250dp"
                                 android:background="@drawable/edit_text_background"
                                 android:layout_alignParentLeft="true"
@@ -237,16 +253,21 @@
 
                         <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:padding="10sp">
+                            android:layout_height="match_parent">
 
                             <EditText
                                 android:layout_height="wrap_content"
                                 android:inputType="textMultiLine"
                                 android:ems="10"
+                                android:paddingRight="5dp"
+                                android:paddingEnd="5dp"
+                                android:paddingLeft="5dp"
+                                android:paddingStart="5dp"
+                                android:paddingTop="10dp"
+                                android:paddingBottom="10dp"
                                 android:id="@+id/fisrtNameEditText"
                                 android:hint="First Name"
-                                android:textSize="14sp"
+                                android:textSize="10sp"
                                 android:layout_width="250dp"
                                 android:freezesText="true"
                                 android:background="@drawable/edit_text_background"
@@ -283,16 +304,21 @@
 
                         <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:padding="10sp">
+                            android:layout_height="match_parent">
 
                             <EditText
                                 android:layout_height="wrap_content"
                                 android:inputType="textMultiLine"
                                 android:ems="10"
+                                android:paddingRight="5dp"
+                                android:paddingEnd="5dp"
+                                android:paddingLeft="5dp"
+                                android:paddingStart="5dp"
+                                android:paddingTop="10dp"
+                                android:paddingBottom="10dp"
                                 android:id="@+id/secondNameEditText"
                                 android:hint="Second Name"
-                                android:textSize="14sp"
+                                android:textSize="10sp"
                                 android:freezesText="true"
                                 android:layout_width="250dp"
                                 android:background="@drawable/edit_text_background"
@@ -310,46 +336,9 @@
 
             </android.support.v7.widget.CardView>
 
-            <!--<android.support.v7.widget.CardView-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:clipToPadding="false"-->
-                <!--app:cardPreventCornerOverlap="false"-->
-                <!--android:layout_marginTop="15dp">-->
-
-                <!--<RelativeLayout-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="match_parent"-->
-                    <!--android:padding="10sp"-->
-                    <!--android:id="@+id/deleteAccountRelativeLayout">-->
-
-                    <!--<TextView-->
-                        <!--android:id="@+id/deleteAccountTextView"-->
-                        <!--android:text="Delete your account"-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:textColor="@android:color/black"-->
-                        <!--android:textSize="18sp"-->
-                        <!--android:textStyle="normal|bold" />-->
-
-                    <!--<TextView-->
-                        <!--android:id="@+id/deleteAccountDescTextView"-->
-                        <!--android:text="You can permanently delete your account. Click here and confirm your account deletion"-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:layout_below="@+id/deleteAccountTextView"-->
-                        <!--android:paddingTop="10sp"-->
-                        <!--android:paddingBottom="10sp" />-->
-
-
-                <!--</RelativeLayout>-->
-
-
-
-            <!--</android.support.v7.widget.CardView>-->
-
         </LinearLayout>
 
     </ScrollView>
 
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>
+

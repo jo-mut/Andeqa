@@ -31,18 +31,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.SetOptions;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -54,7 +46,7 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RedeemCreditsDialogFragment extends DialogFragment implements View.OnClickListener {
+public class DialogRedeemCredits extends DialogFragment implements View.OnClickListener {
     @Bind(R.id.amountEnteredEditText)EditText mAmountEnteredEditText;
     @Bind(R.id.redeemAmountButton)Button mRedeemAmountButton;
 
@@ -75,16 +67,16 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
     //REMOVE SCIENTIFIC NOATATION
     private DecimalFormat formatter =  new DecimalFormat("0.00000000");
 
-    public static RedeemCreditsDialogFragment newInstance(String title){
-        RedeemCreditsDialogFragment redeemCreditsDialogFragment = new RedeemCreditsDialogFragment();
+    public static DialogRedeemCredits newInstance(String title){
+        DialogRedeemCredits dialogRedeemCredits = new DialogRedeemCredits();
         Bundle args = new Bundle();
         args.putString("title", title);
-        redeemCreditsDialogFragment.setArguments(args);
-        return  redeemCreditsDialogFragment;
+        dialogRedeemCredits.setArguments(args);
+        return dialogRedeemCredits;
 
     }
 
-    public RedeemCreditsDialogFragment() {
+    public DialogRedeemCredits() {
         // Required empty public constructor
     }
 
@@ -117,7 +109,7 @@ public class RedeemCreditsDialogFragment extends DialogFragment implements View.
 
             Bundle bundle = getArguments();
             if (bundle != null){
-                mPostKey = bundle.getString(RedeemCreditsDialogFragment.EXTRA_POST_KEY);
+                mPostKey = bundle.getString(DialogRedeemCredits.EXTRA_POST_KEY);
 
                 Log.d("the passed poskey", mPostKey);
 

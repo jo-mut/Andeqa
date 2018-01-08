@@ -2,6 +2,9 @@ package com.cinggl.cinggl.market;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -91,14 +94,17 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
         final double salePrice = postSale.getSalePrice();
         Log.d("cingle postkey", postKey);
 
-        senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
-        cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-        ifairReference = FirebaseFirestore.getInstance().collection(Constants.IFAIR);
-        cingleWalletReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_WALLET);
-        ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
-        usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-        sellingQuery = ifairReference.orderBy("randomNumber").limit(10);
+        firebaseAuth = FirebaseAuth.getInstance();
+        if (firebaseAuth.getCurrentUser() != null){
+            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
+            cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            ifairReference = FirebaseFirestore.getInstance().collection(Constants.MARKET);
+            cingleWalletReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_WALLET);
+            ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
+            usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+            sellingQuery = ifairReference.orderBy("randomNumber").limit(10);
 
+        }
         DecimalFormat formatter =  new DecimalFormat("0.00000000");
         holder.cingleSalePriceTextView.setText("SC" + " " + formatter.format(salePrice));
 
@@ -153,6 +159,24 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
                 }
             }
         });
+
+        if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+            holder.settingsImageView.setVisibility(View.VISIBLE);
+            holder.settingsImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString(SellingAdapter.EXTRA_POST_KEY, postKey);
+                    FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
+                    DialogMarketPostSettings dialogMarketPostSettings = DialogMarketPostSettings.newInstance("post settings");
+                    dialogMarketPostSettings.setArguments(bundle);
+                    dialogMarketPostSettings.show(fragmenManager, "market post settings fragment");
+
+                }
+            });
+        }else {
+            holder.settingsImageView.setVisibility(View.GONE);
+        }
 
         cinglesReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
