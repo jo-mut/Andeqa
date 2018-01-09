@@ -51,7 +51,7 @@
                         android:textSize="14sp"
                         android:layout_marginLeft="10dp"
                         android:layout_marginStart="10dp"
-                        android:layout_alignTop="@+id/postCingleImageView"
+                        android:layout_alignTop="@+id/sharePostImageView"
                         android:layout_toRightOf="@+id/profileImageView"
                         android:layout_toEndOf="@+id/profileImageView" />
 
@@ -123,7 +123,7 @@
                     android:layout_height="match_parent">
 
                     <com.cinggl.cinggl.utils.ProportionalImageView
-                        android:id="@+id/img"
+                        android:id="@+id/postImageView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_alignParentTop="true"

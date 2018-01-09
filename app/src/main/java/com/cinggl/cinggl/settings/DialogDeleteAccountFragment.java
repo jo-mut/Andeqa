@@ -138,7 +138,7 @@ public class DialogDeleteAccountFragment extends DialogFragment implements View.
                                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                                     startActivity(intent);
                                                 }else {
-                                                    Toast.makeText(getContext(), "Sorry! You dont have an active account.Create a new account",
+                                                    Toast.makeText(getContext(), "Sorry! Please try again",
                                                             Toast.LENGTH_LONG).show();
                                                     Intent intent = new Intent(getContext(), SignUpActivity.class);
                                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

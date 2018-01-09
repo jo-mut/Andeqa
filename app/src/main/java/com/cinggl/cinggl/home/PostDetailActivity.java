@@ -35,6 +35,7 @@ import com.cinggl.cinggl.models.PostSale;
 import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.models.Credit;
 import com.cinggl.cinggl.models.Like;
+import com.cinggl.cinggl.models.Timeline;
 import com.cinggl.cinggl.models.TransactionDetails;
 import com.cinggl.cinggl.people.FollowerProfileActivity;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
@@ -44,6 +45,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -110,6 +112,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     private CollectionReference ifairReference;
     private CollectionReference likesReference;
     private CollectionReference postWalletReference;
+    private CollectionReference timelineCollection;
     private com.google.firebase.firestore.Query likesQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
@@ -181,6 +184,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             commentsCountQuery = commentsReference;
             likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
             postWalletReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_WALLET);
+            timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
 
             //RETRIEVE DATA FROM FIREBASE
             setCingleData();
@@ -893,7 +897,17 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                             like.setUid(firebaseAuth.getCurrentUser().getUid());
                                             like.setPushId(firebaseAuth.getCurrentUser().getUid());
                                             likesReference.document(mPostKey).collection("likes")
-                                                    .document(firebaseAuth.getCurrentUser().getUid()).set(like);
+                                                    .document(firebaseAuth.getCurrentUser().getUid()).set(like)
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Timeline timeline = new Timeline();
+                                                    timeline.setPushId(mPostKey);
+                                                    timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                    timeline.setType("like");
+                                                    timelineCollection.document(mPostKey).set(timeline);
+                                                }
+                                            });
                                             processLikes = false;
                                             mLikesImageView.setColorFilter(Color.RED);
 

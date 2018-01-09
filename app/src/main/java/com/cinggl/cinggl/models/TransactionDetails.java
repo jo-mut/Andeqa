@@ -9,6 +9,7 @@ public class TransactionDetails {
     String pushId;
     String cingleId;
     String date;
+    String type;
     double amount;
     double walletBalance;
 
@@ -18,11 +19,12 @@ public class TransactionDetails {
 
 
     public TransactionDetails(String uid, String pushId, String cingleId, String date,
-                              double amount, double walletBalance) {
+                              String type, double amount, double walletBalance) {
         this.uid = uid;
         this.pushId = pushId;
         this.cingleId = cingleId;
         this.date = date;
+        this.type = type;
         this.amount = amount;
         this.walletBalance = walletBalance;
     }
@@ -58,6 +60,14 @@ public class TransactionDetails {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public double getAmount() {

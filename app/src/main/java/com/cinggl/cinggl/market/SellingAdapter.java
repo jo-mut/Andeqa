@@ -161,8 +161,8 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
         });
 
         if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-            holder.settingsImageView.setVisibility(View.VISIBLE);
-            holder.settingsImageView.setOnClickListener(new View.OnClickListener() {
+            holder.unlistPostTextView.setVisibility(View.VISIBLE);
+            holder.unlistPostTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Bundle bundle = new Bundle();
@@ -171,12 +171,13 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
                     DialogMarketPostSettings dialogMarketPostSettings = DialogMarketPostSettings.newInstance("post settings");
                     dialogMarketPostSettings.setArguments(bundle);
                     dialogMarketPostSettings.show(fragmenManager, "market post settings fragment");
-
                 }
             });
+
         }else {
-            holder.settingsImageView.setVisibility(View.GONE);
+            holder.unlistPostTextView.setVisibility(View.GONE);
         }
+
 
         cinglesReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -372,7 +373,5 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
         super.onDocumentRemoved(change);
         removeAt(change.getOldIndex());
     }
-
-
 
 }

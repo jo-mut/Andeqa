@@ -16,11 +16,13 @@ import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.models.Timeline;
 import com.cinggl.cinggl.profile.ProfilePostsAdapter;
 import com.cinggl.cinggl.message.MessagesAccountActivity;
 import com.cinggl.cinggl.models.Post;
 import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.models.Relation;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -62,6 +64,7 @@ public class FollowerProfileActivity extends AppCompatActivity
     private CollectionReference cinglesReference;
     private CollectionReference relationsReference;
     private CollectionReference usersReference;
+    private CollectionReference timelineCollection;
     private com.google.firebase.firestore.Query profileCinglesQuery;
     private Query profileCinglesCountQuery;
     //firebase auth
@@ -115,6 +118,7 @@ public class FollowerProfileActivity extends AppCompatActivity
             profileCinglesQuery = cinglesReference.orderBy("timeStamp", Query.Direction.DESCENDING)
                     .whereEqualTo("uid", mUid);
             profileCinglesCountQuery = cinglesReference.whereEqualTo("uid", mUid);
+            timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             fetchData();
             setTheFirstBacthProfileCingles();
             recyclerViewScrolling();
@@ -403,11 +407,30 @@ public class FollowerProfileActivity extends AppCompatActivity
                                     Relation follower = new Relation();
                                     follower.setUid(firebaseAuth.getCurrentUser().getUid());
                                     relationsReference.document("followers").collection(mUid)
-                                            .document(firebaseAuth.getCurrentUser().getUid()).set(follower);
+                                            .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Timeline timeline = new Timeline();
+                                                    timeline.setPushId(mUid);
+                                                    timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                    timeline.setType("followers");
+                                                    timelineCollection.document(mUid).set(timeline);
+                                                }
+                                            });
                                     final Relation following = new Relation();
                                     following.setUid(mUid);
                                     relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
-                                            .document(mUid).set(following);
+                                            .document(mUid).set(following).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Timeline timeline = new Timeline();
+                                            timeline.setPushId(mUid);
+                                            timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                            timeline.setType("following");
+                                            timelineCollection.document(mUid).set(timeline);
+                                        }
+                                    });
                                     processFollow = false;
                                     mFollowButton.setText("Following");
                                 }else {

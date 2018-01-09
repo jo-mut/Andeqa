@@ -15,6 +15,8 @@ import com.cinggl.cinggl.models.PostSale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.cinggl.cinggl.R.id.settingsImageView;
+
 /**
  * Created by J.EL on 9/14/2017.
  */
@@ -35,7 +37,7 @@ public class PostSellingViewHolder extends RecyclerView.ViewHolder {
     public TextView cingleSalePriceTextView;
     public LinearLayout ifairCinglesLinearLayout;
     public TextView timeTextView;
-    public ImageView settingsImageView;
+    public TextView unlistPostTextView;
 
     public PostSellingViewHolder(View itemView) {
         super(itemView);
@@ -51,7 +53,7 @@ public class PostSellingViewHolder extends RecyclerView.ViewHolder {
         datePostedTextView = (TextView) mView.findViewById(R.id.datePostedTextView);
         usernameTextView = (TextView) mView.findViewById(R.id.usernameTextView);
         cingleSalePriceTextView = (TextView) mView.findViewById(R.id.postSalePriceTextView);
-        settingsImageView = (ImageView) mView.findViewById(R.id.settingsImageView);
+        unlistPostTextView = (TextView) mView.findViewById(R.id.unlistPostTextView);
         ifairCinglesLinearLayout = (LinearLayout) mView.findViewById(R.id.ifair_cingles_linear_layout);
 
 

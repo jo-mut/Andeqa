@@ -63,37 +63,25 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class CreatePostActivity extends AppCompatActivity implements View.OnClickListener{
     @Bind(R.id.cingleTitleEditText)EditText mCingleTitleEditText;
     @Bind(R.id.cingleDescriptionEditText)EditText mCingleDescriptionEditText;
-    @Bind(R.id.postCingleImageView)ImageView mPostCingleImageView;
+    @Bind(R.id.sharePostImageView)ImageView mPostCingleImageView;
     @Bind(R.id.profileImageView)CircleImageView mProfileImageView;
     @Bind(R.id.usernameTextView)TextView mAccountUsernameTextView;
-    @Bind(R.id.img)ProportionalImageView mProportionalImageView;
+    @Bind(R.id.postImageView)ProportionalImageView mPostImageView;
     @Bind(R.id.descriptionCountTextView)TextView mDescriptionCountTextView;
     @Bind(R.id.titleCountTextView)TextView mTitleCountTextView;
 
-    private String ImageFileLocation = "";
-    private File mGalleryFolder;
+
     private String image;
     private Uri photoUri;
     private static final String KEY_IMAGE = "IMAGE FROM GALLERY";
     private static final String TAG = "CreatePostActivity";
-    private static final int MAX_WIDTH = 400;
-    private static final int MAX_HEIGHT = 400;
-    private Bitmap photoReducedSizeBitmap = null;
-    private Bitmap bitmap;
-    private Post post;
-    private File file;
-    private DatabaseReference databaseReference;
     private ProgressDialog progressDialog;
-    private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference postOwnersReference;
-    private List<Post> posts = new ArrayList<>();
 
     private static final int DEFAULT_TITLE_LENGTH_LIMIT = 100;
     private static final int DEFAULT_DESCRIPTION_LENGTH_LIMIT = 500;
     //FIRESTORE
     private FirebaseFirestore firebaseFirestore;
-    private ListenerRegistration listenerRegistration;
     private CollectionReference postsReference;
     private CollectionReference ownersReference;
     private CollectionReference usersReference;
@@ -122,10 +110,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
             postsReference = firebaseFirestore.collection(Constants.POSTS);
             ownersReference = firebaseFirestore.collection(Constants.CINGLE_ONWERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            //firebase database
-            databaseReference = FirebaseDatabase.getInstance().getReference(Constants.POSTS);
-            postOwnersReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_ONWERS);
-
+ 
             fetchUserData();
             uploadingToFirebaseDialog();
             mCingleTitleEditText.setFilters(new InputFilter[]{new InputFilter
@@ -207,7 +192,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
     protected void onPause(){
         super.onPause();
         if(isFinishing()){
-            Picasso.with(this).cancelRequest(mProportionalImageView);
+            Picasso.with(this).cancelRequest(mPostImageView);
         }
     }
 
@@ -236,10 +221,10 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
         Uri imageSelected = data.getParcelableExtra(Intent.EXTRA_STREAM);
         try {
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageSelected);
-//            mProportionalImageView.setImageBitmap(bitmap);
+//            mPostImageView.setImageBitmap(bitmap);
             Picasso.with(this)
                     .load(imageSelected)
-                    .into(mProportionalImageView, new Callback.EmptyCallback(){
+                    .into(mPostImageView, new Callback.EmptyCallback(){
                         @Override
                         public void onSuccess(){
                             /**index 0 is the mChosenImageView*/
@@ -305,7 +290,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
         Picasso.with(this)
                 .load(photoUri)
-                .into(mProportionalImageView, new Callback.EmptyCallback(){
+                .into(mPostImageView, new Callback.EmptyCallback(){
                     @Override
                     public void onSuccess(){
                         /**index 0 is the mChosenImageView*/
@@ -383,7 +368,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                             //reset input fields
                             mCingleTitleEditText.setText("");
                             mCingleDescriptionEditText.setText("");
-                            mProportionalImageView.setImageBitmap(null);
+                            mPostImageView.setImageBitmap(null);
 
                             //set the post ownership
                             TransactionDetails transactionDetails = new TransactionDetails();

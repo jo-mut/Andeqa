@@ -122,7 +122,7 @@
             android:name=".home.FullImageViewActivity"
             android:label="Post" />
         <activity
-            android:name=".market.WalletActivity"
+            android:name=".profile.WalletActivity"
             android:label="Wallet"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />

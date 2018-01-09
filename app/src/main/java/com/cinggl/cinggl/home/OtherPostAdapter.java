@@ -24,15 +24,17 @@ import com.cinggl.cinggl.models.Credit;
 import com.cinggl.cinggl.models.Like;
 import com.cinggl.cinggl.models.Post;
 import com.cinggl.cinggl.models.PostSale;
+import com.cinggl.cinggl.models.Timeline;
 import com.cinggl.cinggl.models.TransactionDetails;
 import com.cinggl.cinggl.people.FollowerProfileActivity;
-import com.cinggl.cinggl.settings.BestPostsSettingsDialog;
+import com.cinggl.cinggl.settings.DialogPostsSettingsFragment;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.viewholders.OtherPostViewHolder;
 import com.cinggl.cinggl.viewholders.WhoLikedViewHolder;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -80,6 +82,7 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
     private CollectionReference senseCreditReference;
     private CollectionReference postWalletReference;
     private CollectionReference likesReference;
+    private CollectionReference timelineCollection;
     private Query likesQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
@@ -114,17 +117,20 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
 
 
         firebaseAuth = FirebaseAuth.getInstance();
-        //firestore
-        cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-        ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
-        usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-        ifairReference = FirebaseFirestore.getInstance().collection(Constants.MARKET);
-        commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
-        senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
-        //document reference
-        commentsCountQuery= commentsReference;
-        likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
-        postWalletReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_WALLET);
+       if (firebaseAuth.getCurrentUser() != null){
+           //firestore
+           cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+           ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
+           usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+           ifairReference = FirebaseFirestore.getInstance().collection(Constants.MARKET);
+           commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
+           senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
+           //document reference
+           commentsCountQuery= commentsReference;
+           likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
+           postWalletReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_WALLET);
+           timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
+       }
 
         if (senseCredits > 0){
             DecimalFormat formatter = new DecimalFormat("0.00000000");
@@ -180,9 +186,9 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                 Bundle bundle = new Bundle();
                 bundle.putString(OtherPostAdapter.EXTRA_POST_KEY, postKey);
                 FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
-                BestPostsSettingsDialog bestPostsSettingsDialog = BestPostsSettingsDialog.newInstance("best posts settings");
-                bestPostsSettingsDialog.setArguments(bundle);
-                bestPostsSettingsDialog.show(fragmenManager, "best settings fragment");
+                DialogPostsSettingsFragment dialogPostsSettingsFragment = DialogPostsSettingsFragment.newInstance("best posts settings");
+                dialogPostsSettingsFragment.setArguments(bundle);
+                dialogPostsSettingsFragment.show(fragmenManager, "best settings fragment");
 
             }
         });
@@ -603,7 +609,17 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                                         like.setUid(firebaseAuth.getCurrentUser().getUid());
                                         like.setPushId(firebaseAuth.getCurrentUser().getUid());
                                         likesReference.document(postKey).collection("likes")
-                                                .document(firebaseAuth.getCurrentUser().getUid()).set(like);
+                                                .document(firebaseAuth.getCurrentUser().getUid()).set(like)
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        Timeline timeline = new Timeline();
+                                                        timeline.setPushId(postKey);
+                                                        timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                        timeline.setType("like");
+                                                        timelineCollection.document(postKey).set(timeline);
+                                                    }
+                                                });
                                         processLikes = false;
                                         holder.likesImageView.setColorFilter(Color.RED);
 

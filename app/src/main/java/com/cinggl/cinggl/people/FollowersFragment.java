@@ -16,6 +16,7 @@ import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Relation;
+import com.cinggl.cinggl.models.Timeline;
 import com.cinggl.cinggl.viewholders.PeopleViewHolder;
 import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
@@ -46,6 +47,7 @@ public class FollowersFragment extends Fragment {
     //firestore
     private CollectionReference relationsReference;
     private CollectionReference usersReference;
+    private CollectionReference timelineCollection;
     private Query followersQuery;
     //adapters
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
@@ -80,6 +82,7 @@ public class FollowersFragment extends Fragment {
         if (firebaseAuth.getCurrentUser()!= null){
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
+            timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
 
             retrieveFollowers();
             firestoreRecyclerAdapter.startListening();
@@ -207,11 +210,31 @@ public class FollowersFragment extends Fragment {
                                                                 Relation follower = new Relation();
                                                                 follower.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                 relationsReference.document("followers").collection(postKey)
-                                                                        .document(firebaseAuth.getCurrentUser().getUid()).set(follower);
+                                                                        .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
+                                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                            @Override
+                                                                            public void onSuccess(Void aVoid) {
+                                                                                Timeline timeline = new Timeline();
+                                                                                timeline.setPushId(postKey);
+                                                                                timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                                timeline.setType("followers");
+                                                                                timelineCollection.document(postKey).set(timeline);
+                                                                            }
+                                                                        });
                                                                 final Relation following = new Relation();
                                                                 following.setUid(postKey);
                                                                 relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
-                                                                        .document(postKey).set(following);
+                                                                        .document(postKey).set(following)
+                                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                            @Override
+                                                                            public void onSuccess(Void aVoid) {
+                                                                                Timeline timeline = new Timeline();
+                                                                                timeline.setPushId(postKey);
+                                                                                timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                                timeline.setType("following");
+                                                                                timelineCollection.document(postKey).set(timeline);
+                                                                            }
+                                                                        });
                                                                 processFollow = false;
                                                                 holder.followButton.setText("Following");
                                                             }else {

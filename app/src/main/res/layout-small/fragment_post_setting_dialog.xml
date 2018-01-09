@@ -1,13 +1,11 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="match_parent"
-    tools:context="com.cinggl.cinggl.settings.DialogCingleSettingsFragment"
     android:layout_width="match_parent"
-    android:background="@android:color/white">
+    android:layout_height="match_parent"
+    tools:context="com.cinggl.cinggl.settings.DialogPostsSettingsFragment">
 
     <!-- TODO: Update blank fragment layout -->
-
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -15,7 +13,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="37dp"
+            android:layout_height="wrap_content"
             android:id="@+id/deletePostRelativeLayout">
 
             <TextView
@@ -25,6 +23,7 @@
                 android:textSize="12sp"
                 android:textColor="@android:color/black"
                 android:textStyle="normal|bold"
+                android:layout_alignParentTop="false"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="false"
                 android:id="@+id/deletePostTextView"
@@ -39,7 +38,7 @@
         <RelativeLayout
             android:id="@+id/redeemCreditsRelativeLayout"
             android:layout_width="match_parent"
-            android:layout_height="37dp">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:text="Redeem Sense Credits"
@@ -57,14 +56,13 @@
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp" />
 
-
         </RelativeLayout>
 
 
         <RelativeLayout
             android:id="@+id/tradePostRelativeLayout"
             android:layout_width="match_parent"
-            android:layout_height="37dp">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:text="Sale this post"
@@ -81,6 +79,7 @@
                 android:paddingLeft="5dp"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp" />
+
 
         </RelativeLayout>
 

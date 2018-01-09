@@ -22,12 +22,12 @@
             android:layout_height="wrap_content"
             android:textStyle="normal"
             android:id="@+id/textView"
-            android:textSize="16dp"
-            android:layout_centerVertical="true" />
+            android:layout_centerVertical="true"
+            android:textSize="16sp" />
     </RelativeLayout>
 
     <RelativeLayout
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content">
 
         <RelativeLayout

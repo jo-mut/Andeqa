@@ -1,0 +1,118 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="5dp"
+    tools:context="com.cinggl.cinggl.settings.DialogDeleteAccountFragment"
+    android:background="@android:color/white">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <RelativeLayout
+        android:padding="5dp"
+        android:layout_height="wrap_content"
+        android:layout_width="450dp">
+
+        <TextView
+            android:text="@string/you_will_not_be_able_to_sign_in_once_you_confirm_to_delete_your_account"
+            android:padding="5dp"
+            android:textSize="24sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:id="@+id/textView" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:padding="5dp"
+        android:layout_height="75dp"
+        android:layout_width="450dp">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="textMultiLine"
+            android:id="@+id/emailEditText"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentStart="false"
+            android:layout_centerInParent="true"
+            android:hint="@string/email"
+            android:textSize="24sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:padding="5dp"
+        android:layout_height="75dp"
+        android:layout_width="450dp">
+
+
+        <EditText
+            android:textSize="24sp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="textMultiLine"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentStart="false"
+            android:id="@+id/passwordEditText"
+            android:layout_centerInParent="true"
+            android:hint="@string/password" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:background="@drawable/border_rectangle"
+            android:id="@+id/YesRelativeLayout"
+            android:layout_height="75dp"
+            android:layout_width="225dp">
+
+            <TextView
+                android:text="Yes"
+                android:padding="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="normal|bold"
+                android:textColor="@android:color/black"
+                android:layout_centerInParent="true"
+                android:textAllCaps="true"
+                android:textSize="27sp" />
+
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="0.1dp"
+            android:layout_height="0.1dp"
+            android:layout_centerInParent="true" />
+
+        <RelativeLayout
+            android:layout_toRightOf="@+id/YesRelativeLayout"
+            android:layout_toEndOf="@+id/YesRelativeLayout"
+            android:background="@drawable/border_rectangle"
+            android:id="@+id/noRelativeLayout"
+            android:layout_height="75dp"
+            android:layout_width="225dp">
+
+            <TextView
+                android:text="No"
+                android:padding="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="normal|bold"
+                android:textColor="@android:color/black"
+                android:layout_centerInParent="true"
+                android:textAllCaps="true"
+                android:textSize="27sp" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>
+

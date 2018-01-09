@@ -26,6 +26,7 @@ import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Post;
 import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.models.Relation;
+import com.cinggl.cinggl.models.Timeline;
 import com.cinggl.cinggl.viewholders.CommentViewHolder;
 import com.cinggl.cinggl.models.Comment;
 import com.cinggl.cinggl.people.FollowerProfileActivity;
@@ -35,6 +36,7 @@ import com.firebase.ui.common.ChangeEventType;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -75,6 +77,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     private Query commentQuery;
     private CollectionReference usersReference;
     private CollectionReference relationsReference;
+    private CollectionReference timelineCollection;
     //adapters
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     private static final String EXTRA_POST_KEY = "post key";
@@ -120,6 +123,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
             commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
+            timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
 
             mCommentEditText.setFilters(new InputFilter[]{new InputFilter
                     .LengthFilter(DEFAULT_COMMENT_LENGTH_LIMIT)});
@@ -524,7 +528,16 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                             DocumentReference pushRef = commentsReference.document(mPostKey);
                             final String pushId = pushRef.getId();
                             comment.setPushId(pushId);
-                            pushRef.set(comment);
+                            pushRef.set(comment).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Timeline timeline = new Timeline();
+                                    timeline.setPushId(mPostKey);
+                                    timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                    timeline.setType("comment");
+                                    timelineCollection.document(mPostKey).set(timeline);
+                                }
+                            });
                             mCommentEditText.setText("");
 
                         }

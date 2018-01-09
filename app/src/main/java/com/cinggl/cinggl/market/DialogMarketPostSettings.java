@@ -30,7 +30,9 @@ import butterknife.ButterKnife;
  * A simple {@link Fragment} subclass.
  */
 public class DialogMarketPostSettings extends DialogFragment implements View.OnClickListener{
-    @Bind(R.id.unlistPostRelativeLayout)RelativeLayout mUnlistPostRelativeLayout;
+    @Bind(R.id.noRelativeLayout)RelativeLayout mNoRelativeLayout;
+    @Bind(R.id.YesRelativeLayout)RelativeLayout mYesRelativeLayout;
+
     private CollectionReference sellingCollection;
     private FirebaseAuth firebaseAuth;
 
@@ -60,7 +62,8 @@ public class DialogMarketPostSettings extends DialogFragment implements View.OnC
         View view = inflater.inflate(R.layout.fragment_market_post_settings_fragement, container, false);
         ButterKnife.bind(this, view);
 
-        mUnlistPostRelativeLayout.setOnClickListener(this);
+        mNoRelativeLayout.setOnClickListener(this);
+        mYesRelativeLayout.setOnClickListener(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
@@ -90,17 +93,11 @@ public class DialogMarketPostSettings extends DialogFragment implements View.OnC
         getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        WindowManager.LayoutParams params = getDialog().getWindow().getAttributes();
-        params.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
-        params.x = 100;
-        params.y = 100;
-        getDialog().getWindow().setAttributes(params);
-        getDialog().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
     }
 
     @Override
     public void onClick(View v){
-        if (v == mUnlistPostRelativeLayout){
+        if (v == mYesRelativeLayout){
             sellingCollection.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
                 public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -115,6 +112,10 @@ public class DialogMarketPostSettings extends DialogFragment implements View.OnC
                     }
                 }
             });
+        }
+
+        if (v == mNoRelativeLayout){
+            dismiss();
         }
     }
 

@@ -41,16 +41,19 @@
             android:textSize="14sp"
             android:textColor="@android:color/black" />
 
-        <ImageView
+        <TextView
+            android:padding="5dp"
             android:visibility="gone"
+            android:text="Unlist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_more_vert_black_24dp"
-            android:id="@+id/settingsImageView"
-            android:layout_alignParentTop="false"
+            android:id="@+id/unlistPostTextView"
+            android:textSize="14sp"
+            android:textStyle="normal|bold"
+            android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true" />
+            android:layout_alignParentEnd="true" />
+
     </RelativeLayout>
 
 

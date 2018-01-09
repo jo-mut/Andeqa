@@ -1,4 +1,4 @@
-package com.cinggl.cinggl.market;
+package com.cinggl.cinggl.profile;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;

@@ -186,7 +186,7 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                                                                                     final double currentBalance = cingleWalletBalance.getTotalBalance();
                                                                                     final double newCingleBalance = currentBalance + amountTransferred;
 
-                                                                                    postWalletReference.document(mPostKey).update("amound deposited", newCingleBalance)
+                                                                                    postWalletReference.document(mPostKey).update("amount deposited", newCingleBalance)
                                                                                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                                                 @Override
                                                                                                 public void onComplete(@NonNull Task<Void> task) {
@@ -203,6 +203,7 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                                                                                     transactionDetails.setAmount(amountTransferred);
                                                                                     transactionDetails.setWalletBalance(newWalletBalance);
                                                                                     transactionDetails.setDate(currentDate);
+                                                                                    transactionDetails.setType("redeem");
 
                                                                                     DocumentReference ownerRef = cingleOwnersReference.document(mPostKey);
                                                                                     ownerRef.set(transactionDetails);
@@ -227,7 +228,7 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                                                                                     transactionDetails.setAmount(amountTransferred);
                                                                                     transactionDetails.setWalletBalance(newWalletBalance);
                                                                                     transactionDetails.setDate(currentDate);
-
+                                                                                    transactionDetails.setType("redeem");
 
                                                                                     DocumentReference ownerRef = cingleOwnersReference.document(mPostKey);
                                                                                     ownerRef.set(transactionDetails);

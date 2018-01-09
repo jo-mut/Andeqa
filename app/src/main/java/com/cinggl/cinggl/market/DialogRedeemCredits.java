@@ -231,6 +231,7 @@ public class DialogRedeemCredits extends DialogFragment implements View.OnClickL
                                                                                 transactionDetails.setCingleId(mPostKey);
                                                                                 transactionDetails.setDate(currentDate);
                                                                                 transactionDetails.setWalletBalance(newBalance);
+                                                                                transactionDetails.setType("redeem");
                                                                                 //get the push id
                                                                                 DocumentReference ref = transactionReference.document();
                                                                                 String pushId = ref.getId();
@@ -267,6 +268,8 @@ public class DialogRedeemCredits extends DialogFragment implements View.OnClickL
                                                                                 transactionDetails.setCingleId(mPostKey);
                                                                                 transactionDetails.setDate(currentDate);
                                                                                 transactionDetails.setWalletBalance(amountTransferred);
+                                                                                transactionDetails.setType("redeem");
+
                                                                                 //get the push id
                                                                                 DocumentReference ref = transactionReference.document();
                                                                                 String pushId = ref.getId();
@@ -310,6 +313,8 @@ public class DialogRedeemCredits extends DialogFragment implements View.OnClickL
                                                                                         transactionDetails.setCingleId(mPostKey);
                                                                                         transactionDetails.setDate(currentDate);
                                                                                         transactionDetails.setWalletBalance(newBalance);
+                                                                                        transactionDetails.setType("redeem");
+
                                                                                         //get the push id
                                                                                         DocumentReference ref = transactionReference.document();
                                                                                         String pushId = ref.getId();
@@ -344,6 +349,8 @@ public class DialogRedeemCredits extends DialogFragment implements View.OnClickL
                                                                                         transactionDetails.setCingleId(mPostKey);
                                                                                         transactionDetails.setDate(currentDate);
                                                                                         transactionDetails.setWalletBalance(amountTransferred);
+                                                                                        transactionDetails.setType("redeem");
+
                                                                                         //get the push id
                                                                                         DocumentReference ref = transactionReference.document();
                                                                                         String pushId = ref.getId();

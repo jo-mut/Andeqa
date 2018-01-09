@@ -181,4 +181,7 @@ This privacy policy page was created at privacypolicytemplate.net and modified/g
     <string name="title_activity_nav">NavActivity</string>
     <string name="following">Following</string>
     <string name="posts">Posts</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="you_will_not_be_able_to_sign_in_once_you_confirm_to_delete_your_account">You will not be able to sign in once you confirm to delete your account</string>
 </resources>

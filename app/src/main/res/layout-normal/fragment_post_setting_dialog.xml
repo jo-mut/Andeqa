@@ -1,8 +1,9 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.cinggl.cinggl.settings.BestPostsSettingsDialog">
+    tools:context="com.cinggl.cinggl.settings.DialogPostsSettingsFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <LinearLayout
@@ -31,12 +32,6 @@
                 android:paddingTop="15dp"
                 android:paddingBottom="15dp" />
 
-            <View
-                android:layout_below="@+id/deletePostTextView"
-                android:layout_width="match_parent"
-                android:layout_height="0.3dp"
-                android:background="@color/colorDivider"/>
-
         </RelativeLayout>
 
         <RelativeLayout
@@ -61,13 +56,8 @@
                 android:paddingBottom="15dp" />
 
 
-            <View
-                android:layout_below="@+id/redeemCreditsTextView"
-                android:layout_width="match_parent"
-                android:layout_height="0.3dp"
-                android:background="@color/colorDivider"/>
-
         </RelativeLayout>
+
 
         <RelativeLayout
             android:id="@+id/tradePostRelativeLayout"
@@ -91,15 +81,8 @@
                 android:paddingBottom="15dp" />
 
 
-            <View
-                android:layout_below="@+id/chooseHouseToTradeCingleTextView"
-                android:layout_width="match_parent"
-                android:layout_height="0.3dp"
-                android:background="@color/colorDivider"/>
-
         </RelativeLayout>
-
 
     </LinearLayout>
 
-</FrameLayout>
+</LinearLayout>

@@ -18,7 +18,6 @@ import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.market.WalletActivity;
 import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.models.Post;
 import com.cinggl.cinggl.people.PeopleActivity;
