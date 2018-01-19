@@ -29,8 +29,7 @@ import com.cinggl.cinggl.models.TransactionDetails;
 import com.cinggl.cinggl.people.FollowerProfileActivity;
 import com.cinggl.cinggl.settings.DialogPostsSettingsFragment;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
-import com.cinggl.cinggl.viewholders.OtherPostViewHolder;
-import com.cinggl.cinggl.viewholders.WhoLikedViewHolder;
+import com.cinggl.cinggl.likes.WhoLikedViewHolder;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
@@ -52,6 +51,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static android.util.Log.d;
@@ -307,6 +307,167 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                         }
                     });
 
+                    holder.likesImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            processLikes = true;
+                            likesReference.document(postKey).collection("likes")
+                                    .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                                            if (e != null) {
+                                                Log.w(TAG, "Listen error", e);
+                                                return;
+                                            }
+
+
+                                            if (processLikes){
+                                                if (documentSnapshots.isEmpty()){
+                                                    Like like = new Like();
+                                                    like.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                    like.setPushId(firebaseAuth.getCurrentUser().getUid());
+                                                    likesReference.document(postKey).collection("likes")
+                                                            .document(firebaseAuth.getCurrentUser().getUid()).set(like)
+                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                @Override
+                                                                public void onSuccess(Void aVoid) {
+                                                                    Timeline timeline = new Timeline();
+                                                                    final long time = new Date().getTime();
+                                                                    timeline.setPushId(postKey);
+                                                                    timeline.setTimeStamp(time);
+                                                                    timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                    timeline.setType("like");
+
+                                                                    if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                                                        //do nothing
+                                                                    }else {
+                                                                        timelineCollection.document(uid).collection("timeline")
+                                                                                .document(postKey).set(timeline);
+                                                                    }
+
+                                                                }
+                                                            });
+                                                    processLikes = false;
+                                                    holder.likesImageView.setColorFilter(Color.RED);
+
+                                                }else {
+                                                    likesReference.document(postKey).collection("likes")
+                                                            .document(firebaseAuth.getCurrentUser().getUid()).delete();
+                                                    processLikes = false;
+                                                    holder.likesImageView.setColorFilter(Color.BLACK);
+
+                                                }
+                                            }
+
+                                            likesReference.document(postKey).collection("likes")
+                                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                                        @Override
+                                                        public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                                                            if (e != null) {
+                                                                Log.w(TAG, "Listen error", e);
+                                                                return;
+                                                            }
+
+                                                            if (!documentSnapshots.isEmpty()){
+                                                                int likesCount = documentSnapshots.size();
+
+                                                                if ( likesCount > 0){
+                                                                    //mille is a thousand likes
+                                                                    double MILLE = 1000.0;
+                                                                    //get the number of likes per a thousand likes
+                                                                    double likesPerMille = likesCount/MILLE;
+                                                                    //get the default rate of likes per unit time in seconds;
+                                                                    double rateOfLike = 1000.0/1800.0;
+                                                                    //get the current rate of likes per unit time in seconds;
+                                                                    double currentRateOfLkes = likesCount * rateOfLike/MILLE;
+                                                                    //get the current price of post
+                                                                    final double currentPrice = currentRateOfLkes * DEFAULT_PRICE/rateOfLike;
+                                                                    //get the perfection value of post's interactivity online
+                                                                    double perfectionValue = GOLDEN_RATIO/likesCount;
+                                                                    //get the new worth of Post price in Sen
+                                                                    final double cingleWorth = perfectionValue * likesPerMille * currentPrice;
+                                                                    //round of the worth of the post to 10 decimal number
+                                                                    final double finalPoints = round( cingleWorth, 10);
+
+                                                                    Log.d("final points", finalPoints + "");
+
+                                                                    postWalletReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                                                        @Override
+                                                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                                                            if (e != null) {
+                                                                                Log.w(TAG, "Listen error", e);
+                                                                                return;
+                                                                            }
+
+
+                                                                            if (documentSnapshot.exists()){
+                                                                                final Balance balance = documentSnapshot.toObject(Balance.class);
+                                                                                final double amountRedeemed = balance.getAmountRedeemed();
+                                                                                Log.d(amountRedeemed + "", "amount redeemed");
+                                                                                final  double amountDeposited = balance.getAmountDeposited();
+                                                                                Log.d(amountDeposited + "", "amount deposited");
+                                                                                final double senseCredits = amountDeposited + finalPoints;
+                                                                                Log.d("sense credit", senseCredits + "");
+                                                                                final double totalSenseCredits = senseCredits - amountRedeemed;
+                                                                                Log.d("total sense credit", totalSenseCredits + "");
+
+                                                                                senseCreditReference.document(postKey).update("amount", totalSenseCredits);
+                                                                            }else {
+                                                                                Credit credit = new Credit();
+                                                                                credit.setPushId(postKey);
+                                                                                credit.setAmount(finalPoints);
+                                                                                credit.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                                senseCreditReference.document(postKey).set(credit);
+                                                                                Log.d("new sense credits", finalPoints + "");
+                                                                            }
+                                                                        }
+                                                                    });
+
+                                                                }
+                                                            }else {
+                                                                final double finalPoints = 0.00;
+                                                                Log.d("finalpoints <= 0", finalPoints + "");
+                                                                postWalletReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                                                    @Override
+                                                                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                                                        if (e != null) {
+                                                                            Log.w(TAG, "Listen error", e);
+                                                                            return;
+                                                                        }
+
+                                                                        if (documentSnapshot.exists()){
+                                                                            final Balance balance = documentSnapshot.toObject(Balance.class);
+                                                                            final double amountRedeemed = balance.getAmountRedeemed();
+                                                                            Log.d(amountRedeemed + "", "amount redeemed");
+                                                                            final  double amountDeposited = balance.getAmountDeposited();
+                                                                            Log.d(amountDeposited + "", "amount deposited");
+                                                                            final double senseCredits = amountDeposited + finalPoints;
+                                                                            Log.d("sense credit", senseCredits + "");
+                                                                            final double totalSenseCredits = senseCredits - amountRedeemed;
+                                                                            Log.d("total sense credit", totalSenseCredits + "");
+
+                                                                            senseCreditReference.document(postKey).update("amount", totalSenseCredits);
+                                                                        }else {
+                                                                            Credit credit = new Credit();
+                                                                            credit.setPushId(postKey);
+                                                                            credit.setAmount(finalPoints);
+                                                                            credit.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                            senseCreditReference.document(postKey).set(credit);
+                                                                        }
+                                                                    }
+                                                                });
+                                                            }
+                                                        }
+                                                    });
+
+
+                                        }
+                                    });
+                        }
+                    });
 
                 }
             }
@@ -584,162 +745,6 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                 }
             }
         });
-
-
-
-        holder.likesImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                processLikes = true;
-                likesReference.document(postKey).collection("likes")
-                        .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
-                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                            @Override
-                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                if (e != null) {
-                                    Log.w(TAG, "Listen error", e);
-                                    return;
-                                }
-
-
-                                if (processLikes){
-                                    if (documentSnapshots.isEmpty()){
-                                        Like like = new Like();
-                                        like.setUid(firebaseAuth.getCurrentUser().getUid());
-                                        like.setPushId(firebaseAuth.getCurrentUser().getUid());
-                                        likesReference.document(postKey).collection("likes")
-                                                .document(firebaseAuth.getCurrentUser().getUid()).set(like)
-                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                    @Override
-                                                    public void onSuccess(Void aVoid) {
-                                                        Timeline timeline = new Timeline();
-                                                        timeline.setPushId(postKey);
-                                                        timeline.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                        timeline.setType("like");
-                                                        timelineCollection.document(postKey).set(timeline);
-                                                    }
-                                                });
-                                        processLikes = false;
-                                        holder.likesImageView.setColorFilter(Color.RED);
-
-                                    }else {
-                                        likesReference.document(postKey).collection("likes")
-                                                .document(firebaseAuth.getCurrentUser().getUid()).delete();
-                                        processLikes = false;
-                                        holder.likesImageView.setColorFilter(Color.BLACK);
-
-                                    }
-                                }
-
-                                likesReference.document(postKey).collection("likes")
-                                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                            @Override
-                                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                                if (e != null) {
-                                                    Log.w(TAG, "Listen error", e);
-                                                    return;
-                                                }
-
-                                                if (!documentSnapshots.isEmpty()){
-                                                    int likesCount = documentSnapshots.size();
-
-                                                    if ( likesCount > 0){
-                                                        //mille is a thousand likes
-                                                        double MILLE = 1000.0;
-                                                        //get the number of likes per a thousand likes
-                                                        double likesPerMille = likesCount/MILLE;
-                                                        //get the default rate of likes per unit time in seconds;
-                                                        double rateOfLike = 1000.0/1800.0;
-                                                        //get the current rate of likes per unit time in seconds;
-                                                        double currentRateOfLkes = likesCount * rateOfLike/MILLE;
-                                                        //get the current price of post
-                                                        final double currentPrice = currentRateOfLkes * DEFAULT_PRICE/rateOfLike;
-                                                        //get the perfection value of post's interactivity online
-                                                        double perfectionValue = GOLDEN_RATIO/likesCount;
-                                                        //get the new worth of Post price in Sen
-                                                        final double cingleWorth = perfectionValue * likesPerMille * currentPrice;
-                                                        //round of the worth of the post to 10 decimal number
-                                                        final double finalPoints = round( cingleWorth, 10);
-
-                                                        Log.d("final points", finalPoints + "");
-
-                                                        postWalletReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                                            @Override
-                                                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                                                if (e != null) {
-                                                                    Log.w(TAG, "Listen error", e);
-                                                                    return;
-                                                                }
-
-
-                                                                if (documentSnapshot.exists()){
-                                                                    final Balance balance = documentSnapshot.toObject(Balance.class);
-                                                                    final double amountRedeemed = balance.getAmountRedeemed();
-                                                                    Log.d(amountRedeemed + "", "amount redeemed");
-                                                                    final  double amountDeposited = balance.getAmountDeposited();
-                                                                    Log.d(amountDeposited + "", "amount deposited");
-                                                                    final double senseCredits = amountDeposited + finalPoints;
-                                                                    Log.d("sense credit", senseCredits + "");
-                                                                    final double totalSenseCredits = senseCredits - amountRedeemed;
-                                                                    Log.d("total sense credit", totalSenseCredits + "");
-
-                                                                    senseCreditReference.document(postKey).update("amount", totalSenseCredits);
-                                                                }else {
-                                                                    Credit credit = new Credit();
-                                                                    credit.setPushId(postKey);
-                                                                    credit.setAmount(finalPoints);
-                                                                    credit.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                    senseCreditReference.document(postKey).set(credit);
-                                                                    Log.d("new sense credits", finalPoints + "");
-                                                                }
-                                                            }
-                                                        });
-
-                                                    }
-                                                }else {
-                                                    final double finalPoints = 0.00;
-                                                    Log.d("finalpoints <= 0", finalPoints + "");
-                                                    postWalletReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                                        @Override
-                                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                                            if (e != null) {
-                                                                Log.w(TAG, "Listen error", e);
-                                                                return;
-                                                            }
-
-                                                            if (documentSnapshot.exists()){
-                                                                final Balance balance = documentSnapshot.toObject(Balance.class);
-                                                                final double amountRedeemed = balance.getAmountRedeemed();
-                                                                Log.d(amountRedeemed + "", "amount redeemed");
-                                                                final  double amountDeposited = balance.getAmountDeposited();
-                                                                Log.d(amountDeposited + "", "amount deposited");
-                                                                final double senseCredits = amountDeposited + finalPoints;
-                                                                Log.d("sense credit", senseCredits + "");
-                                                                final double totalSenseCredits = senseCredits - amountRedeemed;
-                                                                Log.d("total sense credit", totalSenseCredits + "");
-
-                                                                senseCreditReference.document(postKey).update("amount", totalSenseCredits);
-                                                            }else {
-                                                                Credit credit = new Credit();
-                                                                credit.setPushId(postKey);
-                                                                credit.setAmount(finalPoints);
-                                                                credit.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                senseCreditReference.document(postKey).set(credit);
-                                                            }
-                                                        }
-                                                    });
-                                                }
-                                            }
-                                        });
-
-
-                            }
-                        });
-            }
-        });
-
 
     }
 

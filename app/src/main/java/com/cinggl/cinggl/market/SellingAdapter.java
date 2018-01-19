@@ -21,7 +21,6 @@ import com.cinggl.cinggl.models.Credit;
 import com.cinggl.cinggl.models.TransactionDetails;
 import com.cinggl.cinggl.people.FollowerProfileActivity;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
-import com.cinggl.cinggl.viewholders.PostSellingViewHolder;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;

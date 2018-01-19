@@ -1,4 +1,4 @@
-package com.cinggl.cinggl.viewholders;
+package com.cinggl.cinggl.people;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -7,36 +7,34 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.cinggl.cinggl.models.Relation;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
- * Created by J.EL on 6/25/2017.
+ * Created by J.EL on 7/3/2017.
  */
 
-public class LikesViewHolder extends RecyclerView.ViewHolder {
-
+public class PeopleViewHolder extends RecyclerView.ViewHolder {
     View mView;
     Context mContext;
-    public TextView usernameTextView;
+    public TextView fullNameTextView;
     public CircleImageView profileImageView;
     public Button followButton;
-    public TextView fullNameTextView;
+    public TextView usernameTextView;
 
-    public LikesViewHolder(View itemView) {
+    public PeopleViewHolder(View itemView) {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
-        usernameTextView = (TextView)itemView.findViewById(R.id.usernameTextView);
+        fullNameTextView = (TextView) itemView.findViewById(R.id.fullNameTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         followButton = (Button) itemView.findViewById(R.id.followTextView);
-        fullNameTextView = (TextView) itemView.findViewById(R.id.fullNameTextView);
+        usernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
     }
 
-    public void bindLikes(final DocumentSnapshot documentSnapshot){
-        profileImageView = (CircleImageView) mView.findViewById(R.id.profileImageView);
+    public void bindPeople(final Relation relation){
+
 
     }
-
 }

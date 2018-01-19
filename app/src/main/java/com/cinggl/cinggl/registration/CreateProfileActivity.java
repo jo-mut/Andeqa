@@ -3,9 +3,7 @@ package com.cinggl.cinggl.registration;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -20,10 +18,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.home.MainActivity;
+import com.cinggl.cinggl.home.NavigationDrawerActivity;
 import com.cinggl.cinggl.models.Cinggulan;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -234,7 +231,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
             public void onSuccess(Void aVoid) {
 
                 //the user is already logged in so create profile and move to next activity
-                Intent intent = new Intent(CreateProfileActivity.this, MainActivity.class);
+                Intent intent = new Intent(CreateProfileActivity.this, NavigationDrawerActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();

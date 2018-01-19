@@ -43,7 +43,9 @@ public abstract class FirestoreAdapter <VH extends RecyclerView.ViewHolder>
     }
 
     public void removeAt(int position){
-        mSnapshots.get(position);
+        if (mSnapshots.get(position) != null){
+            mSnapshots.get(position);
+        }
     }
 
 

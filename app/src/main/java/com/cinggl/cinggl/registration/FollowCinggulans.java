@@ -14,7 +14,7 @@ import android.widget.ProgressBar;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.home.MainActivity;
+import com.cinggl.cinggl.home.NavigationDrawerActivity;
 import com.cinggl.cinggl.models.Cinggulan;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -157,7 +157,7 @@ public class FollowCinggulans extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View v){
         if (v == mDoneButton){
-            Intent intent = new Intent(FollowCinggulans.this, MainActivity.class);
+            Intent intent = new Intent(FollowCinggulans.this, NavigationDrawerActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();

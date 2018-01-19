@@ -2,8 +2,7 @@ package com.cinggl.cinggl.registration;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,27 +11,22 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.home.MainActivity;
+import com.cinggl.cinggl.home.NavigationDrawerActivity;
+import com.dd.processbutton.iml.ActionProcessButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -43,7 +37,7 @@ public class SignInActivity extends AppCompatActivity implements
     public static final String TAG = SignInActivity.class.getSimpleName();
 
     @Bind(R.id.passwordLoginButton)
-    Button mPasswordLoginButton;
+    ActionProcessButton mPasswordLoginButton;
     @Bind(R.id.emailEditText)
     EditText mEmailEditText;
     @Bind(R.id.passwordEditText) EditText mPasswordEditText;
@@ -76,6 +70,9 @@ public class SignInActivity extends AppCompatActivity implements
         mAuth = FirebaseAuth.getInstance();
         createAuthProgressDialog();
 
+        mPasswordLoginButton.setMode(ActionProcessButton.Mode.ENDLESS);
+        mPasswordLoginButton.setColorScheme(Color.CYAN, Color.BLUE, Color.GREEN, Color.RED);
+
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull final FirebaseAuth firebaseAuth) {
@@ -89,7 +86,7 @@ public class SignInActivity extends AppCompatActivity implements
                             if (documentSnapshot.exists()){
                                 Log.d("user snapshot", documentSnapshot.toString());
                                 //LAUCNH SETUP PROFIFLE ACTIVITY IF NO
-                                Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+                                Intent intent = new Intent(SignInActivity.this, NavigationDrawerActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);
                                 finish();
@@ -184,7 +181,7 @@ public class SignInActivity extends AppCompatActivity implements
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             if (documentSnapshot.exists()){
                                 //LAUCNH SETUP PROFIFLE ACTIVITY IF NO
-                                Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+                                Intent intent = new Intent(SignInActivity.this, NavigationDrawerActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);
                                 finish();

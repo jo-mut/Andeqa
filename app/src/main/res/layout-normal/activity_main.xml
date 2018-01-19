@@ -1,27 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout"
+    android:id="@+id/activity_initialization"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:openDrawer="start">
+    android:orientation="vertical"
+    android:background="@drawable/default_gradient_color"
+    tools:context="com.cinggl.cinggl.home.MainActivity">
 
-    <include
-        layout="@layout/app_bar_nav"
+    <RelativeLayout
+        android:paddingRight="1dp"
+        android:paddingLeft="1dp"
+        android:visibility="gone"
+        android:id="@+id/progressBarRelativeLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:background="@android:color/white">
 
-    <android.support.design.widget.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:fitsSystemWindows="true"
-        app:layout_behavior=".BottomNavigationBehavior"
-        app:headerLayout="@layout/nav_header_main"
-        app:menu="@menu/activity_main_drawer" />
+        <ProgressBar
+            android:indeterminateOnly="true"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar" />
 
-</android.support.v4.widget.DrawerLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <ImageView
+            app:srcCompat="@mipmap/ic_launcher"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/cingglLogoImageView"
+            android:layout_centerInParent="true"
+            android:layout_width="70sp"
+            android:layout_height="70sp" />
+
+        <TextView
+            android:text="Cinggl"
+            android:textSize="30sp"
+            android:textStyle="normal|bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/appNameTextView"
+            android:textColor="@android:color/white"
+            android:layout_above="@+id/mottoTextView"
+            android:layout_centerVertical="false"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:text="A world of value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="false"
+            android:id="@+id/mottoTextView"
+            android:textSize="14dp"
+            android:textColor="@android:color/white"
+            android:layout_centerInParent="false"
+            android:layout_centerVertical="false"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="30dp" />
+    </RelativeLayout>
+
+</LinearLayout>

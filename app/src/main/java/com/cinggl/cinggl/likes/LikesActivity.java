@@ -13,27 +13,21 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
-import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cinggulan;
+import com.cinggl.cinggl.models.Post;
 import com.cinggl.cinggl.models.Relation;
-import com.cinggl.cinggl.viewholders.LikesViewHolder;
 import com.cinggl.cinggl.models.Like;
+import com.cinggl.cinggl.models.Timeline;
 import com.cinggl.cinggl.people.FollowerProfileActivity;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
-import com.cinggl.cinggl.viewholders.WhoLikedViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -45,13 +39,11 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.util.Date;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
-import static com.cinggl.cinggl.R.id.fullNameTextView;
-import static java.lang.System.load;
 
 public class LikesActivity extends AppCompatActivity {
     @Bind(R.id.recentLikesRecyclerView)RecyclerView mRecentLikesRecyclerView;
@@ -61,6 +53,7 @@ public class LikesActivity extends AppCompatActivity {
     private CollectionReference relationsReference;
     private CollectionReference usersReference;
     private CollectionReference likesReference;
+    private CollectionReference timelineCollection;
     private Query likesQuery;
     private FirebaseAuth firebaseAuth;
     private CircleImageView profileImageView;
@@ -102,6 +95,7 @@ public class LikesActivity extends AppCompatActivity {
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
+            timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             postLikes();
         }
 
@@ -246,7 +240,20 @@ public class LikesActivity extends AppCompatActivity {
                                                     Relation follower = new Relation();
                                                     follower.setUid(firebaseAuth.getCurrentUser().getUid());
                                                     relationsReference.document("followers").collection(uid)
-                                                            .document(firebaseAuth.getCurrentUser().getUid()).set(follower);
+                                                            .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
+                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            Timeline timeline = new Timeline();
+                                                            final long time = new Date().getTime();
+                                                            timeline.setPushId(postKey);
+                                                            timeline.setTimeStamp(time);
+                                                            timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                            timeline.setType("followers");
+                                                            timelineCollection.document(uid).collection("timeline")
+                                                                    .document(postKey).set(timeline);
+                                                        }
+                                                    });
                                                     final Relation following = new Relation();
                                                     following.setUid(uid);
                                                     relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())

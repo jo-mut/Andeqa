@@ -27,7 +27,6 @@ import com.cinggl.cinggl.models.Post;
 import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.models.Relation;
 import com.cinggl.cinggl.models.Timeline;
-import com.cinggl.cinggl.viewholders.CommentViewHolder;
 import com.cinggl.cinggl.models.Comment;
 import com.cinggl.cinggl.people.FollowerProfileActivity;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
@@ -51,6 +50,8 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.util.Date;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -73,7 +74,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     //firebase
     //firestore
     private CollectionReference commentsReference;
-    private CollectionReference cinglesReference;
+    private CollectionReference postCollection;
     private Query commentQuery;
     private CollectionReference usersReference;
     private CollectionReference relationsReference;
@@ -119,7 +120,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
             }
 
             //firestore
-            cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            postCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
@@ -167,7 +168,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
     public void setData() {
         //get the cingle that user wants to comment on
-        cinglesReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        postCollection.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -272,7 +273,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     public void setUpFirebaseComments(){
-        commentQuery = commentsReference.whereEqualTo("pushId", mPostKey);
+        commentQuery = commentsReference.orderBy("pushId").whereEqualTo("postId", mPostKey);
         FirestoreRecyclerOptions<Comment> options = new FirestoreRecyclerOptions.Builder<Comment>()
                 .setQuery(commentQuery, Comment.class)
                 .build();
@@ -393,7 +394,19 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                                                     Relation follower = new Relation();
                                                     follower.setUid(firebaseAuth.getCurrentUser().getUid());
                                                     relationsReference.document("followers").collection(uid)
-                                                            .document(firebaseAuth.getCurrentUser().getUid()).set(follower);
+                                                            .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
+                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            Timeline timeline = new Timeline();
+                                                            final long time = new Date().getTime();
+                                                            timeline.setPushId(postKey);
+                                                            timeline.setTimeStamp(time);
+                                                            timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                            timeline.setType("followers");
+                                                            timelineCollection.document(postKey).set(timeline);
+                                                        }
+                                                    });
                                                     final Relation following = new Relation();
                                                     following.setUid(uid);
                                                     relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
@@ -524,18 +537,41 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                             Comment comment = new Comment();
                             comment.setUid(uid);
                             comment.setCommentText(commentText);
-
-                            DocumentReference pushRef = commentsReference.document(mPostKey);
+                            DocumentReference pushRef = commentsReference.document();
                             final String pushId = pushRef.getId();
                             comment.setPushId(pushId);
+                            comment.setPostId(mPostKey);
                             pushRef.set(comment).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    Timeline timeline = new Timeline();
-                                    timeline.setPushId(mPostKey);
-                                    timeline.setUid(firebaseAuth.getCurrentUser().getUid());
-                                    timeline.setType("comment");
-                                    timelineCollection.document(mPostKey).set(timeline);
+                                    postCollection.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                                            if (e != null) {
+                                                Log.w(TAG, "Listen error", e);
+                                                return;
+                                            }
+
+
+                                            if (documentSnapshot.exists()){
+                                                Post post = documentSnapshot.toObject(Post.class);
+                                                final String creatorUid = post.getUid();
+
+                                                Timeline timeline = new Timeline();
+                                                final long time = new Date().getTime();
+                                                timeline.setPushId(mPostKey);
+                                                timeline.setTimeStamp(time);
+                                                timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                timeline.setType("comment");
+                                                if (creatorUid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                                    //do nothing
+                                                }else {
+                                                    timelineCollection.document(creatorUid).collection("timeline").document(mPostKey).set(timeline);
+                                                }
+                                            }
+                                        }
+                                    });
                                 }
                             });
                             mCommentEditText.setText("");

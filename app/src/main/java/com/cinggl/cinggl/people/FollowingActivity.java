@@ -11,12 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.cinggl.cinggl.App;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Relation;
 import com.cinggl.cinggl.models.Timeline;
-import com.cinggl.cinggl.viewholders.PeopleViewHolder;
 import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.firebase.ui.common.ChangeEventType;
@@ -35,6 +33,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
+
+import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -216,26 +216,19 @@ public class FollowingActivity extends AppCompatActivity {
                                                                             @Override
                                                                             public void onSuccess(Void aVoid) {
                                                                                 Timeline timeline = new Timeline();
+                                                                                final long time = new Date().getTime();
                                                                                 timeline.setPushId(postKey);
+                                                                                timeline.setTimeStamp(time);
                                                                                 timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                                 timeline.setType("followers");
-                                                                                timelineCollection.document(postKey).set(timeline);
+                                                                                timelineCollection.document(postKey).collection("timeline").document(postKey)
+                                                                                        .set(timeline);
                                                                             }
                                                                         });
                                                                 final Relation following = new Relation();
                                                                 following.setUid(postKey);
                                                                 relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
-                                                                        .document(postKey).set(following)
-                                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                            @Override
-                                                                            public void onSuccess(Void aVoid) {
-                                                                                Timeline timeline = new Timeline();
-                                                                                timeline.setPushId(postKey);
-                                                                                timeline.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                                timeline.setType("following");
-                                                                                timelineCollection.document(postKey).set(timeline);
-                                                                            }
-                                                                        });
+                                                                        .document(postKey).set(following);
                                                                 processFollow = false;
                                                                 holder.followButton.setText("Following");
                                                             }else {

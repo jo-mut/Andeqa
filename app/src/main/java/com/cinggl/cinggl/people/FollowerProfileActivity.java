@@ -37,6 +37,7 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.Bind;
@@ -78,12 +79,16 @@ public class FollowerProfileActivity extends AppCompatActivity
     private static final int MAX_HEIGHT = 200;
     private String mUid;
     private static final String EXTRA_USER_UID = "uid";
+    private static final String EXTRA_ROOM_UID = "roomId";
     //posts meber variables
     private List<Post> posts = new ArrayList<>();
     private List<String> cinglesIds = new ArrayList<>();
     private int TOTAL_ITEMS = 4;
     private DocumentSnapshot lastVisible;
     private boolean processFollow = false;
+    private String roomId;
+    private String senderUid;
+    private String recepientUid;
 
 
     @Override
@@ -375,7 +380,11 @@ public class FollowerProfileActivity extends AppCompatActivity
         }
 
         if (v == mSendMessageImageView){
+            senderUid = firebaseAuth.getCurrentUser().getUid().substring(0, 6);
+            recepientUid = mUid.substring(0, 6);
+            roomId = senderUid + recepientUid;
             Intent intent = new Intent(FollowerProfileActivity.this, MessagesAccountActivity.class);
+            intent.putExtra(FollowerProfileActivity.EXTRA_ROOM_UID, roomId);
             intent.putExtra(FollowerProfileActivity.EXTRA_USER_UID, mUid);
             startActivity(intent);
         }
@@ -412,25 +421,19 @@ public class FollowerProfileActivity extends AppCompatActivity
                                                 @Override
                                                 public void onSuccess(Void aVoid) {
                                                     Timeline timeline = new Timeline();
+                                                    final long time = new Date().getTime();
                                                     timeline.setPushId(mUid);
+                                                    timeline.setTimeStamp(time);
                                                     timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                     timeline.setType("followers");
-                                                    timelineCollection.document(mUid).set(timeline);
+                                                    timelineCollection.document(mUid).collection("timeline").document(mUid)
+                                                            .set(timeline);
                                                 }
                                             });
                                     final Relation following = new Relation();
                                     following.setUid(mUid);
                                     relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
-                                            .document(mUid).set(following).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Timeline timeline = new Timeline();
-                                            timeline.setPushId(mUid);
-                                            timeline.setUid(firebaseAuth.getCurrentUser().getUid());
-                                            timeline.setType("following");
-                                            timelineCollection.document(mUid).set(timeline);
-                                        }
-                                    });
+                                            .document(mUid).set(following);
                                     processFollow = false;
                                     mFollowButton.setText("Following");
                                 }else {

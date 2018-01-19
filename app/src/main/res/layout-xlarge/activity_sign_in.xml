@@ -105,16 +105,28 @@
                         android:layout_marginBottom="10dp" />
 
 
-                    <Button
+                    <!--<Button-->
+                        <!--android:id="@+id/passwordLoginButton"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:padding="30dp"-->
+                        <!--android:text="Log in"-->
+                        <!--android:background="@drawable/colour_btn_background"-->
+                        <!--android:textSize="28sp"-->
+                        <!--android:textAlignment="center"-->
+                        <!--android:textColor="@android:color/white" />-->
+
+                    <com.dd.processbutton.iml.ActionProcessButton
                         android:id="@+id/passwordLoginButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="30dp"
-                        android:text="Log in"
-                        android:background="@drawable/colour_btn_background"
-                        android:textSize="28sp"
+                        android:layout_marginTop="15dp"
                         android:textAlignment="center"
-                        android:textColor="@android:color/white" />
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/colour_btn_background"
+                        android:padding="30dp"
+                        android:text="Sign_in"
+                        android:textSize="28sp" />
 
                     <LinearLayout
                         android:orientation="horizontal"

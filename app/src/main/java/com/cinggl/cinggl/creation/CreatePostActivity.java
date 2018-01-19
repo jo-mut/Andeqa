@@ -21,7 +21,7 @@ import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.home.MainActivity;
+import com.cinggl.cinggl.home.NavigationDrawerActivity;
 import com.cinggl.cinggl.utils.ProportionalImageView;
 import com.cinggl.cinggl.models.Post;
 import com.cinggl.cinggl.models.Cinggulan;
@@ -30,15 +30,12 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -48,12 +45,9 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Random;
 
 import butterknife.Bind;
@@ -382,7 +376,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                             progressDialog.dismiss();
 
 
-                            Intent intent = new Intent(CreatePostActivity.this, MainActivity.class);
+                            Intent intent = new Intent(CreatePostActivity.this, NavigationDrawerActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
                             finish();

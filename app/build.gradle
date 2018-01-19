@@ -96,6 +96,9 @@ dependencies {
     testCompile 'org.robolectric:robolectric:3.0'
     testCompile 'org.robolectric:shadows-support-v4:3.0'
     annotationProcessor 'org.parceler:parceler:1.1.6'
+    compile 'com.github.dmytrodanylyk.android-process-button:library:1.0.4'
+
+
 }
 apply plugin: 'com.google.gms.google-services'
 

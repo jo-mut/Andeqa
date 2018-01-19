@@ -9,15 +9,25 @@ public class MessagingUser {
     String message;
     long time;
     String pushId;
+    String roomId;
 
     public MessagingUser() {
 
     }
 
-    public MessagingUser(String message, String pushId, long time, String uid) {
+    public MessagingUser(String uid, String message, long time, String pushId, String roomId) {
+        this.uid = uid;
         this.message = message;
-        this.pushId = pushId;
         this.time = time;
+        this.pushId = pushId;
+        this.roomId = roomId;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
         this.uid = uid;
     }
 
@@ -29,14 +39,6 @@ public class MessagingUser {
         this.message = message;
     }
 
-    public String getPushId() {
-        return pushId;
-    }
-
-    public void setPushId(String pushId) {
-        this.pushId = pushId;
-    }
-
     public long getTime() {
         return time;
     }
@@ -45,11 +47,19 @@ public class MessagingUser {
         this.time = time;
     }
 
-    public String getUid() {
-        return uid;
+    public String getPushId() {
+        return pushId;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setPushId(String pushId) {
+        this.pushId = pushId;
+    }
+
+    public String getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(String roomId) {
+        this.roomId = roomId;
     }
 }

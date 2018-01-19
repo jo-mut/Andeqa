@@ -5,19 +5,41 @@ package com.cinggl.cinggl.models;
  */
 
 public class Message {
-    String uid;
+
+    String senderUid;
+    String recepientUid;
     String message;
     String pushId;
     long timeStamp;
+    String type;
 
     public Message() {
     }
 
-    public Message(String message, String pushId, long timeStamp, String uid) {
+    public Message(String senderUid, String recepientUid, String message,
+                   String pushId, long timeStamp, String type) {
+        this.senderUid = senderUid;
+        this.recepientUid = recepientUid;
         this.message = message;
         this.pushId = pushId;
         this.timeStamp = timeStamp;
-        this.uid = uid;
+        this.type = type;
+    }
+
+    public String getSenderUid() {
+        return senderUid;
+    }
+
+    public void setSenderUid(String senderUid) {
+        this.senderUid = senderUid;
+    }
+
+    public String getRecepientUid() {
+        return recepientUid;
+    }
+
+    public void setRecepientUid(String recepientUid) {
+        this.recepientUid = recepientUid;
     }
 
     public String getMessage() {
@@ -44,11 +66,11 @@ public class Message {
         this.timeStamp = timeStamp;
     }
 
-    public String getUid() {
-        return uid;
+    public String getType() {
+        return type;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setType(String type) {
+        this.type = type;
     }
 }

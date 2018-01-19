@@ -18,7 +18,7 @@ import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.home.PostDetailActivity;
 import com.cinggl.cinggl.models.Post;
-import com.cinggl.cinggl.viewholders.TransactionHistoryViewHolder;
+import com.cinggl.cinggl.market.TransactionHistoryViewHolder;
 import com.cinggl.cinggl.models.Balance;
 import com.cinggl.cinggl.models.TransactionDetails;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;

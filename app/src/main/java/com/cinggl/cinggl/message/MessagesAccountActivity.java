@@ -1,6 +1,5 @@
 package com.cinggl.cinggl.message;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,9 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -19,14 +16,7 @@ import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.models.Message;
 import com.cinggl.cinggl.models.MessagingUser;
-import com.cinggl.cinggl.models.Relation;
-import com.cinggl.cinggl.people.FollowerProfileActivity;
-import com.cinggl.cinggl.people.FollowersActivity;
-import com.cinggl.cinggl.profile.PersonalProfileActivity;
-import com.cinggl.cinggl.viewholders.MessageViewHolder;
-import com.cinggl.cinggl.viewholders.MessagingUserViewHolder;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -41,15 +31,10 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static android.os.Build.VERSION_CODES.M;
-import static java.lang.System.load;
 
 public class MessagesAccountActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = MessagesAccountActivity.class.getSimpleName();
@@ -69,9 +54,14 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
     //firebase auth
     private FirebaseAuth firebaseAuth;
     private String mUid;
+    private static final String EXTRA_ROOM_ID = "roomId";
     private static final String EXTRA_USER_UID = "uid";
     private  static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
+    private static final int SEND_TYPE=0;
+    private static final int RECEIVE_TYPE=1;
+    private MessagingAdapter messagingAdapter;
+    private String roomId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,17 +87,22 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
         if (firebaseAuth.getCurrentUser() != null){
 
             //get the passed uid
+            roomId = getIntent().getStringExtra(EXTRA_ROOM_ID);
+            if(roomId == null){
+                throw new IllegalArgumentException("pass an ROOM ID");
+            }
+
             mUid = getIntent().getStringExtra(EXTRA_USER_UID);
             if(mUid == null){
                 throw new IllegalArgumentException("pass an EXTRA_UID");
             }
+
             //initialize references
             messagesCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             messagingUsersCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
-            messagesQuery = messagesCollection.document(mUid).collection("messages");
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-
+            messagesQuery = messagesCollection.document("rooms").collection(roomId);
 
             getProfile();
             getSenderProfile();
@@ -187,67 +182,45 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
 
     /**get all the messages between two users chatting*/
     private void getMessages(){
-        FirestoreRecyclerOptions<Message> options = new FirestoreRecyclerOptions.Builder<Message>()
-                .setQuery(messagesQuery, Message.class)
-                .build();
-        firestoreRecyclerAdapter = new FirestoreRecyclerAdapter<Message, MessageViewHolder>(options) {
+        messagesQuery.orderBy("timeStamp")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            protected void onBindViewHolder(final MessageViewHolder holder, int position, Message model) {
-                holder.bindMessage(model);
-                final String uid = getSnapshots().get(position).getUid();
-                final String postKey = getSnapshots().get(position).getPushId();
-                final String lastMessage = getSnapshots().get(position).getMessage();
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (!documentSnapshots.isEmpty()){
+                    Log.d("messages count", documentSnapshots.size() + "");
+                    messagingAdapter = new MessagingAdapter(messagesQuery, MessagesAccountActivity.this);
+                    messagingAdapter.startListening();
+                    mMessagesRecyclerView.setAdapter(messagingAdapter);
+                    LinearLayoutManager layoutManager = new LinearLayoutManager(MessagesAccountActivity.this);
+                    mMessagesRecyclerView.setLayoutManager(layoutManager);
+                }
             }
-
-            @Override
-            public MessageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-                return null;
-            };
-
-            @Override
-            public int getItemCount() {
-                return super.getItemCount();
-            }
-
-
-            @Override
-            public Message getItem(int position) {
-                return super.getItem(position);
-            }
-
-            @Override
-            public int getItemViewType(int position) {
-                return super.getItemViewType(position);
-
-
-            }
-
-            @Override
-            public long getItemId(int position) {
-                return super.getItemId(position);
-            }
-        };
-
-
+        });
     }
 
     /**send messages to a specific user*/
     private void sendMessage(){
         if (!TextUtils.isEmpty(mSendMessageEditText.getText())){
-            DocumentReference documentReference = messagesCollection.document("messages")
-                    .collection(mUid).document();
+
             final String documentId = messagesCollection.getId();
             final String text_message = mSendMessageEditText.getText().toString().trim();
             final long time = new Date().getTime();
             final Message message = new Message();
             message.setMessage(text_message);
-            message.setUid(firebaseAuth.getCurrentUser().getUid());
+            message.setSenderUid(firebaseAuth.getCurrentUser().getUid());
+            message.setRecepientUid(mUid);
             message.setTimeStamp(time);
+
+            DocumentReference documentReference = messagesCollection.document("rooms")
+                    .collection(roomId).document();
             message.setPushId(documentId);
             documentReference.set(message);
-
 
             DocumentReference messagingReference = messagingUsersCollection.document("messaging users")
                     .collection(mUid).document(firebaseAuth.getCurrentUser().getUid());
@@ -257,14 +230,16 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
             messagingUser.setMessage(text_message);
             messagingUser.setTime(time);
             messagingUser.setPushId(docId);
+            messagingUser.setRoomId(roomId);
             messagingReference.set(messagingUser);
-
             mSendMessageEditText.setText("");
 
         }else {
             mSendMessageEditText.setError("");
         }
     }
+
+
 
 
     @Override

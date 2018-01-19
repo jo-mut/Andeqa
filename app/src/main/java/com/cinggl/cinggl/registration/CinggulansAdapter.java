@@ -11,7 +11,7 @@ import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.firestore.FirestoreAdapter;
 import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.models.Relation;
-import com.cinggl.cinggl.viewholders.FollowCinggulansViewHolder;
+import com.cinggl.cinggl.people.FollowCinggulansViewHolder;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;

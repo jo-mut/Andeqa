@@ -141,8 +141,8 @@
                                 android:layout_centerVertical="true"
                                 android:layout_alignParentLeft="true"
                                 android:layout_alignParentStart="true"
-                                android:layout_width="15sp"
-                                android:layout_height="15sp" />
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
 
                         </RelativeLayout>
 
@@ -167,10 +167,10 @@
                                 android:freezesText="true"
                                 android:textSize="10sp"
                                 android:layout_width="250dp"
-                                android:background="@drawable/edit_text_background"
-                                android:layout_alignParentTop="true"
+                                android:layout_alignParentTop="false"
                                 android:layout_alignParentLeft="true"
-                                android:layout_alignParentStart="true" />
+                                android:layout_alignParentStart="true"
+                                android:layout_centerVertical="true" />
 
 
                         </RelativeLayout>
@@ -197,8 +197,8 @@
                                 android:layout_alignParentTop="false"
                                 android:layout_alignParentLeft="false"
                                 android:layout_alignParentStart="false"
-                                android:layout_width="15sp"
-                                android:layout_height="15sp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
                                 android:layout_centerVertical="true" />
                         </RelativeLayout>
 
@@ -221,10 +221,10 @@
                                 android:freezesText="true"
                                 android:textSize="10sp"
                                 android:layout_width="250dp"
-                                android:background="@drawable/edit_text_background"
+                                android:layout_alignParentTop="false"
                                 android:layout_alignParentLeft="true"
                                 android:layout_alignParentStart="true"
-                                android:layout_alignParentTop="true" />
+                                android:layout_centerVertical="true" />
                         </RelativeLayout>
 
                     </LinearLayout>
@@ -244,8 +244,8 @@
                                 android:layout_centerVertical="true"
                                 android:layout_alignParentLeft="true"
                                 android:layout_alignParentStart="true"
-                                android:layout_width="15sp"
-                                android:layout_height="15sp" />
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
 
                         </RelativeLayout>
 
@@ -270,10 +270,10 @@
                                 android:textSize="10sp"
                                 android:layout_width="250dp"
                                 android:freezesText="true"
-                                android:background="@drawable/edit_text_background"
-                                android:layout_alignParentTop="true"
+                                android:layout_alignParentTop="false"
                                 android:layout_alignParentLeft="true"
-                                android:layout_alignParentStart="true" />
+                                android:layout_alignParentStart="true"
+                                android:layout_centerVertical="true" />
 
 
                         </RelativeLayout>
@@ -295,8 +295,8 @@
                                 android:layout_centerVertical="true"
                                 android:layout_alignParentLeft="true"
                                 android:layout_alignParentStart="true"
-                                android:layout_width="15sp"
-                                android:layout_height="15sp" />
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
 
                         </RelativeLayout>
 
@@ -321,10 +321,10 @@
                                 android:textSize="10sp"
                                 android:freezesText="true"
                                 android:layout_width="250dp"
-                                android:background="@drawable/edit_text_background"
-                                android:layout_alignParentTop="true"
+                                android:layout_alignParentTop="false"
                                 android:layout_alignParentLeft="true"
-                                android:layout_alignParentStart="true" />
+                                android:layout_alignParentStart="true"
+                                android:layout_centerVertical="true" />
 
 
                         </RelativeLayout>

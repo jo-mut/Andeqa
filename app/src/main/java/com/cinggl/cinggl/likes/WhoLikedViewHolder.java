@@ -1,4 +1,4 @@
-package com.cinggl.cinggl.viewholders;
+package com.cinggl.cinggl.likes;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

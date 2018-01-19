@@ -8,15 +8,16 @@ public class Comment {
     String uid;
     String commentText;
     String pushId;
+    String postId;
 
     public Comment() {
     }
 
-    public Comment(String uid, String commentText,
-                   String pushId) {
+    public Comment(String uid, String commentText, String pushId, String postId) {
         this.uid = uid;
         this.commentText = commentText;
         this.pushId = pushId;
+        this.postId = postId;
     }
 
     public String getUid() {
@@ -43,4 +44,11 @@ public class Comment {
         this.pushId = pushId;
     }
 
+    public String getPostId() {
+        return postId;
+    }
+
+    public void setPostId(String postId) {
+        this.postId = postId;
+    }
 }
