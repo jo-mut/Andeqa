@@ -15,7 +15,7 @@ import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cinggulan;
 import com.cinggl.cinggl.models.Message;
-import com.cinggl.cinggl.models.MessagingUser;
+import com.cinggl.cinggl.models.Room;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -225,13 +225,14 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
             DocumentReference messagingReference = messagingUsersCollection.document("messaging users")
                     .collection(mUid).document(firebaseAuth.getCurrentUser().getUid());
             final String docId = messagingReference.getId();
-            MessagingUser messagingUser = new MessagingUser();
-            messagingUser.setUid(firebaseAuth.getCurrentUser().getUid());
-            messagingUser.setMessage(text_message);
-            messagingUser.setTime(time);
-            messagingUser.setPushId(docId);
-            messagingUser.setRoomId(roomId);
-            messagingReference.set(messagingUser);
+            Room room = new Room();
+            room.setUid(firebaseAuth.getCurrentUser().getUid());
+            room.setMessage(text_message);
+            room.setTime(time);
+            room.setPushId(docId);
+            room.setRoomId(roomId);
+            room.setStatus("unRead");
+            messagingReference.set(room);
             mSendMessageEditText.setText("");
 
         }else {

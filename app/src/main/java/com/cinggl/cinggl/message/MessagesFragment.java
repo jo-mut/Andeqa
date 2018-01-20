@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cinggulan;
-import com.cinggl.cinggl.models.MessagingUser;
+import com.cinggl.cinggl.models.Room;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -77,81 +77,95 @@ public class MessagesFragment extends Fragment {
     /**retrieve all the messages*/
     private void getMessagingUsers(){
         messagingUsersQuery.orderBy("time");
-        FirestoreRecyclerOptions<MessagingUser> options = new FirestoreRecyclerOptions.Builder<MessagingUser>()
-                .setQuery(messagingUsersQuery, MessagingUser.class)
+        FirestoreRecyclerOptions<Room> options = new FirestoreRecyclerOptions.Builder<Room>()
+                .setQuery(messagingUsersQuery, Room.class)
                 .build();
-        firestoreRecyclerAdapter = new FirestoreRecyclerAdapter<MessagingUser, MessageViewHolder>(options) {
+        firestoreRecyclerAdapter = new FirestoreRecyclerAdapter<Room, MessageViewHolder>(options) {
             @Override
-            protected void onBindViewHolder(final MessageViewHolder holder, int position, MessagingUser model) {
+            protected void onBindViewHolder(final MessageViewHolder holder, int position, Room model) {
                 final String uid = getSnapshots().get(position).getUid();
                 final String postKey = getSnapshots().get(position).getPushId();
                 final String lastMessage = getSnapshots().get(position).getMessage();
                 final String roomId = getSnapshots().get(position).getRoomId();
+                final String status = getSnapshots().get(position).getStatus();
 
-                if (!uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                    holder.bindMessagingUser(model);
+                holder.bindMessagingUser(model);
 
-                    holder.profileImageView.setOnClickListener(new View.OnClickListener() {
+                if (status.equals("unRead")){
+                    holder.statusView.setVisibility(View.VISIBLE);
+                    holder.roomRelativeLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent intent = new Intent(getContext(), MessagesAccountActivity.class);
-                            intent.putExtra(MessagesFragment.EXTRA_ROOM_ID, roomId);
-                            intent.putExtra(MessagesFragment.EXTRA_USER_UID, uid);
-                            startActivity(intent);
+                            messagingUsersCollection.document("messaging users")
+                                    .collection(firebaseAuth.getCurrentUser().getUid())
+                                    .document(postKey).update("status", "read");
                         }
                     });
 
-                    holder.lastMessageTextView.setText(lastMessage);
-
-                    //postkey is same as uid
-                    usersCollection.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
-
-
-                            if (documentSnapshot.exists()){
-                                Cinggulan cinggulan =  documentSnapshot.toObject(Cinggulan.class);
-                                final String profileImage = cinggulan.getProfileImage();
-                                final String username = cinggulan.getUsername();
-
-                                holder.usernameTextView.setText(username);
-                                Picasso.with(getContext())
-                                        .load(profileImage)
-                                        .fit()
-                                        .centerCrop()
-                                        .placeholder(R.drawable.profle_image_background)
-                                        .networkPolicy(NetworkPolicy.OFFLINE)
-                                        .into(holder.profileImageView, new Callback() {
-                                            @Override
-                                            public void onSuccess() {
-
-                                            }
-
-                                            @Override
-                                            public void onError() {
-                                                Picasso.with(getContext())
-                                                        .load(profileImage)
-                                                        .fit()
-                                                        .centerCrop()
-                                                        .placeholder(R.drawable.profle_image_background)
-                                                        .into(holder.profileImageView);
-
-
-                                            }
-                                        });
-
-
-
-                            }
-
-                        }
-                    });
+                }else {
+                    holder.roomRelativeLayout.setVisibility(View.GONE);
                 }
 
+                holder.roomRelativeLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getContext(), MessagesAccountActivity.class);
+                        intent.putExtra(MessagesFragment.EXTRA_ROOM_ID, roomId);
+                        intent.putExtra(MessagesFragment.EXTRA_USER_UID, uid);
+                        startActivity(intent);
+                    }
+                });
+
+
+                holder.lastMessageTextView.setText(lastMessage);
+
+                //postkey is same as uid
+                usersCollection.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+
+                        if (documentSnapshot.exists()){
+                            Cinggulan cinggulan =  documentSnapshot.toObject(Cinggulan.class);
+                            final String profileImage = cinggulan.getProfileImage();
+                            final String username = cinggulan.getUsername();
+
+                            holder.usernameTextView.setText(username);
+                            Picasso.with(getContext())
+                                    .load(profileImage)
+                                    .fit()
+                                    .centerCrop()
+                                    .placeholder(R.drawable.profle_image_background)
+                                    .networkPolicy(NetworkPolicy.OFFLINE)
+                                    .into(holder.profileImageView, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+
+                                        }
+
+                                        @Override
+                                        public void onError() {
+                                            Picasso.with(getContext())
+                                                    .load(profileImage)
+                                                    .fit()
+                                                    .centerCrop()
+                                                    .placeholder(R.drawable.profle_image_background)
+                                                    .into(holder.profileImageView);
+
+
+                                        }
+                                    });
+
+
+
+                        }
+
+                    }
+                });
             }
 
             @Override

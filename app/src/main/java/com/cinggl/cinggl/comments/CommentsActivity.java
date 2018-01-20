@@ -400,11 +400,16 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                                                         public void onSuccess(Void aVoid) {
                                                             Timeline timeline = new Timeline();
                                                             final long time = new Date().getTime();
+
+                                                            final String postId =  timelineCollection.document(uid).collection("timeline")
+                                                                    .document().getId();
+
                                                             timeline.setPushId(postKey);
                                                             timeline.setTimeStamp(time);
                                                             timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                             timeline.setType("followers");
-                                                            timelineCollection.document(postKey).set(timeline);
+                                                            timeline.setPostId(postId);
+                                                            timelineCollection.document(uid).collection("timeline").document(uid).set(timeline);
                                                         }
                                                     });
                                                     final Relation following = new Relation();
@@ -557,17 +562,23 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                                             if (documentSnapshot.exists()){
                                                 Post post = documentSnapshot.toObject(Post.class);
                                                 final String creatorUid = post.getUid();
-
                                                 Timeline timeline = new Timeline();
                                                 final long time = new Date().getTime();
-                                                timeline.setPushId(mPostKey);
+
+                                                final String postId = timelineCollection.document(creatorUid)
+                                                        .collection("timeline").document().getId();
+
+                                                timeline.setPushId(postId);
                                                 timeline.setTimeStamp(time);
                                                 timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                 timeline.setType("comment");
+                                                timeline.setPostId(mPostKey);
+                                                timeline.setStatus("unRead");
                                                 if (creatorUid.equals(firebaseAuth.getCurrentUser().getUid())){
                                                     //do nothing
                                                 }else {
-                                                    timelineCollection.document(creatorUid).collection("timeline").document(mPostKey).set(timeline);
+                                                    timelineCollection.document(creatorUid)
+                                                            .collection("timeline").document(postId).set(timeline);
                                                 }
                                             }
                                         }

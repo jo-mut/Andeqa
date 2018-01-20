@@ -13,7 +13,9 @@ import android.view.ViewGroup;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.Trace;
 import com.cinggl.cinggl.models.Post;
+import com.cinggl.cinggl.models.TraceData;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -29,10 +31,12 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+import static android.R.attr.data;
+
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements Trace.TracingListener {
     @Bind(R.id.singleOutRecyclerView)RecyclerView singleOutRecyclerView;
 
     private static final String TAG = HomeFragment.class.getSimpleName();
@@ -40,17 +44,14 @@ public class HomeFragment extends Fragment {
     private Parcelable recyclerViewState;
     //firestore reference
     private CollectionReference cinglesReference;
-    private Query randomQuery;
     private Query randomPostsQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //adapters
     private MainPostsAdapter mainPostsAdapter;
-    private DocumentSnapshot lastVisible;
-    private List<Post> posts = new ArrayList<>();
-    private List<String> cinglesIds = new ArrayList<>();
     private LinearLayoutManager layoutManager;
     private int TOTAL_ITEMS = 4;
+    private Trace trace;
 
 
 
@@ -75,6 +76,14 @@ public class HomeFragment extends Fragment {
 
         }
 
+        trace = new Trace.Builder()
+                .setRecyclerView(singleOutRecyclerView)
+                .setMinimumViewingTimeThreshold(2000)
+                .setMinimumVisibleHeightThreshold(60)
+                .setTracingListener(this)
+                .setDataDumpInterval(1000)
+                .dumpDataAfterInterval(true)
+                .build();
 
 
         return view;
@@ -105,4 +114,36 @@ public class HomeFragment extends Fragment {
     }
 
 
+    @Override
+    public void traceDataDump(ArrayList<TraceData> data) {
+        if(data != null) {
+            // Do something with the data.
+            for(int i = 0 ; i < data.size(); ++i)
+                Log.i("Data dump", data.get(i).getViewId());
+        }
+
+    }
+
+//    @Override
+//    public void onStop() {
+//        super.onStop();
+//    }
+//
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        trace.getTraceData(true);
+//
+//    }
+//
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//    }
+//
+//    @Override
+//    public void onPause() {
+//        super.onPause();
+//        trace.startTracing();
+//    }
 }

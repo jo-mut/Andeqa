@@ -15,8 +15,9 @@ public final class Constants {
     public static final String TRANSACTION_HISTORY = "Transaction History";
     public static final String CINGLE_ONWERS = "Post Owners";
     public static final String SENSECREDITS = "Sense Credit";
-    public static final String MARKET = "Market";
+    public static final String SELLING = "Selling";
     public static final String TIMELINE = "Timeline";
     public static final String MESSAGES = "Messages";
+    public static final String VIEWS = "Views";
 
 }

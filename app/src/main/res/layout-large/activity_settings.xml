@@ -102,6 +102,47 @@
                 android:layout_height="match_parent">
 
                 <RelativeLayout
+                    android:id="@+id/updateProfileRelativeLayout"
+                    android:paddingRight="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingStart="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp">
+
+                    <View
+                        android:background="@android:color/darker_gray"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="0.3dp"/>
+
+                    <TextView
+                        android:text="Update your profile"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginLeft="12dp"
+                        android:layout_marginStart="12dp"
+                        android:textSize="21sp"
+                        android:id="@+id/updateProfileTitleTextView"
+                        android:textStyle="normal|bold" />
+
+                    <TextView
+                        android:layout_below="@+id/updateProfileTitleTextView"
+                        android:text="Change your profile photo, username and names"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="21sp"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginLeft="12dp"
+                        android:layout_marginStart="12dp" />
+                </RelativeLayout>
+
+                <RelativeLayout
                     android:id="@+id/sendFeedbackRelativeLayout"
                     android:paddingRight="10dp"
                     android:paddingEnd="10dp"
@@ -142,48 +183,48 @@
                         android:textSize="21sp" />
                 </RelativeLayout>
 
-                <RelativeLayout
-                    android:id="@+id/faqRelativeLayout"
-                    android:paddingRight="10dp"
-                    android:paddingEnd="10dp"
-                    android:paddingLeft="10dp"
-                    android:paddingStart="10dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="120dp">
+                <!--<RelativeLayout-->
+                    <!--android:id="@+id/faqRelativeLayout"-->
+                    <!--android:paddingRight="10dp"-->
+                    <!--android:paddingEnd="10dp"-->
+                    <!--android:paddingLeft="10dp"-->
+                    <!--android:paddingStart="10dp"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="120dp">-->
 
-                    <TextView
-                        android:text="@string/title_faq"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_marginLeft="12dp"
-                        android:layout_marginStart="12dp"
-                        android:id="@+id/faqTextView"
-                        android:textStyle="normal|bold"
-                        android:textSize="21sp" />
+                    <!--<TextView-->
+                        <!--android:text="@string/title_faq"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_centerVertical="true"-->
+                        <!--android:layout_alignParentLeft="true"-->
+                        <!--android:layout_alignParentStart="true"-->
+                        <!--android:layout_marginLeft="12dp"-->
+                        <!--android:layout_marginStart="12dp"-->
+                        <!--android:id="@+id/faqTextView"-->
+                        <!--android:textStyle="normal|bold"-->
+                        <!--android:textSize="21sp" />-->
 
-                    <TextView
-                        android:layout_below="@+id/faqTextView"
-                        android:text="@string/summary_faq"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_marginLeft="12dp"
-                        android:layout_marginStart="12dp"
-                        android:id="@+id/faqSummaryTextView"
-                        android:textSize="21sp" />
+                    <!--<TextView-->
+                        <!--android:layout_below="@+id/faqTextView"-->
+                        <!--android:text="@string/summary_faq"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_centerVertical="true"-->
+                        <!--android:layout_alignParentLeft="true"-->
+                        <!--android:layout_alignParentStart="true"-->
+                        <!--android:layout_marginLeft="12dp"-->
+                        <!--android:layout_marginStart="12dp"-->
+                        <!--android:id="@+id/faqSummaryTextView"-->
+                        <!--android:textSize="21sp" />-->
 
-                    <View
-                        android:background="@android:color/darker_gray"
-                        android:layout_alignParentBottom="true"
-                        android:layout_width="match_parent"
-                        android:layout_height="0.3dp"/>
+                    <!--<View-->
+                        <!--android:background="@android:color/darker_gray"-->
+                        <!--android:layout_alignParentBottom="true"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="0.3dp"/>-->
 
-                </RelativeLayout>
+                <!--</RelativeLayout>-->
 
                 <RelativeLayout
                     android:id="@+id/privacyPolicyRelativeLayout"

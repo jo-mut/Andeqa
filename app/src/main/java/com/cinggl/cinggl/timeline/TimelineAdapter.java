@@ -2,11 +2,17 @@ package com.cinggl.cinggl.timeline;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
@@ -44,7 +50,10 @@ import java.util.Date;
 import static android.R.id.message;
 import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
+import static android.icu.lang.UProperty.INT_START;
 import static android.os.Build.VERSION_CODES.M;
+import static com.cinggl.cinggl.R.id.textView;
+import static com.cinggl.cinggl.R.id.time;
 import static com.cinggl.cinggl.message.MessagingAdapter.RECEIVE_TYPE;
 import static com.cinggl.cinggl.message.MessagingAdapter.SEND_TYPE;
 
@@ -152,82 +161,93 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
         holder.bindTimelineLike(timeline);
         final String postKey = timeline.getPushId();
         final String uid = timeline.getUid();
+        final String status = timeline.getStatus();
+        final String pushId = timeline.getPushId();
         firebaseAuth = FirebaseAuth.getInstance();
 
-        if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-            usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-            postCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            postCollection.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+        timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
+        postCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+        postCollection.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (documentSnapshot.exists()){
+                    Post post = documentSnapshot.toObject(Post.class);
+                    final String image = post.getImage();
+                    final String postUid = post.getUid();
+                    Log.d("post image", image);
+
+                    Picasso.with(mContext)
+                            .load(image)
+                            .networkPolicy(NetworkPolicy.OFFLINE)
+                            .into(holder.postImageView, new Callback() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onError() {
+                                    Picasso.with(mContext)
+                                            .load(image)
+                                            .into(holder.postImageView);
+
+                                }
+                            });
+
+                    //launch post detail
+                    holder.postImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(mContext, PostDetailActivity.class);
+                            intent.putExtra(TimelineAdapter.EXTRA_POST_KEY, postKey);
+                            mContext.startActivity(intent);
+                        }
+                    });
+
+                }
+            }
+        });
+
+        usersCollection.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (documentSnapshot.exists()){
+                    Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
+                    final String username = cinggulan.getUsername();
+
+
+                    String boldText = username;
+                    String normalText = " liked your post";
+                    SpannableString str = new SpannableString(boldText + normalText);
+                    str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    holder.usernameTextView.setText(str);
+                }
+            }
+        });
+
+        if (status.equals("unRead")){
+            holder.statusView.setVisibility(View.VISIBLE);
+            holder.timelineLikeLinearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                    if (e != null) {
-                        Log.w(TAG, "Listen error", e);
-                        return;
-                    }
-
-                    if (documentSnapshot.exists()){
-                        Post post = documentSnapshot.toObject(Post.class);
-                        final String image = post.getImage();
-                        final String postUid = post.getUid();
-                        Log.d("post image", image);
-
-                        Picasso.with(mContext)
-                                .load(image)
-                                .networkPolicy(NetworkPolicy.OFFLINE)
-                                .into(holder.postImageView, new Callback() {
-                                    @Override
-                                    public void onSuccess() {
-
-                                    }
-
-                                    @Override
-                                    public void onError() {
-                                        Picasso.with(mContext)
-                                                .load(image)
-                                                .into(holder.postImageView);
-
-                                    }
-                                });
-
-                        //launch post detail
-                        holder.postImageView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Intent intent = new Intent(mContext, PostDetailActivity.class);
-                                intent.putExtra(TimelineAdapter.EXTRA_POST_KEY, postKey);
-                                mContext.startActivity(intent);
-                            }
-                        });
-
-                    }
+                public void onClick(View view) {
+                    timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
+                            .collection("timeline").document(pushId).update("status", "read");
                 }
             });
-
-            usersCollection.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                @Override
-                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                    if (e != null) {
-                        Log.w(TAG, "Listen error", e);
-                        return;
-                    }
-
-                    if (documentSnapshot.exists()){
-                        Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                        final String username = cinggulan.getUsername();
-
-
-                        holder.usernameTextView.setText(username);
-                        holder.timelineTextView.setText("Liked your post");
-                    }
-                }
-            });
-
+        }else {
+            holder.statusView.setVisibility(View.GONE);
         }
-//        else {
-//            holder.timelineLikeLinearLayout.setVisibility(View.GONE);
-//            holder.timelineLikeLinearLayout.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
-//        }
     }
 
     private void populateTimelineComment(final TimelineCommentViewHolder holder, int position){
@@ -235,73 +255,92 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
         holder.bindTimelineComment(timeline);
         final String postKey = timeline.getPushId();
         final String uid = timeline.getUid();
+        final String status = timeline.getStatus();
+        final String pushId = timeline.getPushId();
         firebaseAuth = FirebaseAuth.getInstance();
 
-        if (!uid.equals(firebaseAuth.getCurrentUser().getUid())){
-            usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            postCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            postCollection.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+        postCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+        timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
+        postCollection.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (documentSnapshot.exists()){
+                    Post post = documentSnapshot.toObject(Post.class);
+                    final String image = post.getImage();
+                    final String postUid = post.getUid();
+
+                    Picasso.with(mContext)
+                            .load(image)
+                            .networkPolicy(NetworkPolicy.OFFLINE)
+                            .into(holder.postImageView, new Callback() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onError() {
+                                    Picasso.with(mContext)
+                                            .load(image)
+                                            .into(holder.postImageView);
+
+                                }
+                            });
+
+                    holder.postImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(mContext, PostDetailActivity.class);
+                            intent.putExtra(TimelineAdapter.EXTRA_POST_KEY, postKey);
+                            mContext.startActivity(intent);
+                        }
+                    });
+
+                }
+            }
+        });
+
+        usersCollection.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (documentSnapshot.exists()){
+                    Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
+                    final String username = cinggulan.getUsername();
+
+
+                    String boldText = username;
+                    String normalText = " commented on your post";
+                    SpannableString str = new SpannableString(boldText + normalText);
+                    str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    holder.usernameTextView.setText(str);
+
+                }
+            }
+        });
+
+        if (status.equals("unRead")){
+            holder.statusView.setVisibility(View.VISIBLE);
+            holder.timelineCommentLinearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                    if (e != null) {
-                        Log.w(TAG, "Listen error", e);
-                        return;
-                    }
-
-                    if (documentSnapshot.exists()){
-                        Post post = documentSnapshot.toObject(Post.class);
-                        final String image = post.getImage();
-                        final String postUid = post.getUid();
-
-                        Picasso.with(mContext)
-                                .load(image)
-                                .networkPolicy(NetworkPolicy.OFFLINE)
-                                .into(holder.postImageView, new Callback() {
-                                    @Override
-                                    public void onSuccess() {
-
-                                    }
-
-                                    @Override
-                                    public void onError() {
-                                        Picasso.with(mContext)
-                                                .load(image)
-                                                .into(holder.postImageView);
-
-                                    }
-                                });
-
-                        holder.postImageView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Intent intent = new Intent(mContext, PostDetailActivity.class);
-                                intent.putExtra(TimelineAdapter.EXTRA_POST_KEY, postKey);
-                                mContext.startActivity(intent);
-                            }
-                        });
-
-                    }
+                public void onClick(View view) {
+                    timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
+                            .collection("timeline").document(pushId).update("status", "read");
                 }
             });
 
-            usersCollection.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                @Override
-                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                    if (e != null) {
-                        Log.w(TAG, "Listen error", e);
-                        return;
-                    }
-
-                    if (documentSnapshot.exists()){
-                        Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                        final String username = cinggulan.getUsername();
-
-
-                        holder.usernameTextView.setText(username);
-                        holder.timelineTextView.setText("Commented on your post");
-                    }
-                }
-            });
+        }else {
+            holder.statusView.setVisibility(View.GONE);
         }
 
 
@@ -311,180 +350,170 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
         Timeline timeline = getSnapshot(position).toObject(Timeline.class);
         final String uid = timeline.getUid();
         final String pushId = timeline.getPushId();
+        final String status = timeline.getStatus();
         firebaseAuth = FirebaseAuth.getInstance();
 
-        if (!uid.equals(firebaseAuth.getCurrentUser().getUid())){
-            relationsCollection = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
-            usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            relationsCollection.document("following").collection(pushId)
-                    .document(firebaseAuth.getCurrentUser().getUid())
-                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
+        relationsCollection = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
+        usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+        timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
 
-                            if (documentSnapshot.exists()){
-                                holder.followButton.setText("following");
-                            }else {
-                                holder.followButton.setText("follow");
-                            }
-                        }
-                    });
+        usersCollection.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
 
-            relationsCollection.document("followers").collection(pushId)
-                    .document(firebaseAuth.getCurrentUser().getUid())
-                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
+                if (documentSnapshot.exists()){
+                    Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
+                    final String username = cinggulan.getUsername();
+                    final String profileImage = cinggulan.getProfileImage();
 
-                            if (documentSnapshot.exists()){
-                                usersCollection.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                        if (e != null) {
-                                            Log.w(TAG, "Listen error", e);
-                                            return;
-                                        }
-
-                                        if (documentSnapshot.exists()){
-                                            Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                                            final String username = cinggulan.getUsername();
-                                            final String profileImage = cinggulan.getProfileImage();
-
-                                            Picasso.with(mContext)
-                                                    .load(profileImage)
-                                                    .resize(MAX_WIDTH, MAX_HEIGHT)
-                                                    .onlyScaleDown()
-                                                    .centerCrop()
-                                                    .placeholder(R.drawable.profle_image_background)
-                                                    .networkPolicy(NetworkPolicy.OFFLINE)
-                                                    .into(holder.profileImageView, new Callback() {
-                                                        @Override
-                                                        public void onSuccess() {
-
-                                                        }
-
-                                                        @Override
-                                                        public void onError() {
-                                                            Picasso.with(mContext)
-                                                                    .load(profileImage)
-                                                                    .resize(MAX_WIDTH, MAX_HEIGHT)
-                                                                    .onlyScaleDown()
-                                                                    .centerCrop()
-                                                                    .placeholder(R.drawable.profle_image_background)
-                                                                    .into(holder.profileImageView);
-
-                                                        }
-                                                    });
-
-                                            holder.usernameTextView.setText(username);
-                                            holder.timelineTextView.setText("started following you");
-                                        }
-                                    }
-                                });
-                            }
-
-                        }
-                    });
-
-
-            holder.followButton.setVisibility(View.VISIBLE);
-            relationsCollection.document("following").collection(uid)
-                    .document(firebaseAuth.getCurrentUser().getUid())
-                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
-
-                            if (documentSnapshot.exists()){
-                                holder.followButton.setText("following");
-                            }else {
-                                holder.followButton.setText("follow");
-                            }
-                        }
-                    });
-
-            holder.followButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    processFollow = true;
-                    relationsCollection.document("followers")
-                            .collection(uid).whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
-                            .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    Picasso.with(mContext)
+                            .load(profileImage)
+                            .resize(MAX_WIDTH, MAX_HEIGHT)
+                            .onlyScaleDown()
+                            .centerCrop()
+                            .placeholder(R.drawable.profle_image_background)
+                            .networkPolicy(NetworkPolicy.OFFLINE)
+                            .into(holder.profileImageView, new Callback() {
                                 @Override
-                                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                                public void onSuccess() {
 
+                                }
 
-                                    if (e != null) {
-                                        Log.w(TAG, "Listen error", e);
-                                        return;
-                                    }
+                                @Override
+                                public void onError() {
+                                    Picasso.with(mContext)
+                                            .load(profileImage)
+                                            .resize(MAX_WIDTH, MAX_HEIGHT)
+                                            .onlyScaleDown()
+                                            .centerCrop()
+                                            .placeholder(R.drawable.profle_image_background)
+                                            .into(holder.profileImageView);
 
-                                    if (processFollow){
-                                        if (documentSnapshots.isEmpty()){
-                                            //set followers and following
-                                            Relation follower = new Relation();
-                                            follower.setUid(firebaseAuth.getCurrentUser().getUid());
-                                            relationsCollection.document("followers").collection(uid)
-                                                    .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
-                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                        @Override
-                                                        public void onSuccess(Void aVoid) {
-                                                            Timeline timeline = new Timeline();
-                                                            final long time = new Date().getTime();
-                                                            timeline.setPushId(uid);
-                                                            timeline.setTimeStamp(time);
-                                                            timeline.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                            timeline.setType("followers");
-                                                            timelineCollection.document(uid).set(timeline);
-                                                        }
-                                                    });
-                                            final Relation following = new Relation();
-                                            following.setUid(uid);
-                                            relationsCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
-                                                    .document(uid).set(following);
-                                            processFollow = false;
-                                            holder.followButton.setText("Following");
-                                        }else {
-                                            relationsCollection.document("followers").collection(uid)
-                                                    .document(firebaseAuth.getCurrentUser().getUid()).delete();
-                                            relationsCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
-                                                    .document(uid).delete();
-                                            processFollow = false;
-                                            holder.followButton.setText("Follow");
-                                        }
-                                    }
                                 }
                             });
 
+                    String boldText = username;
+                    String normalText = " is now following you";
+                    SpannableString str = new SpannableString(boldText + normalText);
+                    str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    holder.usernameTextView.setText(str);
                 }
-            });
-            holder.profileImageView.setOnClickListener(new View.OnClickListener() {
+            }
+        });
+
+
+        holder.followButton.setVisibility(View.VISIBLE);
+        relationsCollection.document("following").collection(uid)
+                .document(firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (documentSnapshot.exists()){
+                            holder.followButton.setText("following");
+                        }else {
+                            holder.followButton.setText("follow");
+                        }
+                    }
+                });
+
+
+        holder.followButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                processFollow = true;
+                relationsCollection.document("followers")
+                        .collection(uid).whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                            @Override
+                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+
+                                if (e != null) {
+                                    Log.w(TAG, "Listen error", e);
+                                    return;
+                                }
+
+                                if (processFollow){
+                                    if (documentSnapshots.isEmpty()){
+                                        //set followers and following
+                                        Relation follower = new Relation();
+                                        follower.setUid(firebaseAuth.getCurrentUser().getUid());
+                                        relationsCollection.document("followers").collection(uid)
+                                                .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        Timeline timeline = new Timeline();
+                                                        final long time = new Date().getTime();
+
+                                                        final String postid =  timelineCollection.document(uid).collection("timeline")
+                                                                .document().getId();
+                                                        timeline.setPushId(postid);
+                                                        timeline.setTimeStamp(time);
+                                                        timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                        timeline.setType("followers");
+                                                        timeline.setPostId(uid);
+                                                        timeline.setStatus("unRead");
+
+                                                        timelineCollection.document(uid).collection("timeline").document(postid)
+                                                                .set(timeline);
+                                                    }
+                                                });
+                                        final Relation following = new Relation();
+                                        following.setUid(uid);
+                                        relationsCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
+                                                .document(uid).set(following);
+                                        processFollow = false;
+                                        holder.followButton.setText("Following");
+                                    }else {
+                                        relationsCollection.document("followers").collection(uid)
+                                                .document(firebaseAuth.getCurrentUser().getUid()).delete();
+                                        relationsCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
+                                                .document(uid).delete();
+                                        processFollow = false;
+                                        holder.followButton.setText("Follow");
+                                    }
+                                }
+                            }
+                        });
+
+            }
+        });
+        holder.profileImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                    Intent intent = new Intent(mContext, PersonalProfileActivity.class);
+                    mContext.startActivity(intent);
+                }else {
+                    Intent intent = new Intent(mContext, FollowerProfileActivity.class);
+                    intent.putExtra(TimelineAdapter.EXTRA_USER_UID, uid);
+                    mContext.startActivity(intent);
+                }
+            }
+        });
+
+        if (status.equals("unRead")){
+            holder.statusView.setVisibility(View.VISIBLE);
+            holder.timelineRelationLinearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                        Intent intent = new Intent(mContext, PersonalProfileActivity.class);
-                        mContext.startActivity(intent);
-                    }else {
-                        Intent intent = new Intent(mContext, FollowerProfileActivity.class);
-                        intent.putExtra(TimelineAdapter.EXTRA_USER_UID, uid);
-                        mContext.startActivity(intent);
-                    }
+                    timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
+                            .collection("timeline").document(pushId).update("status", "read");
                 }
             });
+        }else {
+            holder.statusView.setVisibility(View.GONE);
         }
-
-
     }
 
 

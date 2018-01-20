@@ -100,7 +100,7 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
             setEditTextFilter();
             //firestore
             cingleOwnersReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
-            ifairReference = FirebaseFirestore.getInstance().collection(Constants.MARKET);
+            ifairReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             walletReference = FirebaseFirestore.getInstance().collection(Constants.WALLET);
             postWalletReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_WALLET);
 

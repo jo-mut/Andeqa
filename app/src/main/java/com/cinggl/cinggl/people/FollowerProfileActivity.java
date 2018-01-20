@@ -422,11 +422,17 @@ public class FollowerProfileActivity extends AppCompatActivity
                                                 public void onSuccess(Void aVoid) {
                                                     Timeline timeline = new Timeline();
                                                     final long time = new Date().getTime();
-                                                    timeline.setPushId(mUid);
+
+                                                    final String postid =  timelineCollection.document(mUid).collection("timeline")
+                                                            .document().getId();
+                                                    timeline.setPushId(postid);
                                                     timeline.setTimeStamp(time);
                                                     timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                     timeline.setType("followers");
-                                                    timelineCollection.document(mUid).collection("timeline").document(mUid)
+                                                    timeline.setPostId(mUid);
+                                                    timeline.setStatus("unRead");
+
+                                                    timelineCollection.document(mUid).collection("timeline").document(postid)
                                                             .set(timeline);
                                                 }
                                             });

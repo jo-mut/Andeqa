@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,7 +66,7 @@ public class DialogMarketPostSettings extends DialogFragment implements View.OnC
 
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
-            sellingCollection = FirebaseFirestore.getInstance().collection(Constants.MARKET);
+            sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
         }
 
         Bundle bundle = getArguments();

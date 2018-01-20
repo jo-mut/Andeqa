@@ -3,17 +3,26 @@ package com.cinggl.cinggl.message;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.firestore.FirestoreAdapter;
 import com.cinggl.cinggl.models.Message;
+import com.cinggl.cinggl.models.Timeline;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import static android.R.id.message;
 import static android.media.CamcorderProfile.get;
 
 /**
@@ -30,6 +39,8 @@ public class MessagingAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> 
     public static final int SEND_TYPE=0;
     public static final int RECEIVE_TYPE=1;
     private FirebaseAuth firebaseAuth;
+    private CollectionReference messagingUsersCollection;
+    private Query messagingUsersQuery;
     public boolean showOnClick = true;
 
 
@@ -94,7 +105,6 @@ public class MessagingAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> 
 
         if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
             populateSend((MessageSendViewHolder)holder,position);
-
         }else {
             populateReceive((MessageReceiveViewHolder)holder, position);
 
@@ -102,7 +112,11 @@ public class MessagingAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> 
     }
 
     private void populateSend(final MessageSendViewHolder holder, int position){
+        messagingUsersCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
+        messagingUsersCollection.document("messaging users")
+                .collection(firebaseAuth.getCurrentUser().getUid());
         Message message = getSnapshot(position).toObject(Message.class);
+        final String pushId = message.getPushId();
 
         holder.messageTextView.setText(message.getMessage());
         holder.timeTextView.setText(DateFormat.format("(HH:mm:ss)", message.getTimeStamp()));
@@ -127,8 +141,8 @@ public class MessagingAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> 
     }
 
     private void populateReceive(final MessageReceiveViewHolder holder, int position){
-        Message message = getSnapshot(position).toObject(Message.class);
 
+        Message message = getSnapshot(position).toObject(Message.class);
         holder.messageTextView.setText(message.getMessage());
         holder.timeTextView.setText(DateFormat.format("(HH:mm:ss)", message.getTimeStamp()));
         holder.dateTextView.setText(DateFormat.format("dd-MMM-yy", message.getTimeStamp()));

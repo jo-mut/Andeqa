@@ -8,25 +8,30 @@ public class Timeline {
     String type;
     String uid;
     String pushId;
+    String postId;
     long timeStamp;
+    String status;
 
     public Timeline() {
 
     }
 
-    public Timeline(String type, String uid, String pushId, long timeStamp) {
+    public Timeline(String type, String uid, String pushId,
+                    String postId, long timeStamp, String status) {
         this.type = type;
         this.uid = uid;
         this.pushId = pushId;
+        this.postId = postId;
         this.timeStamp = timeStamp;
+        this.status = status;
     }
 
-    public long getTimeStamp() {
-        return timeStamp;
+    public String getType() {
+        return type;
     }
 
-    public void setTimeStamp(long timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getUid() {
@@ -45,11 +50,27 @@ public class Timeline {
         this.pushId = pushId;
     }
 
-    public String getType() {
-        return type;
+    public String getPostId() {
+        return postId;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setPostId(String postId) {
+        this.postId = postId;
+    }
+
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

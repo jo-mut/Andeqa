@@ -13,11 +13,7 @@ import android.view.ViewGroup;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.message.MessagesFragment;
-import com.cinggl.cinggl.message.MessagingAdapter;
-import com.cinggl.cinggl.models.MessagingUser;
-import com.cinggl.cinggl.models.Timeline;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
@@ -28,8 +24,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-
-import static android.os.Build.VERSION_CODES.M;
 
 /**
  * A simple {@link Fragment} subclass.

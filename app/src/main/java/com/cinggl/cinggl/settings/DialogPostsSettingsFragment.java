@@ -50,10 +50,6 @@ public class DialogPostsSettingsFragment extends DialogFragment implements View.
     private CollectionReference senseCreditReference;
     private CollectionReference ifairReference;
     private CollectionReference ownerReference;
-    //firebase
-    private DatabaseReference cingleOwnerReference;
-    //firebase storage
-    private StorageReference storageReference;
     private static final String TAG = DialogPostsSettingsFragment.class.getSimpleName();
 
 
@@ -102,18 +98,13 @@ public class DialogPostsSettingsFragment extends DialogFragment implements View.
                 throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
             }
 
-            //firebase
-            cingleOwnerReference = FirebaseDatabase.getInstance().getReference(Constants.CINGLE_ONWERS);
             //firestore
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
-            ifairReference = FirebaseFirestore.getInstance().collection(Constants.MARKET);
+            ifairReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
-            // firebase storage
-            storageReference = FirebaseStorage.getInstance().getReference(Constants.POSTS);
 
-            cingleOwnerReference.keepSynced(true);
-
+            showSaleLayout();
 
         }
 
@@ -137,30 +128,9 @@ public class DialogPostsSettingsFragment extends DialogFragment implements View.
         }
 
         if (v == mTradeCingleRelativeLayout){
-            ifairReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                @Override
-                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                    if (e != null) {
-                        Log.w(TAG, "Listen error", e);
-                        return;
-                    }
-
-                    if (documentSnapshot.exists()){
-                        try {
-                            Toast.makeText(getContext(), "This Post is already on sale",
-                                    Toast.LENGTH_SHORT).show();
-                        }catch (Exception ex){
-                            ex.printStackTrace();
-                        }
-                    }else {
-                        Intent intent = new Intent(getActivity(), ListOnMarketActivity.class);
-                        intent.putExtra(DialogPostsSettingsFragment.EXTRA_POST_KEY, mPostKey);
-                        startActivity(intent);
-                    }
-                }
-            });
-
+            Intent intent = new Intent(getActivity(), ListOnMarketActivity.class);
+            intent.putExtra(DialogPostsSettingsFragment.EXTRA_POST_KEY, mPostKey);
+            startActivity(intent);
         }
 
         if (v == mRedeemCreditsRelativeLayout){
@@ -171,7 +141,7 @@ public class DialogPostsSettingsFragment extends DialogFragment implements View.
             DialogRedeemCredits dialogRedeemCredits = DialogRedeemCredits
                     .newInstance("redeem credits");
             dialogRedeemCredits.setArguments(bundle);
-            dialogRedeemCredits.show(fragmentManager, "redeem cingle cscs");
+            dialogRedeemCredits.show(fragmentManager, "redeem post credits");
         }
 
     }
@@ -181,6 +151,25 @@ public class DialogPostsSettingsFragment extends DialogFragment implements View.
     public void onPause() {
         super.onPause();
         dismiss();
+    }
+
+    public void showSaleLayout(){
+        ifairReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (documentSnapshot.exists()){
+                    mTradeCingleRelativeLayout.setVisibility(View.GONE);
+                }else {
+                    mTradeCingleRelativeLayout.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
     public void deleteCingle(){

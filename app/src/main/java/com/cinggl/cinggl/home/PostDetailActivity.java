@@ -2,7 +2,6 @@ package com.cinggl.cinggl.home;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -44,9 +43,7 @@ import com.cinggl.cinggl.likes.WhoLikedViewHolder;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -68,7 +65,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 import static android.util.Log.d;
 
 public class PostDetailActivity extends AppCompatActivity implements View.OnClickListener{
@@ -178,7 +174,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
-            ifairReference = FirebaseFirestore.getInstance().collection(Constants.MARKET);
+            ifairReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             randomQuery = FirebaseFirestore.getInstance().collection(Constants.POSTS)
                     .orderBy("randomNumber");
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
@@ -200,28 +196,6 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void setCingleData(){
-        ifairReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    final PostSale postSale = documentSnapshot.toObject(PostSale.class);
-                    DecimalFormat formatter = new DecimalFormat("0.00000000");
-                    mSalePriceTextView.setText("SC" + " " +
-                            formatter.format(postSale.getSalePrice()));
-                    mBuyPostButton.setVisibility(View.VISIBLE);
-                }else {
-                    mPostSalePriceRelativeLayout.setVisibility(View.GONE);
-                    mBuyPostButton.setVisibility(View.GONE);
-                }
-            }
-        });
-
         senseCreditReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -243,7 +217,8 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         });
 
         //get the number of commments in a cingle
-        commentsCountQuery.whereEqualTo("pushId", mPostKey).addSnapshotListener(new EventListener<QuerySnapshot>() {
+        commentsCountQuery.orderBy("pushId").whereEqualTo("postId", mPostKey)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -374,29 +349,50 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
     /**Post can only be bought by someone else except for the owner of that cingle*/
     private void showBuyButton(){
-        ownerReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        ifairReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
                 if (e != null) {
                     Log.w(TAG, "Listen error", e);
                     return;
                 }
 
                 if (documentSnapshot.exists()){
-                    TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
-                    final String ownerUid = transactionDetails.getUid();
-                    Log.d("owner uid", ownerUid);
+                    final PostSale postSale = documentSnapshot.toObject(PostSale.class);
+                    DecimalFormat formatter = new DecimalFormat("0.00000000");
+                    mSalePriceTextView.setText("SC" + " " +
+                            formatter.format(postSale.getSalePrice()));
+                    mPostSalePriceRelativeLayout.setVisibility(View.VISIBLE);
+                    ownerReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                            if (e != null) {
+                                Log.w(TAG, "Listen error", e);
+                                return;
+                            }
 
-                    if (documentSnapshot.exists()){
-                        if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
-                            mBuyPostButton.setVisibility(View.GONE);
-                        }else {
-                            mBuyPostButton.setVisibility(View.VISIBLE);
+                            if (documentSnapshot.exists()){
+                                TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
+                                final String ownerUid = transactionDetails.getUid();
+                                Log.d("owner uid", ownerUid);
+
+                                if (documentSnapshot.exists()){
+                                    if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
+                                        mBuyPostButton.setVisibility(View.GONE);
+                                    }else {
+                                        mBuyPostButton.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            }
                         }
-                    }
+                    });
+                }else {
+                    mPostSalePriceRelativeLayout.setVisibility(View.GONE);
                 }
             }
         });
+
 
         likesReference.document(mPostKey).collection("likes")
                 .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
@@ -919,16 +915,22 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
                                                                 Timeline timeline = new Timeline();
                                                                 final long time = new Date().getTime();
+
+                                                                final String postId =timelineCollection.document(uid).collection("timeline")
+                                                                        .document(mPostKey).getId();
+
                                                                 timeline.setPushId(mPostKey);
                                                                 timeline.setTimeStamp(time);
                                                                 timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                 timeline.setType("like");
+                                                                timeline.setPostId(postId);
+                                                                timeline.setStatus("unRead");
 
                                                                 if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
                                                                     //do nothing
                                                                 }else {
                                                                     timelineCollection.document(uid).collection("timeline")
-                                                                            .document(mPostKey).set(timeline);
+                                                                            .document(postId).set(timeline);
                                                                 }
 
                                                             }
@@ -1086,7 +1088,6 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void setNewPrice(){
-        mSalePriceTextView.setVisibility(View.GONE);
         final String stringSalePrice = mEditSalePriceEditText.getText().toString().trim();
         if (stringSalePrice.equals("")){
             mEditSalePriceEditText.setError("Sale price is empty!");
@@ -1111,41 +1112,18 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                         if (intSalePrice < senseCredits){
                             mEditSalePriceEditText.setError("Sale price is less than Post Sense Crdits!");
                         }else {
-                            mSalePriceProgressBar.setVisibility(View.VISIBLE);
-                            ifairReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                @Override
-                                public void onEvent(final DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                            ifairReference.document(mPostKey).update("salePrice", intSalePrice);
 
-                                    if (e != null) {
-                                        Log.w(TAG, "Listen error", e);
-                                        return;
-                                    }
-
-                                    if (documentSnapshot.exists()){
-                                        ifairReference.document(mPostKey).update("salePrice", intSalePrice)
-                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-
-                                                final PostSale postSale = documentSnapshot.toObject(PostSale.class);
-                                                mSalePriceTextView.setText("SC" + " " + formatter
-                                                        .format(postSale.getSalePrice()));
-                                                mSalePriceProgressBar.setVisibility(View.GONE);
-                                                mSalePriceTextView.setVisibility(View.VISIBLE);
-                                                mDoneEditingImageView.setVisibility(View.GONE);
-                                                mEditSalePriceImageView.setVisibility(View.VISIBLE);
-                                            }
-                                        });
-
-                                    }
-                                }
-                            });
                         }
                     }
                 }
             });
 
             mEditSalePriceEditText.setText("");
+            mSalePriceTextView.setVisibility(View.VISIBLE);
+            mDoneEditingImageView.setVisibility(View.GONE);
+            mEditSalePriceImageView.setVisibility(View.VISIBLE);
+            mEditSalePriceEditText.setVisibility(View.GONE);
         }
     }
 

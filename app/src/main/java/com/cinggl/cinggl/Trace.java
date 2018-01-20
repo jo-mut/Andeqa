@@ -8,12 +8,11 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 
 import com.cinggl.cinggl.models.TraceData;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -44,7 +43,7 @@ public class Trace {
     private ArrayList<TraceData> traceData = new ArrayList<>();
 
     // The instance of the recyclerView whose views are supposed to be tracked.
-    private RecyclerView cingleOutRecyclerView;
+    private RecyclerView singleOutRecyclerView;
 
     // Time interval after which data should be given to the user.
     private long dataDumpInterval;
@@ -64,7 +63,7 @@ public class Trace {
 
     private Timer dataDumpTimer = new Timer();
 
-    private DatabaseReference traceRef;
+    private CollectionReference viewsCollections;
 
     private int impression;
 
@@ -73,7 +72,7 @@ public class Trace {
 
     public Trace(Builder builder) {
 
-        this.cingleOutRecyclerView = builder.cingleOutRecyclerView;
+        this.singleOutRecyclerView = builder.singleOutRecyclerView;
         this.dataDumpInterval = builder.dataDumpInterval;
         this.minimumVisibleHeightThreshold = builder.minimumVisibleHeightThreshold;
         this.minimumViewingTimeThreshold = builder.minimumViewingTimeThreshold;
@@ -85,7 +84,7 @@ public class Trace {
     public void startTracing() {
 
         // Track the views when the data is loaded into recycler view for the first time.
-        cingleOutRecyclerView.getViewTreeObserver()
+        singleOutRecyclerView.getViewTreeObserver()
                 .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
@@ -95,11 +94,11 @@ public class Trace {
                             startTime = System.currentTimeMillis();
 
                             int firstVisibleItemPosition = ((LinearLayoutManager)
-                                    cingleOutRecyclerView.getLayoutManager())
+                                    singleOutRecyclerView.getLayoutManager())
                                     .findFirstVisibleItemPosition();
 
                             int lastVisibleItemPosition = ((LinearLayoutManager)
-                                    cingleOutRecyclerView.getLayoutManager())
+                                    singleOutRecyclerView.getLayoutManager())
                                     .findLastVisibleItemPosition();
 
                             analyzeAndAddViewData(firstVisibleItemPosition,
@@ -111,7 +110,7 @@ public class Trace {
                 });
 
         // Track the views when user scrolls through the recyclerview.
-        cingleOutRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        singleOutRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -191,10 +190,10 @@ public class Trace {
             endTime = System.currentTimeMillis();
 
             int firstVisibleItemPosition = ((LinearLayoutManager)
-                    cingleOutRecyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+                    singleOutRecyclerView.getLayoutManager()).findFirstVisibleItemPosition();
 
             int lastVisibleItemPosition = ((LinearLayoutManager)
-                    cingleOutRecyclerView.getLayoutManager()).findLastVisibleItemPosition();
+                    singleOutRecyclerView.getLayoutManager()).findLastVisibleItemPosition();
 
             analyzeAndAddViewData(firstVisibleItemPosition, lastVisibleItemPosition);
 
@@ -205,7 +204,7 @@ public class Trace {
 
                 if (duration > minimumViewingTimeThreshold) {
 
-                    View itemView = cingleOutRecyclerView.getLayoutManager()
+                    View itemView = singleOutRecyclerView.getLayoutManager()
                             .findViewByPosition(positionOfViewsViewed.get(trackedViewsCount));
 
                     traceData.add(prepareTrackingData(String.valueOf(
@@ -292,7 +291,7 @@ public class Trace {
              viewPosition <= lastVisibleItemPosition; viewPosition++) {
 
             // Get the view from its position.
-            View itemView = cingleOutRecyclerView.getLayoutManager()
+            View itemView = singleOutRecyclerView.getLayoutManager()
                     .findViewByPosition(viewPosition);
 
             // Check if the visibility of the view is more than or equal
@@ -324,16 +323,32 @@ public class Trace {
 
     //store an instance of the traceData and then return that instance
     private TraceData prepareTrackingData
-    (String viewId, long viewDuration, double percentageHeightVisible) {
+    (final String viewId, final long viewDuration, double percentageHeightVisible) {
 
-        TraceData traceData = new TraceData();
+        final TraceData traceData = new TraceData();
 
         traceData.setViewId(viewId);
         traceData.setViewDuartion(viewDuration);
         traceData.setPercentageHeightVisible(percentageHeightVisible);
+        traceData.setPushId(viewId);
 
-        traceRef = FirebaseDatabase.getInstance().getReference("Data");
-        traceRef.setValue(traceData);
+        viewsCollections = FirebaseFirestore.getInstance().collection(Constants.VIEWS);
+        viewsCollections.document(viewId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                if (documentSnapshot.exists()){
+                    TraceData data = documentSnapshot.toObject(TraceData.class);
+                    final long duration = data.getViewDuartion();
+                    final long newDuaration = duration + viewDuration;
+                    viewsCollections.document(viewId).update("viewDuration", newDuaration);
+                }else {
+                    viewsCollections.document(viewId).set(traceData);
+                }
+            }
+        });
+
+        Log.d("view id", viewId);
 
         return traceData;
     }
@@ -349,7 +364,7 @@ public class Trace {
      */
     public static class Builder {
 
-        private RecyclerView cingleOutRecyclerView;
+        private RecyclerView singleOutRecyclerView;
         private long dataDumpInterval = 60000; // Default to 1 minute.
         private double minimumVisibleHeightThreshold = 60; // Default to 60 percent.
         private long minimumViewingTimeThreshold = 3000; // Default to 3 seconds.
@@ -363,8 +378,8 @@ public class Trace {
         }
 
         //RecyclerView whose items are supposed to be traced
-        public Builder setRecyclerView(RecyclerView cingleOutRecyclerView) {
-            this.cingleOutRecyclerView = cingleOutRecyclerView;
+        public Builder setRecyclerView(RecyclerView singleOutRecyclerView) {
+            this.singleOutRecyclerView = singleOutRecyclerView;
             return this;
         }
 

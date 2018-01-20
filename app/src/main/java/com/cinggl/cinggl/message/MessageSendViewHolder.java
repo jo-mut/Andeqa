@@ -24,6 +24,7 @@ public class MessageSendViewHolder extends RecyclerView.ViewHolder {
     public RelativeLayout sendRelativeLayout;
     public RelativeLayout statusRelativeLayout;
     public TextView dateTextView;
+    public View statusView;
 
     public MessageSendViewHolder(View itemView) {
         super(itemView);
@@ -35,6 +36,8 @@ public class MessageSendViewHolder extends RecyclerView.ViewHolder {
         sendRelativeLayout = (RelativeLayout) mView.findViewById(R.id.sendRelativeLayout);
         statusRelativeLayout = (RelativeLayout) mView.findViewById(R.id.statusRelativeLayout);
         dateTextView = (TextView) mView.findViewById(R.id.dateTextView);
+        statusView = (View) mView.findViewById(R.id.statusView);
+
     }
 
     public void bindMessage(final Message message){

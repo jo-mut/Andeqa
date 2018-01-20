@@ -3,12 +3,11 @@ package com.cinggl.cinggl.message;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cinggl.cinggl.R;
-import com.cinggl.cinggl.models.Message;
-import com.cinggl.cinggl.models.MessagingUser;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.cinggl.cinggl.models.Room;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -23,6 +22,9 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     public TextView usernameTextView;
     public TextView timeTextView;
     public TextView lastMessageTextView;
+    public RelativeLayout roomRelativeLayout;
+    public View statusView;
+
 
 
     public MessageViewHolder(View itemView) {
@@ -33,10 +35,12 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         usernameTextView = (TextView) mView.findViewById(R.id.usernameTextView);
         profileImageView = (CircleImageView) mView.findViewById(R.id.profileImageView);
         lastMessageTextView = (TextView) mView.findViewById(R.id.lastMessageTextView);
+        roomRelativeLayout = (RelativeLayout) mView.findViewById(R.id.messagingUserRelativeLayout);
+        statusView = (View) mView.findViewById(R.id.statusView);
 
     }
 
-    public void bindMessagingUser(final MessagingUser messagingUser){
+    public void bindMessagingUser(final Room room){
 
 
     }

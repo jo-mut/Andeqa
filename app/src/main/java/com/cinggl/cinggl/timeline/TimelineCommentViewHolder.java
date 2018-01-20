@@ -34,6 +34,7 @@ public class TimelineCommentViewHolder extends RecyclerView.ViewHolder {
     public ProportionalImageView postImageView;
     public TextView timelineTextView;
     public LinearLayout timelineCommentLinearLayout;
+    public View statusView;
 
     public TimelineCommentViewHolder(View itemView) {
         super(itemView);
@@ -43,6 +44,8 @@ public class TimelineCommentViewHolder extends RecyclerView.ViewHolder {
         postImageView = (ProportionalImageView) itemView.findViewById(R.id.postImageView);
         timelineTextView = (TextView) itemView.findViewById(R.id.timelineTextView);
         timelineCommentLinearLayout = (LinearLayout) itemView.findViewById(R.id.timelineCommentLinearLayout);
+        statusView = (View) mView.findViewById(R.id.statusView);
+
     }
 
     public void bindTimelineComment(final Timeline timeline){

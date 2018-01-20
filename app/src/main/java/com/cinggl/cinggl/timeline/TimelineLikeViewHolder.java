@@ -26,6 +26,7 @@ public class TimelineLikeViewHolder extends RecyclerView.ViewHolder {
     public ProportionalImageView postImageView;
     public TextView timelineTextView;
     public LinearLayout timelineLikeLinearLayout;
+    public View statusView;
 
     public TimelineLikeViewHolder(View itemView) {
         super(itemView);
@@ -34,6 +35,7 @@ public class TimelineLikeViewHolder extends RecyclerView.ViewHolder {
         usernameTextView = (TextView)itemView.findViewById(R.id.usernameTextView);
         postImageView = (ProportionalImageView) itemView.findViewById(R.id.postImageView);
         timelineTextView = (TextView) itemView.findViewById(R.id.timelineTextView);
+        statusView = (View) mView.findViewById(R.id.statusView);
         timelineLikeLinearLayout = (LinearLayout) itemView.findViewById(R.id.timelineLikeLinearLayout);
     }
 

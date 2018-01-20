@@ -51,6 +51,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -124,14 +125,14 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            ifairReference = FirebaseFirestore.getInstance().collection(Constants.MARKET);
+            ifairReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
             likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             commentsCountQuery = commentsReference;
             profileCinglesQuery = cinglesReference.whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid());
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
-            sellingReference = FirebaseFirestore.getInstance().collection(Constants.MARKET);
+            sellingReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             postWalletReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_WALLET);
 
@@ -354,7 +355,8 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
 
 
         //get the number of commments in a post
-        commentsCountQuery.whereEqualTo("pushId", postKey).addSnapshotListener(new EventListener<QuerySnapshot>() {
+        commentsCountQuery.orderBy("pushId").whereEqualTo("postId", postKey)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
@@ -608,17 +610,7 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                                         like.setUid(firebaseAuth.getCurrentUser().getUid());
                                         like.setPushId(firebaseAuth.getCurrentUser().getUid());
                                         likesReference.document(postKey).collection("dislikes")
-                                                .document(firebaseAuth.getCurrentUser().getUid()).set(like)
-                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                    @Override
-                                                    public void onSuccess(Void aVoid) {
-                                                        Timeline timeline = new Timeline();
-                                                        timeline.setPushId(postKey);
-                                                        timeline.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                        timeline.setType("like");
-                                                        timelineCollection.document(postKey).set(timeline);
-                                                    }
-                                                });
+                                                .document(firebaseAuth.getCurrentUser().getUid()).set(like);
                                         processDislikes = false;
                                         holder.dislikeImageView.setColorFilter(Color.RED);
 
@@ -777,15 +769,30 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                                         likesReference.document(postKey).collection("likes")
                                                 .document(firebaseAuth.getCurrentUser().getUid()).set(like)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                Timeline timeline = new Timeline();
-                                                timeline.setPushId(postKey);
-                                                timeline.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                timeline.setType("like");
-                                                timelineCollection.document(postKey).set(timeline);
-                                            }
-                                        });
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        Timeline timeline = new Timeline();
+                                                        final long time = new Date().getTime();
+
+                                                        final String postId = timelineCollection.document(uid).collection("timeline")
+                                                                .document().getId();
+
+                                                        timeline.setPushId(postKey);
+                                                        timeline.setTimeStamp(time);
+                                                        timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                        timeline.setType("like");
+                                                        timeline.setPostId(postId);
+                                                        timeline.setStatus("unRead");
+
+                                                        if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                                            //do nothing
+                                                        }else {
+                                                            timelineCollection.document(uid).collection("timeline")
+                                                                    .document(uid).set(timeline);
+                                                        }
+
+                                                    }
+                                                });
                                         processLikes = false;
                                         holder.likesImageView.setColorFilter(Color.RED);
 

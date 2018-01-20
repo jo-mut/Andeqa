@@ -16,7 +16,6 @@ import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -24,6 +23,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -54,7 +54,8 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class NavigationDrawerActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        View.OnClickListener{
 
     @Bind(R.id.fab)FloatingActionButton mFloatingActionButton;
     @Bind(R.id.bottomNavigationView)BottomNavigationView mBottomNavigationView;
@@ -65,6 +66,8 @@ public class NavigationDrawerActivity extends AppCompatActivity
     private static final String TAG = NavigationDrawerActivity.class.getSimpleName();
     private int mSelectedItem;
     private CollectionReference usersReference;
+    private CollectionReference timelineCollection;
+    private CollectionReference messagingCollection;
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private ImageView mProfileCover;
@@ -111,13 +114,15 @@ public class NavigationDrawerActivity extends AppCompatActivity
         if (firebaseAuth.getCurrentUser() != null){
             //firestore
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+            timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
+            messagingCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
+
 
 
             fetchData();
             fetchUserEmail();
 
         }
-
 
 
         //bottom navigation
@@ -131,6 +136,19 @@ public class NavigationDrawerActivity extends AppCompatActivity
             }
         });
 
+//        View view = mBottomNavigationView.getChildAt(3);
+//
+//        BottomNavigationItemView itemView = (BottomNavigationItemView) view;
+//
+//        View badge = LayoutInflater.from(this)
+//                .inflate(R.layout.notification_layout, mBottomNavigationView, false);
+//        TextView notificationTextView = badge.findViewById(R.id.notificationTextView);
+//        notificationTextView.setText("22+");
+//        notificationTextView.setText("22+");
+//
+//        itemView.addView(badge);
+
+
         CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams)
                 mBottomNavigationView.getLayoutParams();
         layoutParams.setBehavior(new BottomNavigationViewBehavior());
@@ -138,6 +156,8 @@ public class NavigationDrawerActivity extends AppCompatActivity
         MenuItem selectedItem;
         selectedItem = mBottomNavigationView.getMenu().getItem(0);
         selectFragment(selectedItem);
+
+
 
     }
 
@@ -264,7 +284,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
         if (id == R.id.action_about){
             Intent intent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://johnmutuku628.wixsite.com/cinggl"));
+                    Uri.parse("https://cinggl@cinggl.com"));
             startActivity(intent);
         }
 
@@ -290,7 +310,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
             }
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("message/rfc822");
-            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"cinggl@yahoo.com"});
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"cinggl@cinggl.com"});
             intent.putExtra(Intent.EXTRA_SUBJECT, "Query from android app");
             intent.putExtra(Intent.EXTRA_TEXT, body);
             this.startActivity(Intent.createChooser(intent, this.getString(R.string.choose_email_client)));

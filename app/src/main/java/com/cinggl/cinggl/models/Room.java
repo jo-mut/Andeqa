@@ -4,23 +4,27 @@ package com.cinggl.cinggl.models;
  * Created by J.EL on 1/4/2018.
  */
 
-public class MessagingUser {
+public class Room {
     String uid;
     String message;
     long time;
     String pushId;
     String roomId;
+    String status;
 
-    public MessagingUser() {
+    public Room() {
 
     }
 
-    public MessagingUser(String uid, String message, long time, String pushId, String roomId) {
+
+    public Room(String uid, String message, long time,
+                String pushId, String roomId, String status) {
         this.uid = uid;
         this.message = message;
         this.time = time;
         this.pushId = pushId;
         this.roomId = roomId;
+        this.status = status;
     }
 
     public String getUid() {
@@ -61,5 +65,13 @@ public class MessagingUser {
 
     public void setRoomId(String roomId) {
         this.roomId = roomId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

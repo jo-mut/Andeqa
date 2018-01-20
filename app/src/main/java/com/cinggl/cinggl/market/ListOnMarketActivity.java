@@ -107,7 +107,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             commentReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
-            ifairReference = FirebaseFirestore.getInstance().collection(Constants.MARKET);
+            ifairReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
 
             //initialize input filter
             setEditTextFilter();
@@ -248,7 +248,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                             if (intSalePrice < senseCredits){
                                 mSetCingleSalePriceEditText.setError("Sale price is less than Post Sense Credit!");
                             }else if (intSalePrice >= senseCredits){
-                                //SET CINGLE ON SALE IN MARKET
+                                //SET CINGLE ON SALE IN SELLING
                                 final PostSale postSale =  new PostSale();
                                 postSale.setUid(firebaseAuth.getCurrentUser().getUid());
                                 postSale.setPushId(mPostKey);
@@ -275,7 +275,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                                         }).setIcon(android.R.drawable.ic_dialog_alert).show();
                             }
                         }else {
-                            //SET CINGLE ON SALE IN MARKET
+                            //SET CINGLE ON SALE IN SELLING
                             final PostSale postSale =  new PostSale();
                             postSale.setUid(firebaseAuth.getCurrentUser().getUid());
                             postSale.setPushId(mPostKey);
@@ -285,7 +285,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()){
-                                        Toast.makeText(ListOnMarketActivity.this, "Your cingle has been listed on Ifair",
+                                        Toast.makeText(ListOnMarketActivity.this, "Your post has been listed for sale",
                                                 Toast.LENGTH_SHORT).show();
                                     }
                                 }

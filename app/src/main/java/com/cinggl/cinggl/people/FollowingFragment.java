@@ -220,11 +220,18 @@ public class FollowingFragment extends Fragment {
                                                                             public void onSuccess(Void aVoid) {
                                                                                 Timeline timeline = new Timeline();
                                                                                 final long time = new Date().getTime();
-                                                                                timeline.setPushId(postKey);
+                                                                                timelineCollection.document(postKey).collection("timeline").document(postKey)
+                                                                                        .set(timeline);
+                                                                                final String postid =  timelineCollection.document(postKey).collection("timeline")
+                                                                                        .document().getId();
+                                                                                timeline.setPushId(postid);
                                                                                 timeline.setTimeStamp(time);
                                                                                 timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                                 timeline.setType("followers");
-                                                                                timelineCollection.document(postKey).collection("timeline").document(postKey)
+                                                                                timeline.setPostId(postKey);
+                                                                                timeline.setStatus("unRead");
+
+                                                                                timelineCollection.document(postKey).collection("timeline").document(postid)
                                                                                         .set(timeline);
                                                                             }
                                                                         });

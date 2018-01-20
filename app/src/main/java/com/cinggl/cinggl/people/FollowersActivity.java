@@ -213,11 +213,16 @@ public class FollowersActivity extends AppCompatActivity {
                                                                             public void onSuccess(Void aVoid) {
                                                                                 Timeline timeline = new Timeline();
                                                                                 final long time = new Date().getTime();
-                                                                                timeline.setPushId(postKey);
+                                                                                final String postid =  timelineCollection.document(postKey).collection("timeline")
+                                                                                        .document().getId();
+                                                                                timeline.setPushId(postid);
                                                                                 timeline.setTimeStamp(time);
                                                                                 timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                                 timeline.setType("followers");
-                                                                                timelineCollection.document(postKey).collection("timeline").document(postKey)
+                                                                                timeline.setPostId(mUid);
+                                                                                timeline.setStatus("unRead");
+
+                                                                                timelineCollection.document(mUid).collection("timeline").document(postid)
                                                                                         .set(timeline);
                                                                             }
                                                                         });

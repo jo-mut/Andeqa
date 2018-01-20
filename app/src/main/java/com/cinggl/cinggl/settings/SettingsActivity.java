@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.models.Cinggulan;
+import com.cinggl.cinggl.profile.UpdateProfileActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -36,8 +37,9 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     @Bind(R.id.usernameTextView)TextView mUsernameTextView;
     @Bind(R.id.bioTextView)TextView mBioTextView;
     @Bind(R.id.sendFeedbackRelativeLayout)RelativeLayout mSendFeedbackRelativeLayout;
-    @Bind(R.id.faqRelativeLayout)RelativeLayout mFaqRelativeLayout;
+//    @Bind(R.id.faqRelativeLayout)RelativeLayout mFaqRelativeLayout;
     @Bind(R.id.privacyPolicyRelativeLayout)RelativeLayout mPrivacyPolicyRelativeLayout;
+    @Bind(R.id.updateProfileRelativeLayout)RelativeLayout mUpdateProfileRelativeLayout;
     @Bind(R.id.deleteAccountRelativeLayout)RelativeLayout mDeleteAccountRelativeLayout;
 
     private static final String TAG = SettingsActivity.class.getSimpleName();
@@ -54,9 +56,10 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         ButterKnife.bind(this);
 
         mDeleteAccountRelativeLayout.setOnClickListener(this);
-        mFaqRelativeLayout.setOnClickListener(this);
+//        mFaqRelativeLayout.setOnClickListener(this);
         mPrivacyPolicyRelativeLayout.setOnClickListener(this);
         mSendFeedbackRelativeLayout.setOnClickListener(this);
+        mUpdateProfileRelativeLayout.setOnClickListener(this);
 
         setSupportActionBar(mToolBar);
         mToolBar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
@@ -135,15 +138,20 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             dialogDeleteAccountFragment.show(fragmentManager, "delete account dialog fragment");
         }
 
-        if (v == mFaqRelativeLayout){
-            Intent intent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://johnmutuku628.wixsite.com/cinggl"));
-            startActivity(intent);
-        }
+//        if (v == mFaqRelativeLayout){
+//            Intent intent = new Intent(Intent.ACTION_VIEW,
+//                    Uri.parse("https://cinggl@cinggl.com"));
+//            startActivity(intent);
+//        }
 
         if (v == mPrivacyPolicyRelativeLayout){
             Intent intent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://johnmutuku628.wixsite.com/cinggl"));
+                    Uri.parse("https://cinggl@cinggl.com"));
+            startActivity(intent);
+        }
+
+        if ( v == mUpdateProfileRelativeLayout){
+            Intent intent = new Intent(SettingsActivity.this, UpdateProfileActivity.class);
             startActivity(intent);
         }
 
@@ -158,7 +166,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             }
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("message/rfc822");
-            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"cinggl@yahoo.com"});
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"cinggl@cinggl.com"});
             intent.putExtra(Intent.EXTRA_SUBJECT, "Query from android app");
             intent.putExtra(Intent.EXTRA_TEXT, body);
             this.startActivity(Intent.createChooser(intent, this.getString(R.string.choose_email_client)));

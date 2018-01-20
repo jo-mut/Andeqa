@@ -97,7 +97,7 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
         if (firebaseAuth.getCurrentUser() != null){
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            ifairReference = FirebaseFirestore.getInstance().collection(Constants.MARKET);
+            ifairReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             cingleWalletReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_WALLET);
             ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);

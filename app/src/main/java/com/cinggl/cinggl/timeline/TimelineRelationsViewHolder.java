@@ -31,6 +31,7 @@ public class TimelineRelationsViewHolder extends RecyclerView.ViewHolder {
     public Button followButton;
     public TextView timelineTextView;
     public LinearLayout timelineRelationLinearLayout;
+    public View statusView;
 
     public TimelineRelationsViewHolder(View itemView) {
         super(itemView);
@@ -40,6 +41,7 @@ public class TimelineRelationsViewHolder extends RecyclerView.ViewHolder {
         commentCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         followButton = (Button) itemView.findViewById(R.id.followTextView);
+        statusView = (View) mView.findViewById(R.id.statusView);
         timelineTextView = (TextView) itemView.findViewById(R.id.timelineTextView);
         timelineRelationLinearLayout = (LinearLayout) itemView.findViewById(R.id.timelineRelationLinealLayout);
     }

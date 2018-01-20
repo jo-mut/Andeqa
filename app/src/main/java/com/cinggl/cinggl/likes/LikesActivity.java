@@ -246,12 +246,18 @@ public class LikesActivity extends AppCompatActivity {
                                                         public void onSuccess(Void aVoid) {
                                                             Timeline timeline = new Timeline();
                                                             final long time = new Date().getTime();
-                                                            timeline.setPushId(postKey);
+
+                                                            final String postId = timelineCollection.document(uid).collection("timeline")
+                                                                    .document().getId();
+
+                                                            timeline.setPushId(postId);
                                                             timeline.setTimeStamp(time);
                                                             timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                             timeline.setType("followers");
+                                                            timeline.setPostId(uid);
+                                                            timeline.setStatus("unRead");
                                                             timelineCollection.document(uid).collection("timeline")
-                                                                    .document(postKey).set(timeline);
+                                                                    .document(postId).set(timeline);
                                                         }
                                                     });
                                                     final Relation following = new Relation();

@@ -122,7 +122,7 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
            cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
            ownerReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_ONWERS);
            usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-           ifairReference = FirebaseFirestore.getInstance().collection(Constants.MARKET);
+           ifairReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
            commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
            //document reference
@@ -335,16 +335,22 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                                                                 public void onSuccess(Void aVoid) {
                                                                     Timeline timeline = new Timeline();
                                                                     final long time = new Date().getTime();
+
+                                                                    final String postId = timelineCollection.document(uid).collection("timeline")
+                                                                            .document().getId();
+
                                                                     timeline.setPushId(postKey);
                                                                     timeline.setTimeStamp(time);
                                                                     timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                     timeline.setType("like");
+                                                                    timeline.setPostId(postId);
+                                                                    timeline.setStatus("unRead");
 
                                                                     if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
                                                                         //do nothing
                                                                     }else {
                                                                         timelineCollection.document(uid).collection("timeline")
-                                                                                .document(postKey).set(timeline);
+                                                                                .document(postId).set(timeline);
                                                                     }
 
                                                                 }
@@ -578,7 +584,7 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
         });
 
         //get the number of commments in a cingle
-        commentsCountQuery.whereEqualTo("pushId", postKey)
+        commentsCountQuery.orderBy("pushId").whereEqualTo("postId", postKey)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
