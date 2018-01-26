@@ -14,5 +14,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+    <RelativeLayout
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/placeHolderRelativeLayout">
+
+        <ImageView
+            app:srcCompat="@drawable/ic_photo_black_24dp"
+            android:id="@+id/imagePlaceHolder"
+            android:layout_centerInParent="true"
+            android:layout_width="120sp"
+            android:layout_height="120sp"
+            android:tint="@android:color/darker_gray" />
+
+        <TextView
+            android:textSize="21sp"
+            android:layout_below="@+id/imagePlaceHolder"
+            android:text="@string/place_holder_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/placeHolderTextView"
+            android:textAlignment="center"
+            android:padding="20dp" />
+
+    </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

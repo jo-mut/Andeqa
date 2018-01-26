@@ -55,8 +55,6 @@ public class PostSellingViewHolder extends RecyclerView.ViewHolder {
         cingleSalePriceTextView = (TextView) mView.findViewById(R.id.postSalePriceTextView);
         unlistPostTextView = (TextView) mView.findViewById(R.id.unlistPostTextView);
         ifairCinglesLinearLayout = (LinearLayout) mView.findViewById(R.id.ifair_cingles_linear_layout);
-
-
     }
 
     public void bindIfairCingle(final PostSale postSale){

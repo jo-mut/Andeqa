@@ -119,7 +119,7 @@ public class MessagingAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> 
         final String pushId = message.getPushId();
 
         holder.messageTextView.setText(message.getMessage());
-        holder.timeTextView.setText(DateFormat.format("(HH:mm:ss)", message.getTimeStamp()));
+        holder.timeTextView.setText(DateFormat.format("HH:mm", message.getTimeStamp()));
         holder.dateTextView.setText(DateFormat.format("dd-MMM-yy", message.getTimeStamp()));
 
         holder.sendRelativeLayout.setOnClickListener(new View.OnClickListener() {
@@ -144,7 +144,7 @@ public class MessagingAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> 
 
         Message message = getSnapshot(position).toObject(Message.class);
         holder.messageTextView.setText(message.getMessage());
-        holder.timeTextView.setText(DateFormat.format("(HH:mm:ss)", message.getTimeStamp()));
+        holder.timeTextView.setText(DateFormat.format("HH:mm", message.getTimeStamp()));
         holder.dateTextView.setText(DateFormat.format("dd-MMM-yy", message.getTimeStamp()));
 
         holder.receiveRelativeLayout.setOnClickListener(new View.OnClickListener() {

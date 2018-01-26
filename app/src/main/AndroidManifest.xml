@@ -175,7 +175,11 @@
             android:label="Settings"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity android:name=".creation.CreationPostActivity" />
+        <activity
+            android:label="Create post"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
+            android:name=".creation.CreationPostActivity" />
     </application>
 
 </manifest>

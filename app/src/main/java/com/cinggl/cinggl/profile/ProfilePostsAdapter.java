@@ -35,6 +35,8 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -78,6 +80,8 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
     private CollectionReference timelineCollection;
     private CollectionReference postWalletReference;
     private Query likesQuery;
+    //firebase
+    private DatabaseReference databaseReference;
     //firebase adapter
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     //firebase auth
@@ -135,6 +139,9 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
             sellingReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             postWalletReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_WALLET);
+            //firebase
+            databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
+
 
         }
 
@@ -355,25 +362,24 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
 
 
         //get the number of commments in a post
-        commentsCountQuery.orderBy("pushId").whereEqualTo("postId", postKey)
+        commentsCountQuery.orderBy("postId").whereEqualTo("pushId", postKey)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                    @Override
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
 
-                if (!documentSnapshots.isEmpty()){
-                    final int commentsCount = documentSnapshots.size();
-                    holder.commentsCountTextView.setText(commentsCount + "");
-                }else {
-                    holder.commentsCountTextView.setText("0");
-                }
-            }
-        });
-
+                        if (!documentSnapshots.isEmpty()){
+                            final int commentsCount = documentSnapshots.size();
+                            holder.commentsCountTextView.setText(commentsCount + "");
+                        }else {
+                            holder.commentsCountTextView.setText("0");
+                        }
+                    }
+                });
 
 
         sellingReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -771,11 +777,10 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
-                                                        Timeline timeline = new Timeline();
+                                                        final Timeline timeline = new Timeline();
                                                         final long time = new Date().getTime();
 
-                                                        final String postId = timelineCollection.document(uid).collection("timeline")
-                                                                .document().getId();
+                                                        final String postId = databaseReference.push().getKey();
 
                                                         timeline.setPushId(postKey);
                                                         timeline.setTimeStamp(time);
@@ -788,8 +793,10 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                                                             //do nothing
                                                         }else {
                                                             timelineCollection.document(uid).collection("timeline")
-                                                                    .document(uid).set(timeline);
+                                                                    .document(firebaseAuth.getCurrentUser().getUid())
+                                                                    .set(timeline);
                                                         }
+
 
                                                     }
                                                 });

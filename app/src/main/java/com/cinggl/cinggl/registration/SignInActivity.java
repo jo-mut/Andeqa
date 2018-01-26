@@ -2,7 +2,6 @@ package com.cinggl.cinggl.registration;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,7 +16,6 @@ import android.widget.TextView;
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.home.NavigationDrawerActivity;
-import com.dd.processbutton.iml.ActionProcessButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -37,7 +35,7 @@ public class SignInActivity extends AppCompatActivity implements
     public static final String TAG = SignInActivity.class.getSimpleName();
 
     @Bind(R.id.passwordLoginButton)
-    ActionProcessButton mPasswordLoginButton;
+    Button mPasswordLoginButton;
     @Bind(R.id.emailEditText)
     EditText mEmailEditText;
     @Bind(R.id.passwordEditText) EditText mPasswordEditText;
@@ -69,9 +67,6 @@ public class SignInActivity extends AppCompatActivity implements
         mForgotPasswordTextView.setOnClickListener(this);
         mAuth = FirebaseAuth.getInstance();
         createAuthProgressDialog();
-
-        mPasswordLoginButton.setMode(ActionProcessButton.Mode.ENDLESS);
-        mPasswordLoginButton.setColorScheme(Color.CYAN, Color.BLUE, Color.GREEN, Color.RED);
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -222,6 +217,7 @@ public class SignInActivity extends AppCompatActivity implements
                 mErrorTextView.setText("Password cannot be empty!");
             }else {
                 loginWithPassword();
+
             }
         }
 

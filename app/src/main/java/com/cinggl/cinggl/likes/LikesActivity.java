@@ -28,6 +28,8 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -55,6 +57,8 @@ public class LikesActivity extends AppCompatActivity {
     private CollectionReference likesReference;
     private CollectionReference timelineCollection;
     private Query likesQuery;
+    //firestore
+    private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
     private CircleImageView profileImageView;
     private String mPostKey;
@@ -96,6 +100,8 @@ public class LikesActivity extends AppCompatActivity {
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
+            databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
+
             postLikes();
         }
 
@@ -247,17 +253,17 @@ public class LikesActivity extends AppCompatActivity {
                                                             Timeline timeline = new Timeline();
                                                             final long time = new Date().getTime();
 
-                                                            final String postId = timelineCollection.document(uid).collection("timeline")
-                                                                    .document().getId();
+                                                            final String postId = databaseReference.push().getKey();
 
-                                                            timeline.setPushId(postId);
+                                                            timeline.setPostId(postId);
                                                             timeline.setTimeStamp(time);
                                                             timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                             timeline.setType("followers");
-                                                            timeline.setPostId(uid);
+                                                            timeline.setPushId(uid);
                                                             timeline.setStatus("unRead");
                                                             timelineCollection.document(uid).collection("timeline")
-                                                                    .document(postId).set(timeline);
+                                                                    .document(firebaseAuth.getCurrentUser().getUid())
+                                                                    .set(timeline);
                                                         }
                                                     });
                                                     final Relation following = new Relation();

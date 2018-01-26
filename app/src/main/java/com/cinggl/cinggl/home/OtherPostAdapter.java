@@ -35,6 +35,8 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -84,6 +86,8 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
     private CollectionReference likesReference;
     private CollectionReference timelineCollection;
     private Query likesQuery;
+    //firebase
+    private DatabaseReference databaseReference;
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //adapters
@@ -125,6 +129,8 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
            ifairReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
            commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
+           //firebase
+           databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
            //document reference
            commentsCountQuery= commentsReference;
            likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
@@ -333,12 +339,10 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                 @Override
                                                                 public void onSuccess(Void aVoid) {
-                                                                    Timeline timeline = new Timeline();
+                                                                    final Timeline timeline = new Timeline();
                                                                     final long time = new Date().getTime();
 
-                                                                    final String postId = timelineCollection.document(uid).collection("timeline")
-                                                                            .document().getId();
-
+                                                                    final String postId = databaseReference.push().getKey();
                                                                     timeline.setPushId(postKey);
                                                                     timeline.setTimeStamp(time);
                                                                     timeline.setUid(firebaseAuth.getCurrentUser().getUid());
@@ -350,9 +354,9 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                                                                         //do nothing
                                                                     }else {
                                                                         timelineCollection.document(uid).collection("timeline")
-                                                                                .document(postId).set(timeline);
+                                                                                .document(firebaseAuth.getCurrentUser().getUid())
+                                                                                .set(timeline);
                                                                     }
-
                                                                 }
                                                             });
                                                     processLikes = false;
@@ -583,8 +587,8 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
             }
         });
 
-        //get the number of commments in a cingle
-        commentsCountQuery.orderBy("pushId").whereEqualTo("postId", postKey)
+        //get the number of commments in a post
+        commentsCountQuery.orderBy("postId").whereEqualTo("pushId", postKey)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -602,6 +606,7 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                         }
                     }
                 });
+
 
         likesReference.document(postKey).collection("likes")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {

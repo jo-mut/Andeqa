@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
@@ -24,6 +25,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -31,12 +33,16 @@ import com.squareup.picasso.Picasso;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+import static java.security.AccessController.getContext;
+
 /**
  * A simple {@link Fragment} subclass.
  */
 public class MessagesFragment extends Fragment {
 
     @Bind(R.id.massagingUsersRecyclerView)RecyclerView mMessagingUsersRecyclerView;
+    @Bind(R.id.placeHolderRelativeLayout)RelativeLayout mPlaceHolderRelativeLayout;
+
     private static final String TAG = MessagesFragment.class.getSimpleName();
     private static final String EXTRA_ROOM_ID = "roomId";
     private static final String EXTRA_USER_UID = "uid";
@@ -69,9 +75,29 @@ public class MessagesFragment extends Fragment {
 
 
             getMessagingUsers();
+            showPlaceHolder();
         }
 
         return view;
+    }
+
+    private void showPlaceHolder(){
+        messagingUsersCollection.document("messaging users")
+                .collection(firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (documentSnapshots.isEmpty()){
+                    mPlaceHolderRelativeLayout.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
     /**retrieve all the messages*/
@@ -99,23 +125,25 @@ public class MessagesFragment extends Fragment {
                             messagingUsersCollection.document("messaging users")
                                     .collection(firebaseAuth.getCurrentUser().getUid())
                                     .document(postKey).update("status", "read");
+                            Intent intent = new Intent(getContext(), MessagesAccountActivity.class);
+                            intent.putExtra(MessagesFragment.EXTRA_ROOM_ID, roomId);
+                            intent.putExtra(MessagesFragment.EXTRA_USER_UID, uid);
+                            startActivity(intent);
                         }
                     });
 
                 }else {
-                    holder.roomRelativeLayout.setVisibility(View.GONE);
+                    holder.statusView.setVisibility(View.GONE);
+                    holder.roomRelativeLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(getContext(), MessagesAccountActivity.class);
+                            intent.putExtra(MessagesFragment.EXTRA_ROOM_ID, roomId);
+                            intent.putExtra(MessagesFragment.EXTRA_USER_UID, uid);
+                            startActivity(intent);
+                        }
+                    });
                 }
-
-                holder.roomRelativeLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(getContext(), MessagesAccountActivity.class);
-                        intent.putExtra(MessagesFragment.EXTRA_ROOM_ID, roomId);
-                        intent.putExtra(MessagesFragment.EXTRA_USER_UID, uid);
-                        startActivity(intent);
-                    }
-                });
-
 
                 holder.lastMessageTextView.setText(lastMessage);
 

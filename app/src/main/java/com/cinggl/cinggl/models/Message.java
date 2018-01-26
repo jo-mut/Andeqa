@@ -10,20 +10,25 @@ public class Message {
     String recepientUid;
     String message;
     String pushId;
-    long timeStamp;
     String type;
+    String status;
+    String roomId;
+    long timeStamp;
 
     public Message() {
     }
 
     public Message(String senderUid, String recepientUid, String message,
-                   String pushId, long timeStamp, String type) {
+                   String pushId, String type, String status, String roomId, long timeStamp) {
         this.senderUid = senderUid;
         this.recepientUid = recepientUid;
         this.message = message;
         this.pushId = pushId;
-        this.timeStamp = timeStamp;
         this.type = type;
+        this.status = status;
+        this.roomId = roomId;
+        this.timeStamp = timeStamp;
+
     }
 
     public String getSenderUid() {
@@ -58,19 +63,35 @@ public class Message {
         this.pushId = pushId;
     }
 
-    public long getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(long timeStamp) {
-        this.timeStamp = timeStamp;
-    }
-
     public String getType() {
         return type;
     }
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(String roomId) {
+        this.roomId = roomId;
+    }
+
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
     }
 }

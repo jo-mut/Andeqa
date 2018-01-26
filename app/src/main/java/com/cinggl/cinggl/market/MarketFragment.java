@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
@@ -36,6 +37,7 @@ import butterknife.ButterKnife;
  */
 public class MarketFragment extends Fragment{
     @Bind(R.id.marketRecyclerView)RecyclerView mIfairCingleRecyclerView;
+    @Bind(R.id.placeHolderRelativeLayout)RelativeLayout mPlaceHolderRelativeLayout;
 
     private static final String TAG = "SingleOutFragment";
     private int currentPage = 0;
@@ -116,6 +118,8 @@ public class MarketFragment extends Fragment{
                     mIfairCingleRecyclerView.setHasFixedSize(false);
                     LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
                     mIfairCingleRecyclerView.setLayoutManager(layoutManager);
+                }else {
+                    mPlaceHolderRelativeLayout.setVisibility(View.VISIBLE);
                 }
             }
         });

@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
@@ -38,6 +39,8 @@ import static android.R.attr.data;
  */
 public class HomeFragment extends Fragment implements Trace.TracingListener {
     @Bind(R.id.singleOutRecyclerView)RecyclerView singleOutRecyclerView;
+    @Bind(R.id.placeHolderRelativeLayout)RelativeLayout mPlaceHolderRelativeLayout;
+
 
     private static final String TAG = HomeFragment.class.getSimpleName();
     private static final String KEY_LAYOUT_POSITION = "layout position";
@@ -108,6 +111,8 @@ public class HomeFragment extends Fragment implements Trace.TracingListener {
                     singleOutRecyclerView.setHasFixedSize(false);
                     layoutManager = new LinearLayoutManager(getContext());
                     singleOutRecyclerView.setLayoutManager(layoutManager);
+                }else {
+                    mPlaceHolderRelativeLayout.setVisibility(View.VISIBLE);
                 }
             }
         });

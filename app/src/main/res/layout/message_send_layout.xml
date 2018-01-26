@@ -27,6 +27,7 @@
         android:id="@+id/bubble"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/dateTextView"
         app:cardBackgroundColor="@color/colorAccent"
         app:cardCornerRadius="10dp"
         app:cardUseCompatPadding="true">
@@ -74,6 +75,8 @@
             android:id="@+id/statusImageView"
             android:layout_height="15dp"
             android:gravity="center_vertical|end"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:src="@drawable/ic_remove_red_eye_black_24dp"
             android:tint="@color/greyColor"
             android:layout_width="15dp" />

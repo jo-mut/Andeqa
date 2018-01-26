@@ -23,6 +23,8 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -45,6 +47,8 @@ public class FollowersActivity extends AppCompatActivity {
     private CollectionReference usersReference;
     private CollectionReference timelineCollection;
     private Query followersQuery;
+    //firebase
+    private DatabaseReference databaseReference;
     //adapters
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     private FirebaseAuth firebaseAuth;
@@ -84,6 +88,7 @@ public class FollowersActivity extends AppCompatActivity {
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             followersQuery = relationsReference.document("followers").collection(mUid);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
+            databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
 
             retrieveFollowers();
             firestoreRecyclerAdapter.startListening();
@@ -213,16 +218,16 @@ public class FollowersActivity extends AppCompatActivity {
                                                                             public void onSuccess(Void aVoid) {
                                                                                 Timeline timeline = new Timeline();
                                                                                 final long time = new Date().getTime();
-                                                                                final String postid =  timelineCollection.document(postKey).collection("timeline")
-                                                                                        .document().getId();
-                                                                                timeline.setPushId(postid);
+                                                                                final String postid =  databaseReference.push().getKey();
+                                                                                timeline.setPushId(mUid);
                                                                                 timeline.setTimeStamp(time);
                                                                                 timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                                 timeline.setType("followers");
-                                                                                timeline.setPostId(mUid);
+                                                                                timeline.setPostId(postid);
                                                                                 timeline.setStatus("unRead");
 
-                                                                                timelineCollection.document(mUid).collection("timeline").document(postid)
+                                                                                timelineCollection.document(mUid).collection("timeline")
+                                                                                        .document(firebaseAuth.getCurrentUser().getUid())
                                                                                         .set(timeline);
                                                                             }
                                                                         });

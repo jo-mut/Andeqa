@@ -25,6 +25,8 @@ import com.cinggl.cinggl.message.MessageReceiveViewHolder;
 import com.cinggl.cinggl.message.MessageSendViewHolder;
 import com.cinggl.cinggl.message.MessagingAdapter;
 import com.cinggl.cinggl.models.Cinggulan;
+import com.cinggl.cinggl.models.Comment;
+import com.cinggl.cinggl.models.Credit;
 import com.cinggl.cinggl.models.Message;
 import com.cinggl.cinggl.models.Post;
 import com.cinggl.cinggl.models.Relation;
@@ -33,6 +35,8 @@ import com.cinggl.cinggl.people.FollowerProfileActivity;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -45,6 +49,7 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.sql.Time;
+import java.text.DecimalFormat;
 import java.util.Date;
 
 import static android.R.id.message;
@@ -80,6 +85,9 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
     private CollectionReference postCollection;
     private CollectionReference relationsCollection;
     private CollectionReference timelineCollection;
+    private CollectionReference senseCreditCollection;
+    private CollectionReference commentCollection;
+    private DatabaseReference databaseReference;
 
 
 
@@ -159,7 +167,7 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
     private void populateTimelineLike(final TimelineLikeViewHolder holder, int position){
         Timeline timeline = getSnapshot(position).toObject(Timeline.class);
         holder.bindTimelineLike(timeline);
-        final String postKey = timeline.getPushId();
+        final String postId = timeline.getPostId();
         final String uid = timeline.getUid();
         final String status = timeline.getStatus();
         final String pushId = timeline.getPushId();
@@ -168,51 +176,8 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
         postCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-        postCollection.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    Post post = documentSnapshot.toObject(Post.class);
-                    final String image = post.getImage();
-                    final String postUid = post.getUid();
-                    Log.d("post image", image);
-
-                    Picasso.with(mContext)
-                            .load(image)
-                            .networkPolicy(NetworkPolicy.OFFLINE)
-                            .into(holder.postImageView, new Callback() {
-                                @Override
-                                public void onSuccess() {
-
-                                }
-
-                                @Override
-                                public void onError() {
-                                    Picasso.with(mContext)
-                                            .load(image)
-                                            .into(holder.postImageView);
-
-                                }
-                            });
-
-                    //launch post detail
-                    holder.postImageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent intent = new Intent(mContext, PostDetailActivity.class);
-                            intent.putExtra(TimelineAdapter.EXTRA_POST_KEY, postKey);
-                            mContext.startActivity(intent);
-                        }
-                    });
-
-                }
-            }
-        });
+        senseCreditCollection = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
+        commentCollection = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
 
         usersCollection.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -225,16 +190,79 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
                 if (documentSnapshot.exists()){
                     Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
                     final String username = cinggulan.getUsername();
+                    final String profileImage = cinggulan.getProfileImage();
+
+                    Picasso.with(mContext)
+                            .load(profileImage)
+                            .resize(MAX_WIDTH, MAX_HEIGHT)
+                            .onlyScaleDown()
+                            .centerCrop()
+                            .placeholder(R.drawable.profle_image_background)
+                            .networkPolicy(NetworkPolicy.OFFLINE)
+                            .into(holder.profileImageView, new Callback() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onError() {
+                                    Picasso.with(mContext)
+                                            .load(profileImage)
+                                            .resize(MAX_WIDTH, MAX_HEIGHT)
+                                            .onlyScaleDown()
+                                            .centerCrop()
+                                            .placeholder(R.drawable.profle_image_background)
+                                            .into(holder.profileImageView);
+
+                                }
+                            });
 
 
-                    String boldText = username;
-                    String normalText = " liked your post";
-                    SpannableString str = new SpannableString(boldText + normalText);
-                    str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    holder.usernameTextView.setText(str);
+                    senseCreditCollection.document(pushId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                            if (e != null) {
+                                Log.w(TAG, "Listen error", e);
+                                return;
+                            }
+
+                            if (documentSnapshot.exists()){
+
+                                Credit credit = documentSnapshot.toObject(Credit.class);
+                                final double senseCredit = credit.getAmount();
+
+                                String boldText = username;
+                                String normalText = " liked your post. Your new Sense Credit balance is now ";
+                                DecimalFormat formatter = new DecimalFormat("0.00000000");
+                                String creditText = "SC" + " " + formatter.format(senseCredit);
+                                SpannableString likeText = new SpannableString(boldText + normalText + creditText);
+                                likeText.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(),  Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                holder.usernameTextView.setText(likeText);
+
+                            }else {
+                                String boldText = username;
+                                String normalText = " liked your post";
+                                SpannableString str = new SpannableString(boldText + normalText);
+                                str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                holder.usernameTextView.setText(str);
+
+                            }
+                        }
+                    });
                 }
             }
         });
+
+        holder.profileImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(mContext, FollowerProfileActivity.class);
+                intent.putExtra(TimelineAdapter.EXTRA_USER_UID, uid);
+                mContext.startActivity(intent);
+            }
+        });
+
 
         if (status.equals("unRead")){
             holder.statusView.setVisibility(View.VISIBLE);
@@ -242,7 +270,7 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onClick(View view) {
                     timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
-                            .collection("timeline").document(pushId).update("status", "read");
+                            .collection("timeline").document(postId).update("status", "read");
                 }
             });
         }else {
@@ -253,7 +281,7 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
     private void populateTimelineComment(final TimelineCommentViewHolder holder, int position){
         Timeline timeline = getSnapshot(position).toObject(Timeline.class);
         holder.bindTimelineComment(timeline);
-        final String postKey = timeline.getPushId();
+        final String postId = timeline.getPostId();
         final String uid = timeline.getUid();
         final String status = timeline.getStatus();
         final String pushId = timeline.getPushId();
@@ -262,49 +290,7 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
         postCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-        postCollection.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    Post post = documentSnapshot.toObject(Post.class);
-                    final String image = post.getImage();
-                    final String postUid = post.getUid();
-
-                    Picasso.with(mContext)
-                            .load(image)
-                            .networkPolicy(NetworkPolicy.OFFLINE)
-                            .into(holder.postImageView, new Callback() {
-                                @Override
-                                public void onSuccess() {
-
-                                }
-
-                                @Override
-                                public void onError() {
-                                    Picasso.with(mContext)
-                                            .load(image)
-                                            .into(holder.postImageView);
-
-                                }
-                            });
-
-                    holder.postImageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent intent = new Intent(mContext, PostDetailActivity.class);
-                            intent.putExtra(TimelineAdapter.EXTRA_POST_KEY, postKey);
-                            mContext.startActivity(intent);
-                        }
-                    });
-
-                }
-            }
-        });
+        senseCreditCollection = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
 
         usersCollection.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -315,17 +301,76 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
                 }
 
                 if (documentSnapshot.exists()){
-                    Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
+                    final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
                     final String username = cinggulan.getUsername();
+                    final String profileImage = cinggulan.getProfileImage();
+                    final String uid = cinggulan.getUid();
+
+                    Picasso.with(mContext)
+                            .load(profileImage)
+                            .resize(MAX_WIDTH, MAX_HEIGHT)
+                            .onlyScaleDown()
+                            .centerCrop()
+                            .placeholder(R.drawable.profle_image_background)
+                            .networkPolicy(NetworkPolicy.OFFLINE)
+                            .into(holder.profileImageView, new Callback() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onError() {
+                                    Picasso.with(mContext)
+                                            .load(profileImage)
+                                            .resize(MAX_WIDTH, MAX_HEIGHT)
+                                            .onlyScaleDown()
+                                            .centerCrop()
+                                            .placeholder(R.drawable.profle_image_background)
+                                            .into(holder.profileImageView);
+
+                                }
+                            });
+
+                    commentCollection.document(pushId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                            if (e != null) {
+                                Log.w(TAG, "Listen error", e);
+                                return;
+                            }
+
+                            if (documentSnapshot.exists()){
+                                Comment comment = documentSnapshot.toObject(Comment.class);
+                                final String commmentText = comment.getCommentText();
+                                String boldText = username;
+                                String normalText = " commented on your post. " + " ' " + commmentText + " ' ";
+                                SpannableString str = new SpannableString(boldText + normalText);
+                                str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                holder.usernameTextView.setText(str);
+                            }else {
+                                String boldText = username;
+                                String normalText = " commented on your post.";
+                                SpannableString str = new SpannableString(boldText + normalText);
+                                str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                holder.usernameTextView.setText(str);
+                            }
+                        }
+                    });
 
 
-                    String boldText = username;
-                    String normalText = " commented on your post";
-                    SpannableString str = new SpannableString(boldText + normalText);
-                    str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    holder.usernameTextView.setText(str);
+
 
                 }
+            }
+        });
+
+        holder.profileImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(mContext, FollowerProfileActivity.class);
+                intent.putExtra(TimelineAdapter.EXTRA_USER_UID, uid);
+                mContext.startActivity(intent);
             }
         });
 
@@ -335,7 +380,7 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onClick(View view) {
                     timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
-                            .collection("timeline").document(pushId).update("status", "read");
+                            .collection("timeline").document(postId).update("status", "read");
                 }
             });
 
@@ -353,9 +398,14 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
         final String status = timeline.getStatus();
         firebaseAuth = FirebaseAuth.getInstance();
 
+        //firestore
         relationsCollection = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
+        senseCreditCollection = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
+        //firebase
+        databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
+
 
         usersCollection.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -455,16 +505,15 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
                                                         Timeline timeline = new Timeline();
                                                         final long time = new Date().getTime();
 
-                                                        final String postid =  timelineCollection.document(uid).collection("timeline")
-                                                                .document().getId();
-                                                        timeline.setPushId(postid);
+                                                        final String postid = databaseReference.push().getKey();
+                                                        timeline.setPushId(uid);
                                                         timeline.setTimeStamp(time);
                                                         timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                         timeline.setType("followers");
-                                                        timeline.setPostId(uid);
+                                                        timeline.setPostId(postid);
                                                         timeline.setStatus("unRead");
 
-                                                        timelineCollection.document(uid).collection("timeline").document(postid)
+                                                        timelineCollection.document(uid).collection("timeline").document(uid)
                                                                 .set(timeline);
                                                     }
                                                 });

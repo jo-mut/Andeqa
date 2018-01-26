@@ -18,6 +18,8 @@ import com.cinggl.cinggl.models.Message;
 import com.cinggl.cinggl.models.Room;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -30,11 +32,15 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.sql.Time;
 import java.util.Date;
+import java.util.Random;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
 public class MessagesAccountActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = MessagesAccountActivity.class.getSimpleName();
@@ -49,6 +55,9 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
     private CollectionReference messagingUsersCollection;
     private CollectionReference usersCollection;
     private CollectionReference usersReference;
+
+    private DatabaseReference messagesReference;
+
     private Query messagesQuery;
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     //firebase auth
@@ -62,6 +71,7 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
     private static final int RECEIVE_TYPE=1;
     private MessagingAdapter messagingAdapter;
     private String roomId;
+    private boolean processMessage = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +98,8 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
 
             //get the passed uid
             roomId = getIntent().getStringExtra(EXTRA_ROOM_ID);
+            Log.d("passed roomId", roomId);
+
             if(roomId == null){
                 throw new IllegalArgumentException("pass an ROOM ID");
             }
@@ -103,6 +115,9 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
             messagingUsersCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             messagesQuery = messagesCollection.document("rooms").collection(roomId);
+
+            //firebase
+            messagesReference = FirebaseDatabase.getInstance().getReference(Constants.MESSAGES);
 
             getProfile();
             getSenderProfile();
@@ -182,7 +197,7 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
 
     /**get all the messages between two users chatting*/
     private void getMessages(){
-        messagesQuery.orderBy("timeStamp")
+        messagesQuery.orderBy("timeStamp", Query.Direction.ASCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -198,6 +213,7 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
                     messagingAdapter.startListening();
                     mMessagesRecyclerView.setAdapter(messagingAdapter);
                     LinearLayoutManager layoutManager = new LinearLayoutManager(MessagesAccountActivity.this);
+                    mMessagesRecyclerView.setHasFixedSize(false);
                     mMessagesRecyclerView.setLayoutManager(layoutManager);
                 }
             }
@@ -208,28 +224,64 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
     private void sendMessage(){
         if (!TextUtils.isEmpty(mSendMessageEditText.getText())){
 
-            final String documentId = messagesCollection.getId();
             final String text_message = mSendMessageEditText.getText().toString().trim();
             final long time = new Date().getTime();
-            final Message message = new Message();
-            message.setMessage(text_message);
-            message.setSenderUid(firebaseAuth.getCurrentUser().getUid());
-            message.setRecepientUid(mUid);
-            message.setTimeStamp(time);
 
-            DocumentReference documentReference = messagesCollection.document("rooms")
-                    .collection(roomId).document();
-            message.setPushId(documentId);
-            documentReference.set(message);
+            final String documentId = messagesReference.push().getKey();
+
+            processMessage = true;
+            messagesCollection.document("rooms").collection(roomId)
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                    if (e != null) {
+                        Log.w(TAG, "Listen error", e);
+                        return;
+                    }
+
+                    if (processMessage){
+                       if (!documentSnapshots.isEmpty()){
+                           DocumentReference documentReference = messagesCollection.document("rooms")
+                                   .collection(roomId).document(documentId);
+                           final Message message = new Message();
+                           message.setMessage(text_message);
+                           message.setSenderUid(firebaseAuth.getCurrentUser().getUid());
+                           message.setRecepientUid(mUid);
+                           message.setTimeStamp(time);
+                           message.setPushId(documentId);
+                           message.setType("Message");
+                           message.setStatus("unRead");
+                           message.setRoomId(roomId);
+                           documentReference.set(message);
+                           processMessage = false;
+
+                       }else {
+                           DocumentReference documentReference = messagesCollection.document("rooms")
+                                   .collection(roomId).document(documentId);
+                           final Message message = new Message();
+                           message.setMessage(text_message);
+                           message.setSenderUid(firebaseAuth.getCurrentUser().getUid());
+                           message.setRecepientUid(mUid);
+                           message.setTimeStamp(time);
+                           message.setPushId(documentId);
+                           message.setType("Message");
+                           message.setStatus("unRead");
+                           message.setRoomId(roomId);
+                           documentReference.set(message);
+                           processMessage = false;
+
+                       }
+                   }
+                }
+            });
 
             DocumentReference messagingReference = messagingUsersCollection.document("messaging users")
                     .collection(mUid).document(firebaseAuth.getCurrentUser().getUid());
-            final String docId = messagingReference.getId();
             Room room = new Room();
             room.setUid(firebaseAuth.getCurrentUser().getUid());
             room.setMessage(text_message);
             room.setTime(time);
-            room.setPushId(docId);
+            room.setPushId(firebaseAuth.getCurrentUser().getUid());
             room.setRoomId(roomId);
             room.setStatus("unRead");
             messagingReference.set(room);
@@ -239,7 +291,6 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
             mSendMessageEditText.setError("");
         }
     }
-
 
 
 

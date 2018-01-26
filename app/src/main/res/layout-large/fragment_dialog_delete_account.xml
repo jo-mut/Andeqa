@@ -16,7 +16,7 @@
         android:layout_width="450dp">
 
         <TextView
-            android:text="@string/you_will_not_be_able_to_sign_in_once_you_confirm_to_delete_your_account"
+            android:text="@string/confirm_delete_account"
             android:padding="5dp"
             android:textSize="24sp"
             android:layout_width="wrap_content"

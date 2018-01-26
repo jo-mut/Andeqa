@@ -25,6 +25,8 @@ import com.cinggl.cinggl.models.Relation;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -58,7 +60,7 @@ public class FollowerProfileActivity extends AppCompatActivity
     @Bind(R.id.followingCountTextView)TextView mFollowingCountTextView;
     @Bind(R.id.postsCountTextView)TextView mCinglesCountTextView;
     @Bind(R.id.profileCoverImageView)ImageView mProfileCover;
-    @Bind(followButton)Button mFollowButton;
+    @Bind(R.id.followButton)Button mFollowButton;
     @Bind(R.id.collapsing_toolbar)CollapsingToolbarLayout collapsingToolbarLayout;
     @Bind(R.id.sendMessageImageView)ImageView mSendMessageImageView;
 
@@ -66,8 +68,11 @@ public class FollowerProfileActivity extends AppCompatActivity
     private CollectionReference relationsReference;
     private CollectionReference usersReference;
     private CollectionReference timelineCollection;
+    private CollectionReference messagesCollection;
     private com.google.firebase.firestore.Query profileCinglesQuery;
     private Query profileCinglesCountQuery;
+    //firebase
+    private DatabaseReference databaseReference;
     //firebase auth
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -86,7 +91,8 @@ public class FollowerProfileActivity extends AppCompatActivity
     private int TOTAL_ITEMS = 4;
     private DocumentSnapshot lastVisible;
     private boolean processFollow = false;
-    private String roomId;
+    private String roomId1;
+    private String roomId2;
     private String senderUid;
     private String recepientUid;
 
@@ -120,10 +126,14 @@ public class FollowerProfileActivity extends AppCompatActivity
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            messagesCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
             profileCinglesQuery = cinglesReference.orderBy("timeStamp", Query.Direction.DESCENDING)
                     .whereEqualTo("uid", mUid);
             profileCinglesCountQuery = cinglesReference.whereEqualTo("uid", mUid);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
+            //firebase
+            databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
+
             fetchData();
             setTheFirstBacthProfileCingles();
             recyclerViewScrolling();
@@ -219,7 +229,6 @@ public class FollowerProfileActivity extends AppCompatActivity
         });
 
 
-
         usersReference.document(mUid)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
@@ -229,10 +238,6 @@ public class FollowerProfileActivity extends AppCompatActivity
                             Log.w(TAG, "Listen error", e);
                             return;
                         }
-
-                        String source = documentSnapshot.getMetadata().isFromCache() ?
-                                "local cache" : "server";
-                        Log.d(TAG, "Profile Data fetched from " + source);
 
                         if (documentSnapshot.exists()){
                             final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
@@ -371,6 +376,7 @@ public class FollowerProfileActivity extends AppCompatActivity
 
     }
 
+
     @Override
     public void onClick(View v){
         if (v == mFollowingCountTextView) {
@@ -380,13 +386,39 @@ public class FollowerProfileActivity extends AppCompatActivity
         }
 
         if (v == mSendMessageImageView){
-            senderUid = firebaseAuth.getCurrentUser().getUid().substring(0, 6);
-            recepientUid = mUid.substring(0, 6);
-            roomId = senderUid + recepientUid;
-            Intent intent = new Intent(FollowerProfileActivity.this, MessagesAccountActivity.class);
-            intent.putExtra(FollowerProfileActivity.EXTRA_ROOM_UID, roomId);
-            intent.putExtra(FollowerProfileActivity.EXTRA_USER_UID, mUid);
-            startActivity(intent);
+            senderUid = firebaseAuth.getCurrentUser().getUid().substring(0, 8);
+            recepientUid = mUid.substring(0, 8);
+            roomId1 = senderUid + recepientUid;
+            messagesCollection.document("rooms").collection(roomId1).orderBy(roomId1)
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                    if (e != null) {
+                        Log.w(TAG, "Listen error", e);
+                        return;
+                    }
+
+                    if (!documentSnapshots.isEmpty()){
+                        Intent intent = new Intent(FollowerProfileActivity.this, MessagesAccountActivity.class);
+                        intent.putExtra(FollowerProfileActivity.EXTRA_ROOM_UID, roomId1);
+                        intent.putExtra(FollowerProfileActivity.EXTRA_USER_UID, mUid);
+                        startActivity(intent);
+                        Log.d("roomId 1", documentSnapshots.size() + "");
+
+
+                    }else {
+                        senderUid = firebaseAuth.getCurrentUser().getUid().substring(0, 8);
+                        recepientUid = mUid.substring(0, 8);
+                        roomId2 = recepientUid + senderUid;
+                        Intent intent = new Intent(FollowerProfileActivity.this, MessagesAccountActivity.class);
+                        intent.putExtra(FollowerProfileActivity.EXTRA_ROOM_UID, roomId2);
+                        intent.putExtra(FollowerProfileActivity.EXTRA_USER_UID, mUid);
+                        startActivity(intent);
+                        Log.d("roomId 2 ", "room id 1 is empty, room id 2 to creat room");
+                    }
+                }
+            });
+
         }
 
         if (v == mFollowersCountTextView){
@@ -423,16 +455,16 @@ public class FollowerProfileActivity extends AppCompatActivity
                                                     Timeline timeline = new Timeline();
                                                     final long time = new Date().getTime();
 
-                                                    final String postid =  timelineCollection.document(mUid).collection("timeline")
-                                                            .document().getId();
-                                                    timeline.setPushId(postid);
+                                                    final String postid = databaseReference.push().getKey();
+                                                    timeline.setPushId(mUid);
                                                     timeline.setTimeStamp(time);
                                                     timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                     timeline.setType("followers");
-                                                    timeline.setPostId(mUid);
+                                                    timeline.setPostId(postid);
                                                     timeline.setStatus("unRead");
 
-                                                    timelineCollection.document(mUid).collection("timeline").document(postid)
+                                                    timelineCollection.document(mUid).collection("timeline")
+                                                            .document(firebaseAuth.getCurrentUser().getUid())
                                                             .set(timeline);
                                                 }
                                             });

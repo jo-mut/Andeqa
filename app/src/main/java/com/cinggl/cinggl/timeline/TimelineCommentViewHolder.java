@@ -20,6 +20,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static com.cinggl.cinggl.R.id.commentTextView;
 import static com.cinggl.cinggl.R.id.followButton;
 import static com.cinggl.cinggl.R.id.fullNameTextView;
+import static com.cinggl.cinggl.R.id.postImageView;
 import static com.cinggl.cinggl.R.id.profileImageView;
 
 /**
@@ -31,7 +32,7 @@ public class TimelineCommentViewHolder extends RecyclerView.ViewHolder {
     View mView;
     Context mContext;
     public TextView usernameTextView;
-    public ProportionalImageView postImageView;
+    public CircleImageView profileImageView;
     public TextView timelineTextView;
     public LinearLayout timelineCommentLinearLayout;
     public View statusView;
@@ -41,7 +42,7 @@ public class TimelineCommentViewHolder extends RecyclerView.ViewHolder {
         mView = itemView;
         mContext = itemView.getContext();
         usernameTextView = (TextView)itemView.findViewById(R.id.usernameTextView);
-        postImageView = (ProportionalImageView) itemView.findViewById(R.id.postImageView);
+        profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         timelineTextView = (TextView) itemView.findViewById(R.id.timelineTextView);
         timelineCommentLinearLayout = (LinearLayout) itemView.findViewById(R.id.timelineCommentLinearLayout);
         statusView = (View) mView.findViewById(R.id.statusView);

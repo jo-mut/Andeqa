@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
@@ -30,6 +31,8 @@ import butterknife.ButterKnife;
  */
 public class TimelineFragment extends Fragment {
     @Bind(R.id.timelineRecyclerView)RecyclerView mTimelineRecyclerView;
+    @Bind(R.id.placeHolderRelativeLayout)RelativeLayout mPlaceHolderRelativeLayout;
+
     private static final String TAG = MessagesFragment.class.getSimpleName();
     private static final String EXTRA_USER_UID = "uid";
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
@@ -78,6 +81,8 @@ public class TimelineFragment extends Fragment {
                    mTimelineRecyclerView.setAdapter(timelineAdapter);
                    LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
                    mTimelineRecyclerView.setLayoutManager(layoutManager);
+               }else {
+                   mPlaceHolderRelativeLayout.setVisibility(View.VISIBLE);
                }
 
            }

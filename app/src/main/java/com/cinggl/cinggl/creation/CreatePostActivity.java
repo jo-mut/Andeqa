@@ -30,6 +30,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -79,6 +81,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
     private CollectionReference postsReference;
     private CollectionReference ownersReference;
     private CollectionReference usersReference;
+    private DatabaseReference postReference;
 
 
     @Override
@@ -104,6 +107,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
             postsReference = firebaseFirestore.collection(Constants.POSTS);
             ownersReference = firebaseFirestore.collection(Constants.CINGLE_ONWERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+            postReference = FirebaseDatabase.getInstance().getReference(Constants.POSTS);
  
             fetchUserData();
             uploadingToFirebaseDialog();
@@ -306,8 +310,8 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             final String uid = user.getUid();
 
-            final DocumentReference cingleRef = postsReference.document();
-            final String pushId = cingleRef.getId();
+            final DatabaseReference reference = postReference.push();
+            final String pushId = reference.getKey();
             StorageReference storageReference = FirebaseStorage
                     .getInstance().getReference()
                     .child(Constants.POSTS)
@@ -318,6 +322,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     final Uri downloadUrl = taskSnapshot.getDownloadUrl();
+
                     CollectionReference cl = postsReference;
                     cl.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override
@@ -357,7 +362,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                             post.setCreatorUid(firebaseAuth.getCurrentUser().getUid());
                             post.setDatePosted(currentDate);
                             post.setCingleIndex("Post number" + " " + currentIdex);
-                            cingleRef.set(post);
+                            postsReference.document(pushId).set(post);
 
                             //reset input fields
                             mCingleTitleEditText.setText("");

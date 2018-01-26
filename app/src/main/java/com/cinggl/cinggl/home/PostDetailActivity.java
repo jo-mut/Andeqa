@@ -46,6 +46,8 @@ import com.firebase.ui.firestore.ObservableSnapshotArray;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -112,6 +114,8 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     private CollectionReference postWalletReference;
     private CollectionReference timelineCollection;
     private com.google.firebase.firestore.Query likesQuery;
+    //firebase references
+    private DatabaseReference databaseReference;
     //firebase auth
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -178,7 +182,8 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             randomQuery = FirebaseFirestore.getInstance().collection(Constants.POSTS)
                     .orderBy("randomNumber");
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
-
+            //firebase
+            databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
             commentsCountQuery = commentsReference;
             likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
             postWalletReference = FirebaseFirestore.getInstance().collection(Constants.CINGLE_WALLET);
@@ -217,7 +222,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         });
 
         //get the number of commments in a cingle
-        commentsCountQuery.orderBy("pushId").whereEqualTo("postId", mPostKey)
+        commentsCountQuery.orderBy("postId").whereEqualTo("pushId", mPostKey)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -231,11 +236,11 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                     mCommentCountTextView.setText(commentsCount + "");
                 }else {
                     mCommentCountTextView.setText("0");
-                }
+
+         }
 
             }
         });
-
 
         cinglesReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -913,11 +918,10 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                                                 Post post = documentSnapshot.toObject(Post.class);
                                                                 final String uid = post.getUid();
 
-                                                                Timeline timeline = new Timeline();
+                                                                final Timeline timeline = new Timeline();
                                                                 final long time = new Date().getTime();
 
-                                                                final String postId =timelineCollection.document(uid).collection("timeline")
-                                                                        .document(mPostKey).getId();
+                                                                final String postId = databaseReference.push().getKey();
 
                                                                 timeline.setPushId(mPostKey);
                                                                 timeline.setTimeStamp(time);
@@ -930,7 +934,8 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                                                     //do nothing
                                                                 }else {
                                                                     timelineCollection.document(uid).collection("timeline")
-                                                                            .document(postId).set(timeline);
+                                                                            .document(firebaseAuth.getCurrentUser().getUid())
+                                                                            .set(timeline);
                                                                 }
 
                                                             }

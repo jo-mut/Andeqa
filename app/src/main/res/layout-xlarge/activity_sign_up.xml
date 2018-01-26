@@ -118,8 +118,7 @@
                 <RelativeLayout
                     android:id="@+id/signUpRelativeLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:paddingBottom="10dp">
+                    android:layout_height="match_parent">
 
                     <Button
                         android:id="@+id/createUserButton"

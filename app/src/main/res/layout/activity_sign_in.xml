@@ -105,7 +105,7 @@
                         android:textColor="@android:color/black"
                         android:textSize="16sp" />
 
-                    <com.dd.processbutton.iml.ActionProcessButton
+                    <Button
                         android:id="@+id/passwordLoginButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

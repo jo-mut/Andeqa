@@ -38,8 +38,9 @@ import com.firebase.ui.firestore.ObservableSnapshotArray;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -72,6 +73,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     private FirebaseUser firebaseUser;
     private String mPostKey;
     //firebase
+    private DatabaseReference databaseReference;
     //firestore
     private CollectionReference commentsReference;
     private CollectionReference postCollection;
@@ -125,6 +127,8 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
+            //firebase
+            databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
 
             mCommentEditText.setFilters(new InputFilter[]{new InputFilter
                     .LengthFilter(DEFAULT_COMMENT_LENGTH_LIMIT)});
@@ -273,7 +277,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     public void setUpFirebaseComments(){
-        commentQuery = commentsReference.orderBy("pushId").whereEqualTo("postId", mPostKey);
+        commentQuery = commentsReference.orderBy("postId").whereEqualTo("pushId", mPostKey);
         FirestoreRecyclerOptions<Comment> options = new FirestoreRecyclerOptions.Builder<Comment>()
                 .setQuery(commentQuery, Comment.class)
                 .build();
@@ -401,15 +405,16 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                                                             Timeline timeline = new Timeline();
                                                             final long time = new Date().getTime();
 
-                                                            final String postId =  timelineCollection.document(uid).collection("timeline")
-                                                                    .document().getId();
+                                                            final String postId = databaseReference.push().getKey();
 
                                                             timeline.setPushId(postKey);
                                                             timeline.setTimeStamp(time);
                                                             timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                             timeline.setType("followers");
                                                             timeline.setPostId(postId);
-                                                            timelineCollection.document(uid).collection("timeline").document(uid).set(timeline);
+                                                            timelineCollection.document(uid).collection("timeline")
+                                                                    .document(firebaseAuth.getCurrentUser().getUid())
+                                                                    .set(timeline);
                                                         }
                                                     });
                                                     final Relation following = new Relation();
@@ -539,16 +544,20 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                             final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
                             final String uid = cinggulan.getUid();
 
+                            final String postId = databaseReference.push().getKey();
+
                             Comment comment = new Comment();
                             comment.setUid(uid);
                             comment.setCommentText(commentText);
-                            DocumentReference pushRef = commentsReference.document();
-                            final String pushId = pushRef.getId();
-                            comment.setPushId(pushId);
-                            comment.setPostId(mPostKey);
-                            pushRef.set(comment).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            comment.setPushId(mPostKey);
+                            comment.setPostId(postId);
+                            commentsReference.document(postId).set(comment)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
+                                    final Timeline timeline = new Timeline();
+                                    final long time = new Date().getTime();
+
                                     postCollection.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                         @Override
                                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -558,21 +567,15 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                                                 return;
                                             }
 
-
                                             if (documentSnapshot.exists()){
                                                 Post post = documentSnapshot.toObject(Post.class);
                                                 final String creatorUid = post.getUid();
-                                                Timeline timeline = new Timeline();
-                                                final long time = new Date().getTime();
 
-                                                final String postId = timelineCollection.document(creatorUid)
-                                                        .collection("timeline").document().getId();
-
-                                                timeline.setPushId(postId);
+                                                timeline.setPostId(postId);
                                                 timeline.setTimeStamp(time);
                                                 timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                 timeline.setType("comment");
-                                                timeline.setPostId(mPostKey);
+                                                timeline.setPushId(mPostKey);
                                                 timeline.setStatus("unRead");
                                                 if (creatorUid.equals(firebaseAuth.getCurrentUser().getUid())){
                                                     //do nothing
@@ -580,6 +583,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                                                     timelineCollection.document(creatorUid)
                                                             .collection("timeline").document(postId).set(timeline);
                                                 }
+
                                             }
                                         }
                                     });
