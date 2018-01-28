@@ -3,6 +3,7 @@ package com.cinggl.cinggl.timeline;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -40,6 +41,7 @@ public class TimelineFragment extends Fragment {
     private CollectionReference timelineCollection;
     private Query timelineQuery;
     private TimelineAdapter timelineAdapter;
+    private int TOTAL_ITEMS = 30;
 
 
 
@@ -58,7 +60,8 @@ public class TimelineFragment extends Fragment {
 
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
         timelineQuery = timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
-                .collection("timeline").orderBy("timeStamp", Query.Direction.DESCENDING);
+                .collection("timeline").orderBy("timeStamp", Query.Direction.DESCENDING)
+                .limit(TOTAL_ITEMS);
 
         getTimeline();
 

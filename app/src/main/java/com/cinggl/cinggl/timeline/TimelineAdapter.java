@@ -242,7 +242,7 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
 
                             }else {
                                 String boldText = username;
-                                String normalText = " liked your post";
+                                String normalText = " liked your post.";
                                 SpannableString str = new SpannableString(boldText + normalText);
                                 str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                                 holder.usernameTextView.setText(str);
@@ -270,7 +270,7 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onClick(View view) {
                     timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
-                            .collection("timeline").document(postId).update("status", "read");
+                            .collection("timeline").document(uid).update("status", "read");
                 }
             });
         }else {
@@ -332,7 +332,7 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
                                 }
                             });
 
-                    commentCollection.document(pushId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    commentCollection.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                             if (e != null) {

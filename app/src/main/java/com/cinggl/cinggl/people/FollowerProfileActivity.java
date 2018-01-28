@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.models.Room;
 import com.cinggl.cinggl.models.Timeline;
 import com.cinggl.cinggl.profile.ProfilePostsAdapter;
 import com.cinggl.cinggl.message.MessagesAccountActivity;
@@ -68,7 +69,7 @@ public class FollowerProfileActivity extends AppCompatActivity
     private CollectionReference relationsReference;
     private CollectionReference usersReference;
     private CollectionReference timelineCollection;
-    private CollectionReference messagesCollection;
+    private CollectionReference messagesUsersCollection;
     private com.google.firebase.firestore.Query profileCinglesQuery;
     private Query profileCinglesCountQuery;
     //firebase
@@ -91,10 +92,7 @@ public class FollowerProfileActivity extends AppCompatActivity
     private int TOTAL_ITEMS = 4;
     private DocumentSnapshot lastVisible;
     private boolean processFollow = false;
-    private String roomId1;
-    private String roomId2;
-    private String senderUid;
-    private String recepientUid;
+    private String roomId;
 
 
     @Override
@@ -126,7 +124,7 @@ public class FollowerProfileActivity extends AppCompatActivity
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            messagesCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
+            messagesUsersCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
             profileCinglesQuery = cinglesReference.orderBy("timeStamp", Query.Direction.DESCENDING)
                     .whereEqualTo("uid", mUid);
             profileCinglesCountQuery = cinglesReference.whereEqualTo("uid", mUid);
@@ -325,6 +323,8 @@ public class FollowerProfileActivity extends AppCompatActivity
                     LinearLayoutManager layoutManager = new LinearLayoutManager(FollowerProfileActivity.this);
                     layoutManager.setAutoMeasureEnabled(true);
                     mProfileCinglesRecyclerView.setLayoutManager(layoutManager);
+                    mProfileCinglesRecyclerView.setNestedScrollingEnabled(false);
+
                 }
             }
         });
@@ -386,35 +386,29 @@ public class FollowerProfileActivity extends AppCompatActivity
         }
 
         if (v == mSendMessageImageView){
-            senderUid = firebaseAuth.getCurrentUser().getUid().substring(0, 8);
-            recepientUid = mUid.substring(0, 8);
-            roomId1 = senderUid + recepientUid;
-            messagesCollection.document("rooms").collection(roomId1).orderBy(roomId1)
-                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+            messagesUsersCollection.document("messaging users")
+                    .collection(mUid).document(firebaseAuth.getCurrentUser().getUid())
+                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
-                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                     if (e != null) {
                         Log.w(TAG, "Listen error", e);
                         return;
                     }
 
-                    if (!documentSnapshots.isEmpty()){
+                    if (documentSnapshot.exists()){
+                        Room room = documentSnapshot.toObject(Room.class);
+                        roomId = room.getRoomId();
                         Intent intent = new Intent(FollowerProfileActivity.this, MessagesAccountActivity.class);
-                        intent.putExtra(FollowerProfileActivity.EXTRA_ROOM_UID, roomId1);
+                        intent.putExtra(FollowerProfileActivity.EXTRA_ROOM_UID, roomId);
                         intent.putExtra(FollowerProfileActivity.EXTRA_USER_UID, mUid);
                         startActivity(intent);
-                        Log.d("roomId 1", documentSnapshots.size() + "");
-
-
                     }else {
-                        senderUid = firebaseAuth.getCurrentUser().getUid().substring(0, 8);
-                        recepientUid = mUid.substring(0, 8);
-                        roomId2 = recepientUid + senderUid;
+                        roomId = databaseReference.push().getKey();
                         Intent intent = new Intent(FollowerProfileActivity.this, MessagesAccountActivity.class);
-                        intent.putExtra(FollowerProfileActivity.EXTRA_ROOM_UID, roomId2);
+                        intent.putExtra(FollowerProfileActivity.EXTRA_ROOM_UID, roomId);
                         intent.putExtra(FollowerProfileActivity.EXTRA_USER_UID, mUid);
                         startActivity(intent);
-                        Log.d("roomId 2 ", "room id 1 is empty, room id 2 to creat room");
                     }
                 }
             });

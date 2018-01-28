@@ -356,6 +356,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
                     mProfileCinglesRecyclerView.setHasFixedSize(false);
                     layoutManager = new LinearLayoutManager(PersonalProfileActivity.this);
                     mProfileCinglesRecyclerView.setLayoutManager(layoutManager);
+                    mProfileCinglesRecyclerView.setNestedScrollingEnabled(false);
                 }
 
             }

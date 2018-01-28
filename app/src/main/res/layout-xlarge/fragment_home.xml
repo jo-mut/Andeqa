@@ -8,11 +8,13 @@
     android:fitsSystemWindows="true"
     tools:context="com.cinggl.cinggl.home.HomeFragment">
 
+
     <android.support.v7.widget.RecyclerView
         android:overScrollMode="never"
         android:id="@+id/singleOutRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
 
     <RelativeLayout
         android:visibility="gone"

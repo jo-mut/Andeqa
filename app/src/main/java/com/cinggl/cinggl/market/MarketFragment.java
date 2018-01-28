@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -55,9 +56,7 @@ public class MarketFragment extends Fragment{
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     private SellingAdapter sellingAdapter;
     private FirebaseAuth firebaseAuth;
-    private List<PostSale> postSales = new ArrayList<>();
-    private List<String> cingleSaleIds = new ArrayList<>();
-    private int TOTAL_ITEMS = 4;
+    private int TOTAL_ITEMS = 50;
     private DocumentSnapshot lastVisible;
 
 
@@ -77,7 +76,7 @@ public class MarketFragment extends Fragment{
         if (firebaseAuth.getCurrentUser()!= null){
             //firestore
             ifairReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
-            sellingQuery = ifairReference.orderBy("randomNumber").limit(TOTAL_ITEMS);
+            sellingQuery = ifairReference.orderBy("randomNumber");
 
         }
 

@@ -32,15 +32,11 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
-import java.sql.Time;
 import java.util.Date;
-import java.util.Random;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
 public class MessagesAccountActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = MessagesAccountActivity.class.getSimpleName();
@@ -56,7 +52,7 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
     private CollectionReference usersCollection;
     private CollectionReference usersReference;
 
-    private DatabaseReference messagesReference;
+    private DatabaseReference databaseReference;
 
     private Query messagesQuery;
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
@@ -92,13 +88,13 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
         //initilize click listeners
         mSendMessageImageView.setOnClickListener(this);
 
+
         //initialize firebase auth
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
 
             //get the passed uid
             roomId = getIntent().getStringExtra(EXTRA_ROOM_ID);
-            Log.d("passed roomId", roomId);
 
             if(roomId == null){
                 throw new IllegalArgumentException("pass an ROOM ID");
@@ -109,6 +105,8 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
                 throw new IllegalArgumentException("pass an EXTRA_UID");
             }
 
+            //firebase
+            databaseReference = FirebaseDatabase.getInstance().getReference(Constants.MESSAGES);
             //initialize references
             messagesCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
@@ -116,8 +114,6 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             messagesQuery = messagesCollection.document("rooms").collection(roomId);
 
-            //firebase
-            messagesReference = FirebaseDatabase.getInstance().getReference(Constants.MESSAGES);
 
             getProfile();
             getSenderProfile();
@@ -227,7 +223,7 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
             final String text_message = mSendMessageEditText.getText().toString().trim();
             final long time = new Date().getTime();
 
-            final String documentId = messagesReference.push().getKey();
+            final String documentId = databaseReference.push().getKey();
 
             processMessage = true;
             messagesCollection.document("rooms").collection(roomId)

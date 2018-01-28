@@ -4,6 +4,7 @@ package com.cinggl.cinggl.home;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,6 +18,7 @@ import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.Trace;
 import com.cinggl.cinggl.models.Post;
 import com.cinggl.cinggl.models.TraceData;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -33,11 +35,12 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 import static android.R.attr.data;
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment implements Trace.TracingListener {
+public class HomeFragment extends Fragment implements Trace.TracingListener{
     @Bind(R.id.singleOutRecyclerView)RecyclerView singleOutRecyclerView;
     @Bind(R.id.placeHolderRelativeLayout)RelativeLayout mPlaceHolderRelativeLayout;
 
@@ -48,13 +51,16 @@ public class HomeFragment extends Fragment implements Trace.TracingListener {
     //firestore reference
     private CollectionReference cinglesReference;
     private Query randomPostsQuery;
+    private DocumentSnapshot lastVisible;
+
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //adapters
     private MainPostsAdapter mainPostsAdapter;
     private LinearLayoutManager layoutManager;
-    private int TOTAL_ITEMS = 4;
+    private int TOTAL_ITEMS = 50;
     private Trace trace;
+
 
 
 
@@ -69,32 +75,34 @@ public class HomeFragment extends Fragment implements Trace.TracingListener {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.bind(this, view);
+
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
             //firestore
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            randomPostsQuery = cinglesReference;
+            randomPostsQuery = cinglesReference.orderBy("timeStamp", Query.Direction.DESCENDING)
+                    .limit(TOTAL_ITEMS);
 
-            latestPosts();
+            refresh();
 
         }
 
-        trace = new Trace.Builder()
-                .setRecyclerView(singleOutRecyclerView)
-                .setMinimumViewingTimeThreshold(2000)
-                .setMinimumVisibleHeightThreshold(60)
-                .setTracingListener(this)
-                .setDataDumpInterval(1000)
-                .dumpDataAfterInterval(true)
-                .build();
+//        trace = new Trace.Builder()
+//                .setRecyclerView(singleOutRecyclerView)
+//                .setMinimumViewingTimeThreshold(2000)
+//                .setMinimumVisibleHeightThreshold(60)
+//                .setTracingListener(this)
+//                .setDataDumpInterval(1000)
+//                .dumpDataAfterInterval(true)
+//                .build();
 
 
         return view;
     }
 
-    private void latestPosts(){
-        randomPostsQuery.orderBy("timeStamp", Query.Direction.DESCENDING)
-                .limit(50).addSnapshotListener(new EventListener<QuerySnapshot>() {
+
+    private void refresh(){
+        randomPostsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
@@ -105,6 +113,9 @@ public class HomeFragment extends Fragment implements Trace.TracingListener {
 
 
                 if (!documentSnapshots.isEmpty()){
+                    // Get the last visible document
+                    lastVisible = documentSnapshots.getDocuments()
+                            .get(documentSnapshots.size() -1);
                     mainPostsAdapter = new MainPostsAdapter(randomPostsQuery, getContext());
                     mainPostsAdapter.startListening();
                     singleOutRecyclerView.setAdapter(mainPostsAdapter);
@@ -116,6 +127,36 @@ public class HomeFragment extends Fragment implements Trace.TracingListener {
                 }
             }
         });
+    }
+
+    private void nextPosts(){
+//        mSwipeRefreshLayout.setRefreshing(true);
+        // Construct a new query starting at this document,
+        // get the next 30 documents.
+       final Query next = cinglesReference.orderBy("timeStamp", Query.Direction.DESCENDING)
+                .startAfter(lastVisible).limit(TOTAL_ITEMS);
+
+        next.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (!documentSnapshots.isEmpty()){
+                    mainPostsAdapter = new MainPostsAdapter(next, getContext());
+                    mainPostsAdapter.startListening();
+                    singleOutRecyclerView.setAdapter(mainPostsAdapter);
+                    singleOutRecyclerView.setHasFixedSize(false);
+                    layoutManager = new LinearLayoutManager(getContext());
+                    singleOutRecyclerView.setLayoutManager(layoutManager);
+//                    mSwipeRefreshLayout.setRefreshing(false);
+                }
+            }
+        });
+
     }
 
 
