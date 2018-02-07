@@ -28,8 +28,8 @@ import com.cinggl.cinggl.models.Credit;
 import com.cinggl.cinggl.models.Like;
 import com.cinggl.cinggl.models.Timeline;
 import com.cinggl.cinggl.models.TransactionDetails;
-import com.cinggl.cinggl.settings.DialogPostsSettingsFragment;
 import com.cinggl.cinggl.likes.WhoLikedViewHolder;
+import com.cinggl.cinggl.settings.FragmentPostSettings;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
@@ -182,15 +182,15 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
             }
         });
 
-        holder.cingleSettingsImageView.setOnClickListener(new View.OnClickListener() {
+        holder.settingsImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
                 bundle.putString(ProfilePostsAdapter.EXTRA_POST_KEY, postKey);
                 FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
-                DialogPostsSettingsFragment dialogPostsSettingsFragment = DialogPostsSettingsFragment.newInstance("post settings");
-                dialogPostsSettingsFragment.setArguments(bundle);
-                dialogPostsSettingsFragment.show(fragmenManager, "post settings fragment");
+                FragmentPostSettings fragmentPostSettings = FragmentPostSettings.newInstance("post settngs");
+                fragmentPostSettings.setArguments(bundle);
+                fragmentPostSettings.show(fragmenManager, "post settings fragment");
             }
         });
 
@@ -248,21 +248,7 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                                                 public void onSuccess() {
                                                     Picasso.with(mContext)
                                                             .load(post.getImage())
-                                                            .into(holder.cingleImageView, new com.squareup.picasso.Callback() {
-                                                                @Override
-                                                                public void onSuccess() {
-                                                                    Log.d("picasso", "successfully loaded");
-                                                                    //success..
-                                                                }
-
-                                                                @Override
-                                                                public void onError() {
-                                                                    Log.v("picasso", "Could not fetch image");
-                                                                    Log.d("picasso images", post.getImage() +"");
-
-
-                                                                }
-                                                            });
+                                                            .into(holder.cingleImageView);
                                                 }
 
                                                 @Override
@@ -351,9 +337,9 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                     Log.d("owner uid", ownerUid);
 
                     if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
-                        holder.cingleSettingsImageView.setVisibility(View.VISIBLE);
+                        holder.settingsImageView.setVisibility(View.VISIBLE);
                     }else {
-                        holder.cingleSettingsImageView.setVisibility(View.INVISIBLE);
+                        holder.settingsImageView.setVisibility(View.INVISIBLE);
                     }
                 }
             }
@@ -780,23 +766,38 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                                                         final Timeline timeline = new Timeline();
                                                         final long time = new Date().getTime();
 
-                                                        final String postId = databaseReference.push().getKey();
+                                                        timelineCollection.document(uid).collection("timeline")
+                                                                .whereEqualTo("type", "like").whereEqualTo("pushId", postKey)
+                                                                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                                                    @Override
+                                                                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                                                                        if (e != null) {
+                                                                            Log.w(TAG, "Listen error", e);
+                                                                            return;
+                                                                        }
 
-                                                        timeline.setPushId(postKey);
-                                                        timeline.setTimeStamp(time);
-                                                        timeline.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                        timeline.setType("like");
-                                                        timeline.setPostId(postId);
-                                                        timeline.setStatus("unRead");
+                                                                        if (!documentSnapshots.isEmpty()){
 
-                                                        if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                                            //do nothing
-                                                        }else {
-                                                            timelineCollection.document(uid).collection("timeline")
-                                                                    .document(firebaseAuth.getCurrentUser().getUid())
-                                                                    .set(timeline);
-                                                        }
+                                                                            Log.d("timeline exists", postKey);
+                                                                        }else {
+                                                                            final String postId = databaseReference.push().getKey();
+                                                                            timeline.setPushId(postKey);
+                                                                            timeline.setTimeStamp(time);
+                                                                            timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                            timeline.setType("like");
+                                                                            timeline.setPostId(postId);
+                                                                            timeline.setStatus("unRead");
 
+                                                                            if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                                                                //do nothing
+                                                                            }else {
+                                                                                timelineCollection.document(uid).collection("timeline")
+                                                                                        .document(postId)
+                                                                                        .set(timeline);
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                });
 
                                                     }
                                                 });

@@ -1,8 +1,8 @@
 package com.cinggl.cinggl.people;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -40,6 +40,8 @@ import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+
+import static android.support.v7.appcompat.R.styleable.Toolbar;
 
 public class FollowersActivity extends AppCompatActivity {
     //firestore references

@@ -278,8 +278,8 @@ public class NavigationDrawerActivity extends AppCompatActivity
         }
 
         if (id == R.id.action_settings){
-            Intent intent = new Intent(NavigationDrawerActivity.this, SettingsActivity.class);
-            startActivity(intent);
+//            Intent intent = new Intent(NavigationDrawerActivity.this, SettingsActivity.class);
+//            startActivity(intent);
         }
 
         if (id == R.id.action_about){
@@ -292,7 +292,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
             sendIntent.putExtra(Intent.EXTRA_TEXT,
-                    "Hey check out Cinggl and show your world to the world" +
+                    "Hey! Check out Cinggl and share your best moments, beautiful ideas and discover even more than you know" +
                             " at: https://play.google.com/store/apps/details?id=com.cinggl.cinggl");
             sendIntent.setType("text/plain");
             startActivity(sendIntent);
@@ -310,7 +310,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
             }
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("message/rfc822");
-            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"cinggl@cinggl.com"});
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"cinggl@yahoo.com"});
             intent.putExtra(Intent.EXTRA_SUBJECT, "Query from android app");
             intent.putExtra(Intent.EXTRA_TEXT, body);
             this.startActivity(Intent.createChooser(intent, this.getString(R.string.choose_email_client)));

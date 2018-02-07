@@ -141,8 +141,17 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
                           mAuthProgressDialog.dismiss();
                           if (!task.isSuccessful()) {
                               Log.w(TAG, "signInWithEmail", task.getException());
+
                               mErrorRelativeLayout.setVisibility(View.VISIBLE);
                               mErrorTextView.setText("Please confirm that your email and password match you are connected to the internet");
+
+                              mErrorRelativeLayout.postDelayed(new Runnable() {
+                                  public void run() {
+                                      mErrorRelativeLayout.setVisibility(View.GONE);
+                                  }
+                              }, 5000);
+
+
                           }else {
                               checkIfImailVerified();
                           }
@@ -166,6 +175,13 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
             FirebaseAuth.getInstance().signOut();
             mErrorRelativeLayout.setVisibility(View.VISIBLE);
             mErrorTextView.setText("Check that you have confirmed your email");
+
+            mErrorRelativeLayout.postDelayed(new Runnable() {
+                public void run() {
+                    mErrorRelativeLayout.setVisibility(View.GONE);
+                }
+            }, 5000);
+
             mResendLinkRelativeLayout.setVisibility(View.VISIBLE);
 
         }
@@ -371,6 +387,13 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
                             }else {
                                 mErrorRelativeLayout.setVisibility(View.VISIBLE);
                                 mErrorTextView.setText("Check that you are connected to the internet");
+
+                                mErrorRelativeLayout.postDelayed(new Runnable() {
+                                    public void run() {
+                                        mErrorRelativeLayout.setVisibility(View.GONE);
+                                    }
+                                }, 5000);
+
                             }
                         }
                     });

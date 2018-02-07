@@ -1,6 +1,7 @@
 package com.cinggl.cinggl.settings;
 
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -89,10 +90,11 @@ public class DialogDeleteAccountFragment extends DialogFragment implements View.
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        String title = getArguments().getString("title", "delete account");
-        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        Dialog dialog = getDialog();
+
+        if (dialog != null){
+            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        }
 
     }
 

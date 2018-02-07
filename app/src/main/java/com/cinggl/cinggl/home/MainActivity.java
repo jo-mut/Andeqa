@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.RelativeLayout;
+import android.widget.ProgressBar;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
@@ -22,7 +22,7 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity {
     private CollectionReference usersReference;
     private FirebaseAuth firebaseAuth;
-    @Bind(R.id.progressBarRelativeLayout)RelativeLayout mProgressBarRelativeLayout;
+    @Bind(R.id.progressBar)ProgressBar mProgressBar;
 
 
     @Override
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void authenticationListener(){
         firebaseAuth = FirebaseAuth.getInstance();
-        mProgressBarRelativeLayout.setVisibility(View.VISIBLE);
+        mProgressBar.setVisibility(View.VISIBLE);
         if (firebaseAuth.getCurrentUser() != null){
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             Log.d("user is present", "user is present");

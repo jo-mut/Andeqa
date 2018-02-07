@@ -1,20 +1,21 @@
-<LinearLayout
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="300dp"
     android:layout_height="match_parent"
-    tools:context="com.cinggl.cinggl.settings.DialogPostsSettingsFragment">
+    tools:context="com.cinggl.cinggl.settings.FragmentPostSettings">
 
-    <!-- TODO: Update blank fragment layout -->
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
         <RelativeLayout
+            android:id="@+id/deletePostRelativeLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/deletePostRelativeLayout">
+            android:layout_height="wrap_content">
+
 
             <TextView
                 android:text="Delete"
@@ -39,6 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+
             <TextView
                 android:text="Redeem Sense Credits"
                 android:layout_width="wrap_content"
@@ -55,14 +57,13 @@
                 android:paddingTop="15dp"
                 android:paddingBottom="15dp" />
 
-
         </RelativeLayout>
-
 
         <RelativeLayout
             android:id="@+id/tradePostRelativeLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
 
             <TextView
                 android:text="Sale this post"
@@ -80,9 +81,7 @@
                 android:paddingTop="15dp"
                 android:paddingBottom="15dp" />
 
-
         </RelativeLayout>
 
     </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>

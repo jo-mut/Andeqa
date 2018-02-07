@@ -4,7 +4,6 @@ package com.cinggl.cinggl.home;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,7 +17,6 @@ import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.Trace;
 import com.cinggl.cinggl.models.Post;
 import com.cinggl.cinggl.models.TraceData;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -29,13 +27,14 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-
-import static android.R.attr.data;
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
+import retrofit.Callback;
+import retrofit.RequestInterceptor;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -99,7 +98,6 @@ public class HomeFragment extends Fragment implements Trace.TracingListener{
 
         return view;
     }
-
 
     private void refresh(){
         randomPostsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {

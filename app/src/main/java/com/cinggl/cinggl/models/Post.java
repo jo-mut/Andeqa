@@ -1,5 +1,11 @@
 package com.cinggl.cinggl.models;
 
+import android.graphics.Movie;
+
+import java.util.List;
+
+import static android.os.Build.VERSION_CODES.M;
+
 /**
  * Created by J.EL on 10/28/2017.
  */
@@ -148,4 +154,5 @@ public class Post {
     public void setDefaultRate(double defaultRate) {
         this.defaultRate = defaultRate;
     }
+
 }

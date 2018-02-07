@@ -114,9 +114,26 @@ public class SignUpActivity extends AppCompatActivity implements
                                 mErrorRelativeLayout.setVisibility(View.VISIBLE);
                                 mErrorTextView.setText("Sorry !" + " " + "User with this email already " +
                                         "exists. Please use another email!");
+                                mErrorRelativeLayout.postDelayed(new Runnable() {
+                                    public void run() {
+                                        mErrorRelativeLayout.setVisibility(View.GONE);
+
+                                    }
+                                }, 3000);
+
+
                             }else {
+
                                 mErrorRelativeLayout.setVisibility(View.VISIBLE);
                                 mErrorTextView.setText("Check that you are connected to the internet!");
+
+                                mErrorRelativeLayout.postDelayed(new Runnable() {
+                                    public void run() {
+                                        mErrorRelativeLayout.setVisibility(View.GONE);
+                                    }
+                                }, 3000);
+
+
                             }
                         }else {
                             //editText for email and password

@@ -31,7 +31,7 @@ public class ProfilePostsViewHolder extends RecyclerView.ViewHolder implements V
     public TextView accountUsernameTextView;
     public CircleImageView profileImageView;
     public TextView commentsCountTextView;
-    public ImageView cingleSettingsImageView;
+    public ImageView settingsImageView;
     public RelativeLayout cingleTitleRelativeLayout;
     public RelativeLayout descriptionRelativeLayout;
     public ProportionalImageView cingleImageView;
@@ -56,7 +56,7 @@ public class ProfilePostsViewHolder extends RecyclerView.ViewHolder implements V
         accountUsernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
-        cingleSettingsImageView = (ImageView) itemView.findViewById(R.id.settingsImageView);
+        settingsImageView = (ImageView) itemView.findViewById(R.id.settingsImageView);
         cingleTitleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
         descriptionRelativeLayout  = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
         cingleImageView = (ProportionalImageView) mView.findViewById(R.id.postImageView);

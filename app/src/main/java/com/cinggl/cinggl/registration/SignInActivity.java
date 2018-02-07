@@ -10,24 +10,40 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cinggl.cinggl.Constants;
 import com.cinggl.cinggl.R;
+import com.cinggl.cinggl.home.MainActivity;
 import com.cinggl.cinggl.home.NavigationDrawerActivity;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+
+import static android.R.attr.delay;
 
 public class SignInActivity extends AppCompatActivity implements
         View.OnClickListener{
@@ -44,7 +60,8 @@ public class SignInActivity extends AppCompatActivity implements
     @Bind(R.id.forgotPasswordTextView)TextView mForgotPasswordTextView;
     @Bind(R.id.errorRelativeLayout)RelativeLayout mErrorRelativeLayout;
     @Bind(R.id.errorTextView)TextView mErrorTextView;
-    @Bind(R.id.progressBarRelativeLayout)RelativeLayout mProgressBarRelativeLayout;
+    @Bind(R.id.progressBar)ProgressBar mProgressBar;
+    @Bind(R.id.googleSignInButton)Button mGoogleSignInButton;
 
 
     private FirebaseAuth mAuth;
@@ -161,14 +178,19 @@ public class SignInActivity extends AppCompatActivity implements
                 Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
                 mAuthProgressDialog.dismiss();
                 if (!task.isSuccessful()) {
-
                     mErrorRelativeLayout.setVisibility(View.VISIBLE);
                     mErrorTextView.setText("Please confirm that your email and password match and" + " " +
                             "that you are connected to the internet");
-                    mAuthProgressDialog.dismiss();
+                    mErrorRelativeLayout.postDelayed(new Runnable() {
+                        public void run() {
+                            mErrorRelativeLayout.setVisibility(View.GONE);
+
+                        }
+                    }, 5000);
+
 
                 }else {
-                    mProgressBarRelativeLayout.setVisibility(View.VISIBLE);
+                    mProgressBar.setVisibility(View.VISIBLE);
                     usersReferenece = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
                     usersReferenece.document(mAuth.getCurrentUser().getUid())
                             .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -212,9 +234,22 @@ public class SignInActivity extends AppCompatActivity implements
             if (TextUtils.isEmpty(mEmailEditText.getText())){
                 mErrorRelativeLayout.setVisibility(View.VISIBLE);
                 mErrorTextView.setText("Email cannot be empty!");
+                mErrorRelativeLayout.postDelayed(new Runnable() {
+                    public void run() {
+                        mErrorRelativeLayout.setVisibility(View.GONE);
+                    }
+                }, 5000);
+
             }else if (TextUtils.isEmpty(mPasswordEditText.getText())){
                 mErrorRelativeLayout.setVisibility(View.VISIBLE);
                 mErrorTextView.setText("Password cannot be empty!");
+                mErrorRelativeLayout.postDelayed(new Runnable() {
+                    public void run() {
+                        mErrorRelativeLayout.setVisibility(View.GONE);
+                    }
+                }, 5000);
+
+
             }else {
                 loginWithPassword();
 
@@ -228,4 +263,5 @@ public class SignInActivity extends AppCompatActivity implements
         }
 
     }
+
 }

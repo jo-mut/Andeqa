@@ -27,7 +27,6 @@ import com.cinggl.cinggl.models.PostSale;
 import com.cinggl.cinggl.models.Timeline;
 import com.cinggl.cinggl.models.TransactionDetails;
 import com.cinggl.cinggl.people.FollowerProfileActivity;
-import com.cinggl.cinggl.settings.DialogPostsSettingsFragment;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.likes.WhoLikedViewHolder;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -186,18 +185,6 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
         });
 
 
-        holder.settingsImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Bundle bundle = new Bundle();
-                bundle.putString(OtherPostAdapter.EXTRA_POST_KEY, postKey);
-                FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
-                DialogPostsSettingsFragment dialogPostsSettingsFragment = DialogPostsSettingsFragment.newInstance("best posts settings");
-                dialogPostsSettingsFragment.setArguments(bundle);
-                dialogPostsSettingsFragment.show(fragmenManager, "best settings fragment");
-
-            }
-        });
 
 
         cinglesReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -342,21 +329,38 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                                                                     final Timeline timeline = new Timeline();
                                                                     final long time = new Date().getTime();
 
-                                                                    final String postId = databaseReference.push().getKey();
-                                                                    timeline.setPushId(postKey);
-                                                                    timeline.setTimeStamp(time);
-                                                                    timeline.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                    timeline.setType("like");
-                                                                    timeline.setPostId(postId);
-                                                                    timeline.setStatus("unRead");
+                                                                    timelineCollection.document(uid).collection("timeline")
+                                                                            .orderBy(firebaseAuth.getCurrentUser().getUid())
+                                                                            .whereEqualTo("postKey", postKey)
+                                                                            .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                                                                @Override
+                                                                                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-                                                                    if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                                                        //do nothing
-                                                                    }else {
-                                                                        timelineCollection.document(uid).collection("timeline")
-                                                                                .document(firebaseAuth.getCurrentUser().getUid())
-                                                                                .set(timeline);
-                                                                    }
+                                                                                    if (e != null) {
+                                                                                        Log.w(TAG, "Listen error", e);
+                                                                                        return;
+                                                                                    }
+
+
+                                                                                    if (documentSnapshots.isEmpty()){
+                                                                                        final String postId = databaseReference.push().getKey();
+                                                                                        timeline.setPushId(postKey);
+                                                                                        timeline.setTimeStamp(time);
+                                                                                        timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                                        timeline.setType("like");
+                                                                                        timeline.setPostId(postId);
+                                                                                        timeline.setStatus("unRead");
+
+                                                                                        if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                                                                            //do nothing
+                                                                                        }else {
+                                                                                            timelineCollection.document(uid).collection("timeline")
+                                                                                                    .document(postId)
+                                                                                                    .set(timeline);
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            });
                                                                 }
                                                             });
                                                     processLikes = false;

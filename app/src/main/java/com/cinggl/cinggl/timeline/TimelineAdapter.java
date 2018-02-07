@@ -270,7 +270,7 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onClick(View view) {
                     timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
-                            .collection("timeline").document(uid).update("status", "read");
+                            .collection("timeline").document(postId).update("status", "read");
                 }
             });
         }else {
@@ -557,7 +557,7 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onClick(View view) {
                     timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
-                            .collection("timeline").document(pushId).update("status", "read");
+                            .collection("timeline").document(uid).update("status", "read");
                 }
             });
         }else {

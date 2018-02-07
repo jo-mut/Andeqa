@@ -119,6 +119,7 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
             getSenderProfile();
             getMessages();
 
+
         }
 
 
@@ -211,6 +212,7 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
                     LinearLayoutManager layoutManager = new LinearLayoutManager(MessagesAccountActivity.this);
                     mMessagesRecyclerView.setHasFixedSize(false);
                     mMessagesRecyclerView.setLayoutManager(layoutManager);
+                    layoutManager.scrollToPosition(messagingAdapter.getItemCount() - 1);
                 }
             }
         });

@@ -921,22 +921,38 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                                                 final Timeline timeline = new Timeline();
                                                                 final long time = new Date().getTime();
 
-                                                                final String postId = databaseReference.push().getKey();
+                                                                timelineCollection.document(uid).collection("timeline")
+                                                                        .orderBy(firebaseAuth.getCurrentUser().getUid())
+                                                                        .whereEqualTo("postKey", mPostKey)
+                                                                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                                                            @Override
+                                                                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-                                                                timeline.setPushId(mPostKey);
-                                                                timeline.setTimeStamp(time);
-                                                                timeline.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                timeline.setType("like");
-                                                                timeline.setPostId(postId);
-                                                                timeline.setStatus("unRead");
+                                                                                if (e != null) {
+                                                                                    Log.w(TAG, "Listen error", e);
+                                                                                    return;
+                                                                                }
 
-                                                                if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                                                    //do nothing
-                                                                }else {
-                                                                    timelineCollection.document(uid).collection("timeline")
-                                                                            .document(firebaseAuth.getCurrentUser().getUid())
-                                                                            .set(timeline);
-                                                                }
+
+                                                                                if (documentSnapshots.isEmpty()){
+                                                                                    final String postId = databaseReference.push().getKey();
+                                                                                    timeline.setPushId(mPostKey);
+                                                                                    timeline.setTimeStamp(time);
+                                                                                    timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                                    timeline.setType("like");
+                                                                                    timeline.setPostId(postId);
+                                                                                    timeline.setStatus("unRead");
+
+                                                                                    if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                                                                        //do nothing
+                                                                                    }else {
+                                                                                        timelineCollection.document(uid).collection("timeline")
+                                                                                                .document(postId)
+                                                                                                .set(timeline);
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        });
 
                                                             }
                                                         }

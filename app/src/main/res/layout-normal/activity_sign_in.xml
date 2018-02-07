@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -20,6 +21,14 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <ProgressBar
+                android:visibility="gone"
+                android:indeterminateOnly="true"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/progressBar" />
 
             <RelativeLayout
                 android:padding="10dp"
@@ -43,8 +52,10 @@
 
             </RelativeLayout>
 
+
             <RelativeLayout
                 android:layout_marginTop="100dp"
+                android:layout_marginBottom="40dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -57,9 +68,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:paddingLeft="30dp"
-                    android:paddingRight="30dp"
-                    android:layout_marginBottom="40dp">
-
+                    android:paddingRight="30dp">
 
                     <EditText
                         android:id="@+id/emailEditText"
@@ -71,7 +80,7 @@
                         android:nextFocusDown="@+id/passwordEditText"
                         android:padding="15sp"
                         android:layout_marginBottom="10dp"
-                        android:textColor="@android:color/white"
+                        android:textColor="@android:color/black"
                         android:textSize="16sp" />
 
                     <EditText
@@ -83,21 +92,8 @@
                         android:inputType="textPassword"
                         android:nextFocusDown="@+id/passwordEditText"
                         android:padding="15sp"
-                        android:textColor="@android:color/white"
+                        android:textColor="@android:color/black"
                         android:textSize="16sp" />
-
-
-                    <!--<Button-->
-                        <!--android:id="@+id/passwordLoginButton"-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:padding="10dp"-->
-                        <!--android:text="Log in"-->
-                        <!--android:background="@drawable/colour_btn_background"-->
-                        <!--android:layout_marginTop="15dp"-->
-                        <!--android:textSize="14sp"-->
-                        <!--android:textAlignment="center"-->
-                        <!--android:textColor="@android:color/white" />-->
 
                     <Button
                         android:id="@+id/passwordLoginButton"
@@ -110,6 +106,19 @@
                         android:padding="10dp"
                         android:text="Sign_in"
                         android:textSize="14sp" />
+
+
+                    <!--<Button-->
+                    <!--android:id="@+id/passwordLoginButton"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:padding="10dp"-->
+                    <!--android:text="Log in"-->
+                    <!--android:background="@drawable/colour_btn_background"-->
+                    <!--android:layout_marginTop="15dp"-->
+                    <!--android:textSize="14sp"-->
+                    <!--android:textAlignment="center"-->
+                    <!--android:textColor="@android:color/white" />-->
 
                     <LinearLayout
                         android:orientation="horizontal"
@@ -144,7 +153,7 @@
 
 
                             <TextView
-                                android:text="Sign Up"
+                                android:text="Sign_up"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentTop="false"
@@ -167,160 +176,39 @@
 
             </RelativeLayout>
 
-            <!--<RelativeLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content">-->
 
-            <!--<View-->
-            <!--android:layout_height="0.3dp"-->
-            <!--android:layout_alignParentLeft="false"-->
-            <!--android:background="@color/colorDivider"-->
-            <!--android:layout_centerHorizontal="false"-->
-            <!--android:layout_centerInParent="true"-->
-            <!--android:layout_width="250sp"-->
-            <!--android:layout_marginBottom="40dp" />-->
+            <RelativeLayout
+                android:paddingLeft="30dp"
+                android:paddingRight="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <!--</RelativeLayout>-->
+                <View
+                    android:id="@+id/signingDividingView"
+                    android:layout_height="0.3dp"
+                    android:layout_alignParentLeft="false"
+                    android:background="@color/colorDivider"
+                    android:layout_centerHorizontal="true"
+                    android:layout_width="200sp"
+                    android:layout_marginBottom="40dp" />
 
-            <!--<LinearLayout-->
-            <!--android:orientation="horizontal"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginLeft="30dp"-->
-            <!--android:layout_marginRight="30dp">-->
+                <Button
+                    android:id="@+id/googleSignInButton"
+                    android:layout_below="@+id/signingDividingView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:textColor="@android:color/white"
+                    android:background="@drawable/google_btn_background"
+                    android:padding="10dp"
+                    android:text="Sign in with google+"
+                    android:textSize="14sp" />
 
-            <!--<RelativeLayout-->
-            <!--android:layout_width="150sp"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="0.03"-->
-            <!--android:layout_marginRight="20sp">-->
-
-            <!--<Button-->
-            <!--android:text="Google"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:id="@+id/googleSigninButton"-->
-            <!--android:textAllCaps="false"-->
-            <!--android:background="@drawable/google_btn_background"-->
-            <!--android:textColor="@android:color/white"-->
-            <!--android:layout_alignParentTop="true"-->
-            <!--android:layout_alignParentLeft="true"-->
-            <!--android:layout_alignParentStart="true" />-->
-
-
-            <!--</RelativeLayout>-->
-
-            <!--<RelativeLayout-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_weight="0.03"-->
-            <!--android:layout_width="40sp">-->
-
-            <!--<TextView-->
-            <!--android:text="or"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:textColor="@android:color/white"-->
-            <!--android:layout_centerVertical="true"-->
-            <!--android:layout_centerHorizontal="true"-->
-            <!--android:id="@+id/signInOrTextView"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_centerInParent="true" />-->
-
-
-            <!--</RelativeLayout>-->
-
-            <!--<RelativeLayout-->
-            <!--android:layout_width="150sp"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="0.03"-->
-            <!--android:layout_marginLeft="20sp">-->
-
-            <!--<Button-->
-            <!--android:text="Facebook"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:id="@+id/facebookSigninButton"-->
-            <!--android:textAllCaps="false"-->
-            <!--android:background="@drawable/fb_btn_background"-->
-            <!--android:textColor="@android:color/white"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_alignParentTop="true"-->
-            <!--android:layout_alignParentRight="true"-->
-            <!--android:layout_alignParentEnd="true" />-->
-
-            <!--</RelativeLayout>-->
-
-
-
-
-
-            <!--<RelativeLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="30dp"-->
-            <!--android:paddingLeft="40dp"-->
-            <!--android:paddingRight="40dp">-->
-
-            <!--<View-->
-            <!--android:layout_height="0.3dp"-->
-            <!--android:layout_centerHorizontal="false"-->
-            <!--android:layout_centerInParent="true"-->
-            <!--android:layout_alignParentLeft="false"-->
-            <!--android:layout_alignParentRight="true"-->
-            <!--android:layout_width="140sp"-->
-            <!--android:background="@color/colorAccent" />-->
-
-            <!--<TextView-->
-            <!--android:text="or"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:textColor="@android:color/white"-->
-            <!--android:layout_centerVertical="true"-->
-            <!--android:layout_centerHorizontal="true"-->
-            <!--android:id="@+id/signInOrTextView" />-->
-
-            <!--<View-->
-            <!--android:layout_height="0.3dp"-->
-            <!--android:layout_centerHorizontal="false"-->
-            <!--android:layout_centerInParent="true"-->
-            <!--android:layout_alignParentLeft="true"-->
-            <!--android:layout_width="140sp"-->
-            <!--android:background="@color/colorAccent" />-->
-
-            <!--</RelativeLayout>-->
-
-            <!--<RelativeLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:paddingRight="30dp"-->
-            <!--android:paddingLeft="30dp">-->
-
-            <!---->
-
-            <!--</RelativeLayout>-->
-
-            <!--</LinearLayout>-->
-
+            </RelativeLayout>
 
         </LinearLayout>
 
 
     </ScrollView>
-
-    <RelativeLayout
-        android:paddingLeft="1dp"
-        android:paddingRight="1dp"
-        android:visibility="gone"
-        android:id="@+id/progressBarRelativeLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/white">
-
-        <ProgressBar
-            android:indeterminateOnly="true"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/progressBar" />
-
-    </RelativeLayout>
-
 
 </LinearLayout>

@@ -18,7 +18,6 @@ import com.cinggl.cinggl.R;
 import com.cinggl.cinggl.firestore.FirestoreAdapter;
 import com.cinggl.cinggl.models.Post;
 import com.cinggl.cinggl.models.Timeline;
-import com.cinggl.cinggl.settings.DialogPostsSettingsFragment;
 import com.cinggl.cinggl.comments.CommentsActivity;
 import com.cinggl.cinggl.likes.LikesActivity;
 import com.cinggl.cinggl.models.Balance;
@@ -29,6 +28,7 @@ import com.cinggl.cinggl.models.TransactionDetails;
 import com.cinggl.cinggl.people.FollowerProfileActivity;
 import com.cinggl.cinggl.profile.PersonalProfileActivity;
 import com.cinggl.cinggl.likes.WhoLikedViewHolder;
+import com.cinggl.cinggl.settings.FragmentPostSettings;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
@@ -52,10 +52,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Date;
-
-import static com.cinggl.cinggl.R.string.credit;
-import static com.cinggl.cinggl.R.string.likes;
-import static com.cinggl.cinggl.home.PostDetailActivity.round;
 
 /**
  * Created by J.EL on 11/17/2017.
@@ -185,9 +181,9 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
                 Bundle bundle = new Bundle();
                 bundle.putString(MainPostsAdapter.EXTRA_POST_KEY, postKey);
                 FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
-                DialogPostsSettingsFragment dialogPostsSettingsFragment = DialogPostsSettingsFragment.newInstance("post settings");
-                dialogPostsSettingsFragment.setArguments(bundle);
-                dialogPostsSettingsFragment.show(fragmenManager, "post settings fragment");
+                FragmentPostSettings fragmentPostSettings = FragmentPostSettings.newInstance("post settngs");
+                fragmentPostSettings.setArguments(bundle);
+                fragmentPostSettings.show(fragmenManager, "post settings fragment");
             }
         });
 
@@ -721,7 +717,7 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
 
                                 if (processLikes){
                                     if (documentSnapshots.isEmpty()){
-                                        Like like = new Like();
+                                        final Like like = new Like();
                                         like.setUid(firebaseAuth.getCurrentUser().getUid());
                                         like.setPushId(firebaseAuth.getCurrentUser().getUid());
                                         likesReference.document(postKey).collection("likes")
@@ -732,23 +728,38 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
                                                         final Timeline timeline = new Timeline();
                                                         final long time = new Date().getTime();
 
-                                                        final String postId = databaseReference.push().getKey();
+                                                        timelineCollection.document(uid).collection("timeline")
+                                                                .whereEqualTo("postKey", postKey)
+                                                                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                                                    @Override
+                                                                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-                                                        timeline.setPushId(postKey);
-                                                        timeline.setTimeStamp(time);
-                                                        timeline.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                        timeline.setType("like");
-                                                        timeline.setPostId(postId);
-                                                        timeline.setStatus("unRead");
+                                                                        if (e != null) {
+                                                                            Log.w(TAG, "Listen error", e);
+                                                                            return;
+                                                                        }
 
-                                                        if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                                            //do nothing
-                                                        }else {
-                                                            timelineCollection.document(uid).collection("timeline")
-                                                                    .document(firebaseAuth.getCurrentUser().getUid())
-                                                                    .set(timeline);
-                                                        }
 
+                                                                        if (documentSnapshots.isEmpty()){
+                                                                            Log.d("timeline is empty", postKey);
+                                                                            final String postId = databaseReference.push().getKey();
+                                                                            timeline.setPushId(postKey);
+                                                                            timeline.setTimeStamp(time);
+                                                                            timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                            timeline.setType("like");
+                                                                            timeline.setPostId(postId);
+                                                                            timeline.setStatus("unRead");
+
+                                                                            if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                                                                //do nothing
+                                                                            }else {
+                                                                                timelineCollection.document(uid).collection("timeline")
+                                                                                        .document(postId)
+                                                                                        .set(timeline);
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                });
 
 
                                                     }
