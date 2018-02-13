@@ -7,7 +7,7 @@
     android:weightSum="1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.cinggl.cinggl.comments.CommentsActivity">
+    tools:context="com.andeqa.andeqa.comments.CommentsActivity">
 
 
     <RelativeLayout
@@ -105,7 +105,7 @@
                         android:textSize="32sp"
                         android:layout_marginLeft="3dp" />
 
-                    <com.cinggl.cinggl.utils.ProportionalImageView
+                    <com.andeqa.andeqa.utils.ProportionalImageView
                         android:id="@+id/postImageView"
                         android:layout_width="match_parent"
                         android:layout_alignParentTop="true"

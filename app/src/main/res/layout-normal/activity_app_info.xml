@@ -8,7 +8,7 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical"
     android:background="@drawable/default_gradient_color"
-    tools:context="com.cinggl.cinggl.AppInfoActivity">
+    tools:context="com.andeqa.andeqa.AppInfoActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

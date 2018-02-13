@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#e4e4e4"
-    tools:context="com.cinggl.cinggl.registration.FollowCinggulans">
+    tools:context="com.andeqa.andeqa.registration.FollowCinggulans">
 
 
     <android.support.v7.widget.RecyclerView

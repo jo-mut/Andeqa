@@ -11,19 +11,19 @@
     </item>
 
     <item
-        android:id="@+id/action_messages"
-        android:icon="@drawable/ic_chat_white_24dp"
-        app:showAsAction="ifRoom"
-        android:enabled="true"
-        android:title="Messages">
-    </item>
-
-    <item
         android:id="@+id/action_market"
         android:icon="@drawable/ic_business_black_24dp"
         app:showAsAction="ifRoom"
         android:enabled="true"
         android:title="Market">
+    </item>
+
+    <item
+        android:id="@+id/action_messages"
+        android:icon="@drawable/ic_chat_white_24dp"
+        app:showAsAction="ifRoom"
+        android:enabled="true"
+        android:title="Chats">
     </item>
 
     <item
@@ -33,5 +33,6 @@
         android:enabled="true"
         android:title="Timeline">
     </item>
+
 
 </menu>

@@ -6,7 +6,7 @@
     android:id="@+id/activity_cingle_creation"
     android:layout_width="match_parent"
     android:orientation="vertical"
-    tools:context="com.cinggl.cinggl.creation.CreatePostActivity"
+    tools:context="com.andeqa.andeqa.creation.CreatePostActivity"
     android:layout_height="match_parent"
     android:weightSum="1">
 
@@ -51,20 +51,25 @@
                         android:textSize="14sp"
                         android:layout_marginLeft="10dp"
                         android:layout_marginStart="10dp"
-                        android:layout_alignTop="@+id/sharePostImageView"
+                        android:layout_alignTop="@+id/sharePostButton"
                         android:layout_toRightOf="@+id/profileImageView"
                         android:layout_toEndOf="@+id/profileImageView" />
 
-                    <ImageView
+                    <Button
+                        android:text="Post"
+                        android:id="@+id/sharePostButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:srcCompat="@drawable/ic_menu_send"
-                        android:id="@+id/sharePostImageView"
-                        android:padding="5dp"
                         android:layout_centerVertical="true"
                         android:layout_alignParentRight="true"
                         android:layout_alignParentEnd="true"
-                        android:tint="@color/colorPrimary" />
+                        android:layout_marginRight="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/colour_btn_background"
+                        android:minWidth="50dp"
+                        android:minHeight="25dp"
+                        android:textSize="12sp" />
 
                 </RelativeLayout>
 
@@ -90,7 +95,7 @@
                         android:layout_height="wrap_content"
                         android:inputType="textMultiLine|textCapWords"
                         android:background="@drawable/edit_text_background"
-                        android:id="@+id/cingleTitleEditText"
+                        android:id="@+id/titleEditText"
                         android:hint=" Write a Title..."
                         android:textSize="10sp"
                         android:paddingTop="10dp"
@@ -114,7 +119,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_marginRight="10dp"
                         android:layout_marginTop="10dp"
-                        android:layout_below="@+id/cingleTitleEditText"/>
+                        android:layout_below="@+id/titleEditText"/>
 
                 </RelativeLayout>
 
@@ -122,7 +127,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <com.cinggl.cinggl.utils.ProportionalImageView
+                    <com.andeqa.andeqa.utils.ProportionalImageView
                         android:id="@+id/postImageView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -147,7 +152,7 @@
             android:inputType="textMultiLine|textCapSentences"
             android:ems="10"
             android:background="@drawable/edit_text_background"
-            android:id="@+id/cingleDescriptionEditText"
+            android:id="@+id/descriptionEditText"
             android:hint="Write a description note..."
             android:textSize="10sp"
             android:paddingBottom="10dp"
@@ -168,7 +173,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
-            android:layout_below="@+id/cingleDescriptionEditText"/>
+            android:layout_below="@+id/descriptionEditText"/>
 
     </RelativeLayout>
 

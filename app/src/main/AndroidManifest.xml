@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.cinggl.cinggl">
+    package="com.andeqa.andeqa">
 
     <supports-screens
         android:anyDensity="true"
@@ -23,7 +23,6 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
@@ -31,7 +30,7 @@
         android:allowBackup="true"
         android:allowClearUserData="false"
         android:icon="@mipmap/ic_launcher"
-        android:label="Cinggl"
+        android:label="Andeqa"
         android:largeHeap="false"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -64,11 +63,7 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".likes.LikesActivity"
-            android:label="Cinggulans who liked"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".people.PeopleActivity"
+            android:label="Andeqans who liked"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
 
@@ -115,7 +110,7 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".home.NavigationDrawerActivity"
-            android:label="Cinggl"
+            android:label="Andeqa"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
@@ -162,8 +157,8 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:launchMode="singleInstance"
             android:name=".message.MessagesAccountActivity"
+            android:launchMode="singleInstance"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
@@ -176,11 +171,7 @@
             android:label="Settings"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity
-            android:label="Create post"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"
-            android:name=".creation.CreationPostActivity" />
+        <activity android:name=".registration.SignInWithGoogle"></activity>
     </application>
 
 </manifest>

@@ -1,0 +1,21 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:context="com.andeqa.andeqa.utils.DialogProgressFragment">
+
+    <RelativeLayout
+        android:layout_width="225dp"
+        android:id="@+id/progressRelativeLayout"
+        android:layout_height="150dp">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar"
+            android:layout_centerInParent="true" />
+
+    </RelativeLayout>
+</RelativeLayout>

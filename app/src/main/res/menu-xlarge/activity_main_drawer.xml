@@ -33,7 +33,7 @@
 
             <item
                 android:icon="@drawable/ic_menu_share"
-                android:id="@+id/action_share_cinggl"
+                android:id="@+id/action_share_andeqa"
                 android:title="@string/share" />
 
         </menu>

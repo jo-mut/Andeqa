@@ -63,7 +63,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <com.cinggl.cinggl.utils.ProportionalImageView
+        <com.andeqa.andeqa.utils.ProportionalImageView
             android:id="@+id/postImageView"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
@@ -263,6 +263,27 @@
 
 
         </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:padding="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:text="Buy"
+            android:layout_width="wrap_content"
+            android:id="@+id/buyPostButton"
+            android:textAllCaps="false"
+            android:background="@drawable/colour_btn_background"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:minHeight="26dp"
+            android:minWidth="50dip"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
 
     </RelativeLayout>
 

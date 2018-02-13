@@ -41,7 +41,7 @@
     <string name="about">About</string>
     <string name="intro_tutorial">Introduction</string>
     <string name="extras">Help</string>
-    <string name="share">Share Cinggl</string>
+    <string name="share">Share Andeqa</string>
     <string name="settings">Settings</string>
 
     <!-- Strings related to Settings -->
@@ -194,7 +194,7 @@ This privacy policy page was created at privacypolicytemplate.net and modified/g
     <string name="place_holder_text">Share your ideas, inspiration beautiful photos and see what other think as your earn in Sense Credits</string>
     <string name="selling_holder_text">Currently there are no post on sale. Check again later</string>
     <string name="timeline_holder_text">You have no recent activities on your timeline.</string>
-    <string name="messages_holder_text">You have not received any new messages. Start a chat with your followers</string>
+    <string name="messages_holder_text">You have not received any new messages. Start a chat with your friends</string>
 
     <!--google signin-->
     <!-- Button text -->

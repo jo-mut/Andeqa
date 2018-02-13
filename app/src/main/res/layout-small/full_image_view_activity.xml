@@ -7,7 +7,7 @@ android:layout_height="match_parent"
 xmlns:tools="http://schemas.android.com/tools"
 android:fitsSystemWindows="true"
 android:background="#000000"
-tools:context="com.cinggl.cinggl.home.FullImageViewActivity">
+tools:context="com.andeqa.andeqa.home.FullImageViewActivity">
 
 
     <RelativeLayout
@@ -15,7 +15,7 @@ tools:context="com.cinggl.cinggl.home.FullImageViewActivity">
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.cinggl.cinggl.utils.ProportionalImageView
+        <com.andeqa.andeqa.utils.ProportionalImageView
             android:id="@+id/postImageView"
             android:layout_width="match_parent"
             android:layout_alignParentTop="false"

@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <com.cinggl.cinggl.utils.ProportionalImageView
+        <com.andeqa.andeqa.utils.ProportionalImageView
             android:id="@+id/postImageView"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"

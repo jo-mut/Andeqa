@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="600dp"
     android:layout_height="match_parent"
-    tools:context="com.cinggl.cinggl.settings.FragmentPostSettings">
+    tools:context="com.andeqa.andeqa.settings.FragmentPostSettings">
 
     <LinearLayout
         android:orientation="vertical"

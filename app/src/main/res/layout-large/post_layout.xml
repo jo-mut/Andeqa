@@ -90,7 +90,8 @@
                         android:layout_toLeftOf="@+id/tradeMethodTextView"
                         android:layout_toStartOf="@+id/tradeMethodTextView"
                         android:layout_marginStart="10dp"
-                        android:layout_marginLeft="10dp" />
+                        android:layout_marginLeft="10dp"
+                        android:textColor="@color/colorPrimary" />
 
                 </RelativeLayout>
 
@@ -127,7 +128,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <com.cinggl.cinggl.utils.ProportionalImageView
+            <com.andeqa.andeqa.utils.ProportionalImageView
                 android:id="@+id/postImageView"
                 android:layout_width="match_parent"
                 android:adjustViewBounds="false"
@@ -312,7 +313,8 @@
                     android:layout_marginBottom="5dp"
                     android:layout_width="match_parent"
                     android:padding="5dp"
-                    android:layout_height="30dp">
+                    android:layout_height="30dp"
+                    android:id="@+id/likesRelativeLayout">
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/likesRecyclerView"

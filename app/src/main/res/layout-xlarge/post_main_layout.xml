@@ -116,7 +116,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <com.cinggl.cinggl.utils.ProportionalImageView
+                        <com.andeqa.andeqa.utils.ProportionalImageView
                             android:id="@+id/postImageView"
                             android:layout_width="match_parent"
                             android:layout_alignParentTop="true"

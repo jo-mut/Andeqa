@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.cinggl.cinggl.people.FollowingActivity">
+    tools:context="com.andeqa.andeqa.people.FollowingActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

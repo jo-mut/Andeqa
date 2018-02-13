@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context="com.cinggl.cinggl.home.PostDetailActivity">
+    tools:context="com.andeqa.andeqa.home.PostDetailActivity">
 
     <LinearLayout
         android:orientation="vertical"
@@ -46,7 +46,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <com.cinggl.cinggl.utils.ProportionalImageView
+                    <com.andeqa.andeqa.utils.ProportionalImageView
                         android:id="@+id/postImageView"
                         android:layout_width="match_parent"
                         android:layout_height="300dp"

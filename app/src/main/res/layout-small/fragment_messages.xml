@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.cinggl.cinggl.message.MessagesFragment">
+    tools:context="com.andeqa.andeqa.message.MessagesFragment">
 
     <!-- TODO: Update blank fragment layout -->
 

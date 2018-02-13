@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingBottom="20dp"
-    tools:context="com.cinggl.cinggl.market.ListOnMarketActivity"
+    tools:context="com.andeqa.andeqa.market.ListOnMarketActivity"
     android:background="@android:color/white">
 
     <android.support.v7.widget.Toolbar
@@ -154,7 +154,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <com.cinggl.cinggl.utils.ProportionalImageView
+                <com.andeqa.andeqa.utils.ProportionalImageView
                     android:id="@+id/postImageView"
                     android:layout_width="match_parent"
                     android:layout_alignParentTop="true"

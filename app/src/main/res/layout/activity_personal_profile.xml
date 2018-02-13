@@ -7,7 +7,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    tools:context="com.cinggl.cinggl.profile.PersonalProfileActivity">
+    tools:context="com.andeqa.andeqa.profile.PersonalProfileActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"
