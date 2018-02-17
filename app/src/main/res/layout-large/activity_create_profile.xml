@@ -52,7 +52,7 @@
                   >
 
                     <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/profilePictureImageView"
+                        android:id="@+id/profileImageView"
                         android:layout_alignParentTop="true"
                         android:layout_marginLeft="30dp"
                         android:layout_marginStart="30dp"
@@ -70,6 +70,18 @@
                         android:id="@+id/updateProfilePictureImageButton"
                         android:layout_width="80dp"
                         android:layout_height="80dp" />
+
+                    <TextView
+                        android:text="Create your profile to have a better experience with other Andeqans"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@+id/profileImageView"
+                        android:layout_centerHorizontal="true"
+                        android:layout_toEndOf="@+id/profileImageView"
+                        android:layout_toRightOf="@+id/profileImageView"
+                        android:id="@+id/createProfileTextView"
+                        android:textSize="21sp"
+                        android:layout_margin="30dp" />
 
                 </RelativeLayout>
 

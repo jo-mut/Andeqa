@@ -45,7 +45,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UpdateProfileActivity extends AppCompatActivity implements
         View.OnClickListener {
-    @Bind(R.id.profilePictureImageView)CircleImageView mProfilePictureImageView;
+    @Bind(R.id.profileImageView)CircleImageView mProfilePictureImageView;
     @Bind(R.id.usernameEditText) EditText mUsernameEditText;
     @Bind(R.id.bioEditText)EditText mBioEditText;
     @Bind(R.id.fisrtNameEditText)EditText mFirstNameEditText;

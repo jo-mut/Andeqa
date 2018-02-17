@@ -10,6 +10,8 @@ import android.widget.TextView;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Message;
 
+import static com.andeqa.andeqa.R.id.statusView;
+
 /**
  * Created by J.EL on 1/4/2018.
  */
@@ -20,11 +22,10 @@ public class MessageSendViewHolder extends RecyclerView.ViewHolder {
     Context mContext;
     public TextView messageTextView;
     public TextView timeTextView;
-    public ImageView statusImageView;
+//    public ImageView statusImageView;
     public RelativeLayout sendRelativeLayout;
     public RelativeLayout statusRelativeLayout;
     public TextView dateTextView;
-    public View statusView;
 
     public MessageSendViewHolder(View itemView) {
         super(itemView);
@@ -32,11 +33,10 @@ public class MessageSendViewHolder extends RecyclerView.ViewHolder {
         mContext = itemView.getContext();
         messageTextView = (TextView) mView.findViewById(R.id.messageTextView);
         timeTextView = (TextView) mView.findViewById(R.id.timeTextView);
-        statusImageView = (ImageView) mView.findViewById(R.id.statusImageView);
+//        statusImageView = (ImageView) mView.findViewById(R.id.statusImageView);
         sendRelativeLayout = (RelativeLayout) mView.findViewById(R.id.sendRelativeLayout);
         statusRelativeLayout = (RelativeLayout) mView.findViewById(R.id.statusRelativeLayout);
         dateTextView = (TextView) mView.findViewById(R.id.dateTextView);
-        statusView = (View) mView.findViewById(R.id.statusView);
 
     }
 

@@ -25,8 +25,6 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     public RelativeLayout roomRelativeLayout;
     public View statusView;
 
-
-
     public MessageViewHolder(View itemView) {
         super(itemView);
         mView = itemView;

@@ -10,15 +10,17 @@
     tools:context="com.andeqa.andeqa.registration.SignInWithGoogle">
 
     <ImageView
-        android:layout_width="70sp"
-        android:layout_height="70sp"
+        android:layout_height="100sp"
         app:srcCompat="@mipmap/ic_launcher"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:id="@+id/appLogoImageView" />
+        android:id="@+id/appLogoImageView"
+        android:layout_width="100sp" />
 
     <TextView
-        android:text="Signing in with Google..."
+        android:padding="10dp"
+        android:textSize="14sp"
+        android:text="Signing in..."
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/appLogoImageView"
@@ -30,8 +32,24 @@
         android:layout_below="@+id/signingInTextView"
         android:indeterminateOnly="true"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:id="@+id/progressBar"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"
+        android:layout_width="100dp" />
+
+    <TextView
+        android:text="Andeqa"
+        android:textSize="40sp"
+        android:textStyle="normal|bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/appNameTextView"
+        android:textColor="@android:color/white"
+        android:layout_marginBottom="20dp"
+        android:layout_centerVertical="false"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true" />
+
 </RelativeLayout>
+
+

@@ -51,17 +51,14 @@
     <string name="pref_header_about">Help</string>
     <string name="summary_app_info">Cinggl</string>
     <string name="title_app_info">App Info</string>
-    <string name="app_version">1.2.0.1</string>
+    <string name="app_version">1.4.0.Z0</string>
     <string name="summary_support">Got any queries? We are happy to help!</string>
     <string name="title_send_feedback">Send Feedback</string>
     <string name="title_faq">FAQ</string>
     <string name="summary_faq">View frequently asked questions</string>
-    <string name="url_faq">https://www.androidhive.info/privacy-policy/</string>
     <string name="privacy_policy">Privacy Policy</string>
-    <string name="url_privacy">https://www.androidhive.info/privacy-policy/</string>
     <string name="delete_account">Delete my account</string>
     <string name="title_terms">Terms &amp; Conditions</string>
-    <string name="url_terms">https://www.androidhive.info/terms-of-service/</string>
     <string name="title_version">Version</string>
     <string name="choose_email_client">Choose email client</string>
     <string name="title_new_notification_sound">New message notification</string>
@@ -80,102 +77,6 @@
     <!--animations-->
     <integer name="slide_animation_duration">300</integer>
 
-    <!--create post-->
-    <string name="choose_cingle_backing">Allow pontetial Cinngulans to invest in your Cingle in
-        Cingle Sense Credits. You cannot choose any other method of trade with Cingle Backing
-        activated</string>
-    <string name="choose_cingle_lacing">Merge Cingle with another Cingle while earning profit from
-        the success of the higher perfoming Cingle. You can only sell your Cingle once you merge
-        with another</string>
-    <string name="choose_cingle_leasing">Lease your Cingle to interested Cingulans and earn 10% of
-        all the CSC earned by the Cingle. You will be able to sell your Cingle during the lease
-        period and proceed with any other necessary way of trade after the lease period</string>
-    <string name="choose_cingle_selling">Sell your Cingle to interested buyers in Cingle Sense
-        Credits. Once Cingle is sold you lose all the rights of the Cingle Ownership</string>
-    <string name="title_activity_laced_cingles">LacedCinglesActivity</string>
-
-    <!--terms of service-->
-    <string name="term_of_service">
-        Privacy Policy
-[Developer name or Company name] built the [Cinggl] app as a Free app. This SERVICE is provided by
-        [Developer name or Company name] at no cost and is intended for use as is.
-        This page is used to inform website visitors regarding [my|our] policies with the collection, use,
-        and disclosure of Personal Information if anyone decided to use [my|our] Service.
-        If you choose to use [my|our] Service, then you agree to the collection and use of information in
-        relation to this policy. The Personal Information that [I | we] collect is used for providing and
-        improving the Service. [I | we] will not use or share your information with anyone except as described
-        in this Privacy Policy.
-        The terms used in this Privacy Policy have the same meanings as in our Terms and Conditions, which is
-        accessible at [Cinggl] unless otherwise defined in this Privacy Policy.
-        Information Collection and Use
-
-        For a better experience, while using our Service, [I | we] may require you to provide us with
-        certain personally identifiable information, including but not limited to Official names, usernames
-        and email, profile picture. The information that [I | we] request is [retained on your device and is
-        not collected by [me|us] in any way]|[will be retained by us and used as described in this privacy policy].
-        The app does use third party services that may collect information used to identify you.
-        Link to privacy policy of third party service providers used by the app
-        Google Play Services
-Log Data
-
-[I | we] want to inform you that whenever you use [my|our] Service, in a case of an error in the app
-        [I | we] collect data and information (through third party products) on your phone called Log
-        Data. This Log Data may include information such as your device Internet Protocol (“IP”) address,
-        device name, operating system version, the configuration of the app when utilizing [my|our] Service,
-        the time and date of your use of the Service, and other statistics.
-
-Cookies
-
-Cookies are files with small amount of data that is commonly used an anonymous unique identifier.
-        These are sent to your browser from the website that you visit and are stored on your device internal memory.
-This Service does not use these “cookies” explicitly. However, the app may use third party code and
-        libraries that use “cookies” to collection information and to improve their services. You have
-        the option to either accept or refuse these cookies and know when a cookie is being sent to your
-        device. If you choose to refuse our cookies, you may not be able to use some portions of this Service.
-
-Service Providers
-[I | we] may employ third-party companies and individuals due to the following reasons:
-
-To facilitate our Service;
-To provide the Service on our behalf;
-To perform Service-related services; or
-To assist us in analyzing how our Service is used.
-[I | we] want to inform users of this Service that these third parties have access to your Personal
-        Information. The reason is to perform the tasks assigned to them on our behalf. However, they are
-        obligated not to disclose or use the information for any other purpose.
-
-Security
-        [I | we] value your trust in providing us your Personal Information, thus we are striving to
-        use commercially acceptable means of protecting it. But remember that no method of transmission
-        over the internet, or method of electronic storage is 100% secure and reliable, and [I | we]
-        cannot guarantee its absolute security.
-
-Links to Other Sites
-        This Service may contain links to other sites. If you click on a third-party link, you will
-        be directed to that site. Note that these external sites are not operated by [me|us]. Therefore,
-        [I | we] strongly advise you to review the Privacy Policy of these websites. [I | we] have no
-        control over and assume no responsibility for the content, privacy policies, or practices of
-        any third-party sites or services.
-
-Children’s Privacy
-
-        These Services do not address anyone under the age of 13. [I | we] do not knowingly collect personally
-        identifiable information from children under 13. In the case [I | we] discover that a child under
-        13 has provided [me|us] with personal information, [I | we] immediately delete this from our servers.
-        If you are a parent or guardian and you are aware that your child has provided us with personal
-        information, please contact [me|us] so that [I | we] will be able to do necessary actions.
-
-Changes to This Privacy Policy
-
-[I | we] may update our Privacy Policy from time to time. Thus, you are advised to review this page
-        periodically for any changes. [I | we] will notify you of any changes by posting the new Privacy
-        Policy on this page. These changes are effective immediately after they are posted on this page.
-
-Contact Us
-
-If you have any questions or suggestions about [my|our] Privacy Policy, do not hesitate to contact [me|us].
-
-This privacy policy page was created at privacypolicytemplate.net and modified/generated by App Privacy Policy Generator</string>
     <string name="title_activity_tabbed">TabbedActivity</string>
     <string name="title_activity_test">TestActivity</string>
     <string name="title_activity_nav">NavActivity</string>
@@ -195,11 +96,6 @@ This privacy policy page was created at privacypolicytemplate.net and modified/g
     <string name="selling_holder_text">Currently there are no post on sale. Check again later</string>
     <string name="timeline_holder_text">You have no recent activities on your timeline.</string>
     <string name="messages_holder_text">You have not received any new messages. Start a chat with your friends</string>
-
-    <!--google signin-->
-    <!-- Button text -->
-    <string name="btn_logout_from_google">Logout from Google</string>
-    <string name="btn_revoke_access">Revoke Access</string>
 
 
 </resources>

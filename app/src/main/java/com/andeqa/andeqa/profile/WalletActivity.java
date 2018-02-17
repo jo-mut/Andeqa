@@ -54,7 +54,6 @@ public class WalletActivity extends AppCompatActivity {
     //firebase
     //adapters
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
-    private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     private FirebaseAuth firebaseAuth;
     private static final String EXTRA_POST_KEY = "post key";
     private DecimalFormat formatter =  new DecimalFormat("0.00000000");
@@ -142,7 +141,7 @@ public class WalletActivity extends AppCompatActivity {
                     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                         if (documentSnapshot.exists()){
                             final TransactionDetails td = documentSnapshot.toObject(TransactionDetails.class);
-                            final String transactionKey = td.getCingleId();
+                            final String transactionKey = td.getPushId();
 
                             cinglesReference.document(transactionKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                 @Override

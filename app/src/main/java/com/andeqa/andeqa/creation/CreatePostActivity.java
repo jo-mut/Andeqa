@@ -223,7 +223,6 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
         Uri imageSelected = data.getParcelableExtra(Intent.EXTRA_STREAM);
         try {
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageSelected);
-//            mPostImageView.setImageBitmap(bitmap);
             Picasso.with(this)
                     .load(imageSelected)
                     .into(mPostImageView, new Callback.EmptyCallback(){
@@ -259,6 +258,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                             .fit()
                             .centerCrop()
                             .networkPolicy(NetworkPolicy.OFFLINE)
+                            .placeholder(R.drawable.profle_image_background)
                             .into(mProfileImageView, new Callback() {
                                 @Override
                                 public void onSuccess() {
@@ -271,6 +271,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                                             .load(profileImage)
                                             .fit()
                                             .centerCrop()
+                                            .placeholder(R.drawable.profle_image_background)
                                             .into(mProfileImageView);
                                 }
                             });
@@ -316,7 +317,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
         if (photoUri != null){
             progressDialog.show();
             mSharePostButton.setEnabled(false);
-            mSharePostButton.setBackgroundColor(Color.GRAY);
+            mSharePostButton.setBackgroundResource(R.drawable.inactive_button_background);
             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             final String uid = user.getUid();
 
@@ -384,9 +385,10 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                             transactionDetails.setPushId(pushId);
                             transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
                             transactionDetails.setDate(currentDate);
-
-                            DocumentReference ownerRef = ownersReference.document(pushId);
-                            ownerRef.set(transactionDetails);
+                            transactionDetails.setType("owner");
+                            transactionDetails.setAmount(0.0);
+                            transactionDetails.setWalletBalance(0.0);
+                            ownersReference.document(pushId).set(transactionDetails);
 
                             progressDialog.dismiss();
 

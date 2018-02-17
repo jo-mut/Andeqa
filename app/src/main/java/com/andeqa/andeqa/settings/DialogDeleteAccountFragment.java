@@ -29,7 +29,10 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -99,7 +102,7 @@ public class DialogDeleteAccountFragment extends DialogFragment implements View.
 
     public void deleteAccountProgessDialog(){
         progressDialog = new ProgressDialog(getContext());
-        progressDialog.setMessage("Updating your profile...");
+        progressDialog.setMessage("Deleting your profile...");
         progressDialog.setCancelable(true);
         progressDialog.getWindow().setLayout(100, 150);
     }
@@ -116,45 +119,53 @@ public class DialogDeleteAccountFragment extends DialogFragment implements View.
             final String email = mEmailEditText.getText().toString().trim();
             final String password = mPasswordEditText.getText().toString().trim();
 
-            AuthCredential credential = EmailAuthProvider
+            final AuthCredential credential = EmailAuthProvider
                     .getCredential(email, password);
 
-            // Prompt the user to re-provide their sign-in credentials
-            if (user != null){
-                user.reauthenticate(credential)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                user.delete()
+            mUsersCollectionReference.document(firebaseAuth.getCurrentUser().getUid())
+                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                            if (documentSnapshot.exists()){
+                                mUsersCollectionReference.document(firebaseAuth.getCurrentUser()
+                                        .getUid()).delete();
+
+                                user.reauthenticate(credential)
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    Log.d(TAG, "User account deleted.");
-                                                    progressDialog.dismiss();
+
+                                                if (task.isSuccessful()){
+                                                    user.delete();
+                                                    Intent intent = new Intent(getContext(), SignUpActivity.class);
+                                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                    startActivity(intent);
+
                                                     Toast.makeText(getContext(), "Account successfully deleted",
                                                             Toast.LENGTH_LONG).show();
-                                                    Intent intent = new Intent(getContext(), SignUpActivity.class);
-                                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                    startActivity(intent);
+                                                    progressDialog.dismiss();
                                                 }else {
-                                                    Toast.makeText(getContext(), "Sorry! Please try again",
+                                                    Toast.makeText(getContext(), "Check that email and password match and try again",
                                                             Toast.LENGTH_LONG).show();
-                                                    Intent intent = new Intent(getContext(), SignUpActivity.class);
-                                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                    startActivity(intent);
+                                                    progressDialog.dismiss();
                                                 }
+
                                             }
                                         });
 
+
                             }
-                        });
-            }
+                        }
+                    });
+
 
         }
 
 
     }
+
+
 
     @Override
     public void onClick(View v){

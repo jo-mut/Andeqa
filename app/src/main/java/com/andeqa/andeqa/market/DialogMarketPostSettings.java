@@ -116,6 +116,8 @@ public class DialogMarketPostSettings extends DialogFragment implements View.OnC
                     }
                 }
             });
+
+            dismiss();
         }
 
         if (v == mNoRelativeLayout){

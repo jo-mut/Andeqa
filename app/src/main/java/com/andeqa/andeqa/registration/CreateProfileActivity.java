@@ -47,7 +47,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
     @Bind(R.id.fisrtNameEditText)EditText mFirstNameEditText;
     @Bind(R.id.secondNameEditText)EditText mSecondNameEditText;
     @Bind(R.id.usernameEditText) EditText mUsernameEditText;
-    @Bind(R.id.profilePictureImageView)CircleImageView mProfilePictureImageView;
+    @Bind(R.id.profileImageView)CircleImageView mProfilePictureImageView;
     @Bind(R.id.updateProfilePictureImageButton)ImageButton mUpdateProfilePictureImageButton;
     @Bind(R.id.submitUserInfoButton)Button mSubmitUserInfoButton;
     @Bind(R.id.errorRelativeLayout)RelativeLayout mErrorRelativeLayout;
@@ -89,12 +89,12 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
 
             email = getIntent().getStringExtra(EMAIL);
             if(email == null){
-               throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
+               throw new IllegalArgumentException("pass EMAIL");
             }
 
             password = getIntent().getStringExtra(PASSWORD);
             if(password == null){
-               throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
+               throw new IllegalArgumentException("pass PASSWORD");
             }
 
             createAuthProgressDialog();
@@ -237,6 +237,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
         cinggulan.setSecondName(secondName);
         cinggulan.setUsername(username);
         cinggulan.setUid(uid);
+        cinggulan.setEmail(email);
 
         DocumentReference pushRef = usersReference.document(uid);
         String pushId = pushRef.getId();
@@ -245,12 +246,6 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
         pushRef.set(cinggulan).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-
-                //the user is already logged in so create profile and move to next activity
-                Intent intent = new Intent(CreateProfileActivity.this, NavigationDrawerActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish();
 
                 //move to next actvity even if the user doesnt submit a profile image
                 if (profileUri != null){
@@ -273,7 +268,6 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
                     });
                 }
 
-
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -282,6 +276,12 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
                         Toast.LENGTH_SHORT).show();
             }
         });
+
+        //the user is already logged in so create profile and move to next activity
+        Intent intent = new Intent(CreateProfileActivity.this, NavigationDrawerActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
 
     }
 

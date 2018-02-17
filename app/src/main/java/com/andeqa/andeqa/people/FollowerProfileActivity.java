@@ -91,6 +91,7 @@ public class FollowerProfileActivity extends AppCompatActivity
     private DocumentSnapshot lastVisible;
     private boolean processFollow = false;
     private String roomId;
+    private boolean processRoom = false;
 
 
     @Override
@@ -384,7 +385,8 @@ public class FollowerProfileActivity extends AppCompatActivity
         }
 
         if (v == mSendMessageImageView){
-            messagesUsersCollection.document("messaging users")
+            processRoom = true;
+            messagesUsersCollection.document("room")
                     .collection(mUid).document(firebaseAuth.getCurrentUser().getUid())
                     .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
@@ -394,19 +396,26 @@ public class FollowerProfileActivity extends AppCompatActivity
                         return;
                     }
 
-                    if (documentSnapshot.exists()){
-                        Room room = documentSnapshot.toObject(Room.class);
-                        roomId = room.getRoomId();
-                        Intent intent = new Intent(FollowerProfileActivity.this, MessagesAccountActivity.class);
-                        intent.putExtra(FollowerProfileActivity.EXTRA_ROOM_UID, roomId);
-                        intent.putExtra(FollowerProfileActivity.EXTRA_USER_UID, mUid);
-                        startActivity(intent);
-                    }else {
-                        roomId = databaseReference.push().getKey();
-                        Intent intent = new Intent(FollowerProfileActivity.this, MessagesAccountActivity.class);
-                        intent.putExtra(FollowerProfileActivity.EXTRA_ROOM_UID, roomId);
-                        intent.putExtra(FollowerProfileActivity.EXTRA_USER_UID, mUid);
-                        startActivity(intent);
+                    if (processRoom){
+                        if (documentSnapshot.exists()){
+                            Room room = documentSnapshot.toObject(Room.class);
+                            roomId = room.getRoomId();
+                            Intent intent = new Intent(FollowerProfileActivity.this, MessagesAccountActivity.class);
+                            intent.putExtra(FollowerProfileActivity.EXTRA_ROOM_UID, roomId);
+                            intent.putExtra(FollowerProfileActivity.EXTRA_USER_UID, mUid);
+                            startActivity(intent);
+
+                            processRoom = false;
+
+                        }else {
+                            roomId = databaseReference.push().getKey();
+                            Intent intent = new Intent(FollowerProfileActivity.this, MessagesAccountActivity.class);
+                            intent.putExtra(FollowerProfileActivity.EXTRA_ROOM_UID, roomId);
+                            intent.putExtra(FollowerProfileActivity.EXTRA_USER_UID, mUid);
+                            startActivity(intent);
+
+                            processRoom = false;
+                        }
                     }
                 }
             });

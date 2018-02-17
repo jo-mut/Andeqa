@@ -29,11 +29,13 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.creation.CameraActivity;
 import com.andeqa.andeqa.creation.CreatePostActivity;
 import com.andeqa.andeqa.market.MarketFragment;
 import com.andeqa.andeqa.message.MessagesFragment;
 import com.andeqa.andeqa.models.Cinggulan;
 import com.andeqa.andeqa.profile.PersonalProfileActivity;
+import com.andeqa.andeqa.settings.SettingsActivity;
 import com.andeqa.andeqa.timeline.TimelineFragment;
 import com.andeqa.andeqa.utils.BottomNavigationViewBehavior;
 import com.andeqa.andeqa.utils.BottomNavigationViewHelper;
@@ -116,8 +118,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             messagingCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
 
-
-
             fetchData();
             fetchUserEmail();
 
@@ -134,19 +134,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
                 return true;
             }
         });
-
-//        View view = mBottomNavigationView.getChildAt(3);
-//
-//        BottomNavigationItemView itemView = (BottomNavigationItemView) view;
-//
-//        View badge = LayoutInflater.from(this)
-//                .inflate(R.layout.notification_layout, mBottomNavigationView, false);
-//        TextView notificationTextView = badge.findViewById(R.id.notificationTextView);
-//        notificationTextView.setText("22+");
-//        notificationTextView.setText("22+");
-//
-//        itemView.addView(badge);
-
 
         CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams)
                 mBottomNavigationView.getLayoutParams();
@@ -415,6 +402,11 @@ public class NavigationDrawerActivity extends AppCompatActivity
             startActivityForResult(intent, IMAGE_GALLERY_REQUEST);
 
         }
+
+//        if (v == mFloatingActionButton){
+//            Intent intent = new Intent(NavigationDrawerActivity.this, CameraActivity.class);
+//            startActivity(intent);
+//        }
     }
 
 }

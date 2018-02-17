@@ -17,6 +17,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static android.media.CamcorderProfile.get;
 
 /**
@@ -36,6 +39,7 @@ public class MessagingAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> 
     private CollectionReference messagingUsersCollection;
     private Query messagingUsersQuery;
     public boolean showOnClick = true;
+    private List<DocumentSnapshot> mSnapshots = new ArrayList<>();
 
 
 
@@ -107,7 +111,7 @@ public class MessagingAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> 
 
     private void populateSend(final MessageSendViewHolder holder, int position){
         messagingUsersCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
-        messagingUsersCollection.document("messaging users")
+        messagingUsersCollection.document("room")
                 .collection(firebaseAuth.getCurrentUser().getUid());
         Message message = getSnapshot(position).toObject(Message.class);
         final String pushId = message.getPushId();
@@ -115,6 +119,8 @@ public class MessagingAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> 
         holder.messageTextView.setText(message.getMessage());
         holder.timeTextView.setText(DateFormat.format("HH:mm", message.getTimeStamp()));
         holder.dateTextView.setText(DateFormat.format("dd-MMM-yy", message.getTimeStamp()));
+
+
 
         holder.sendRelativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,4 +163,6 @@ public class MessagingAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> 
         });
 
     }
+
+
 }

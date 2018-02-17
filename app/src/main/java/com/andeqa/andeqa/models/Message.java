@@ -11,7 +11,6 @@ public class Message {
     String message;
     String pushId;
     String type;
-    String status;
     String roomId;
     long timeStamp;
 
@@ -19,13 +18,12 @@ public class Message {
     }
 
     public Message(String senderUid, String recepientUid, String message,
-                   String pushId, String type, String status, String roomId, long timeStamp) {
+                   String pushId, String type, String roomId, long timeStamp) {
         this.senderUid = senderUid;
         this.recepientUid = recepientUid;
         this.message = message;
         this.pushId = pushId;
         this.type = type;
-        this.status = status;
         this.roomId = roomId;
         this.timeStamp = timeStamp;
 
@@ -71,13 +69,6 @@ public class Message {
         this.type = type;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 
     public String getRoomId() {
         return roomId;

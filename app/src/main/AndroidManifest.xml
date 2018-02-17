@@ -126,7 +126,9 @@
             android:label="Set sale price"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity android:name=".registration.CreateProfileActivity" />
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".registration.CreateProfileActivity" />
         <activity
             android:name=".home.PostDetailActivity"
             android:label="Post"
@@ -152,18 +154,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".settings.TermsActivity"
-            android:label="Term of service"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
             android:name=".message.MessagesAccountActivity"
-            android:launchMode="singleInstance"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".AppInfoActivity"
-            android:label="@string/about"
+            android:label="Chat"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
@@ -171,7 +163,15 @@
             android:label="Settings"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity android:name=".registration.SignInWithGoogle"></activity>
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".registration.SignInWithGoogle" />
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".creation.CameraActivity" />
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".registration.SaveGoogleProfileActivity"/>
     </application>
 
 </manifest>

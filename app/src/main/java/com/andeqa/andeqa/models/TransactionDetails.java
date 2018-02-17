@@ -7,7 +7,6 @@ package com.andeqa.andeqa.models;
 public class TransactionDetails {
     String uid;
     String pushId;
-    String cingleId;
     String date;
     String type;
     double amount;
@@ -18,11 +17,10 @@ public class TransactionDetails {
     }
 
 
-    public TransactionDetails(String uid, String pushId, String cingleId, String date,
+    public TransactionDetails(String uid, String pushId, String date,
                               String type, double amount, double walletBalance) {
         this.uid = uid;
         this.pushId = pushId;
-        this.cingleId = cingleId;
         this.date = date;
         this.type = type;
         this.amount = amount;
@@ -46,13 +44,6 @@ public class TransactionDetails {
         this.pushId = pushId;
     }
 
-    public String getCingleId() {
-        return cingleId;
-    }
-
-    public void setCingleId(String cingleId) {
-        this.cingleId = cingleId;
-    }
 
     public String getDate() {
         return date;

@@ -67,7 +67,7 @@ public class MessagesFragment extends Fragment {
 
         if (firebaseAuth.getCurrentUser() != null){
             messagingUsersCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
-            messagingUsersQuery = messagingUsersCollection.document("messaging users")
+            messagingUsersQuery = messagingUsersCollection.document("room")
                     .collection(firebaseAuth.getCurrentUser().getUid());
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
 
@@ -80,7 +80,7 @@ public class MessagesFragment extends Fragment {
     }
 
     private void showPlaceHolder(){
-        messagingUsersCollection.document("messaging users")
+        messagingUsersCollection.document("room")
                 .collection(firebaseAuth.getCurrentUser().getUid())
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -120,7 +120,7 @@ public class MessagesFragment extends Fragment {
                     holder.roomRelativeLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            messagingUsersCollection.document("messaging users")
+                            messagingUsersCollection.document("room")
                                     .collection(firebaseAuth.getCurrentUser().getUid())
                                     .document(postKey).update("status", "read");
                             Intent intent = new Intent(getContext(), MessagesAccountActivity.class);

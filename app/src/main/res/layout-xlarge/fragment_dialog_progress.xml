@@ -8,7 +8,10 @@
     <RelativeLayout
         android:id="@+id/progressRelativeLayout"
         android:layout_width="300dp"
-        android:layout_height="200dp">
+        android:layout_height="200dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <ProgressBar
             style="?android:attr/progressBarStyle"
@@ -16,6 +19,15 @@
             android:layout_height="wrap_content"
             android:id="@+id/progressBar"
             android:layout_centerInParent="true" />
+
+        <TextView
+            android:layout_below="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/loadingTextView"
+            android:textAlignment="center"
+            android:textSize="28sp" />
 
     </RelativeLayout>
 </RelativeLayout>

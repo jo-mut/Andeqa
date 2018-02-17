@@ -14,25 +14,41 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:id="@+id/appLogoImageView"
-        android:layout_width="105sp"
-        android:layout_height="105sp" />
+        android:layout_width="150sp"
+        android:layout_height="150sp" />
 
     <TextView
-        android:text="Signing in with Google..."
+        android:padding="15dp"
+        android:textSize="21sp"
+        android:text="Signing in..."
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/appLogoImageView"
         android:layout_centerHorizontal="true"
         android:id="@+id/signingInTextView"
-        android:textColor="@color/greyColor"
-        android:textSize="21sp" />
+        android:textColor="@color/greyColor" />
 
     <ProgressBar
         android:layout_below="@+id/signingInTextView"
         android:indeterminateOnly="true"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:id="@+id/progressBar"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"
+        android:layout_width="150dp" />
+
+    <TextView
+        android:text="Andeqa"
+        android:textSize="60sp"
+        android:textStyle="normal|bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/appNameTextView"
+        android:textColor="@android:color/white"
+        android:layout_marginBottom="20dp"
+        android:layout_centerVertical="false"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true" />
 </RelativeLayout>
+
+

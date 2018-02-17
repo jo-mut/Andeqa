@@ -17,34 +17,37 @@
 
 
         <ImageView
-            app:srcCompat="@mipmap/ic_launcher"
+            android:src="@drawable/ic_launcher"
             android:layout_centerHorizontal="true"
             android:id="@+id/cingglLogoImageView"
             android:layout_centerInParent="true"
-            android:layout_width="140sp"
-            android:layout_height="140sp" />
+            android:layout_width="200sp"
+            android:layout_height="200sp"
+            android:adjustViewBounds="true" />
 
         <ProgressBar
             android:visibility="gone"
-            android:layout_below="@+id/appNameTextView"
+            android:layout_below="@+id/cingglLogoImageView"
             android:indeterminateOnly="true"
             style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="100dp"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:id="@+id/progressBar"
             android:layout_centerInParent="true" />
 
         <TextView
             android:text="Andeqa"
-            android:textSize="60sp"
+            android:textSize="80sp"
             android:textStyle="normal|bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/appNameTextView"
             android:textColor="@android:color/white"
             android:layout_centerVertical="false"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@+id/cingglLogoImageView"/>
+            android:layout_marginBottom="30dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true" />
 
     </RelativeLayout>
 

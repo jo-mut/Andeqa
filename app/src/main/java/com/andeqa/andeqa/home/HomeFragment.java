@@ -3,21 +3,26 @@ package com.andeqa.andeqa.home;
 
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.os.Trace;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.Trace;
+import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.TraceData;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -26,16 +31,20 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+import static android.media.CamcorderProfile.get;
+
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment implements Trace.TracingListener{
+public class HomeFragment extends Fragment{
     @Bind(R.id.singleOutRecyclerView)RecyclerView singleOutRecyclerView;
     @Bind(R.id.placeHolderRelativeLayout)RelativeLayout mPlaceHolderRelativeLayout;
+    @Bind(R.id.progressBar)ProgressBar progressBar;
 
 
     private static final String TAG = HomeFragment.class.getSimpleName();
@@ -50,12 +59,13 @@ public class HomeFragment extends Fragment implements Trace.TracingListener{
     private FirebaseAuth firebaseAuth;
     //adapters
     private MainPostsAdapter mainPostsAdapter;
+    private MainPostsViewHolder mainPostsViewHolder;
+    private PostsAdapter postsAdapter;
+    private PostViewHolder postViewHolder;
     private LinearLayoutManager layoutManager;
     private int TOTAL_ITEMS = 50;
-    private Trace trace;
-
-
-
+    private List<String> postsIds = new ArrayList<>();
+    private List<Post> posts = new ArrayList<>();
 
     public HomeFragment() {
         // Required empty public constructor
@@ -69,6 +79,7 @@ public class HomeFragment extends Fragment implements Trace.TracingListener{
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.bind(this, view);
 
+
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
             //firestore
@@ -76,24 +87,37 @@ public class HomeFragment extends Fragment implements Trace.TracingListener{
             randomPostsQuery = cinglesReference.orderBy("timeStamp", Query.Direction.DESCENDING)
                     .limit(TOTAL_ITEMS);
 
-            refresh();
+            setAllPosts();
 
         }
-
-//        trace = new Trace.Builder()
-//                .setRecyclerView(singleOutRecyclerView)
-//                .setMinimumViewingTimeThreshold(2000)
-//                .setMinimumVisibleHeightThreshold(60)
-//                .setTracingListener(this)
-//                .setDataDumpInterval(1000)
-//                .dumpDataAfterInterval(true)
-//                .build();
 
 
         return view;
     }
 
-    private void refresh(){
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setRecyclerView();
+
+        if (singleOutRecyclerView != null){
+            progressBar.setVisibility(View.GONE);
+        }else {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void setRecyclerView(){
+        mainPostsAdapter = new MainPostsAdapter(randomPostsQuery, getContext());
+        mainPostsAdapter.startListening();
+        singleOutRecyclerView.setAdapter(mainPostsAdapter);
+        singleOutRecyclerView.setHasFixedSize(false);
+        layoutManager = new LinearLayoutManager(getContext());
+        singleOutRecyclerView.setLayoutManager(layoutManager);
+
+    }
+
+    private void setAllPosts(){
         randomPostsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -103,85 +127,12 @@ public class HomeFragment extends Fragment implements Trace.TracingListener{
                     return;
                 }
 
-
-                if (!documentSnapshots.isEmpty()){
-                    // Get the last visible document
-                    lastVisible = documentSnapshots.getDocuments()
-                            .get(documentSnapshots.size() -1);
-                    mainPostsAdapter = new MainPostsAdapter(randomPostsQuery, getContext());
-                    mainPostsAdapter.startListening();
-                    singleOutRecyclerView.setAdapter(mainPostsAdapter);
-                    singleOutRecyclerView.setHasFixedSize(false);
-                    layoutManager = new LinearLayoutManager(getContext());
-                    singleOutRecyclerView.setLayoutManager(layoutManager);
-                }else {
+                if (documentSnapshots.isEmpty()){
                     mPlaceHolderRelativeLayout.setVisibility(View.VISIBLE);
                 }
+
             }
         });
     }
 
-    private void nextPosts(){
-//        mSwipeRefreshLayout.setRefreshing(true);
-        // Construct a new query starting at this document,
-        // get the next 30 documents.
-       final Query next = cinglesReference.orderBy("timeStamp", Query.Direction.DESCENDING)
-                .startAfter(lastVisible).limit(TOTAL_ITEMS);
-
-        next.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (!documentSnapshots.isEmpty()){
-                    mainPostsAdapter = new MainPostsAdapter(next, getContext());
-                    mainPostsAdapter.startListening();
-                    singleOutRecyclerView.setAdapter(mainPostsAdapter);
-                    singleOutRecyclerView.setHasFixedSize(false);
-                    layoutManager = new LinearLayoutManager(getContext());
-                    singleOutRecyclerView.setLayoutManager(layoutManager);
-//                    mSwipeRefreshLayout.setRefreshing(false);
-                }
-            }
-        });
-
-    }
-
-
-    @Override
-    public void traceDataDump(ArrayList<TraceData> data) {
-        if(data != null) {
-            // Do something with the data.
-            for(int i = 0 ; i < data.size(); ++i)
-                Log.i("Data dump", data.get(i).getViewId());
-        }
-
-    }
-
-//    @Override
-//    public void onStop() {
-//        super.onStop();
-//    }
-//
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        trace.getTraceData(true);
-//
-//    }
-//
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//    }
-//
-//    @Override
-//    public void onPause() {
-//        super.onPause();
-//        trace.startTracing();
-//    }
 }

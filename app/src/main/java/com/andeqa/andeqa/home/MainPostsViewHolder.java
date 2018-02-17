@@ -83,60 +83,6 @@ public class MainPostsViewHolder extends RecyclerView.ViewHolder {
         totalLikesCountTextView = (TextView) mView.findViewById(R.id.totalLikesCountTextView);
     }
 
-    public void bindRandomCingles(final DocumentSnapshot documentSnapshot){
-        final Post post = documentSnapshot.toObject(Post.class);
-        postImageView = (ProportionalImageView) mView.findViewById(R.id.postImageView);
-        descriptionTextView = (TextView) itemView.findViewById(R.id.descriptionTextView);
-        titleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
-        titleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
-        descriptionRelativeLayout  = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
-        senseCreditsTextView = (TextView) mView.findViewById(R.id.postSenseCreditsTextView);
-        tradeMethodTextView = (TextView) mView.findViewById(R.id.tradeMethodTextView);
-
-
-        Picasso.with(mContext)
-                .load(post.getImage())
-                .networkPolicy(NetworkPolicy.OFFLINE)
-                .into(postImageView, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        Log.v("Picasso", "Fetched image");
-                    }
-
-                    @Override
-                    public void onError() {
-                        Picasso.with(mContext)
-                                .load(post.getImage())
-                                .into(postImageView, new Callback() {
-                                    @Override
-                                    public void onSuccess() {
-
-                                    }
-
-                                    @Override
-                                    public void onError() {
-                                        Log.v("Picasso", "Could not fetch image");
-                                    }
-                                });
-
-
-                    }
-                });
-
-
-        if (!TextUtils.isEmpty(post.getTitle())){
-            titleTextView.setText(post.getTitle());
-            titleRelativeLayout.setVisibility(View.VISIBLE);
-
-        }
-
-        if (!TextUtils.isEmpty(post.getDescription())){
-            descriptionTextView.setText(post.getDescription());
-            descriptionRelativeLayout.setVisibility(View.VISIBLE);
-        }
-
-    }
-
 
     private static double round(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();

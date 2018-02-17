@@ -385,11 +385,4 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
 
     }
 
-
-    @Override
-    protected void onDocumentRemoved(DocumentChange change) {
-        super.onDocumentRemoved(change);
-        removeAt(change.getOldIndex());
-    }
-
 }

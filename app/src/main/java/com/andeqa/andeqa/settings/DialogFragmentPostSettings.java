@@ -30,12 +30,14 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+import static com.google.firebase.firestore.FieldValue.delete;
+
 
 /**
  * Created by J.EL on 2/6/2018.
  */
 
-public class FragmentPostSettings extends DialogFragment implements View.OnClickListener {
+public class DialogFragmentPostSettings extends DialogFragment implements View.OnClickListener {
 
     @Bind(R.id.deletePostRelativeLayout)RelativeLayout mDeleteCingleRelativeLayout;
     @Bind(R.id.tradePostRelativeLayout)RelativeLayout mTradeCingleRelativeLayout;
@@ -50,15 +52,15 @@ public class FragmentPostSettings extends DialogFragment implements View.OnClick
     private CollectionReference senseCreditReference;
     private CollectionReference ifairReference;
     private CollectionReference ownerReference;
-    private static final String TAG = FragmentPostSettings.class.getSimpleName();
+    private static final String TAG = DialogFragmentPostSettings.class.getSimpleName();
 
 
-    public static FragmentPostSettings newInstance(String title){
-        FragmentPostSettings fragmentPostSettings = new FragmentPostSettings();
+    public static DialogFragmentPostSettings newInstance(String title){
+        DialogFragmentPostSettings dialogFragmentPostSettings = new DialogFragmentPostSettings();
         Bundle args = new Bundle();
         args.putString("title", title);
-        fragmentPostSettings.setArguments(args);
-        return fragmentPostSettings;
+        dialogFragmentPostSettings.setArguments(args);
+        return dialogFragmentPostSettings;
 
     }
 
@@ -82,7 +84,7 @@ public class FragmentPostSettings extends DialogFragment implements View.OnClick
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_post_settings, container, false);
+        View view = inflater.inflate(R.layout.dialog_fragment_post_settings, container, false);
 
         ButterKnife.bind(this, view);
 
@@ -95,7 +97,7 @@ public class FragmentPostSettings extends DialogFragment implements View.OnClick
 
             Bundle bundle = getArguments();
             if (bundle != null){
-                mPostKey = bundle.getString(FragmentPostSettings.EXTRA_POST_KEY);
+                mPostKey = bundle.getString(DialogFragmentPostSettings.EXTRA_POST_KEY);
 
                 Log.d("the passed poskey", mPostKey);
 
@@ -135,14 +137,14 @@ public class FragmentPostSettings extends DialogFragment implements View.OnClick
 
         if (v == mTradeCingleRelativeLayout){
             Intent intent = new Intent(getActivity(), ListOnMarketActivity.class);
-            intent.putExtra(FragmentPostSettings.EXTRA_POST_KEY, mPostKey);
+            intent.putExtra(DialogFragmentPostSettings.EXTRA_POST_KEY, mPostKey);
             startActivity(intent);
         }
 
         if (v == mRedeemCreditsRelativeLayout){
             //LAUCH THE DIALOG TO REDEEM CREDITS
             Bundle bundle = new Bundle();
-            bundle.putString(FragmentPostSettings.EXTRA_POST_KEY, mPostKey);
+            bundle.putString(DialogFragmentPostSettings.EXTRA_POST_KEY, mPostKey);
             FragmentManager fragmentManager = getChildFragmentManager();
             DialogRedeemCredits dialogRedeemCredits = DialogRedeemCredits
                     .newInstance("redeem credits");
@@ -174,49 +176,63 @@ public class FragmentPostSettings extends DialogFragment implements View.OnClick
 
     public void deleteCingle(){
         cinglesReference.document(mPostKey)
-                .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(Void aVoid) {
-                ownerReference.document(mPostKey).delete()
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                senseCreditReference.document(mPostKey)
-                                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                            @Override
-                                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                                if (e != null) {
-                                                    Log.w(TAG, "Listen error", e);
-                                                    return;
-                                                }
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
 
-                                                if (documentSnapshot.exists()){
-                                                    senseCreditReference.document(mPostKey).delete();
-                                                }
-                                            }
-                                        });
-
-                                ifairReference.document(mPostKey)
-                                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                            @Override
-                                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                                                if (e != null) {
-                                                    Log.w(TAG, "Listen error", e);
-                                                    return;
-                                                }
-
-                                                if (documentSnapshot.exists()) {
-                                                    ifairReference.document(mPostKey).delete();
-                                                }
-                                            }
-                                        });
-
-                            }
-                        });
-
+                if (documentSnapshot.exists()){
+                    cinglesReference.document(mPostKey).delete();
+                }
             }
         });
+
+        ownerReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (documentSnapshot.exists()){
+                    ownerReference.document(mPostKey).delete();
+                }
+            }
+        });
+        senseCreditReference.document(mPostKey)
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (documentSnapshot.exists()){
+                            senseCreditReference.document(mPostKey).delete();
+                        }
+                    }
+                });
+
+        ifairReference.document(mPostKey)
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (documentSnapshot.exists()) {
+                            ifairReference.document(mPostKey).delete();
+                        }
+                    }
+                });
 
         dismiss();
     }

@@ -29,7 +29,7 @@ import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.models.TransactionDetails;
 import com.andeqa.andeqa.likes.WhoLikedViewHolder;
-import com.andeqa.andeqa.settings.FragmentPostSettings;
+import com.andeqa.andeqa.settings.DialogFragmentPostSettings;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
@@ -38,7 +38,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -115,8 +114,7 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
 
     @Override
     public void onBindViewHolder(final ProfilePostsViewHolder holder, int position) {
-        final Post post = getSnapshot(position).toObject(Post.class);
-        holder.bindProfileCingle(getSnapshot(position));
+        final Post post = getSnapshot(holder.getAdapterPosition()).toObject(Post.class);
         final String postKey = post.getPushId();
         final String uid = post.getUid();
         Log.d("post postkey", postKey);
@@ -188,9 +186,9 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                 Bundle bundle = new Bundle();
                 bundle.putString(ProfilePostsAdapter.EXTRA_POST_KEY, postKey);
                 FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
-                FragmentPostSettings fragmentPostSettings = FragmentPostSettings.newInstance("post settngs");
-                fragmentPostSettings.setArguments(bundle);
-                fragmentPostSettings.show(fragmenManager, "post settings fragment");
+                DialogFragmentPostSettings dialogFragmentPostSettings = DialogFragmentPostSettings.newInstance("post settngs");
+                dialogFragmentPostSettings.setArguments(bundle);
+                dialogFragmentPostSettings.show(fragmenManager, "post settings fragment");
             }
         });
 
@@ -923,12 +921,6 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
 
     }
 
-
-    @Override
-    protected void onDocumentRemoved(DocumentChange change) {
-        super.onDocumentRemoved(change);
-        removeAt(change.getOldIndex());
-    }
 
     private static int roundPercentage(int value, int places) {
         if (places < 0) throw new IllegalArgumentException();

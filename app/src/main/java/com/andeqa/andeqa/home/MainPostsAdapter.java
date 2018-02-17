@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +29,7 @@ import com.andeqa.andeqa.models.TransactionDetails;
 import com.andeqa.andeqa.people.FollowerProfileActivity;
 import com.andeqa.andeqa.profile.PersonalProfileActivity;
 import com.andeqa.andeqa.likes.WhoLikedViewHolder;
-import com.andeqa.andeqa.settings.FragmentPostSettings;
+import com.andeqa.andeqa.settings.DialogFragmentPostSettings;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
@@ -37,7 +38,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -72,7 +72,7 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
     private static final int LIMIT = 10;
     //firestore reference
     private FirebaseFirestore firebaseFirestore;
-    private CollectionReference cinglesReference;
+    private CollectionReference postsReference;
     private CollectionReference ifairReference;
     private com.google.firebase.firestore.Query commentsCountQuery;
     private CollectionReference ownerReference;
@@ -98,31 +98,36 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
     }
 
     @Override
+    public long getItemId(int position) {
+        return super.getItemId(position);
+    }
+
+
+
+    @Override
     public int getItemCount() {
         return super.getItemCount();
 
     }
 
     @Override
-    public MainPostsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MainPostsViewHolder onCreateViewHolder(ViewGroup parent, final int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         return new MainPostsViewHolder(inflater.inflate(R.layout.post_layout, parent, false));
     }
 
 
     @Override
-    public void onBindViewHolder(final MainPostsViewHolder holder, int position) {
-        final Post post = getSnapshot(position).toObject(Post.class);
-        holder.bindRandomCingles(getSnapshot(position));
+    public void onBindViewHolder(final MainPostsViewHolder holder, final int position) {
+        final Post post = getSnapshot(holder.getAdapterPosition()).toObject(Post.class);
         final String postKey = post.getPushId();
         final String uid = post.getUid();
         Log.d("post postkey", postKey);
 
-
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser()!= null){
             //firestore
-            cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            postsReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             ownerReference = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             ifairReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
@@ -137,6 +142,48 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
             likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
             postWalletReference = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
 
+        }
+
+
+        Picasso.with(mContext)
+                .load(post.getImage())
+                .networkPolicy(NetworkPolicy.OFFLINE)
+                .into(holder.postImageView, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        Log.v("Picasso", "Fetched image");
+                    }
+
+                    @Override
+                    public void onError() {
+                        Picasso.with(mContext)
+                                .load(post.getImage())
+                                .into(holder.postImageView, new Callback() {
+                                    @Override
+                                    public void onSuccess() {
+
+                                    }
+
+                                    @Override
+                                    public void onError() {
+                                        Log.v("Picasso", "Could not fetch image");
+                                    }
+                                });
+
+
+                    }
+                });
+
+
+        if (!TextUtils.isEmpty(post.getTitle())){
+            holder.titleTextView.setText(post.getTitle());
+            holder.titleRelativeLayout.setVisibility(View.VISIBLE);
+
+        }
+
+        if (!TextUtils.isEmpty(post.getDescription())){
+           holder.descriptionTextView.setText(post.getDescription());
+            holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
         }
 
         holder.totalLikesCountTextView.setOnClickListener(new View.OnClickListener() {
@@ -181,9 +228,9 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
                 Bundle bundle = new Bundle();
                 bundle.putString(MainPostsAdapter.EXTRA_POST_KEY, postKey);
                 FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
-                FragmentPostSettings fragmentPostSettings = FragmentPostSettings.newInstance("post settngs");
-                fragmentPostSettings.setArguments(bundle);
-                fragmentPostSettings.show(fragmenManager, "post settings fragment");
+                DialogFragmentPostSettings dialogFragmentPostSettings = DialogFragmentPostSettings.newInstance("post settngs");
+                dialogFragmentPostSettings.setArguments(bundle);
+                dialogFragmentPostSettings.show(fragmenManager, "post settings fragment");
             }
         });
 
@@ -203,6 +250,7 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
                 }
             }
         });
+
 
         senseCreditReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -564,8 +612,7 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
 
                                     @Override
                                     protected void onBindViewHolder(final WhoLikedViewHolder viewHolder, int position, Like model) {
-                                        viewHolder.bindWhoLiked(getSnapshots().getSnapshot(position));
-                                        Like like = getSnapshots().getSnapshot(position).toObject(Like.class);
+                                        Like like = getSnapshots().getSnapshot(viewHolder.getAdapterPosition()).toObject(Like.class);
                                         final String uid = like.getUid();
 
                                         viewHolder.whoLikedImageView.setOnClickListener(new View.OnClickListener() {
@@ -890,24 +937,6 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
 
 
     @Override
-    protected void onDocumentAdded(DocumentChange change) {
-        super.onDocumentAdded(change);
-
-    }
-
-    @Override
-    protected void onDocumentModified(DocumentChange change) {
-        super.onDocumentModified(change);
-    }
-
-    @Override
-    protected void onDocumentRemoved(DocumentChange change) {
-        super.onDocumentRemoved(change);
-        removeAt(change.getOldIndex());
-    }
-
-
-    @Override
     protected void onError(FirebaseFirestoreException e) {
         super.onError(e);
     }
@@ -915,6 +944,11 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
     @Override
     protected void onDataChanged() {
         super.onDataChanged();
+    }
+
+    @Override
+    protected DocumentSnapshot getSnapshot(int index) {
+        return super.getSnapshot(index);
     }
 
     //region listeners

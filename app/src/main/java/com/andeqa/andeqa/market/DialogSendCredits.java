@@ -210,8 +210,7 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                                                                                     transactionDetails.setDate(currentDate);
                                                                                     transactionDetails.setType("redeem");
 
-                                                                                    DocumentReference ownerRef = cingleOwnersReference.document(mPostKey);
-                                                                                    ownerRef.set(transactionDetails);
+                                                                                    cingleOwnersReference.document(mPostKey).set(transactionDetails);
                                                                                     //once cingle has been bought remove it from cingle selling
                                                                                     ifairReference.document(mPostKey).delete();
                                                                                 }else {
@@ -234,9 +233,7 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                                                                                     transactionDetails.setWalletBalance(newWalletBalance);
                                                                                     transactionDetails.setDate(currentDate);
                                                                                     transactionDetails.setType("redeem");
-
-                                                                                    DocumentReference ownerRef = cingleOwnersReference.document(mPostKey);
-                                                                                    ownerRef.set(transactionDetails);
+                                                                                    cingleOwnersReference.document(mPostKey).set(transactionDetails);
                                                                                     //once cingle has been bought remove it from cingle selling
                                                                                     ifairReference.document(mPostKey).delete();
                                                                                 }

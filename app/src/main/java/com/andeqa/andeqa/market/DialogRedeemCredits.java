@@ -233,7 +233,7 @@ public class DialogRedeemCredits extends DialogFragment implements View.OnClickL
                                                                                 final TransactionDetails transactionDetails = new TransactionDetails();
                                                                                 transactionDetails.setAmount(amountTransferred);
                                                                                 transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                                transactionDetails.setCingleId(mPostKey);
+                                                                                transactionDetails.setPushId(mPostKey);
                                                                                 transactionDetails.setDate(currentDate);
                                                                                 transactionDetails.setWalletBalance(newBalance);
                                                                                 transactionDetails.setType("redeem");
@@ -270,7 +270,7 @@ public class DialogRedeemCredits extends DialogFragment implements View.OnClickL
                                                                                 final TransactionDetails transactionDetails = new TransactionDetails();
                                                                                 transactionDetails.setAmount(amountTransferred);
                                                                                 transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                                transactionDetails.setCingleId(mPostKey);
+                                                                                transactionDetails.setPushId(mPostKey);
                                                                                 transactionDetails.setDate(currentDate);
                                                                                 transactionDetails.setWalletBalance(amountTransferred);
                                                                                 transactionDetails.setType("redeem");
@@ -315,7 +315,7 @@ public class DialogRedeemCredits extends DialogFragment implements View.OnClickL
                                                                                         final TransactionDetails transactionDetails = new TransactionDetails();
                                                                                         transactionDetails.setAmount(amountTransferred);
                                                                                         transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                                        transactionDetails.setCingleId(mPostKey);
+                                                                                        transactionDetails.setPushId(mPostKey);
                                                                                         transactionDetails.setDate(currentDate);
                                                                                         transactionDetails.setWalletBalance(newBalance);
                                                                                         transactionDetails.setType("redeem");
@@ -351,7 +351,7 @@ public class DialogRedeemCredits extends DialogFragment implements View.OnClickL
                                                                                         final TransactionDetails transactionDetails = new TransactionDetails();
                                                                                         transactionDetails.setAmount(amountTransferred);
                                                                                         transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                                        transactionDetails.setCingleId(mPostKey);
+                                                                                        transactionDetails.setPushId(mPostKey);
                                                                                         transactionDetails.setDate(currentDate);
                                                                                         transactionDetails.setWalletBalance(amountTransferred);
                                                                                         transactionDetails.setType("redeem");

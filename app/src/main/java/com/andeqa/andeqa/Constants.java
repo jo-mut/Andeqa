@@ -5,21 +5,21 @@ package com.andeqa.andeqa;
  */
 
 public final class Constants {
-    public  static  final String POSTS = "Posts";
-    public  static  final String FIREBASE_USERS = "Cingulans";
-    public static final String COMMENTS = "Comments";
-    public static final String LIKES= "Likes";
-    public static final String RELATIONS = "Relations";
-    public static final String WALLET = "Wallet";
-    public static final String POST_WALLET = "Post Wallet";
-    public static final String TRANSACTION_HISTORY = "Transaction History";
-    public static final String POST_OWNERS = "Post Owners";
-    public static final String SENSECREDITS = "Sense Credit";
-    public static final String SELLING = "Selling";
-    public static final String TIMELINE = "Timeline";
-    public static final String MESSAGES = "Messages";
-    public static final String VIEWS = "Views";
-    public static final String RANDOM_PUSH_ID = "random id";
+    public  static  final String POSTS = "posts";
+    public  static  final String FIREBASE_USERS = "users";
+    public static final String COMMENTS = "comments";
+    public static final String LIKES= "likes";
+    public static final String RELATIONS = "relations";
+    public static final String WALLET = "wallet";
+    public static final String POST_WALLET = "post_wallet";
+    public static final String TRANSACTION_HISTORY = "transaction_history";
+    public static final String POST_OWNERS = "post_owners";
+    public static final String SENSECREDITS = "sense_credit";
+    public static final String SELLING = "selling";
+    public static final String TIMELINE = "timeline";
+    public static final String MESSAGES = "messages";
+    public static final String VIEWS = "views";
+    public static final String RANDOM_PUSH_ID = "random_id";
 
 
 }

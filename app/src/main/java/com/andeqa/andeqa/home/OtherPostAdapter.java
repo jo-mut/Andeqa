@@ -757,14 +757,6 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
 
     }
 
-
-    @Override
-    protected void onDocumentRemoved(DocumentChange change) {
-        super.onDocumentRemoved(change);
-        removeAt(change.getOldIndex());
-    }
-
-
     //region listeners
     private static double round(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();

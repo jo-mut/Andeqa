@@ -1,11 +1,13 @@
 package com.andeqa.andeqa.home;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
@@ -16,6 +18,8 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.w3c.dom.Text;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -23,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private CollectionReference usersReference;
     private FirebaseAuth firebaseAuth;
     @Bind(R.id.progressBar)ProgressBar mProgressBar;
+    @Bind(R.id.appNameTextView)TextView mAppNameTextView;
 
 
     @Override
@@ -32,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         authenticationListener();
+        setFonts();
     }
 
 
@@ -72,5 +78,11 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
+    }
+
+    private void setFonts(){
+        Typeface appNameFont = Typeface.createFromAsset(getAssets(),
+                "fonts/Lucida Handwriting Italic.ttf");
+        mAppNameTextView.setTypeface(appNameFont);
     }
 }

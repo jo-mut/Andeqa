@@ -38,8 +38,8 @@
                         android:layout_centerVertical="true"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="37dp"
+                        android:layout_height="37dp"
                         android:background="@drawable/profle_image_background"
                         android:scaleType="centerCrop"
                         android:cropToPadding="false" />
@@ -50,7 +50,7 @@
                         android:layout_marginLeft="10dp"
                         android:layout_marginStart="10dp"
                         android:id="@+id/usernameTextView"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         android:textColor="@android:color/black"
                         android:textStyle="normal|bold"
                         android:layout_alignParentTop="true"
@@ -66,6 +66,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/tradeMethodTextView"
+                        android:textSize="12sp"
                         android:textStyle="normal|bold"
                         android:textColor="@color/colorPrimary"
                         android:layout_alignTop="@+id/profileImageView"
@@ -102,6 +103,7 @@
                     android:id="@+id/cingleTitleRelativeLayout">
 
                     <TextView
+                        android:text=""
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
@@ -110,7 +112,7 @@
                         android:id="@+id/titleTextView"
                         android:textStyle="normal|bold"
                         android:textColor="@android:color/black"
-                        android:textSize="12sp"
+                        android:textSize="14sp"
                         android:layout_marginLeft="3dp"
                         android:paddingBottom="5dp" />
 
@@ -201,11 +203,12 @@
                                 app:cardCornerRadius="10dp">
 
                                 <TextView
+                                    android:text=""
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:id="@+id/likesPercentageTextView"
                                     android:textColor="@android:color/black"
-                                    android:textSize="10sp"
+                                    android:textSize="12sp"
                                     android:layout_centerInParent="false"
                                     android:layout_centerVertical="false"
                                     android:layout_centerHorizontal="false"
@@ -246,7 +249,7 @@
                                     android:layout_height="wrap_content"
                                     android:id="@+id/dislikesPercentageTextView"
                                     android:textColor="@android:color/black"
-                                    android:textSize="10sp"
+                                    android:textSize="12sp"
                                     android:layout_centerInParent="false"
                                     android:layout_centerVertical="false"
                                     android:layout_centerHorizontal="false"
@@ -295,7 +298,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/commentsCountTextView"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         android:paddingTop="2dp"
                         android:paddingBottom="2dp"
                         android:layout_toRightOf="@+id/commentsImageView"
@@ -340,7 +343,7 @@
                         android:layout_toEndOf="@+id/likesRecyclerView"
                         android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         android:text=""
                         android:paddingLeft="4dp"
                         android:paddingRight="4dp"
@@ -361,7 +364,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/descriptionTextView"
                         android:textColor="@android:color/black"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"

@@ -70,7 +70,7 @@
             android:textSize="12sp"
             tools:text="06:00a.m." />
 
-        <ImageView
+        <!--<ImageView-->
             android:layout_toRightOf="@+id/timeTextView"
             android:layout_toEndOf="@+id/timeTextView"
             android:id="@+id/statusImageView"
