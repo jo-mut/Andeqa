@@ -127,8 +127,8 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:screenOrientation="portrait"
-            android:name=".registration.CreateProfileActivity" />
+            android:name=".registration.CreateProfileActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".home.PostDetailActivity"
             android:label="Post"
@@ -164,14 +164,18 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:screenOrientation="portrait"
-            android:name=".registration.SignInWithGoogle" />
+            android:name=".registration.SignInWithGoogle"
+            android:screenOrientation="portrait" />
         <activity
-            android:screenOrientation="portrait"
-            android:name=".creation.CameraActivity" />
+            android:name=".creation.CameraActivity"
+            android:screenOrientation="portrait" />
         <activity
-            android:screenOrientation="portrait"
-            android:name=".registration.SaveGoogleProfileActivity"/>
+            android:name=".registration.SaveGoogleProfileActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".creation.CreationActivity"
+            android:label="@string/title_activity_create"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

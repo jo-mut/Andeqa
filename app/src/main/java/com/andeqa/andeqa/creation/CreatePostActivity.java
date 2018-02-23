@@ -372,6 +372,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                             post.setUid(firebaseAuth.getCurrentUser().getUid());
                             post.setCreatorUid(firebaseAuth.getCurrentUser().getUid());
                             post.setDatePosted(currentDate);
+                            post.setType("post");
                             post.setCingleIndex("Post number" + " " + currentIdex);
                             postsReference.document(pushId).set(post);
 

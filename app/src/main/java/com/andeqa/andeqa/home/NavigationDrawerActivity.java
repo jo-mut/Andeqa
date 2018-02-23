@@ -29,13 +29,12 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.creation.CameraActivity;
 import com.andeqa.andeqa.creation.CreatePostActivity;
+import com.andeqa.andeqa.creation.CreationActivity;
 import com.andeqa.andeqa.market.MarketFragment;
 import com.andeqa.andeqa.message.MessagesFragment;
 import com.andeqa.andeqa.models.Cinggulan;
 import com.andeqa.andeqa.profile.PersonalProfileActivity;
-import com.andeqa.andeqa.settings.SettingsActivity;
 import com.andeqa.andeqa.timeline.TimelineFragment;
 import com.andeqa.andeqa.utils.BottomNavigationViewBehavior;
 import com.andeqa.andeqa.utils.BottomNavigationViewHelper;
@@ -395,18 +394,11 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
     @Override
     public void onClick(View v){
-        if(v == mFloatingActionButton){
-            Intent intent = new Intent();
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            intent.setType("image/*");
-            startActivityForResult(intent, IMAGE_GALLERY_REQUEST);
 
+        if (v == mFloatingActionButton){
+            Intent intent = new Intent(NavigationDrawerActivity.this, CreationActivity.class);
+            startActivity(intent);
         }
-
-//        if (v == mFloatingActionButton){
-//            Intent intent = new Intent(NavigationDrawerActivity.this, CameraActivity.class);
-//            startActivity(intent);
-//        }
     }
 
 }

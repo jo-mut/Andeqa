@@ -17,6 +17,7 @@ public class Post {
     String datePosted;
     String uid;
     String creatorUid;
+    String type;
     double rate;
     double defaultRate;
 
@@ -25,80 +26,25 @@ public class Post {
 
     }
 
-    public Post(long timeStamp, long number, double randomNumber,
-                String title, String image,
-                String description, String pushId, String cingleIndex,
-                String datePosted, String uid, String creatorUid,
-                double rate, double defaultRate) {
-        this.timeStamp = timeStamp;
-        this.number = number;
-        this.randomNumber = randomNumber;
-        this.title = title;
-        this.image = image;
-        this.description = description;
-        this.pushId = pushId;
+    public Post(String cingleIndex, String creatorUid,
+                String datePosted, double defaultRate, String description,
+                String image, long number, String pushId,
+                double randomNumber, double rate, long timeStamp,
+                String title, String type, String uid) {
         this.cingleIndex = cingleIndex;
-        this.datePosted = datePosted;
-        this.uid = uid;
         this.creatorUid = creatorUid;
-        this.rate = rate;
+        this.datePosted = datePosted;
         this.defaultRate = defaultRate;
-    }
-
-    public long getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(long timeStamp) {
-        this.timeStamp = timeStamp;
-    }
-
-    public long getNumber() {
-        return number;
-    }
-
-    public void setNumber(long number) {
-        this.number = number;
-    }
-
-    public double getRandomNumber() {
-        return randomNumber;
-    }
-
-    public void setRandomNumber(double randomNumber) {
-        this.randomNumber = randomNumber;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getPushId() {
-        return pushId;
-    }
-
-    public void setPushId(String pushId) {
+        this.image = image;
+        this.number = number;
         this.pushId = pushId;
+        this.randomNumber = randomNumber;
+        this.rate = rate;
+        this.timeStamp = timeStamp;
+        this.title = title;
+        this.type = type;
+        this.uid = uid;
     }
 
     public String getCingleIndex() {
@@ -109,22 +55,6 @@ public class Post {
         this.cingleIndex = cingleIndex;
     }
 
-    public String getDatePosted() {
-        return datePosted;
-    }
-
-    public void setDatePosted(String datePosted) {
-        this.datePosted = datePosted;
-    }
-
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
     public String getCreatorUid() {
         return creatorUid;
     }
@@ -133,12 +63,12 @@ public class Post {
         this.creatorUid = creatorUid;
     }
 
-    public double getRate() {
-        return rate;
+    public String getDatePosted() {
+        return datePosted;
     }
 
-    public void setRate(double rate) {
-        this.rate = rate;
+    public void setDatePosted(String datePosted) {
+        this.datePosted = datePosted;
     }
 
     public double getDefaultRate() {
@@ -149,4 +79,83 @@ public class Post {
         this.defaultRate = defaultRate;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public long getNumber() {
+        return number;
+    }
+
+    public void setNumber(long number) {
+        this.number = number;
+    }
+
+    public String getPushId() {
+        return pushId;
+    }
+
+    public void setPushId(String pushId) {
+        this.pushId = pushId;
+    }
+
+    public double getRandomNumber() {
+        return randomNumber;
+    }
+
+    public void setRandomNumber(double randomNumber) {
+        this.randomNumber = randomNumber;
+    }
+
+    public double getRate() {
+        return rate;
+    }
+
+    public void setRate(double rate) {
+        this.rate = rate;
+    }
+
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 }

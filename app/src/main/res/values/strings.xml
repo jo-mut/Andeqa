@@ -96,6 +96,8 @@
     <string name="selling_holder_text">Currently there are no post on sale. Check again later</string>
     <string name="timeline_holder_text">You have no recent activities on your timeline.</string>
     <string name="messages_holder_text">You have not received any new messages. Start a chat with your friends</string>
+    <string name="title_activity_creation">CreationActivity</string>
+    <string name="title_activity_create">CreateActivity</string>
 
 
 </resources>
