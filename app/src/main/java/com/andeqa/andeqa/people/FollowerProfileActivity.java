@@ -5,7 +5,6 @@ import android.os.Parcelable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -18,9 +17,9 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Room;
 import com.andeqa.andeqa.models.Timeline;
-import com.andeqa.andeqa.profile.ProfilePostsAdapter;
+import com.andeqa.andeqa.profile.CollectionPostsActivity;
 import com.andeqa.andeqa.message.MessagesAccountActivity;
-import com.andeqa.andeqa.models.Post;
+import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.models.Cinggulan;
 import com.andeqa.andeqa.models.Relation;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -51,7 +50,7 @@ public class FollowerProfileActivity extends AppCompatActivity
         implements View.OnClickListener{
     private static final String TAG = FollowerProfileActivity.class.getSimpleName();
 
-    @Bind(R.id.profileCinglesRecyclerView)RecyclerView mProfileCinglesRecyclerView;
+    @Bind(R.id.collectionsRecyclerView)RecyclerView mProfileCinglesRecyclerView;
     @Bind(R.id.profileImageView)CircleImageView mProifleImageView;
     @Bind(R.id.fullNameTextView)TextView mFullNameTextView;
     @Bind(R.id.bioTextView)TextView mBioTextView;
@@ -76,7 +75,7 @@ public class FollowerProfileActivity extends AppCompatActivity
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     //firestore adapters
-    private ProfilePostsAdapter profilePostsAdapter;
+    private CollectionPostsActivity collectionPostsActivity;
     private static final String KEY_LAYOUT_POSITION = "layout pooition";
     private Parcelable recyclerViewState;
     private  static final int MAX_WIDTH = 200;
@@ -84,8 +83,8 @@ public class FollowerProfileActivity extends AppCompatActivity
     private String mUid;
     private static final String EXTRA_USER_UID = "uid";
     private static final String EXTRA_ROOM_UID = "roomId";
-    //posts meber variables
-    private List<Post> posts = new ArrayList<>();
+    //singles meber variables
+    private List<Single> singles = new ArrayList<>();
     private List<String> cinglesIds = new ArrayList<>();
     private int TOTAL_ITEMS = 4;
     private DocumentSnapshot lastVisible;
@@ -132,7 +131,6 @@ public class FollowerProfileActivity extends AppCompatActivity
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
 
             fetchData();
-            setTheFirstBacthProfileCingles();
             recyclerViewScrolling();
 
             //INITIALIZE CLICK LISTENERS
@@ -301,35 +299,6 @@ public class FollowerProfileActivity extends AppCompatActivity
                         }
                     }
                 });
-    }
-
-    private void setTheFirstBacthProfileCingles(){
-        profileCinglesQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (!documentSnapshots.isEmpty()){
-                    // RecyclerView
-                    profilePostsAdapter = new ProfilePostsAdapter(profileCinglesQuery, FollowerProfileActivity.this);
-                    profilePostsAdapter.startListening();
-                    mProfileCinglesRecyclerView.setAdapter(profilePostsAdapter);
-                    mProfileCinglesRecyclerView.setHasFixedSize(false);
-                    LinearLayoutManager layoutManager = new LinearLayoutManager(FollowerProfileActivity.this);
-                    layoutManager.setAutoMeasureEnabled(true);
-                    mProfileCinglesRecyclerView.setLayoutManager(layoutManager);
-                    mProfileCinglesRecyclerView.setNestedScrollingEnabled(false);
-
-                }
-            }
-        });
-
-
-
     }
 
 

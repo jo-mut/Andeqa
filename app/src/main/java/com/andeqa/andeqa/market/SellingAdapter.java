@@ -14,7 +14,7 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.firestore.FirestoreAdapter;
 import com.andeqa.andeqa.home.PostDetailActivity;
-import com.andeqa.andeqa.models.Post;
+import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.models.PostSale;
 import com.andeqa.andeqa.models.Cinggulan;
 import com.andeqa.andeqa.models.Credit;
@@ -25,7 +25,6 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -199,10 +198,10 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
                 }
 
                 if (documentSnapshot.exists()){
-                    final Post post = documentSnapshot.toObject(Post.class);
+                    final Single single = documentSnapshot.toObject(Single.class);
 
                     Picasso.with(mContext)
-                            .load(post.getImage())
+                            .load(single.getImage())
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(holder.cingleImageView, new Callback() {
                                 @Override
@@ -213,7 +212,7 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
                                 @Override
                                 public void onError() {
                                     Picasso.with(mContext)
-                                            .load(post.getImage())
+                                            .load(single.getImage())
                                             .into(holder.cingleImageView, new Callback() {
                                                 @Override
                                                 public void onSuccess() {
@@ -229,7 +228,6 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
 
                                 }
                             });
-                    holder.datePostedTextView.setText(post.getDatePosted());
 
 
                 }

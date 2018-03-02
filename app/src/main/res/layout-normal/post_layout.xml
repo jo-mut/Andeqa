@@ -87,8 +87,7 @@
                         android:layout_toEndOf="@+id/profileImageView"
                         android:layout_toLeftOf="@+id/tradeMethodTextView"
                         android:layout_toStartOf="@+id/tradeMethodTextView"
-                        android:layout_marginLeft="10dp"
-                        android:textColor="@color/colorPrimary" />
+                        android:layout_marginLeft="10dp" />
 
                 </RelativeLayout>
 

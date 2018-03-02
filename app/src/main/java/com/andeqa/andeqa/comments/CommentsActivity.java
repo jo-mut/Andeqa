@@ -23,7 +23,7 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.Post;
+import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.models.Cinggulan;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Timeline;
@@ -181,11 +181,11 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                 }
 
                 if (documentSnapshot.exists()){
-                    final Post post = documentSnapshot.toObject(Post.class);
+                    final Single single = documentSnapshot.toObject(Single.class);
 
-                    final String uid = post.getUid();
-                    final String image = post.getImage();
-                    final String title = post.getTitle();
+                    final String uid = single.getUid();
+                    final String image = single.getImage();
+                    final String title = single.getTitle();
 
 
                     //LAUCNH PROFILE IF ITS NOT DELETED ELSE CATCH THE EXCEPTION
@@ -203,14 +203,14 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                         }
                     });
 
-                    //set the title of the post
+                    //set the title of the single
                     if (title.equals("")) {
                         mCingleTitleRelativeLayout.setVisibility(View.GONE);
                     } else {
                         mCingleTitleTextView.setText(title);
                     }
 
-                    //set the post image
+                    //set the single image
                     Picasso.with(CommentsActivity.this)
                             .load(image)
                             .networkPolicy(NetworkPolicy.OFFLINE)
@@ -568,8 +568,8 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                                             }
 
                                             if (documentSnapshot.exists()){
-                                                Post post = documentSnapshot.toObject(Post.class);
-                                                final String creatorUid = post.getUid();
+                                                Single single = documentSnapshot.toObject(Single.class);
+                                                final String creatorUid = single.getUid();
 
                                                 timeline.setPostId(postId);
                                                 timeline.setTimeStamp(time);

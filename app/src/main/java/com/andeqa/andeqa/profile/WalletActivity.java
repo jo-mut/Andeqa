@@ -17,11 +17,10 @@ import android.widget.Toast;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.home.PostDetailActivity;
-import com.andeqa.andeqa.models.Post;
+import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.market.TransactionHistoryViewHolder;
 import com.andeqa.andeqa.models.Balance;
 import com.andeqa.andeqa.models.TransactionDetails;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -153,9 +152,9 @@ public class WalletActivity extends AppCompatActivity {
                                     }
 
                                     if (documentSnapshot.exists()){
-                                        final Post post = documentSnapshot.toObject(Post.class);
+                                        final Single single = documentSnapshot.toObject(Single.class);
                                         Picasso.with(WalletActivity.this)
-                                                .load(post.getImage())
+                                                .load(single.getImage())
                                                 .networkPolicy(NetworkPolicy.OFFLINE)
                                                 .into(holder.cingleImageView, new Callback() {
                                                     @Override
@@ -166,7 +165,7 @@ public class WalletActivity extends AppCompatActivity {
                                                     @Override
                                                     public void onError() {
                                                         Picasso.with(WalletActivity.this)
-                                                                .load(post.getImage())
+                                                                .load(single.getImage())
                                                                 .into(holder.cingleImageView);
 
 

@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.firestore.FirestoreAdapter;
-import com.andeqa.andeqa.models.Post;
+import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.likes.LikesActivity;
@@ -119,10 +119,10 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
 
     @Override
     public void onBindViewHolder(final MainPostsViewHolder holder, final int position) {
-        final Post post = getSnapshot(holder.getAdapterPosition()).toObject(Post.class);
-        final String postKey = post.getPushId();
-        final String uid = post.getUid();
-        Log.d("post postkey", postKey);
+        final Single single = getSnapshot(holder.getAdapterPosition()).toObject(Single.class);
+        final String postKey = single.getPushId();
+        final String uid = single.getUid();
+        Log.d("single postkey", postKey);
 
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser()!= null){
@@ -146,7 +146,7 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
 
 
         Picasso.with(mContext)
-                .load(post.getImage())
+                .load(single.getImage())
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(holder.postImageView, new Callback() {
                     @Override
@@ -157,7 +157,7 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
                     @Override
                     public void onError() {
                         Picasso.with(mContext)
-                                .load(post.getImage())
+                                .load(single.getImage())
                                 .into(holder.postImageView, new Callback() {
                                     @Override
                                     public void onSuccess() {
@@ -175,14 +175,14 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
                 });
 
 
-        if (!TextUtils.isEmpty(post.getTitle())){
-            holder.titleTextView.setText(post.getTitle());
+        if (!TextUtils.isEmpty(single.getTitle())){
+            holder.titleTextView.setText(single.getTitle());
             holder.titleRelativeLayout.setVisibility(View.VISIBLE);
 
         }
 
-        if (!TextUtils.isEmpty(post.getDescription())){
-           holder.descriptionTextView.setText(post.getDescription());
+        if (!TextUtils.isEmpty(single.getDescription())){
+           holder.descriptionTextView.setText(single.getDescription());
             holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
         }
 
@@ -228,9 +228,9 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
                 Bundle bundle = new Bundle();
                 bundle.putString(MainPostsAdapter.EXTRA_POST_KEY, postKey);
                 FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
-                DialogFragmentPostSettings dialogFragmentPostSettings = DialogFragmentPostSettings.newInstance("post settngs");
+                DialogFragmentPostSettings dialogFragmentPostSettings = DialogFragmentPostSettings.newInstance("single settngs");
                 dialogFragmentPostSettings.setArguments(bundle);
-                dialogFragmentPostSettings.show(fragmenManager, "post settings fragment");
+                dialogFragmentPostSettings.show(fragmenManager, "single settings fragment");
             }
         });
 
@@ -335,7 +335,7 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
             }
         });
 
-        //get the number of commments in a post
+        //get the number of commments in a single
         commentsCountQuery.orderBy("postId").whereEqualTo("pushId", postKey)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -356,7 +356,7 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
                 });
 
 
-        //check if post is listed on the marketplace
+        //check if single is listed on the marketplace
         ifairReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -844,13 +844,13 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
                                                         double rateOfLike = 1000.0/1800.0;
                                                         //get the current rate of likes per unit time in seconds;
                                                         double currentRateOfLkes = likesCount * rateOfLike/MILLE;
-                                                        //get the current price of post
+                                                        //get the current price of single
                                                         final double currentPrice = currentRateOfLkes * DEFAULT_PRICE/rateOfLike;
-                                                        //get the perfection value of post's interactivity online
+                                                        //get the perfection value of single's interactivity online
                                                         double perfectionValue = GOLDEN_RATIO/likesCount;
-                                                        //get the new worth of Post price in Sen
+                                                        //get the new worth of Single price in Sen
                                                         final double cingleWorth = perfectionValue * likesPerMille * currentPrice;
-                                                        //round of the worth of the post to 10 decimal number
+                                                        //round of the worth of the single to 10 decimal number
                                                         final double finalPoints = roundCredits( cingleWorth, 10);
 
                                                         Log.d("finalpoints > 0", finalPoints + "");

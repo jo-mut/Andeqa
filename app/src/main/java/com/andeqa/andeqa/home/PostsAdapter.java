@@ -22,7 +22,7 @@ import com.andeqa.andeqa.models.Balance;
 import com.andeqa.andeqa.models.Cinggulan;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Like;
-import com.andeqa.andeqa.models.Post;
+import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.models.TransactionDetails;
 import com.andeqa.andeqa.people.FollowerProfileActivity;
@@ -92,25 +92,25 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
     //adapters
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
 
-    private List<Post> posts = new ArrayList<>();
+    private List<Single> singles = new ArrayList<>();
 
 
     public PostsAdapter(Context mContext) {
         this.mContext = mContext;
     }
 
-    public void setRandomPosts(List<Post> posts){
-        this.posts = posts;
+    public void setRandomPosts(List<Single> singles){
+        this.singles = singles;
         notifyDataSetChanged();
     }
 
     public void removeAt(int position){
-        posts.remove(posts.get(position));
+        singles.remove(singles.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return posts.size();
+        return singles.size();
     }
 
     @Override
@@ -121,11 +121,11 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
 
     @Override
     public void onBindViewHolder(final PostViewHolder holder, int position) {
-        final Post post = posts.get(position);
-        holder.bindRandomCingles(post);
-        final String postKey = post.getPushId();
-        final String uid = post.getUid();
-        Log.d("post postkey", postKey);
+        final Single single = singles.get(position);
+        holder.bindRandomCingles(single);
+        final String postKey = single.getPushId();
+        final String uid = single.getUid();
+        Log.d("single postkey", postKey);
 
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -190,9 +190,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                 Bundle bundle = new Bundle();
                 bundle.putString(PostsAdapter.EXTRA_POST_KEY, postKey);
                 FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
-                DialogFragmentPostSettings dialogFragmentPostSettings = DialogFragmentPostSettings.newInstance("post settngs");
+                DialogFragmentPostSettings dialogFragmentPostSettings = DialogFragmentPostSettings.newInstance("single settngs");
                 dialogFragmentPostSettings.setArguments(bundle);
-                dialogFragmentPostSettings.show(fragmenManager, "post settings fragment");
+                dialogFragmentPostSettings.show(fragmenManager, "single settings fragment");
             }
         });
 
@@ -296,7 +296,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
             }
         });
 
-        //get the number of commments in a post
+        //get the number of commments in a single
         commentsCountQuery.orderBy("postId").whereEqualTo("pushId", postKey)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -317,7 +317,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                 });
 
 
-        //check if post is listed on the marketplace
+        //check if single is listed on the marketplace
         ifairReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -806,13 +806,13 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                                                         double rateOfLike = 1000.0/1800.0;
                                                         //get the current rate of likes per unit time in seconds;
                                                         double currentRateOfLkes = likesCount * rateOfLike/MILLE;
-                                                        //get the current price of post
+                                                        //get the current price of single
                                                         final double currentPrice = currentRateOfLkes * DEFAULT_PRICE/rateOfLike;
-                                                        //get the perfection value of post's interactivity online
+                                                        //get the perfection value of single's interactivity online
                                                         double perfectionValue = GOLDEN_RATIO/likesCount;
-                                                        //get the new worth of Post price in Sen
+                                                        //get the new worth of Single price in Sen
                                                         final double cingleWorth = perfectionValue * likesPerMille * currentPrice;
-                                                        //round of the worth of the post to 10 decimal number
+                                                        //round of the worth of the single to 10 decimal number
                                                         final double finalPoints = roundCredits( cingleWorth, 10);
 
                                                         Log.d("finalpoints > 0", finalPoints + "");

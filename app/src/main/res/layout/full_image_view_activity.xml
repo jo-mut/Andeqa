@@ -40,7 +40,7 @@
             android:layout_height="56dp"
             app:titleTextColor="@android:color/white"
             app:layout_scrollFlags="scroll|enterAlways"
-            app:titleTextAppearance="@style/toolbarTextSize"
+            app:titleTextAppearance="@style/toolbarTextAppearance"
             app:popupTheme="@style/AppTheme.PopupOverlay"
             android:src="@color/transparentColor"
             />

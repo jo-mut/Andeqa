@@ -178,7 +178,7 @@ public class DialogRedeemCredits extends DialogFragment implements View.OnClickL
                             if (mAmountEnteredEditText.getText().equals("")) {
                                 mAmountEnteredEditText.setError("Amount cannot be empty");
                             } else if (amountTransferred > senseCredits) {
-                                mAmountEnteredEditText.setError("Your Post has insufficient SC balance");
+                                mAmountEnteredEditText.setError("Your Single has insufficient SC balance");
                             }else if (amountTransferred <= 0.00){
                                 mAmountEnteredEditText.setError("Amount cannot be zero");
                             }else {
@@ -190,19 +190,9 @@ public class DialogRedeemCredits extends DialogFragment implements View.OnClickL
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()){
-                                            //get the current date
-                                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d");
-                                            final String date = simpleDateFormat.format(new Date());
+                                            //get the now time
+                                            final long timeStamp = new Date().getTime();
 
-                                            if (date.endsWith("1") && !date.endsWith("11"))
-                                                simpleDateFormat = new SimpleDateFormat("d'st' MMM yyyy");
-                                            else if (date.endsWith("2") && !date.endsWith("12"))
-                                                simpleDateFormat = new SimpleDateFormat("d'nd' MMM yyyy");
-                                            else if (date.endsWith("3") && !date.endsWith("13"))
-                                                simpleDateFormat = new SimpleDateFormat("d'rd' MMM yyyy");
-                                            else
-                                                simpleDateFormat = new SimpleDateFormat("d'th' MMM yyyy");
-                                            final String currentDate = simpleDateFormat.format(new Date());
                                             //INCREAMENT THE AMOUNT TRANSFERED AFTER NEW TRANSFERS
                                             postWalletReference.document(mPostKey).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                                 @Override
@@ -234,7 +224,7 @@ public class DialogRedeemCredits extends DialogFragment implements View.OnClickL
                                                                                 transactionDetails.setAmount(amountTransferred);
                                                                                 transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                                 transactionDetails.setPushId(mPostKey);
-                                                                                transactionDetails.setDate(currentDate);
+                                                                                transactionDetails.setTime(timeStamp);
                                                                                 transactionDetails.setWalletBalance(newBalance);
                                                                                 transactionDetails.setType("redeem");
                                                                                 //get the push id
@@ -271,7 +261,7 @@ public class DialogRedeemCredits extends DialogFragment implements View.OnClickL
                                                                                 transactionDetails.setAmount(amountTransferred);
                                                                                 transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                                 transactionDetails.setPushId(mPostKey);
-                                                                                transactionDetails.setDate(currentDate);
+                                                                                transactionDetails.setTime(timeStamp);
                                                                                 transactionDetails.setWalletBalance(amountTransferred);
                                                                                 transactionDetails.setType("redeem");
 
@@ -316,7 +306,7 @@ public class DialogRedeemCredits extends DialogFragment implements View.OnClickL
                                                                                         transactionDetails.setAmount(amountTransferred);
                                                                                         transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                                         transactionDetails.setPushId(mPostKey);
-                                                                                        transactionDetails.setDate(currentDate);
+                                                                                        transactionDetails.setTime(timeStamp);
                                                                                         transactionDetails.setWalletBalance(newBalance);
                                                                                         transactionDetails.setType("redeem");
 
@@ -352,7 +342,7 @@ public class DialogRedeemCredits extends DialogFragment implements View.OnClickL
                                                                                         transactionDetails.setAmount(amountTransferred);
                                                                                         transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                                         transactionDetails.setPushId(mPostKey);
-                                                                                        transactionDetails.setDate(currentDate);
+                                                                                        transactionDetails.setTime(timeStamp);
                                                                                         transactionDetails.setWalletBalance(amountTransferred);
                                                                                         transactionDetails.setType("redeem");
 
@@ -401,7 +391,7 @@ public class DialogRedeemCredits extends DialogFragment implements View.OnClickL
 
                             }
                         }else {
-                            mAmountEnteredEditText.setError("Your Post has insufficient SC balance");
+                            mAmountEnteredEditText.setError("Your Single has insufficient SC balance");
                         }
                     }
                 });

@@ -8,9 +8,9 @@ import android.util.Log;
 import android.view.View;
 
 import com.andeqa.andeqa.Constants;
+import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.Post;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -107,11 +107,11 @@ public class FullImageViewActivity extends AppCompatActivity implements View.OnC
                 }
 
                 if (documentSnapshot.exists()){
-                    final Post post = documentSnapshot.toObject(Post.class);
-                    final String image = post.getImage();
+                    final Single single = documentSnapshot.toObject(Single.class);
+                    final String image = single.getImage();
                     Log.d("detailed image", image);
 
-                    //set the post image
+                    //set the single image
                     Picasso.with(FullImageViewActivity.this)
                             .load(image)
                             .networkPolicy(NetworkPolicy.OFFLINE)

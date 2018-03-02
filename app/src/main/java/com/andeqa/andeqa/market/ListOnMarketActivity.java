@@ -19,9 +19,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
+import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.PostSale;
 import com.andeqa.andeqa.models.Cinggulan;
 import com.andeqa.andeqa.models.Credit;
@@ -132,20 +132,20 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                 }
 
                 if (documentSnapshot.exists()){
-                    final Post post = documentSnapshot.toObject(Post.class);
-                    final String uid = post.getUid();
-                    final String title = post.getTitle();
-                    final String image = post.getImage();
+                    final Single single = documentSnapshot.toObject(Single.class);
+                    final String uid = single.getUid();
+                    final String title = single.getTitle();
+                    final String image = single.getImage();
 
-                    if (post.getTitle().equals("")){
+                    if (single.getTitle().equals("")){
                         mCingleTitleRelativeLayout.setVisibility(View.GONE);
                     }else {
-                        mCingleTitleTextView.setText(post.getTitle());
+                        mCingleTitleTextView.setText(single.getTitle());
                     }
 
-                    //set the post title
+                    //set the single title
                     mCingleTitleTextView.setText(title);
-                    //set the post image
+                    //set the single image
                     Picasso.with(ListOnMarketActivity.this)
                             .load(image)
                             .networkPolicy(NetworkPolicy.OFFLINE)
@@ -248,7 +248,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                             final double senseCredits = credit.getAmount();
 
                             if (intSalePrice < senseCredits){
-                                mSetCingleSalePriceEditText.setError("Sale price is less than Post Sense Credit!");
+                                mSetCingleSalePriceEditText.setError("Sale price is less than Single Sense Credit!");
                             }else if (intSalePrice >= senseCredits){
                                 //SET CINGLE ON SALE IN SELLING
                                 final PostSale postSale =  new PostSale();
@@ -270,7 +270,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
 
                                 new AlertDialog.Builder(ListOnMarketActivity.this)
                                         .setTitle("Sorry !")
-                                        .setMessage("The sale price cannot be less than the Post's Sense Credit")
+                                        .setMessage("The sale price cannot be less than the Single's Sense Credit")
                                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
                                             }

@@ -219,7 +219,7 @@
                 android:id="@+id/toolbar"
                 android:layout_gravity="top"
                 app:layout_scrollFlags="scroll|enterAlways"
-                app:titleTextAppearance="@style/toolbarTextSize"
+                app:titleTextAppearance="@style/toolbarTextAppearance"
                 app:titleMarginStart="-50sp"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
@@ -232,6 +232,7 @@
 
 
 
+
     <android.support.v4.widget.NestedScrollView
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
@@ -239,7 +240,7 @@
 
         <android.support.v7.widget.RecyclerView
             android:numColumns="auto_fit"
-            android:id="@+id/profileCinglesRecyclerView"
+            android:id="@+id/collectionsRecyclerView"
             android:overScrollMode="never"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

@@ -18,6 +18,7 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.firestore.FirestoreAdapter;
 import com.andeqa.andeqa.home.PostDetailActivity;
 import com.andeqa.andeqa.models.Post;
+import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.home.FullImageViewActivity;
 import com.andeqa.andeqa.likes.LikesActivity;
@@ -59,10 +60,10 @@ import java.util.List;
  * Created by J.EL on 11/14/2017.
  */
 
-public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder> {
-    private static final String TAG = ProfilePostsAdapter.class.getSimpleName();
+public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder> {
+    private static final String TAG = CollectionPostsAdapter.class.getSimpleName();
     private Context mContext;
-    private List<Post> posts = new ArrayList<>();
+    private List<Single> singles = new ArrayList<>();
     //firestore
     private FirebaseFirestore firebaseFirestore;
     private CollectionReference cinglesReference;
@@ -96,7 +97,7 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
     private static final int MAX_HEIGHT = 200;
 
 
-    public ProfilePostsAdapter(Query query, Context mContext) {
+    public CollectionPostsAdapter(Query query, Context mContext) {
         super(query);
         this.mContext = mContext;
     }
@@ -117,7 +118,6 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
         final Post post = getSnapshot(holder.getAdapterPosition()).toObject(Post.class);
         final String postKey = post.getPushId();
         final String uid = post.getUid();
-        Log.d("post postkey", postKey);
 
 
         //initialize firebase auth
@@ -148,7 +148,7 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, LikesActivity.class);
-                intent.putExtra(ProfilePostsAdapter.EXTRA_POST_KEY, postKey);
+                intent.putExtra(CollectionPostsAdapter.EXTRA_POST_KEY, postKey);
                 mContext.startActivity(intent);
             }
         });
@@ -157,7 +157,7 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, CommentsActivity.class);
-                intent.putExtra(ProfilePostsAdapter.EXTRA_POST_KEY, postKey);
+                intent.putExtra(CollectionPostsAdapter.EXTRA_POST_KEY, postKey);
                 mContext.startActivity(intent);
             }
         });
@@ -166,7 +166,7 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, FullImageViewActivity.class);
-                intent.putExtra(ProfilePostsAdapter.EXTRA_POST_KEY, postKey);
+                intent.putExtra(CollectionPostsAdapter.EXTRA_POST_KEY, postKey);
                 mContext.startActivity(intent);
             }
         });
@@ -175,7 +175,7 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, PostDetailActivity.class);
-                intent.putExtra(ProfilePostsAdapter.EXTRA_POST_KEY, postKey);
+                intent.putExtra(CollectionPostsAdapter.EXTRA_POST_KEY, postKey);
                 mContext.startActivity(intent);
             }
         });
@@ -184,11 +184,11 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
-                bundle.putString(ProfilePostsAdapter.EXTRA_POST_KEY, postKey);
+                bundle.putString(CollectionPostsAdapter.EXTRA_POST_KEY, postKey);
                 FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
-                DialogFragmentPostSettings dialogFragmentPostSettings = DialogFragmentPostSettings.newInstance("post settngs");
+                DialogFragmentPostSettings dialogFragmentPostSettings = DialogFragmentPostSettings.newInstance("single settngs");
                 dialogFragmentPostSettings.setArguments(bundle);
-                dialogFragmentPostSettings.show(fragmenManager, "post settings fragment");
+                dialogFragmentPostSettings.show(fragmenManager, "single settings fragment");
             }
         });
 
@@ -224,10 +224,10 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                 }
 
                 if (documentSnapshot.exists()){
-                    final Post post = documentSnapshot.toObject(Post.class);
+                    final Single single = documentSnapshot.toObject(Single.class);
 
                     Picasso.with(mContext)
-                            .load(post.getImage())
+                            .load(single.getImage())
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(holder.cingleImageView, new Callback() {
                                 @Override
@@ -240,12 +240,12 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                                 public void onError() {
                                     // fetch online because cache is not there
                                     Picasso.with(mContext)
-                                            .load(post.getImage())
+                                            .load(single.getImage())
                                             .fetch(new Callback() {
                                                 @Override
                                                 public void onSuccess() {
                                                     Picasso.with(mContext)
-                                                            .load(post.getImage())
+                                                            .load(single.getImage())
                                                             .into(holder.cingleImageView);
                                                 }
 
@@ -253,7 +253,7 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                                                 public void onError() {
                                                     //NO IMAGE offline or online
                                                     Log.v("Picasso", "Could not fetch image");
-                                                    Log.d("picasso images", post.getImage() +"");
+                                                    Log.d("picasso images", single.getImage() +"");
 
 
                                                 }
@@ -262,16 +262,16 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                             });
 
 
-                    if (post.getTitle().equals("")){
+                    if (single.getTitle().equals("")){
                         holder.cingleTitleRelativeLayout.setVisibility(View.GONE);
                     }else {
-                        holder.cingleTitleTextView.setText(post.getTitle());
+                        holder.cingleTitleTextView.setText(single.getTitle());
                     }
 
-                    if (post.getDescription().equals("")){
+                    if (single.getDescription().equals("")){
                         holder.descriptionRelativeLayout.setVisibility(View.GONE);
                     }else {
-                        holder.cingleDescriptionTextView.setText(post.getDescription());
+                        holder.cingleDescriptionTextView.setText(single.getDescription());
                     }
 
                 }
@@ -345,7 +345,7 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
 
 
 
-        //get the number of commments in a post
+        //get the number of commments in a single
         commentsCountQuery.orderBy("postId").whereEqualTo("pushId", postKey)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -648,7 +648,7 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                                     @Override
                                     public void onClick(View view) {
                                         Intent intent = new Intent(mContext, LikesActivity.class);
-                                        intent.putExtra(ProfilePostsAdapter.EXTRA_POST_KEY, postKey);
+                                        intent.putExtra(CollectionPostsAdapter.EXTRA_POST_KEY, postKey);
                                         mContext.startActivity(intent);
                                     }
                                 });
@@ -832,13 +832,13 @@ public class ProfilePostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder
                                                         double rateOfLike = 1000.0/1800.0;
                                                         //get the current rate of likes per unit time in seconds;
                                                         double currentRateOfLkes = likesCount * rateOfLike/MILLE;
-                                                        //get the current price of post
+                                                        //get the current price of single
                                                         final double currentPrice = currentRateOfLkes * DEFAULT_PRICE/rateOfLike;
-                                                        //get the perfection value of post's interactivity online
+                                                        //get the perfection value of single's interactivity online
                                                         double perfectionValue = GOLDEN_RATIO/likesCount;
-                                                        //get the new worth of Post price in Sen
+                                                        //get the new worth of Single price in Sen
                                                         final double cingleWorth = perfectionValue * likesPerMille * currentPrice;
-                                                        //round of the worth of the post to 10 decimal number
+                                                        //round of the worth of the single to 10 decimal number
                                                         final double finalPoints = roundCredits( cingleWorth, 10);
 
                                                         Log.d("finalpoints > 0", finalPoints + "");

@@ -2,8 +2,6 @@ package com.andeqa.andeqa.home;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -12,12 +10,7 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.Post;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

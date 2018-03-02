@@ -1,82 +1,23 @@
 package com.andeqa.andeqa.models;
 
 /**
- * Created by J.EL on 10/28/2017.
+ * Created by J.EL on 2/28/2018.
  */
 
 public class Post {
-
-    long timeStamp;
+    long time;
     long number;
     double randomNumber;
     String title;
     String image;
     String description;
     String pushId;
-    String cingleIndex;
-    String datePosted;
     String uid;
-    String creatorUid;
     String type;
-    double rate;
-    double defaultRate;
+    String collectionId;
 
 
     public Post() {
-
-    }
-
-    public Post(String cingleIndex, String creatorUid,
-                String datePosted, double defaultRate, String description,
-                String image, long number, String pushId,
-                double randomNumber, double rate, long timeStamp,
-                String title, String type, String uid) {
-        this.cingleIndex = cingleIndex;
-        this.creatorUid = creatorUid;
-        this.datePosted = datePosted;
-        this.defaultRate = defaultRate;
-        this.description = description;
-        this.image = image;
-        this.number = number;
-        this.pushId = pushId;
-        this.randomNumber = randomNumber;
-        this.rate = rate;
-        this.timeStamp = timeStamp;
-        this.title = title;
-        this.type = type;
-        this.uid = uid;
-    }
-
-    public String getCingleIndex() {
-        return cingleIndex;
-    }
-
-    public void setCingleIndex(String cingleIndex) {
-        this.cingleIndex = cingleIndex;
-    }
-
-    public String getCreatorUid() {
-        return creatorUid;
-    }
-
-    public void setCreatorUid(String creatorUid) {
-        this.creatorUid = creatorUid;
-    }
-
-    public String getDatePosted() {
-        return datePosted;
-    }
-
-    public void setDatePosted(String datePosted) {
-        this.datePosted = datePosted;
-    }
-
-    public double getDefaultRate() {
-        return defaultRate;
-    }
-
-    public void setDefaultRate(double defaultRate) {
-        this.defaultRate = defaultRate;
     }
 
     public String getDescription() {
@@ -119,20 +60,12 @@ public class Post {
         this.randomNumber = randomNumber;
     }
 
-    public double getRate() {
-        return rate;
+    public long getTime() {
+        return time;
     }
 
-    public void setRate(double rate) {
-        this.rate = rate;
-    }
-
-    public long getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(long timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setTime(long time) {
+        this.time = time;
     }
 
     public String getTitle() {
@@ -157,5 +90,13 @@ public class Post {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public String getCollectionId() {
+        return collectionId;
+    }
+
+    public void setCollectionId(String collectionId) {
+        this.collectionId = collectionId;
     }
 }

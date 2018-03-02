@@ -3,10 +3,8 @@ package com.andeqa.andeqa.home;
 
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.os.Trace;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,11 +16,9 @@ import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.Post;
-import com.andeqa.andeqa.models.TraceData;
+import com.andeqa.andeqa.models.Single;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -59,13 +55,10 @@ public class HomeFragment extends Fragment{
     private FirebaseAuth firebaseAuth;
     //adapters
     private MainPostsAdapter mainPostsAdapter;
-    private MainPostsViewHolder mainPostsViewHolder;
-    private PostsAdapter postsAdapter;
-    private PostViewHolder postViewHolder;
     private LinearLayoutManager layoutManager;
     private int TOTAL_ITEMS = 50;
     private List<String> postsIds = new ArrayList<>();
-    private List<Post> posts = new ArrayList<>();
+    private List<Single> singles = new ArrayList<>();
 
     public HomeFragment() {
         // Required empty public constructor
@@ -84,10 +77,8 @@ public class HomeFragment extends Fragment{
         if (firebaseAuth.getCurrentUser() != null){
             //firestore
             cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            randomPostsQuery = cinglesReference.orderBy("timeStamp", Query.Direction.DESCENDING)
-                    .limit(TOTAL_ITEMS);
 
-            setAllPosts();
+            AllPosts();
 
         }
 
@@ -98,7 +89,6 @@ public class HomeFragment extends Fragment{
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setRecyclerView();
 
         if (singleOutRecyclerView != null){
             progressBar.setVisibility(View.GONE);
@@ -107,18 +97,9 @@ public class HomeFragment extends Fragment{
         }
     }
 
-    private void setRecyclerView(){
-        mainPostsAdapter = new MainPostsAdapter(randomPostsQuery, getContext());
-        mainPostsAdapter.startListening();
-        singleOutRecyclerView.setAdapter(mainPostsAdapter);
-        singleOutRecyclerView.setHasFixedSize(false);
-        layoutManager = new LinearLayoutManager(getContext());
-        singleOutRecyclerView.setLayoutManager(layoutManager);
 
-    }
-
-    private void setAllPosts(){
-        randomPostsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+    private void AllPosts(){
+        cinglesReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
@@ -127,8 +108,15 @@ public class HomeFragment extends Fragment{
                     return;
                 }
 
-                if (documentSnapshots.isEmpty()){
-                    mPlaceHolderRelativeLayout.setVisibility(View.VISIBLE);
+
+                if (!documentSnapshots.isEmpty()){
+                    randomPostsQuery = cinglesReference.orderBy("timeStamp", Query.Direction.DESCENDING);
+                    mainPostsAdapter = new MainPostsAdapter(randomPostsQuery, getContext());
+                    mainPostsAdapter.startListening();
+                    singleOutRecyclerView.setAdapter(mainPostsAdapter);
+                    singleOutRecyclerView.setHasFixedSize(false);
+                    layoutManager = new LinearLayoutManager(getContext());
+                    singleOutRecyclerView.setLayoutManager(layoutManager);
                 }
 
             }

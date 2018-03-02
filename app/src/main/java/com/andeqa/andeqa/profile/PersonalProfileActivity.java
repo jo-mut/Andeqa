@@ -6,6 +6,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -19,7 +20,7 @@ import android.widget.TextView;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Cinggulan;
-import com.andeqa.andeqa.models.Post;
+import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.people.FollowersActivity;
 import com.andeqa.andeqa.people.FollowingActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,7 +44,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PersonalProfileActivity extends AppCompatActivity implements View.OnClickListener{
     //BIND VIEWS
-    @Bind(R.id.profileCinglesRecyclerView)RecyclerView mProfileCinglesRecyclerView;
+    @Bind(R.id.collectionsRecyclerView)RecyclerView mCollectionsRecyclerView;
     @Bind(R.id.profileImageView)CircleImageView mProifleImageView;
     @Bind(R.id.fullNameTextView)TextView mFullNameTextView;
     @Bind(R.id.bioTextView)TextView mBioTextView;
@@ -55,21 +56,21 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
 
     private static final String TAG = PersonalProfileActivity.class.getSimpleName();
     //firestore reference
-    private CollectionReference cinglesReference;
+    private CollectionReference collectionsCollection;
     private CollectionReference relationsReference;
     private CollectionReference usersReference;
-    private Query profileCinglesCountQuery;
-    private Query profileCinglesQuery;
+    private Query profilePostCountQuery;
+    private Query profileCollectionsQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore adapters
-    private ProfilePostsAdapter profilePostsAdapter;
+    private ProfileCollectionsAdapter profileCollectionsAdapter;
     private static final String KEY_LAYOUT_POSITION = "layout pooition";
     private Parcelable recyclerViewState;
     private  static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
-    //posts meber variables
-    private List<Post> posts = new ArrayList<>();
+    //singles meber variables
+    private List<Single> singles = new ArrayList<>();
     private List<String> cinglesIds = new ArrayList<>();
     private int TOTAL_ITEMS = 4;
     private DocumentSnapshot lastVisible;
@@ -87,18 +88,28 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
         //FIREBASE AUTH
         firebaseAuth = FirebaseAuth.getInstance();
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
         if (firebaseAuth.getCurrentUser()!= null){
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
-            cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            profileCinglesQuery = cinglesReference.orderBy("timeStamp", Query.Direction.DESCENDING)
-                    .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid());
-            profileCinglesCountQuery = cinglesReference.whereEqualTo("uid",
+            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTION);
+            profileCollectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING);
+            profilePostCountQuery = collectionsCollection.whereEqualTo("uid",
                     firebaseAuth.getCurrentUser().getUid());
 
 
             fetchData();
-            setProfileCingles();
+            setCollections();
             if (savedInstanceState != null){
                 recyclerViewState = savedInstanceState.getParcelable(KEY_LAYOUT_POSITION);
                 Log.d("Profile saved Instance", "Instance is not null");
@@ -111,16 +122,6 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
 
         }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
 
     }
 
@@ -157,7 +158,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
     }
 
     private void fetchData(){
-        profileCinglesCountQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        profilePostCountQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
@@ -302,45 +303,8 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
     }
 
 
-    private void recyclerViewScrolling(){
-        mProfileCinglesRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                if (!recyclerView.canScrollVertically(-1)) {
-                    onScrolledToTop();
-                } else if (!recyclerView.canScrollVertically(1)) {
-                    onScrolledToBottom();
-                } else if (dy < 0) {
-                    onScrolledUp();
-                } else if (dy > 0) {
-                    onScrolledDown();
-                }
-            }
-        });
-    }
-
-    public void onScrolledUp() {}
-
-    public void onScrolledDown() {}
-
-    public void onScrolledToTop() {
-
-    }
-
-    public void onScrolledToBottom() {
-    }
-
-    private void setProfileCingles(){
-        cinglesReference.orderBy("timeStamp", Query.Direction.DESCENDING)
-                .whereEqualTo("uid",firebaseAuth.getCurrentUser().getUid())
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+    private void setCollections(){
+        profileCollectionsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
@@ -349,23 +313,20 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
                     return;
                 }
 
-
                 if (!documentSnapshots.isEmpty()){
-                    // RecyclerView
-                    profilePostsAdapter = new ProfilePostsAdapter(profileCinglesQuery, PersonalProfileActivity.this);
-                    profilePostsAdapter.startListening();
-                    mProfileCinglesRecyclerView.setAdapter(profilePostsAdapter);
-                    mProfileCinglesRecyclerView.setHasFixedSize(false);
-                    layoutManager = new LinearLayoutManager(PersonalProfileActivity.this);
-                    mProfileCinglesRecyclerView.setLayoutManager(layoutManager);
-                    mProfileCinglesRecyclerView.setNestedScrollingEnabled(false);
+                    profileCollectionsAdapter = new ProfileCollectionsAdapter(profileCollectionsQuery, PersonalProfileActivity.this);
+                    profileCollectionsAdapter.startListening();
+                    layoutManager = new GridLayoutManager(PersonalProfileActivity.this, 2);
+                    mCollectionsRecyclerView.setLayoutManager(layoutManager);
+                    mCollectionsRecyclerView.setAdapter(profileCollectionsAdapter);
+                    mCollectionsRecyclerView.setHasFixedSize(false);
+                    mCollectionsRecyclerView.setNestedScrollingEnabled(false);
+
                 }
 
             }
         });
-
     }
-
 
 
     @Override

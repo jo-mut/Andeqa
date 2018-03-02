@@ -15,27 +15,25 @@ import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.home.NavigationDrawerActivity;
+import com.andeqa.andeqa.models.Collection;
+import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.utils.DialogProgressFragment;
 import com.andeqa.andeqa.utils.ProportionalImageView;
-import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Cinggulan;
-import com.andeqa.andeqa.models.TransactionDetails;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -50,7 +48,6 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
@@ -61,12 +58,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class CreatePostActivity extends AppCompatActivity implements View.OnClickListener{
     @Bind(R.id.titleEditText)EditText mCingleTitleEditText;
     @Bind(R.id.descriptionEditText)EditText mCingleDescriptionEditText;
-    @Bind(R.id.sharePostButton)Button mSharePostButton;
     @Bind(R.id.profileImageView)CircleImageView mProfileImageView;
-    @Bind(R.id.usernameTextView)TextView mAccountUsernameTextView;
     @Bind(R.id.postImageView)ProportionalImageView mPostImageView;
+    @Bind(R.id.backImageView)ImageView mBackImageView;
+    @Bind(R.id.postTextView)TextView mPostTextView;
     @Bind(R.id.descriptionCountTextView)TextView mDescriptionCountTextView;
     @Bind(R.id.titleCountTextView)TextView mTitleCountTextView;
+    @Bind(R.id.addImageTextView)TextView mAddImageTextView;
 
 
     private String image;
@@ -78,12 +76,19 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
     private static final int DEFAULT_TITLE_LENGTH_LIMIT = 100;
     private static final int DEFAULT_DESCRIPTION_LENGTH_LIMIT = 500;
+    private static final int IMAGE_GALLERY_REQUEST = 112;
+    private static final String COLLECTION_ID = "collection id";
+    private String collectionId;
+
+
     //FIRESTORE
     private FirebaseFirestore firebaseFirestore;
-    private CollectionReference postsReference;
+    private CollectionReference postsCollection;
     private CollectionReference ownersReference;
     private CollectionReference usersReference;
-    private DatabaseReference postReference;
+    private DatabaseReference randomReference;
+    private CollectionReference collectionCollection;
+
 
 
     @Override
@@ -92,24 +97,27 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_create_post);
         ButterKnife.bind(this);
 
-        mSharePostButton.setOnClickListener(this);
+        mPostTextView.setOnClickListener(this);
+        mBackImageView.setOnClickListener(this);
+        mAddImageTextView.setOnClickListener(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
         if (firebaseAuth.getCurrentUser() != null){
 
-            if (getIntent().getExtras() != null){
-                photoUri = Uri.parse(getIntent().getStringExtra("photoUri"));
-                loadImage();
+            collectionId = getIntent().getStringExtra(COLLECTION_ID);
+            if(collectionId == null){
+                throw new IllegalArgumentException("pass an EXTRA_UID");
             }
 
             //initialize firestore
             firebaseFirestore =  FirebaseFirestore.getInstance();
             //get the reference to posts(collection reference)
-            postsReference = firebaseFirestore.collection(Constants.POSTS);
+            postsCollection = firebaseFirestore.collection(Constants.POSTS);
             ownersReference = firebaseFirestore.collection(Constants.POST_OWNERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            postReference = FirebaseDatabase.getInstance().getReference(Constants.POSTS);
+            randomReference = FirebaseDatabase.getInstance().getReference(Constants.POSTS);
+            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTION);
 
             mCingleTitleEditText.setFilters(new InputFilter[]{new InputFilter
                     .LengthFilter(DEFAULT_TITLE_LENGTH_LIMIT)});
@@ -118,6 +126,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
             textWatchers();
             fetchUserData();
             uploadingToFirebaseDialog();
+
 
         }
 
@@ -248,10 +257,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
                 if (documentSnapshot.exists()) {
                     final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                    final String username = cinggulan.getUsername();
                     final String profileImage = cinggulan.getProfileImage();
-
-                    mAccountUsernameTextView.setText(username);
 
                     Picasso.with(CreatePostActivity.this)
                             .load(profileImage)
@@ -281,8 +287,33 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK){
+            if(requestCode == IMAGE_GALLERY_REQUEST && data != null){
+                photoUri = data.getData();
+                if (photoUri != null){
+                    mAddImageTextView.setVisibility(View.GONE);
+                    Picasso.with(this)
+                            .load(photoUri)
+                            .into(mPostImageView,
+                                    new Callback.EmptyCallback(){
+                                        @Override
+                                        public void onSuccess(){
+
+                                        }
+                                    });
+
+                }
+            }else {
+                super.onActivityResult(requestCode, resultCode, data);
+            }
+        }
+    }
+
+    @Override
     public void onClick(View v){
-        if(v == mSharePostButton){
+        if(v == mPostTextView){
             if (firebaseAuth.getCurrentUser() != null){
                 savingDataToFirebase();
             }else {
@@ -292,21 +323,19 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
             }
         }
 
-    }
+        if (v == mBackImageView){
+            finish();
+        }
 
-    public void loadImage(){
-        /**index 1 is the progress bar and it show as the image is loading*/
-
-        Picasso.with(this)
-                .load(photoUri)
-                .into(mPostImageView, new Callback.EmptyCallback(){
-                    @Override
-                    public void onSuccess(){
-                        /**index 0 is the mChosenImageView*/
-                    }
-                });
+        if (v == mAddImageTextView){
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            intent.setType("image/*");
+            startActivityForResult(intent, IMAGE_GALLERY_REQUEST);
+        }
 
     }
+
 
     public void uploadingToFirebaseDialog(){
         progressDialog = new ProgressDialog(this);
@@ -316,12 +345,8 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
     private void savingDataToFirebase(){
         if (photoUri != null){
             progressDialog.show();
-            mSharePostButton.setEnabled(false);
-            mSharePostButton.setBackgroundResource(R.drawable.inactive_button_background);
-            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            final String uid = user.getUid();
 
-            final DatabaseReference reference = postReference.push();
+            final DatabaseReference reference = randomReference.push();
             final String pushId = reference.getKey();
             StorageReference storageReference = FirebaseStorage
                     .getInstance().getReference()
@@ -334,64 +359,50 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     final Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
-                    CollectionReference cl = postsReference;
+                    CollectionReference cl = postsCollection;
                     cl.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override
                         public void onSuccess(QuerySnapshot documentSnapshots) {
                             final int index = documentSnapshots.getDocuments().size();
-                            Post post = new Post();
-                            final Long timeStamp = System.currentTimeMillis();
+                            final Post post = new Post();
+                            final long timeStamp = new Date().getTime();
+                            final int currentCount = index + 1;
 
-                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d");
-                            String date = simpleDateFormat.format(new Date());
+                            collectionCollection.document().addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                @Override
+                                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                    if (e != null) {
+                                        Log.w(TAG, "Listen error", e);
+                                        return;
+                                    }
+                                    if (documentSnapshot.exists()){
+                                        Collection collection = documentSnapshot.toObject(Collection.class);
+                                        final String collectionId = collection.getPushId();
 
-                            if (date.endsWith("1") && !date.endsWith("11"))
-                                simpleDateFormat = new SimpleDateFormat("d'st' MMM yyyy");
-                            else if (date.endsWith("2") && !date.endsWith("12"))
-                                simpleDateFormat = new SimpleDateFormat("d'nd' MMM yyyy");
-                            else if (date.endsWith("3") && !date.endsWith("13"))
-                                simpleDateFormat = new SimpleDateFormat("d'rd' MMM yyyy");
-                            else
-                                simpleDateFormat = new SimpleDateFormat("d'th' MMM yyyy");
-                            String currentDate = simpleDateFormat.format(new Date());
+                                        //record all the single data
+                                        post.setNumber(currentCount);
+                                        post.setRandomNumber((double) new Random().nextDouble());
+                                        post.setTime(timeStamp);
+                                        post.setUid(firebaseAuth.getCurrentUser().getUid());
+                                        post.setPushId(pushId);
+                                        post.setTitle(mCingleTitleEditText.getText().toString());
+                                        post.setDescription(mCingleDescriptionEditText.getText().toString());
+                                        post.setImage(downloadUrl.toString());
+                                        post.setPushId(pushId);
+                                        post.setUid(firebaseAuth.getCurrentUser().getUid());
+                                        post.setType("single");
+                                        postsCollection.document("collection_posts").collection(collectionId)
+                                                .document(pushId).set(post);
 
-                            final long currentIdex = index + 1;
+                                        //reset input fields
+                                        mCingleTitleEditText.setText("");
+                                        mCingleDescriptionEditText.setText("");
+                                        mPostImageView.setImageBitmap(null);
 
-                            Log.d("downloadUrl post image", downloadUrl.toString());
-
-                            //record all the post data
-                            post.setNumber(currentIdex);
-                            post.setRandomNumber((double) new Random().nextDouble());
-                            post.setTimeStamp(timeStamp);
-                            post.setUid(firebaseAuth.getCurrentUser().getUid());
-                            post.setPushId(pushId);
-                            post.setTitle(mCingleTitleEditText.getText().toString());
-                            post.setDescription(mCingleDescriptionEditText.getText().toString());
-                            post.setImage(downloadUrl.toString());
-                            post.setPushId(pushId);
-                            post.setUid(firebaseAuth.getCurrentUser().getUid());
-                            post.setCreatorUid(firebaseAuth.getCurrentUser().getUid());
-                            post.setDatePosted(currentDate);
-                            post.setType("post");
-                            post.setCingleIndex("Post number" + " " + currentIdex);
-                            postsReference.document(pushId).set(post);
-
-                            //reset input fields
-                            mCingleTitleEditText.setText("");
-                            mCingleDescriptionEditText.setText("");
-                            mPostImageView.setImageBitmap(null);
-
-                            //set the post ownership
-                            TransactionDetails transactionDetails = new TransactionDetails();
-                            transactionDetails.setPushId(pushId);
-                            transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
-                            transactionDetails.setDate(currentDate);
-                            transactionDetails.setType("owner");
-                            transactionDetails.setAmount(0.0);
-                            transactionDetails.setWalletBalance(0.0);
-                            ownersReference.document(pushId).set(transactionDetails);
-
-                            progressDialog.dismiss();
+                                        progressDialog.dismiss();
+                                    }
+                                }
+                            });
 
 
                             Intent intent = new Intent(CreatePostActivity.this, NavigationDrawerActivity.class);
@@ -411,7 +422,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                 @Override
                 public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                     double progress = (100.0 * taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
-                    progressDialog.setMessage("Adding your Post" + " " + ((int) progress) + "%...");
+                    progressDialog.setMessage("Adding your Single" + " " + ((int) progress) + "%...");
                     if (progress == 100.0){
                         progressDialog.dismiss();
                     }

@@ -34,7 +34,7 @@
                     android:id="@+id/toolbar"
                     android:layout_gravity="top"
                     app:layout_scrollFlags="scroll|enterAlways"
-                    app:titleTextAppearance="@style/toolbarTextSize"
+                    app:titleTextAppearance="@style/toolbarTextAppearance"
                     app:titleMarginStart="-50sp"
                     android:layout_width="match_parent"
                     android:layout_height="42dp"

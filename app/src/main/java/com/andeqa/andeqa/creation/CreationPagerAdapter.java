@@ -23,9 +23,7 @@ public class CreationPagerAdapter extends FragmentPagerAdapter {
             case 1:
                 CreationCameraFragment creationCameraFragment = new CreationCameraFragment();
                 return creationCameraFragment;
-            case 2:
-                CreationArticleFragment creationArticleFragment = new CreationArticleFragment();
-                return creationArticleFragment;
+
         }
         return null;
     }
@@ -33,7 +31,7 @@ public class CreationPagerAdapter extends FragmentPagerAdapter {
     @Override
     public int getCount() {
         // Show 3 total pages.
-        return 3;
+        return 2;
     }
 
     @Override
@@ -43,8 +41,7 @@ public class CreationPagerAdapter extends FragmentPagerAdapter {
                 return "GALLERY";
             case 1:
                 return "CAMERA";
-            case 2:
-                return "ARTICLE";
+
         }
         return null;
     }

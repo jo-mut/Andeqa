@@ -133,19 +133,9 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                 Log.d("amount entered", amountTransferred + "");
                 final String formattedString = formatter.format(amountTransferred);
 
-                //get the current date
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d");
-                String date = simpleDateFormat.format(new Date());
+                //get the now time
+                final long timeStamp = new Date().getTime();
 
-                if (date.endsWith("1") && !date.endsWith("11"))
-                    simpleDateFormat = new SimpleDateFormat("d'st' MMM yyyy");
-                else if (date.endsWith("2") && !date.endsWith("12"))
-                    simpleDateFormat = new SimpleDateFormat("d'nd' MMM yyyy");
-                else if (date.endsWith("3") && !date.endsWith("13"))
-                    simpleDateFormat = new SimpleDateFormat("d'rd' MMM yyyy");
-                else
-                    simpleDateFormat = new SimpleDateFormat("d'th' MMM yyyy");
-                final String currentDate = simpleDateFormat.format(new Date());
 
                 ifairReference.document(mPostKey).get()
                         .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -207,7 +197,7 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                                                                                     transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                                     transactionDetails.setAmount(amountTransferred);
                                                                                     transactionDetails.setWalletBalance(newWalletBalance);
-                                                                                    transactionDetails.setDate(currentDate);
+                                                                                    transactionDetails.setTime(timeStamp);
                                                                                     transactionDetails.setType("redeem");
 
                                                                                     cingleOwnersReference.document(mPostKey).set(transactionDetails);
@@ -231,7 +221,7 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                                                                                     transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                                     transactionDetails.setAmount(amountTransferred);
                                                                                     transactionDetails.setWalletBalance(newWalletBalance);
-                                                                                    transactionDetails.setDate(currentDate);
+                                                                                    transactionDetails.setTime(timeStamp);
                                                                                     transactionDetails.setType("redeem");
                                                                                     cingleOwnersReference.document(mPostKey).set(transactionDetails);
                                                                                     //once cingle has been bought remove it from cingle selling

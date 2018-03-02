@@ -15,6 +15,7 @@
             android:layout_height="120dp"
             app:srcCompat="@drawable/transparent_background"
             android:id="@+id/picImageView"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true" />
     </RelativeLayout>
 </LinearLayout>

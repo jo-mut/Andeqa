@@ -12,6 +12,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,6 +51,7 @@ public class CreationGalleryFragment extends Fragment {
     private LoadPhotos loadPhotos;
     private GalleryAdapter galleryAdapter;
     private GridLayoutManager gridLayoutManager;
+//    private StaggeredGridLayoutManager staggeredGridLayoutManager;
 
     public CreationGalleryFragment() {
         // Required empty public constructor
@@ -112,8 +114,10 @@ public class CreationGalleryFragment extends Fragment {
         protected void onPostExecute(String xml) {
             galleryAdapter = new GalleryAdapter(getActivity(), photos);
             gridLayoutManager = new GridLayoutManager(getContext(), 3);
+//            staggeredGridLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
             mGalleryRecyclerView.setAdapter(galleryAdapter);
             mGalleryRecyclerView.setNestedScrollingEnabled(false);
+//            mGalleryRecyclerView.setLayoutManager(staggeredGridLayoutManager);
             mGalleryRecyclerView.setLayoutManager(gridLayoutManager);
 
             try {

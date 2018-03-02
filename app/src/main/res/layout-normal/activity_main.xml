@@ -30,6 +30,7 @@
             android:indeterminateOnly="true"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="100dp"
+            android:layout_marginTop="20dp"
             android:layout_height="wrap_content"
             android:id="@+id/progressBar"
             android:layout_centerInParent="true" />

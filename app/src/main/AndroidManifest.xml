@@ -175,7 +175,13 @@
         <activity
             android:name=".creation.CreationActivity"
             android:label="@string/title_activity_create"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
+        <activity
+            android:label="Create collection"
+            android:name=".creation.CreateCollectionActivity" />
+        <activity
+            android:label="Add to collection"
+            android:name=".profile.CollectionPostsActivity"></activity>
     </application>
 
 </manifest>

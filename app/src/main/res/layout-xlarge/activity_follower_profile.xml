@@ -259,7 +259,7 @@
 
         <android.support.v7.widget.RecyclerView
             android:numColumns="auto_fit"
-            android:id="@+id/profileCinglesRecyclerView"
+            android:id="@+id/collectionsRecyclerView"
             android:overScrollMode="never"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

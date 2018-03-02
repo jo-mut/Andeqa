@@ -17,7 +17,7 @@
         android:layout_width="225dp">
 
         <TextView
-            android:text="Confirm to unlist post from the market"
+            android:text="Confirm to unlist single from the market"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="normal"

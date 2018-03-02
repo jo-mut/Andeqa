@@ -16,7 +16,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_gravity="top"
-            app:titleTextAppearance="@style/toolbarTextSize"
+            app:titleTextAppearance="@style/toolbarTextAppearance"
             android:layout_height="42dp"
             android:background="@color/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways"
@@ -37,7 +37,7 @@
 
 
         <TextView
-            android:text="Like this post"
+            android:text="Like this single"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="false"

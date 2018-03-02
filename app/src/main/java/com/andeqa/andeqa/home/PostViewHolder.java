@@ -11,10 +11,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.Post;
+import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -82,7 +81,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
         totalLikesCountTextView = (TextView) mView.findViewById(R.id.totalLikesCountTextView);
     }
 
-    public void bindRandomCingles(final Post post){
+    public void bindRandomCingles(final Single single){
         postImageView = (ProportionalImageView) mView.findViewById(R.id.postImageView);
         descriptionTextView = (TextView) itemView.findViewById(R.id.descriptionTextView);
         titleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
@@ -93,7 +92,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
 
 
         Picasso.with(mContext)
-                .load(post.getImage())
+                .load(single.getImage())
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(postImageView, new Callback() {
                     @Override
@@ -104,7 +103,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
                     @Override
                     public void onError() {
                         Picasso.with(mContext)
-                                .load(post.getImage())
+                                .load(single.getImage())
                                 .into(postImageView, new Callback() {
                                     @Override
                                     public void onSuccess() {
@@ -122,14 +121,14 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
                 });
 
 
-        if (!TextUtils.isEmpty(post.getTitle())){
-            titleTextView.setText(post.getTitle());
+        if (!TextUtils.isEmpty(single.getTitle())){
+            titleTextView.setText(single.getTitle());
             titleRelativeLayout.setVisibility(View.VISIBLE);
 
         }
 
-        if (!TextUtils.isEmpty(post.getDescription())){
-            descriptionTextView.setText(post.getDescription());
+        if (!TextUtils.isEmpty(single.getDescription())){
+            descriptionTextView.setText(single.getDescription());
             descriptionRelativeLayout.setVisibility(View.VISIBLE);
         }
 

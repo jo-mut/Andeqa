@@ -29,6 +29,7 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.creation.CreateCollectionActivity;
 import com.andeqa.andeqa.creation.CreatePostActivity;
 import com.andeqa.andeqa.creation.CreationActivity;
 import com.andeqa.andeqa.market.MarketFragment;
@@ -396,8 +397,12 @@ public class NavigationDrawerActivity extends AppCompatActivity
     public void onClick(View v){
 
         if (v == mFloatingActionButton){
-            Intent intent = new Intent(NavigationDrawerActivity.this, CreationActivity.class);
+            Intent intent = new Intent(NavigationDrawerActivity.this, CreateCollectionActivity.class);
             startActivity(intent);
+//            Intent intent = new Intent();
+//            intent.setAction(Intent.ACTION_GET_CONTENT);
+//            intent.setType("image/*");
+//            startActivityForResult(intent, IMAGE_GALLERY_REQUEST);
         }
     }
 

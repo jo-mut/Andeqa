@@ -7,8 +7,8 @@ package com.andeqa.andeqa.models;
 public class TransactionDetails {
     String uid;
     String pushId;
-    String date;
     String type;
+    long time;
     double amount;
     double walletBalance;
 
@@ -16,16 +16,6 @@ public class TransactionDetails {
     public TransactionDetails() {
     }
 
-
-    public TransactionDetails(String uid, String pushId, String date,
-                              String type, double amount, double walletBalance) {
-        this.uid = uid;
-        this.pushId = pushId;
-        this.date = date;
-        this.type = type;
-        this.amount = amount;
-        this.walletBalance = walletBalance;
-    }
 
 
     public String getUid() {
@@ -44,13 +34,12 @@ public class TransactionDetails {
         this.pushId = pushId;
     }
 
-
-    public String getDate() {
-        return date;
+    public long getTime() {
+        return time;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setTime(long time) {
+        this.time = time;
     }
 
     public String getType() {

@@ -14,7 +14,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_gravity="top"
-        app:titleTextAppearance="@style/toolbarTextSize"
+        app:titleTextAppearance="@style/toolbarTextAppearance"
         android:layout_height="56dp"
         android:background="@color/colorPrimary"
         app:layout_scrollFlags="scroll|enterAlways"
@@ -83,7 +83,7 @@
 
                 <TextView
                     android:padding="5dp"
-                    android:text="Set the sale price of your post and place it on the market"
+                    android:text="Set the sale price of your single and place it on the market"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/setSalePriceTextView"

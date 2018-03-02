@@ -7,6 +7,7 @@ package com.andeqa.andeqa;
 public final class Constants {
     public  static  final String POSTS = "posts";
     public  static  final String FIREBASE_USERS = "users";
+    public static final String COLLECTION = "Collections";
     public static final String COMMENTS = "comments";
     public static final String LIKES= "likes";
     public static final String RELATIONS = "relations";

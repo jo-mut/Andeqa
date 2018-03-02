@@ -81,7 +81,7 @@
     <string name="title_activity_test">TestActivity</string>
     <string name="title_activity_nav">NavActivity</string>
     <string name="following">Following</string>
-    <string name="posts">Posts</string>
+    <string name="singles">Posts</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="confirm_delete_account">You will not be able to sign in once you confirm to delete your account</string>
@@ -93,7 +93,7 @@
     <string name="owner">Owner:</string>
     <string name="sense_credits">Sense Credits:</string>
     <string name="place_holder_text">Share your ideas, inspiration beautiful photos and see what other think as your earn in Sense Credits</string>
-    <string name="selling_holder_text">Currently there are no post on sale. Check again later</string>
+    <string name="selling_holder_text">Currently there are no single on sale. Check again later</string>
     <string name="timeline_holder_text">You have no recent activities on your timeline.</string>
     <string name="messages_holder_text">You have not received any new messages. Start a chat with your friends</string>
     <string name="title_activity_creation">CreationActivity</string>

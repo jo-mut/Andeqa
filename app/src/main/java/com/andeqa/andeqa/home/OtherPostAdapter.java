@@ -19,7 +19,7 @@ import com.andeqa.andeqa.models.Balance;
 import com.andeqa.andeqa.models.Cinggulan;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Like;
-import com.andeqa.andeqa.models.Post;
+import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.models.PostSale;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.models.TransactionDetails;
@@ -34,7 +34,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -190,12 +189,12 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                 }
 
                 if (documentSnapshot.exists()){
-                    final Post post = documentSnapshot.toObject(Post.class);
-                    final String uid = post.getUid();
+                    final Single single = documentSnapshot.toObject(Single.class);
+                    final String uid = single.getUid();
 
 
                     Picasso.with(mContext)
-                            .load(post.getImage())
+                            .load(single.getImage())
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(holder.postImageView, new Callback() {
                                 @Override
@@ -206,7 +205,7 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                                 @Override
                                 public void onError() {
                                     Picasso.with(mContext)
-                                            .load(post.getImage())
+                                            .load(single.getImage())
                                             .into(holder.postImageView, new Callback() {
                                                 @Override
                                                 public void onSuccess() {
@@ -223,19 +222,18 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                                 }
                             });
 
-                    if (post.getTitle().equals("")){
+                    if (single.getTitle().equals("")){
                         holder.titleRelativeLayout.setVisibility(View.GONE);
                     }else {
-                        holder.titleTextView.setText(post.getTitle());
+                        holder.titleTextView.setText(single.getTitle());
                     }
 
-                    if (post.getDescription().equals("")){
+                    if (single.getDescription().equals("")){
                         holder.descriptionRelativeLayout.setVisibility(View.GONE);
                     }else {
-                        holder.descriptionTextView.setText(post.getDescription());
+                        holder.descriptionTextView.setText(single.getDescription());
                     }
 
-                    holder.datePostedTextView.setText(post.getDatePosted());
 
                     holder.profileImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -391,13 +389,13 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                                                                     double rateOfLike = 1000.0/1800.0;
                                                                     //get the current rate of likes per unit time in seconds;
                                                                     double currentRateOfLkes = likesCount * rateOfLike/MILLE;
-                                                                    //get the current price of post
+                                                                    //get the current price of single
                                                                     final double currentPrice = currentRateOfLkes * DEFAULT_PRICE/rateOfLike;
-                                                                    //get the perfection value of post's interactivity online
+                                                                    //get the perfection value of single's interactivity online
                                                                     double perfectionValue = GOLDEN_RATIO/likesCount;
-                                                                    //get the new worth of Post price in Sen
+                                                                    //get the new worth of Single price in Sen
                                                                     final double cingleWorth = perfectionValue * likesPerMille * currentPrice;
-                                                                    //round of the worth of the post to 10 decimal number
+                                                                    //round of the worth of the single to 10 decimal number
                                                                     final double finalPoints = round( cingleWorth, 10);
 
                                                                     Log.d("final points", finalPoints + "");

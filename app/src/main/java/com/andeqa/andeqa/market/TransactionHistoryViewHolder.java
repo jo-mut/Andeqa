@@ -38,11 +38,11 @@ public class TransactionHistoryViewHolder extends RecyclerView.ViewHolder {
 
     public void bindTransactionHistory(final TransactionDetails transactionDetails){
         TextView amountTransferredTextView = (TextView) mView.findViewById(R.id.amountTransferredTextView);
-
-        DecimalFormat formatter =  new DecimalFormat("0.00000000");
-        amountTransferredTextView.setText("You have redeemed" + " SC " + formatter.format
-                (transactionDetails.getAmount()) +  " on " +
-                transactionDetails.getDate() + ". Your new wallet balance is " +
-                "SC " + formatter.format(transactionDetails.getWalletBalance()));
+//
+//        DecimalFormat formatter =  new DecimalFormat("0.00000000");
+//        amountTransferredTextView.setText("You have redeemed" + " SC " + formatter.format
+//                (transactionDetails.getAmount()) +  " on " +
+//                transactionDetails.getDat + ". Your new wallet balance is " +
+//                "SC " + formatter.format(transactionDetails.getWalletBalance()));
     }
 }

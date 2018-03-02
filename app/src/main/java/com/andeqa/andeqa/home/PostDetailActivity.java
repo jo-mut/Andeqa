@@ -29,7 +29,7 @@ import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.market.DialogSendCredits;
 import com.andeqa.andeqa.likes.LikesActivity;
 import com.andeqa.andeqa.models.Balance;
-import com.andeqa.andeqa.models.Post;
+import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.models.PostSale;
 import com.andeqa.andeqa.models.Cinggulan;
 import com.andeqa.andeqa.models.Credit;
@@ -251,13 +251,12 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                 }
 
                 if (documentSnapshot.exists()){
-                    final Post post = documentSnapshot.toObject(Post.class);
+                    final Single single = documentSnapshot.toObject(Single.class);
 
-                    final String image = post.getImage();
-                    final String uid = post.getUid();
-                    final String title = post.getTitle();
-                    final String description = post.getDescription();
-                    final String datePosted = post.getDatePosted();
+                    final String image = single.getImage();
+                    final String uid = single.getUid();
+                    final String title = single.getTitle();
+                    final String description = single.getDescription();
 
                     //LAUCNH PROFILE IF ITS NOT DELETED ELSE CATCH THE EXCEPTION
                     mProfileImageView.setOnClickListener(new View.OnClickListener() {
@@ -275,21 +274,20 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                     });
 
 
-                    //set the title of the post
+                    //set the title of the single
                     if (title.equals("")){
                         mCingleTitleRelativeLayout.setVisibility(View.GONE);
                     }else {
                         mCingleTitleTextView.setText(title);
                     }
 
-                    if (!TextUtils.isEmpty(post.getDescription())){
+                    if (!TextUtils.isEmpty(single.getDescription())){
                         mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
                         mDescriptionTextView.setText(description);
                     }
 
-                    mDatePostedTextView.setText(datePosted);
 
-                    //set the post image
+                    //set the single image
                     Picasso.with(PostDetailActivity.this)
                             .load(image)
                             .networkPolicy(NetworkPolicy.OFFLINE)
@@ -352,7 +350,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
     }
 
-    /**Post can only be bought by someone else except for the owner of that cingle*/
+    /**Single can only be bought by someone else except for the owner of that cingle*/
     private void showBuyButton(){
         ifairReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -915,8 +913,8 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
 
                                                             if (documentSnapshot.exists()){
-                                                                Post post = documentSnapshot.toObject(Post.class);
-                                                                final String uid = post.getUid();
+                                                                Single single = documentSnapshot.toObject(Single.class);
+                                                                final String uid = single.getUid();
 
                                                                 final Timeline timeline = new Timeline();
                                                                 final long time = new Date().getTime();
@@ -997,7 +995,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                                             final double currentPrice = currentRateOfLkes * DEFAULT_PRICE/rateOfLike;
                                                             //get the perfection value of post's interactivity online
                                                             double perfectionValue = GOLDEN_RATIO/likesCount;
-                                                            //get the new worth of Post price in Sen
+                                                            //get the new worth of Single price in Sen
                                                             final double cingleWorth = perfectionValue * likesPerMille * currentPrice;
                                                             //round of the worth of the post to 10 decimal number
                                                             final double finalPoints = round( cingleWorth, 10);
@@ -1131,7 +1129,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                         mPoseSenseCreditsTextView.setText("SC" + " " + formatter.format(senseCredits));
 
                         if (intSalePrice < senseCredits){
-                            mEditSalePriceEditText.setError("Sale price is less than Post Sense Crdits!");
+                            mEditSalePriceEditText.setError("Sale price is less than Single Sense Crdits!");
                         }else {
                             ifairReference.document(mPostKey).update("salePrice", intSalePrice);
 
