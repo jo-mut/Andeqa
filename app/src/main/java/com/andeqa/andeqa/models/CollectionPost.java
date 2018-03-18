@@ -1,27 +1,39 @@
 package com.andeqa.andeqa.models;
 
 /**
- * Created by J.EL on 3/13/2018.
+ * Created by J.EL on 2/28/2018.
  */
 
-public class Post {
+public class CollectionPost {
     long time;
     long number;
     double randomNumber;
+    String title;
+    String image;
+    String description;
     String pushId;
     String uid;
     String type;
     String collectionId;
 
-    public Post() {
+
+    public CollectionPost() {
     }
 
-    public String getCollectionId() {
-        return collectionId;
+    public String getDescription() {
+        return description;
     }
 
-    public void setCollectionId(String collectionId) {
-        this.collectionId = collectionId;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public long getNumber() {
@@ -56,6 +68,14 @@ public class Post {
         this.time = time;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getType() {
         return type;
     }
@@ -70,5 +90,13 @@ public class Post {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public String getCollectionId() {
+        return collectionId;
+    }
+
+    public void setCollectionId(String collectionId) {
+        this.collectionId = collectionId;
     }
 }

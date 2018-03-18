@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-xmlns:tools="http://schemas.android.com/tools"
-android:fitsSystemWindows="true"
-android:background="#000000"
-tools:context="com.andeqa.andeqa.home.FullImageViewActivity">
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="#000000"
+    tools:context="com.andeqa.andeqa.home.FullImageViewActivity">
 
     <RelativeLayout
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -26,25 +25,13 @@ tools:context="com.andeqa.andeqa.home.FullImageViewActivity">
 
     </RelativeLayout>
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar_layout"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
-        android:background="@android:color/transparent"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:layout_height="56dp"
+        app:titleTextColor="@android:color/white"
+        app:layout_scrollFlags="scroll|enterAlways"
+        app:titleTextAppearance="@style/toolbarTextAppearance"
+        app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            app:titleTextColor="@android:color/white"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:titleTextAppearance="@style/toolbarTextAppearance"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            android:src="@color/transparentColor"
-            />
-
-    </android.support.design.widget.AppBarLayout>
-
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

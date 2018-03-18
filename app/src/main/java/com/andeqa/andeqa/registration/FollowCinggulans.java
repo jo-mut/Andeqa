@@ -57,7 +57,7 @@ public class FollowCinggulans extends AppCompatActivity implements View.OnClickL
 
         if (firebaseAuth.getCurrentUser() != null){
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            postsReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            postsReference = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             cinggulansQuery = usersReference.orderBy("uid");
             followInitialCinggulans();

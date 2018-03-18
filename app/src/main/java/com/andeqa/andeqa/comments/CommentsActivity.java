@@ -71,19 +71,21 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
-    private String mPostKey;
+    private String mPostId;
+    private String mCollectionId;
     //firebase
     private DatabaseReference databaseReference;
     //firestore
     private CollectionReference commentsReference;
-    private CollectionReference postCollection;
+    private CollectionReference collectionsCollection;
     private Query commentQuery;
     private CollectionReference usersReference;
     private CollectionReference relationsReference;
     private CollectionReference timelineCollection;
     //adapters
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
-    private static final String EXTRA_POST_KEY = "post key";
+    private static final String COLLECTION_ID = "collection id";
+    private static final String EXTRA_POST_ID = "post id";
     private static final String EXTRA_USER_UID = "uid";
     private static final String TAG = CommentsActivity.class.getSimpleName();
     private boolean processFollow = false;
@@ -116,13 +118,19 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
             mSendCommentImageView.setOnClickListener(this);
             firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-            mPostKey = getIntent().getStringExtra(EXTRA_POST_KEY);
-            if(mPostKey == null){
-                throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
+            mPostId = getIntent().getStringExtra(EXTRA_POST_ID);
+            if(mPostId == null){
+                throw new IllegalArgumentException("pass a post id");
+            }
+
+            mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
+            if(mCollectionId == null){
+                throw new IllegalArgumentException("pass a collection id");
             }
 
             //firestore
-            postCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS)
+                    .document("collection_posts").collection(mCollectionId);
             commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
@@ -172,7 +180,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
     public void setData() {
         //get the cingle that user wants to comment on
-        postCollection.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        collectionsCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -277,7 +285,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     public void setUpFirebaseComments(){
-        commentQuery = commentsReference.orderBy("postId").whereEqualTo("pushId", mPostKey);
+        commentQuery = commentsReference.orderBy("postId").whereEqualTo("pushId", mPostId);
         FirestoreRecyclerOptions<Comment> options = new FirestoreRecyclerOptions.Builder<Comment>()
                 .setQuery(commentQuery, Comment.class)
                 .build();
@@ -290,7 +298,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                 final String uid = getSnapshots().get(position).getUid();
 
                 //SET UP TEXTVIEW TO SHOW NO COMMENTS YET IF THERE ARE NO COMMENTS
-                if (commentsReference.document(mPostKey) != null){
+                if (commentsReference.document(mPostId) != null){
                     mSaySomethingRelativeLayout.setVisibility(View.GONE);
                 }else {
                     mSaySomethingRelativeLayout.setVisibility(View.VISIBLE);
@@ -549,7 +557,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                             Comment comment = new Comment();
                             comment.setUid(uid);
                             comment.setCommentText(commentText);
-                            comment.setPushId(mPostKey);
+                            comment.setPushId(mPostId);
                             comment.setPostId(postId);
                             commentsReference.document(postId).set(comment)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -558,7 +566,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                                     final Timeline timeline = new Timeline();
                                     final long time = new Date().getTime();
 
-                                    postCollection.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                    collectionsCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                         @Override
                                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -575,7 +583,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                                                 timeline.setTimeStamp(time);
                                                 timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                 timeline.setType("comment");
-                                                timeline.setPushId(mPostKey);
+                                                timeline.setPushId(mPostId);
                                                 timeline.setStatus("unRead");
                                                 if (creatorUid.equals(firebaseAuth.getCurrentUser().getUid())){
                                                     //do nothing

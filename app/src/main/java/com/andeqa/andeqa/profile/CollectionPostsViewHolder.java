@@ -18,7 +18,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * Created by J.EL on 6/8/2017.
  */
 
-public class ProfilePostsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+public class CollectionPostsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     View mView;
     Context mContext;
@@ -34,8 +34,8 @@ public class ProfilePostsViewHolder extends RecyclerView.ViewHolder implements V
     public ImageView settingsImageView;
     public RelativeLayout cingleTitleRelativeLayout;
     public RelativeLayout descriptionRelativeLayout;
-    public ProportionalImageView cingleImageView;
-    public TextView cingleTradeMethodTextView;
+    public ProportionalImageView postImageView;
+    public TextView tradeMethodTextView;
     public TextView cingleSenseCreditsTextView;
     public RecyclerView likesRecyclerView;
     public TextView totalLikesCountTextView;
@@ -43,7 +43,7 @@ public class ProfilePostsViewHolder extends RecyclerView.ViewHolder implements V
     public RelativeLayout likesRelativeLayout;
 
 
-    public ProfilePostsViewHolder(View itemView){
+    public CollectionPostsViewHolder(View itemView){
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
@@ -60,9 +60,9 @@ public class ProfilePostsViewHolder extends RecyclerView.ViewHolder implements V
         settingsImageView = (ImageView) itemView.findViewById(R.id.settingsImageView);
         cingleTitleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
         descriptionRelativeLayout  = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
-        cingleImageView = (ProportionalImageView) mView.findViewById(R.id.postImageView);
+        postImageView = (ProportionalImageView) mView.findViewById(R.id.postImageView);
         cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.postSenseCreditsTextView);
-        cingleTradeMethodTextView = (TextView) mView.findViewById(R.id.tradeMethodTextView);
+        tradeMethodTextView = (TextView) mView.findViewById(R.id.tradeMethodTextView);
         likesRecyclerView = (RecyclerView) mView.findViewById(R.id.likesRecyclerView);
         likesRelativeLayout = (RelativeLayout) mView.findViewById(R.id.likesRelativeLayout);
         totalLikesCountTextView = (TextView) mView.findViewById(R.id.totalLikesCountTextView);

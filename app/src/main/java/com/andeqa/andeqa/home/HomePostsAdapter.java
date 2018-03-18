@@ -17,7 +17,8 @@ import android.view.ViewGroup;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.firestore.FirestoreAdapter;
-import com.andeqa.andeqa.models.Single;
+import com.andeqa.andeqa.models.CollectionPost;
+import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.likes.LikesActivity;
@@ -57,10 +58,10 @@ import java.util.Date;
  * Created by J.EL on 11/17/2017.
  */
 
-public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
-    private static final String TAG =  MainPostsAdapter.class.getSimpleName();
+public class HomePostsAdapter extends FirestoreAdapter<HomePostsViewHolder> {
+    private static final String TAG =  HomePostsAdapter.class.getSimpleName();
     private Context mContext;
-    private static final String EXTRA_POST_KEY = "post key";
+    private static final String EXTRA_POST_ID = "post id";
     private static final String EXTRA_USER_UID =  "uid";
     private boolean processLikes = false;
     private boolean processDislikes = false;
@@ -72,7 +73,7 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
     private static final int LIMIT = 10;
     //firestore reference
     private FirebaseFirestore firebaseFirestore;
-    private CollectionReference postsReference;
+    private CollectionReference collectionsCollection;
     private CollectionReference ifairReference;
     private com.google.firebase.firestore.Query commentsCountQuery;
     private CollectionReference ownerReference;
@@ -91,8 +92,11 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
     //adapters
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
 
+    private static final String COLLECTION_ID = "collection id";
 
-    public MainPostsAdapter(Query query, Context mContext) {
+
+
+    public HomePostsAdapter(Query query, Context mContext) {
         super(query);
         this.mContext = mContext;
     }
@@ -111,23 +115,24 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
     }
 
     @Override
-    public MainPostsViewHolder onCreateViewHolder(ViewGroup parent, final int viewType) {
+    public HomePostsViewHolder onCreateViewHolder(ViewGroup parent, final int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        return new MainPostsViewHolder(inflater.inflate(R.layout.post_layout, parent, false));
+        return new HomePostsViewHolder(inflater.inflate(R.layout.post_layout, parent, false));
     }
 
 
     @Override
-    public void onBindViewHolder(final MainPostsViewHolder holder, final int position) {
-        final Single single = getSnapshot(holder.getAdapterPosition()).toObject(Single.class);
-        final String postKey = single.getPushId();
-        final String uid = single.getUid();
-        Log.d("single postkey", postKey);
+    public void onBindViewHolder(final HomePostsViewHolder holder, final int position) {
+        final Post post = getSnapshot(holder.getAdapterPosition()).toObject(Post.class);
+        final String postKey = post.getPushId();
+        final String uid = post.getUid();
+        final String collectionId = post.getCollectionId();
 
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser()!= null){
             //firestore
-            postsReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS)
+                    .document("collection_posts").collection(collectionId);
             ownerReference = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             ifairReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
@@ -144,53 +149,62 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
 
         }
 
+        collectionsCollection.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
-        Picasso.with(mContext)
-                .load(single.getImage())
-                .networkPolicy(NetworkPolicy.OFFLINE)
-                .into(holder.postImageView, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        Log.v("Picasso", "Fetched image");
+                if (documentSnapshot.exists()){
+                    final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                    Picasso.with(mContext)
+                            .load(collectionPost.getImage())
+                            .networkPolicy(NetworkPolicy.OFFLINE)
+                            .into(holder.postImageView, new Callback() {
+                                @Override
+                                public void onSuccess() {
+                                    Log.v("Picasso", "Fetched image");
+                                }
+
+                                @Override
+                                public void onError() {
+                                    Picasso.with(mContext)
+                                            .load(collectionPost.getImage())
+                                            .into(holder.postImageView, new Callback() {
+                                                @Override
+                                                public void onSuccess() {
+
+                                                }
+
+                                                @Override
+                                                public void onError() {
+                                                    Log.v("Picasso", "Could not fetch image");
+                                                }
+                                            });
+
+
+                                }
+                            });
+
+
+                    if (!TextUtils.isEmpty(collectionPost.getTitle())){
+                        holder.titleTextView.setText(collectionPost.getTitle());
+                        holder.titleRelativeLayout.setVisibility(View.VISIBLE);
+
                     }
 
-                    @Override
-                    public void onError() {
-                        Picasso.with(mContext)
-                                .load(single.getImage())
-                                .into(holder.postImageView, new Callback() {
-                                    @Override
-                                    public void onSuccess() {
-
-                                    }
-
-                                    @Override
-                                    public void onError() {
-                                        Log.v("Picasso", "Could not fetch image");
-                                    }
-                                });
-
-
+                    if (!TextUtils.isEmpty(collectionPost.getDescription())){
+                        holder.descriptionTextView.setText(collectionPost.getDescription());
+                        holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
                     }
-                });
 
-
-        if (!TextUtils.isEmpty(single.getTitle())){
-            holder.titleTextView.setText(single.getTitle());
-            holder.titleRelativeLayout.setVisibility(View.VISIBLE);
-
-        }
-
-        if (!TextUtils.isEmpty(single.getDescription())){
-           holder.descriptionTextView.setText(single.getDescription());
-            holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
-        }
+                }
+            }
+        });
 
         holder.totalLikesCountTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, LikesActivity.class);
-                intent.putExtra(MainPostsAdapter.EXTRA_POST_KEY, postKey);
+                intent.putExtra(HomePostsAdapter.EXTRA_POST_ID, postKey);
                 mContext.startActivity(intent);
             }
         });
@@ -199,7 +213,8 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
             @Override
             public void onClick(View view) {
                 Intent intent =  new Intent(mContext, CommentsActivity.class);
-                intent.putExtra(MainPostsAdapter.EXTRA_POST_KEY, postKey);
+                intent.putExtra(HomePostsAdapter.EXTRA_POST_ID, postKey);
+                intent.putExtra(HomePostsAdapter.COLLECTION_ID, collectionId);
                 mContext.startActivity(intent);
             }
         });
@@ -208,7 +223,8 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, FullImageViewActivity.class);
-                intent.putExtra(MainPostsAdapter.EXTRA_POST_KEY, postKey);
+                intent.putExtra(HomePostsAdapter.EXTRA_POST_ID, postKey);
+                intent.putExtra(HomePostsAdapter.COLLECTION_ID, collectionId);
                 mContext.startActivity(intent);
             }
         });
@@ -217,7 +233,8 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
             @Override
             public void onClick(View view) {
                 Intent intent =  new Intent(mContext, PostDetailActivity.class);
-                intent.putExtra(MainPostsAdapter.EXTRA_POST_KEY, postKey);
+                intent.putExtra(HomePostsAdapter.EXTRA_POST_ID, postKey);
+                intent.putExtra(HomePostsAdapter.COLLECTION_ID, collectionId);
                 mContext.startActivity(intent);
             }
         });
@@ -226,7 +243,8 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
-                bundle.putString(MainPostsAdapter.EXTRA_POST_KEY, postKey);
+                bundle.putString(HomePostsAdapter.EXTRA_POST_ID, postKey);
+                bundle.putString(HomePostsAdapter.COLLECTION_ID, collectionId);
                 FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
                 DialogFragmentPostSettings dialogFragmentPostSettings = DialogFragmentPostSettings.newInstance("single settngs");
                 dialogFragmentPostSettings.setArguments(bundle);
@@ -239,12 +257,12 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
             public void onClick(View view) {
                 if ((firebaseAuth.getCurrentUser().getUid()).equals(uid)){
                     Intent intent = new Intent(mContext, PersonalProfileActivity.class);
-                    intent.putExtra(MainPostsAdapter.EXTRA_USER_UID, uid);
+                    intent.putExtra(HomePostsAdapter.EXTRA_USER_UID, uid);
                     mContext.startActivity(intent);
                     Log.d("profile uid", firebaseAuth.getCurrentUser().getUid());
                 }else {
                     Intent intent = new Intent(mContext, FollowerProfileActivity.class);
-                    intent.putExtra(MainPostsAdapter.EXTRA_USER_UID, uid);
+                    intent.putExtra(HomePostsAdapter.EXTRA_USER_UID, uid);
                     Log.d("follower uid", uid);
                     mContext.startActivity(intent);
                 }
@@ -619,7 +637,7 @@ public class MainPostsAdapter extends FirestoreAdapter<MainPostsViewHolder> {
                                             @Override
                                             public void onClick(View view) {
                                                 Intent intent = new Intent(mContext, LikesActivity.class);
-                                                intent.putExtra(MainPostsAdapter.EXTRA_POST_KEY, postKey);
+                                                intent.putExtra(HomePostsAdapter.EXTRA_POST_ID, postKey);
                                                 mContext.startActivity(intent);
                                             }
                                         });

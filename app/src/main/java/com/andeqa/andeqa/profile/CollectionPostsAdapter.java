@@ -17,7 +17,7 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.firestore.FirestoreAdapter;
 import com.andeqa.andeqa.home.PostDetailActivity;
-import com.andeqa.andeqa.models.Post;
+import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.home.FullImageViewActivity;
@@ -30,6 +30,7 @@ import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.models.TransactionDetails;
 import com.andeqa.andeqa.likes.WhoLikedViewHolder;
+import com.andeqa.andeqa.people.FollowerProfileActivity;
 import com.andeqa.andeqa.settings.DialogFragmentPostSettings;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -60,14 +61,13 @@ import java.util.List;
  * Created by J.EL on 11/14/2017.
  */
 
-public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHolder> {
+public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsViewHolder> {
     private static final String TAG = CollectionPostsAdapter.class.getSimpleName();
     private Context mContext;
     private List<Single> singles = new ArrayList<>();
     //firestore
     private FirebaseFirestore firebaseFirestore;
-    private CollectionReference cinglesReference;
-    private com.google.firebase.firestore.Query profileCinglesQuery;
+    private CollectionReference postsCollection;
     private com.google.firebase.firestore.Query commentsCountQuery;
     private CollectionReference ownerReference;
     private CollectionReference usersReference;
@@ -91,7 +91,8 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
 
     private static final double GOLDEN_RATIO = 1.618;
     private static final double DEFAULT_PRICE = 1.5;
-    private static final String EXTRA_POST_KEY = "post key";
+    private static final String COLLECTION_ID = "collection id";
+    private static final String EXTRA_POST_ID = "post id";
     private static final String EXTRA_USER_UID = "uid";
     private  static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
@@ -108,23 +109,25 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
     }
 
     @Override
-    public ProfilePostsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public CollectionPostsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.post_layout, parent, false);
-        return new ProfilePostsViewHolder(view);
+        return new CollectionPostsViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final ProfilePostsViewHolder holder, int position) {
-        final Post post = getSnapshot(holder.getAdapterPosition()).toObject(Post.class);
-        final String postKey = post.getPushId();
-        final String uid = post.getUid();
+    public void onBindViewHolder(final CollectionPostsViewHolder holder, int position) {
+        final CollectionPost collectionPost = getSnapshot(holder.getAdapterPosition()).toObject(CollectionPost.class);
+        final String collectionId = collectionPost.getCollectionId();
+        final String postId = collectionPost.getPushId();
+        final String uid = collectionPost.getUid();
 
 
         //initialize firebase auth
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
             //initialize firestore
-            cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            postsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS)
+                    .document("collection_posts").collection(collectionId);
             ownerReference = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             ifairReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
@@ -132,7 +135,6 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
             likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             commentsCountQuery = commentsReference;
-            profileCinglesQuery = cinglesReference.whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid());
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
             sellingReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
@@ -143,12 +145,44 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
 
         }
 
+        Picasso.with(mContext)
+                .load(collectionPost.getImage())
+                .networkPolicy(NetworkPolicy.OFFLINE)
+                .into(holder.postImageView, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        //successfully loads from CACHE
+                        Log.d("picasso", "successfully loaded");
+                    }
+
+                    @Override
+                    public void onError() {
+                        // fetch online because cache is not there
+                        Picasso.with(mContext)
+                                .load(collectionPost.getImage())
+                                .into(holder.postImageView);
+                    }
+                });
+
+
+        if (collectionPost.getTitle().equals("")){
+            holder.cingleTitleRelativeLayout.setVisibility(View.GONE);
+        }else {
+            holder.cingleTitleTextView.setText(collectionPost.getTitle());
+        }
+
+        if (collectionPost.getDescription().equals("")){
+            holder.descriptionRelativeLayout.setVisibility(View.GONE);
+        }else {
+            holder.cingleDescriptionTextView.setText(collectionPost.getDescription());
+        }
+
 
         holder.totalLikesCountTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, LikesActivity.class);
-                intent.putExtra(CollectionPostsAdapter.EXTRA_POST_KEY, postKey);
+                intent.putExtra(CollectionPostsAdapter.EXTRA_POST_ID, postId);
                 mContext.startActivity(intent);
             }
         });
@@ -157,25 +191,28 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, CommentsActivity.class);
-                intent.putExtra(CollectionPostsAdapter.EXTRA_POST_KEY, postKey);
+                intent.putExtra(CollectionPostsAdapter.COLLECTION_ID, collectionId);
+                intent.putExtra(CollectionPostsAdapter.EXTRA_POST_ID, postId);
                 mContext.startActivity(intent);
             }
         });
 
-        holder.cingleImageView.setOnClickListener(new View.OnClickListener() {
+        holder.postImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, FullImageViewActivity.class);
-                intent.putExtra(CollectionPostsAdapter.EXTRA_POST_KEY, postKey);
+                intent.putExtra(CollectionPostsAdapter.COLLECTION_ID, collectionId);
+                intent.putExtra(CollectionPostsAdapter.EXTRA_POST_ID, postId);
                 mContext.startActivity(intent);
             }
         });
 
-        holder.cingleTradeMethodTextView.setOnClickListener(new View.OnClickListener() {
+        holder.tradeMethodTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, PostDetailActivity.class);
-                intent.putExtra(CollectionPostsAdapter.EXTRA_POST_KEY, postKey);
+                intent.putExtra(CollectionPostsAdapter.COLLECTION_ID, collectionId);
+                intent.putExtra(CollectionPostsAdapter.EXTRA_POST_ID, postId);
                 mContext.startActivity(intent);
             }
         });
@@ -184,7 +221,8 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
-                bundle.putString(CollectionPostsAdapter.EXTRA_POST_KEY, postKey);
+                bundle.putString(CollectionPostsAdapter.COLLECTION_ID, collectionId);
+                bundle.putString(CollectionPostsAdapter.EXTRA_POST_ID, postId);
                 FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
                 DialogFragmentPostSettings dialogFragmentPostSettings = DialogFragmentPostSettings.newInstance("single settngs");
                 dialogFragmentPostSettings.setArguments(bundle);
@@ -192,8 +230,25 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
             }
         });
 
+        holder.profileImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if ((firebaseAuth.getCurrentUser().getUid()).equals(uid)){
+                    Intent intent = new Intent(mContext, PersonalProfileActivity.class);
+                    intent.putExtra(CollectionPostsAdapter.EXTRA_USER_UID, uid);
+                    mContext.startActivity(intent);
+                    Log.d("profile uid", firebaseAuth.getCurrentUser().getUid());
+                }else {
+                    Intent intent = new Intent(mContext, FollowerProfileActivity.class);
+                    intent.putExtra(CollectionPostsAdapter.EXTRA_USER_UID, uid);
+                    Log.d("follower uid", uid);
+                    mContext.startActivity(intent);
+                }
+            }
+        });
 
-        senseCreditReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+
+        senseCreditReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -210,70 +265,6 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
 
                 }else {
                     holder.cingleSenseCreditsTextView.setText("SC 0.00000000");
-                }
-            }
-        });
-
-
-        cinglesReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    final Single single = documentSnapshot.toObject(Single.class);
-
-                    Picasso.with(mContext)
-                            .load(single.getImage())
-                            .networkPolicy(NetworkPolicy.OFFLINE)
-                            .into(holder.cingleImageView, new Callback() {
-                                @Override
-                                public void onSuccess() {
-                                    //successfully loads from CACHE
-                                    Log.d("picasso", "successfully loaded");
-                                }
-
-                                @Override
-                                public void onError() {
-                                    // fetch online because cache is not there
-                                    Picasso.with(mContext)
-                                            .load(single.getImage())
-                                            .fetch(new Callback() {
-                                                @Override
-                                                public void onSuccess() {
-                                                    Picasso.with(mContext)
-                                                            .load(single.getImage())
-                                                            .into(holder.cingleImageView);
-                                                }
-
-                                                @Override
-                                                public void onError() {
-                                                    //NO IMAGE offline or online
-                                                    Log.v("Picasso", "Could not fetch image");
-                                                    Log.d("picasso images", single.getImage() +"");
-
-
-                                                }
-                                            });
-                                }
-                            });
-
-
-                    if (single.getTitle().equals("")){
-                        holder.cingleTitleRelativeLayout.setVisibility(View.GONE);
-                    }else {
-                        holder.cingleTitleTextView.setText(single.getTitle());
-                    }
-
-                    if (single.getDescription().equals("")){
-                        holder.descriptionRelativeLayout.setVisibility(View.GONE);
-                    }else {
-                        holder.cingleDescriptionTextView.setText(single.getDescription());
-                    }
-
                 }
             }
         });
@@ -321,7 +312,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
             }
         });
 
-        ownerReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        ownerReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -346,7 +337,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
 
 
         //get the number of commments in a single
-        commentsCountQuery.orderBy("postId").whereEqualTo("pushId", postKey)
+        commentsCountQuery.orderBy("postId").whereEqualTo("pushId", postId)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -366,7 +357,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
                 });
 
 
-        sellingReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        sellingReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -377,9 +368,9 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
 
                 if (documentSnapshot.exists()){
                     final PostSale postSale = documentSnapshot.toObject(PostSale.class);
-                    holder.cingleTradeMethodTextView.setText("@Selling");
+                    holder.tradeMethodTextView.setText("@Selling");
                 }else {
-                    holder.cingleTradeMethodTextView.setText("@NotOnSale");
+                    holder.tradeMethodTextView.setText("@NotOnSale");
 
                 }
 
@@ -388,7 +379,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
 
 
         //check get the count of likes after the top 5
-        likesReference.document(postKey).collection("likes").orderBy("uid").startAt(6)
+        likesReference.document(postId).collection("likes").orderBy("uid").startAt(6)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -409,7 +400,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
                 });
 
         //calculate the percentage of likes to dislikes
-        likesReference.document(postKey).collection("dislikes")
+        likesReference.document(postId).collection("dislikes")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot dislikesSnapshots, FirebaseFirestoreException e) {
@@ -421,7 +412,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
                         if (!dislikesSnapshots.isEmpty()){
                             final int dislikes = dislikesSnapshots.size();
                             Log.d("dislikes count", dislikes + "");
-                            likesReference.document(postKey).collection("likes")
+                            likesReference.document(postId).collection("likes")
                                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                         @Override
                                         public void onEvent(QuerySnapshot likesSnapshots, FirebaseFirestoreException e) {
@@ -449,7 +440,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
                         }else {
                             final int dislikes = dislikesSnapshots.size();
                             Log.d("dislikes count", dislikes + "");
-                            likesReference.document(postKey).collection("likes")
+                            likesReference.document(postId).collection("likes")
                                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                         @Override
                                         public void onEvent(QuerySnapshot likesSnapshots, FirebaseFirestoreException e) {
@@ -480,7 +471,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
                 });
 
         //calculate the percentage of likes to dislikes
-        likesReference.document(postKey).collection("likes")
+        likesReference.document(postId).collection("likes")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot likesSnapshots, FirebaseFirestoreException e) {
@@ -492,7 +483,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
                         if (!likesSnapshots.isEmpty()){
                             final int likes = likesSnapshots.size();
                             Log.d("likes count size", likes + "");
-                            likesReference.document(postKey).collection("dislikes")
+                            likesReference.document(postId).collection("dislikes")
                                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                         @Override
                                         public void onEvent(QuerySnapshot dislikesSnapshots, FirebaseFirestoreException e) {
@@ -527,7 +518,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
                         }else {
                             final int likes = likesSnapshots.size();
                             Log.d("likes count size", likes + "");
-                            likesReference.document(postKey).collection("dislikes")
+                            likesReference.document(postId).collection("dislikes")
                                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                         @Override
                                         public void onEvent(QuerySnapshot dislikesSnapshots, FirebaseFirestoreException e) {
@@ -557,7 +548,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
                     }
                 });
 
-        likesReference.document(postKey).collection("likes")
+        likesReference.document(postId).collection("likes")
                 .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -582,7 +573,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
             @Override
             public void onClick(View view) {
                 processDislikes = true;
-                likesReference.document(postKey).collection("dislikes")
+                likesReference.document(postId).collection("dislikes")
                         .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
                         .addSnapshotListener(new EventListener<QuerySnapshot>() {
                             @Override
@@ -599,13 +590,13 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
                                         Like like = new Like();
                                         like.setUid(firebaseAuth.getCurrentUser().getUid());
                                         like.setPushId(firebaseAuth.getCurrentUser().getUid());
-                                        likesReference.document(postKey).collection("dislikes")
+                                        likesReference.document(postId).collection("dislikes")
                                                 .document(firebaseAuth.getCurrentUser().getUid()).set(like);
                                         processDislikes = false;
                                         holder.dislikeImageView.setColorFilter(Color.RED);
 
                                     }else {
-                                        likesReference.document(postKey).collection("dislikes")
+                                        likesReference.document(postId).collection("dislikes")
                                                 .document(firebaseAuth.getCurrentUser().getUid()).delete();
                                         processDislikes = false;
                                         holder.dislikeImageView.setColorFilter(Color.BLACK);
@@ -619,7 +610,8 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
         });
 
 
-        likesReference.document(postKey).collection("likes").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        likesReference.document(postId)
+                .collection("likes").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
@@ -631,7 +623,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
                 if (!documentSnapshots.isEmpty()){
                     if (documentSnapshots.size() > 0){
                         holder.likesRelativeLayout.setVisibility(View.VISIBLE);
-                        likesQuery = likesReference.document(postKey).collection("likes").orderBy("uid");
+                        likesQuery = likesReference.document(postId).collection("likes").orderBy("uid");
                         FirestoreRecyclerOptions<Like> options = new FirestoreRecyclerOptions.Builder<Like>()
                                 .setQuery(likesQuery, Like.class)
                                 .build();
@@ -648,7 +640,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
                                     @Override
                                     public void onClick(View view) {
                                         Intent intent = new Intent(mContext, LikesActivity.class);
-                                        intent.putExtra(CollectionPostsAdapter.EXTRA_POST_KEY, postKey);
+                                        intent.putExtra(CollectionPostsAdapter.COLLECTION_ID, collectionId);
                                         mContext.startActivity(intent);
                                     }
                                 });
@@ -739,7 +731,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
             @Override
             public void onClick(View view) {
                 processLikes = true;
-                likesReference.document(postKey).collection("likes")
+                likesReference.document(postId).collection("likes")
                         .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
                         .addSnapshotListener(new EventListener<QuerySnapshot>() {
                             @Override
@@ -756,7 +748,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
                                         Like like = new Like();
                                         like.setUid(firebaseAuth.getCurrentUser().getUid());
                                         like.setPushId(firebaseAuth.getCurrentUser().getUid());
-                                        likesReference.document(postKey).collection("likes")
+                                        likesReference.document(postId).collection("likes")
                                                 .document(firebaseAuth.getCurrentUser().getUid()).set(like)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
@@ -765,7 +757,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
                                                         final long time = new Date().getTime();
 
                                                         timelineCollection.document(uid).collection("timeline")
-                                                                .whereEqualTo("type", "like").whereEqualTo("pushId", postKey)
+                                                                .whereEqualTo("type", "like").whereEqualTo("pushId", postId)
                                                                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                                                     @Override
                                                                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -774,12 +766,9 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
                                                                             return;
                                                                         }
 
-                                                                        if (!documentSnapshots.isEmpty()){
-
-                                                                            Log.d("timeline exists", postKey);
-                                                                        }else {
+                                                                        if (documentSnapshots.isEmpty()){
                                                                             final String postId = databaseReference.push().getKey();
-                                                                            timeline.setPushId(postKey);
+                                                                            timeline.setPushId(postId);
                                                                             timeline.setTimeStamp(time);
                                                                             timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                             timeline.setType("like");
@@ -803,7 +792,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
                                         holder.likesImageView.setColorFilter(Color.RED);
 
                                     }else {
-                                        likesReference.document(postKey).collection("likes")
+                                        likesReference.document(postId).collection("likes")
                                                 .document(firebaseAuth.getCurrentUser().getUid()).delete();
                                         processLikes = false;
                                         holder.likesImageView.setColorFilter(Color.BLACK);
@@ -811,7 +800,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
                                     }
                                 }
 
-                                likesReference.document(postKey).collection("likes")
+                                likesReference.document(postId).collection("likes")
                                         .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                             @Override
                                             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -843,7 +832,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
 
                                                         Log.d("finalpoints > 0", finalPoints + "");
 
-                                                        postWalletReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                                        postWalletReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                                             @Override
                                                             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                                                                 if (e != null) {
@@ -863,13 +852,13 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
                                                                     final double totalSenseCredits = senseCredits - amountRedeemed;
                                                                     Log.d("total sense credit", totalSenseCredits + "");
 
-                                                                    senseCreditReference.document(postKey).update("amount", totalSenseCredits);
+                                                                    senseCreditReference.document(postId).update("amount", totalSenseCredits);
                                                                 }else {
                                                                     Credit credit = new Credit();
-                                                                    credit.setPushId(postKey);
+                                                                    credit.setPushId(postId);
                                                                     credit.setAmount(finalPoints);
                                                                     credit.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                    senseCreditReference.document(postKey).set(credit);
+                                                                    senseCreditReference.document(postId).set(credit);
                                                                     Log.d("new sense credits", finalPoints + "");
                                                                 }
                                                             }
@@ -879,7 +868,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
                                                 }else {
                                                     final double finalPoints = 0.00;
                                                     Log.d("finalpoints <= 0", finalPoints + "");
-                                                    postWalletReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                                    postWalletReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                                         @Override
                                                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                                                             if (e != null) {
@@ -898,13 +887,13 @@ public class CollectionPostsAdapter extends FirestoreAdapter<ProfilePostsViewHol
                                                                 final double totalSenseCredits = senseCredits - amountRedeemed;
                                                                 Log.d("total sense credit", totalSenseCredits + "");
 
-                                                                senseCreditReference.document(postKey).update("amount", totalSenseCredits);
+                                                                senseCreditReference.document(postId).update("amount", totalSenseCredits);
                                                             }else {
                                                                 Credit credit = new Credit();
-                                                                credit.setPushId(postKey);
+                                                                credit.setPushId(postId);
                                                                 credit.setAmount(finalPoints);
                                                                 credit.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                senseCreditReference.document(postKey).set(credit);
+                                                                senseCreditReference.document(postId).set(credit);
                                                             }
                                                         }
                                                     });

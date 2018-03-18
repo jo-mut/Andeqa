@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
+import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.andeqa.andeqa.R;
@@ -41,6 +42,8 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
+import java.util.Date;
+import java.util.Random;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -61,9 +64,14 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
     private String mPostKey;
     private static final String EXTRA_POST_KEY = "post key";
     private static final String EXTRA_USER_UID = "uid";
+    private static final String COLLECTION_ID = "collection id";
+    private String mCollectionId;
+
+
     private static final String TAG = ListOnMarketActivity.class.getSimpleName();
     //firestore
-    private CollectionReference cinglesReference;
+    private CollectionReference collectionsCollection;
+    private CollectionReference postsCollection;
     private CollectionReference usersReference;
     private CollectionReference relationsReference;
     private CollectionReference commentReference;
@@ -104,7 +112,13 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                 throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
             }
 
-            cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
+            if (mCollectionId == null){
+                throw new IllegalArgumentException("pass a collection id");
+            }
+
+            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS)
+                    .document("collection_posts").collection(mCollectionId);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             commentReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
@@ -122,7 +136,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
 
     public void setData(){
         //set the cingle image
-        cinglesReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        collectionsCollection.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -226,6 +240,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
     @Override
     public void onClick(View v){
         if (v == mSetCinglePriceButton){
+            final long timeStamp = new Date().getTime();
             //GET EDITTEXT INPUT
             final String stringSalePrice = mSetCingleSalePriceEditText.getText().toString().trim();
             if (stringSalePrice.equals("")){
@@ -234,64 +249,80 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                 final double intSalePrice = Double.parseDouble(stringSalePrice);
                 final String formattedString = formatter.format(intSalePrice);
 
-                senseCreditReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                postsCollection.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
                         if (e != null) {
                             Log.w(TAG, "Listen error", e);
                             return;
                         }
 
                         if (documentSnapshot.exists()){
-                            final Credit credit = documentSnapshot.toObject(Credit.class);
-                            final double senseCredits = credit.getAmount();
-
-                            if (intSalePrice < senseCredits){
-                                mSetCingleSalePriceEditText.setError("Sale price is less than Single Sense Credit!");
-                            }else if (intSalePrice >= senseCredits){
-                                //SET CINGLE ON SALE IN SELLING
-                                final PostSale postSale =  new PostSale();
-                                postSale.setUid(firebaseAuth.getCurrentUser().getUid());
-                                postSale.setPushId(mPostKey);
-                                postSale.setSalePrice(intSalePrice);
-
-                                selllingCollection.document(mPostKey).set(postSale).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()){
-                                            Toast.makeText(ListOnMarketActivity.this, "Your post has been listed on Ifair",
-                                                    Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                });
-
-                            }else {
-
-                                new AlertDialog.Builder(ListOnMarketActivity.this)
-                                        .setTitle("Sorry !")
-                                        .setMessage("The sale price cannot be less than the Single's Sense Credit")
-                                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                            }
-                                        }).setIcon(android.R.drawable.ic_dialog_alert).show();
-                            }
-                        }else {
-                            //SET CINGLE ON SALE IN SELLING
-                            final PostSale postSale =  new PostSale();
-                            postSale.setUid(firebaseAuth.getCurrentUser().getUid());
-                            postSale.setPushId(mPostKey);
-                            postSale.setSalePrice(intSalePrice);
-
-                            selllingCollection.document(mPostKey).set(postSale).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            final Post post = documentSnapshot.toObject(Post.class);
+                            final String collectionId = post.getCollectionId();
+                            senseCreditReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                 @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()){
-                                        Toast.makeText(ListOnMarketActivity.this, "Your post has been listed for sale",
-                                                Toast.LENGTH_SHORT).show();
+                                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                                    if (e != null) {
+                                        Log.w(TAG, "Listen error", e);
+                                        return;
+                                    }
+
+                                    if (documentSnapshot.exists()){
+                                        final Credit credit = documentSnapshot.toObject(Credit.class);
+                                        final double senseCredits = credit.getAmount();
+
+                                        if (intSalePrice < senseCredits){
+                                            mSetCingleSalePriceEditText.setError("Sale price is less than CollectionPost Sense Credit!");
+                                        }else if (intSalePrice >= senseCredits){
+                                            //SET CINGLE ON SALE IN SELLING
+
+                                            selllingCollection.document(mPostKey).update("salePrice", intSalePrice)
+                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            if (task.isSuccessful()){
+                                                                Toast.makeText(ListOnMarketActivity.this, "Your post has been listed on Ifair",
+                                                                        Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        }
+                                                    });
+
+                                        }else {
+
+                                            new AlertDialog.Builder(ListOnMarketActivity.this)
+                                                    .setTitle("Sorry !")
+                                                    .setMessage("The sale price cannot be less than the CollectionPost's Sense Credit")
+                                                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                                        public void onClick(DialogInterface dialog, int which) {
+                                                        }
+                                                    }).setIcon(android.R.drawable.ic_dialog_alert).show();
+                                        }
+                                    }else {
+                                        //SET CINGLE ON SALE IN SELLING
+                                        final PostSale postSale =  new PostSale();
+                                        postSale.setUid(firebaseAuth.getCurrentUser().getUid());
+                                        postSale.setPushId(mPostKey);
+                                        postSale.setSalePrice(intSalePrice);
+                                        postSale.setRandomNumber((double) new Random().nextDouble());
+                                        postSale.setTime(timeStamp);
+
+
+                                        selllingCollection.document(mPostKey).set(postSale).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()){
+                                                    Toast.makeText(ListOnMarketActivity.this, "Your post has been listed for sale",
+                                                            Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        });
+
                                     }
                                 }
                             });
+
 
                         }
                     }
@@ -299,6 +330,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
 
                 mSetCingleSalePriceEditText.setText("");
             }
+
 
         }
     }

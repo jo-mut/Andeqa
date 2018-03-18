@@ -8,7 +8,7 @@ public class PostSale {
     String pushId;
     String uid;
     String datePosted;
-    long timeStamp;
+    long time;
     double randomNumber;
     double salePrice;
     long number;
@@ -18,12 +18,12 @@ public class PostSale {
     }
 
     public PostSale(String pushId, String uid, String datePosted,
-                    long timeStamp, double randomNumber, double
+                    long time, double randomNumber, double
                               salePrice, long number) {
         this.pushId = pushId;
         this.uid = uid;
         this.datePosted = datePosted;
-        this.timeStamp = timeStamp;
+        this.time = time;
         this.randomNumber = randomNumber;
         this.salePrice = salePrice;
         this.number = number;
@@ -53,12 +53,12 @@ public class PostSale {
         this.datePosted = datePosted;
     }
 
-    public long getTimeStamp() {
-        return timeStamp;
+    public long getTime() {
+        return time;
     }
 
-    public void setTimeStamp(long timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setTime(long time) {
+        this.time = time;
     }
 
     public double getRandomNumber() {

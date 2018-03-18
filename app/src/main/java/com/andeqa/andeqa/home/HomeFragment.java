@@ -47,14 +47,14 @@ public class HomeFragment extends Fragment{
     private static final String KEY_LAYOUT_POSITION = "layout position";
     private Parcelable recyclerViewState;
     //firestore reference
-    private CollectionReference cinglesReference;
+    private CollectionReference postsCollection;
     private Query randomPostsQuery;
     private DocumentSnapshot lastVisible;
 
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //adapters
-    private MainPostsAdapter mainPostsAdapter;
+    private HomePostsAdapter homePostsAdapter;
     private LinearLayoutManager layoutManager;
     private int TOTAL_ITEMS = 50;
     private List<String> postsIds = new ArrayList<>();
@@ -76,7 +76,7 @@ public class HomeFragment extends Fragment{
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
             //firestore
-            cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
 
             AllPosts();
 
@@ -95,11 +95,12 @@ public class HomeFragment extends Fragment{
         }else {
             progressBar.setVisibility(View.VISIBLE);
         }
+
     }
 
 
     private void AllPosts(){
-        cinglesReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        postsCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
@@ -110,10 +111,10 @@ public class HomeFragment extends Fragment{
 
 
                 if (!documentSnapshots.isEmpty()){
-                    randomPostsQuery = cinglesReference.orderBy("timeStamp", Query.Direction.DESCENDING);
-                    mainPostsAdapter = new MainPostsAdapter(randomPostsQuery, getContext());
-                    mainPostsAdapter.startListening();
-                    singleOutRecyclerView.setAdapter(mainPostsAdapter);
+                    randomPostsQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING);
+                    homePostsAdapter = new HomePostsAdapter(randomPostsQuery, getContext());
+                    homePostsAdapter.startListening();
+                    singleOutRecyclerView.setAdapter(homePostsAdapter);
                     singleOutRecyclerView.setHasFixedSize(false);
                     layoutManager = new LinearLayoutManager(getContext());
                     singleOutRecyclerView.setLayoutManager(layoutManager);

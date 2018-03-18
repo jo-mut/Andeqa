@@ -2,352 +2,37 @@
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_update_profile"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.andeqa.andeqa.profile.UpdateProfileActivity"
-    android:weightSum="1">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="#000000"
+    android:fitsSystemWindows="false"
+    tools:context="com.andeqa.andeqa.home.FullImageViewActivity">
 
-    <ScrollView
-        android:fillViewport="true"
-        android:scrollbars="none"
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <LinearLayout
-            android:orientation="vertical"
+        <com.andeqa.andeqa.utils.ProportionalImageView
+            android:id="@+id/postImageView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-
-            <android.support.design.widget.AppBarLayout
-                android:id="@+id/app_bar_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fitsSystemWindows="true"
-                android:background="@drawable/default_gradient_color"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
-                <android.support.v7.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_gravity="top"
-                    app:layout_scrollFlags="scroll|enterAlways"
-                    app:titleTextAppearance="@style/toolbarTextAppearance"
-                    app:titleMarginStart="-50sp"
-                    android:layout_width="match_parent"
-                    android:layout_height="112dp"
-                    app:popupTheme="@style/AppTheme.PopupOverlay"
-                    app:titleTextColor="@android:color/white"
-                    android:title="Collapsing Toolbar"
-                    app:layout_collapseMode="pin"
-                    tools:ignore="HardcodedText" />
-
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_weight="0.07"
-                    android:background="@drawable/default_gradient_color"
-                    android:layout_marginBottom="15dp"
-                    android:layout_height="500dp">
-
-                    <ImageView
-                        android:id="@+id/profileCoverImageView"
-                        android:src="@drawable/default_gradient_color"
-                        android:alpha="0.1"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop" />
-
-
-                    <ViewAnimator
-                        android:id="@+id/animator"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:animateFirstView="false"
-                        android:layout_centerInParent="true">
-
-
-                        <de.hdodenhof.circleimageview.CircleImageView
-                            android:id="@+id/profileImageView"
-                            android:layout_centerHorizontal="true"
-                            android:layout_alignParentTop="true"
-                            android:layout_gravity="center"
-                            android:background="@drawable/profile_circular_border_imageview"
-                            android:layout_height="160dp"
-                            android:layout_width="140dp" />
-
-                        <ProgressBar
-                            android:id="@+id/progress"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"/>
-
-                    </ViewAnimator>
-
-                    <ImageButton
-                        android:src="@drawable/ic_menu_camera"
-                        android:layout_marginLeft="80dp"
-                        android:layout_marginStart="80dp"
-                        android:id="@+id/updateProfilePictureImageButton"
-                        android:layout_alignBottom="@+id/animator"
-                        android:layout_alignLeft="@+id/animator"
-                        android:layout_alignStart="@+id/animator"
-                        android:layout_height="50dp"
-                        android:layout_width="50dp" />
-
-                    <TextView
-                        android:text="Update Cover"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginBottom="12dp"
-                        android:textSize="24sp"
-                        android:id="@+id/updateCoverTextView"
-                        android:textColor="@android:color/white"
-                        android:layout_marginRight="10dp"
-                        android:padding="5dp" />
-
-                </RelativeLayout>
-
-
-            </android.support.design.widget.AppBarLayout>
-
-
-            <android.support.v7.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clipToPadding="false"
-                app:cardPreventCornerOverlap="false">
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <RelativeLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:paddingLeft="40dp"
-                            android:paddingStart="40dp"
-                            android:paddingEnd="40dp"
-                            android:paddingRight="40dp">
-
-                            <ImageView
-                                app:srcCompat="@drawable/ic_person_black_24dp"
-                                android:id="@+id/imageView"
-                                android:layout_centerVertical="true"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-
-                        </RelativeLayout>
-
-
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-
-                            <EditText
-                                android:layout_height="wrap_content"
-                                android:inputType="textMultiLine"
-                                android:ems="10"
-                                android:paddingRight="5dp"
-                                android:paddingEnd="5dp"
-                                android:paddingLeft="5dp"
-                                android:paddingStart="5dp"
-                                android:paddingTop="30dp"
-                                android:paddingBottom="30dp"
-                                android:id="@+id/usernameEditText"
-                                android:hint="Username"
-                                android:freezesText="true"
-                                android:textSize="28sp"
-                                android:layout_width="500dp"
-                                android:background="@drawable/edit_text_background"
-                                android:layout_alignParentTop="false"
-                                android:layout_alignParentLeft="true"
-                                android:layout_alignParentStart="true"
-                                android:layout_centerVertical="true" />
-
-
-                        </RelativeLayout>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/linearLayout3"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_marginTop="10dp">
-
-                        <RelativeLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:paddingLeft="40dp"
-                            android:paddingStart="40dp"
-                            android:paddingEnd="40dp"
-                            android:paddingRight="40dp">
-
-                            <ImageView
-                                app:srcCompat="@drawable/ic_description_black_24dp"
-                                android:id="@+id/imageView3"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerVertical="true" />
-                        </RelativeLayout>
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-
-                            <EditText
-                                android:layout_height="wrap_content"
-                                android:ems="10"
-                                android:paddingRight="5dp"
-                                android:paddingEnd="5dp"
-                                android:paddingLeft="5dp"
-                                android:paddingStart="5dp"
-                                android:paddingTop="30dp"
-                                android:paddingBottom="30dp"
-                                android:inputType="textMultiLine"
-                                android:id="@+id/bioEditText"
-                                android:hint="Bio line"
-                                android:freezesText="true"
-                                android:textSize="28sp"
-                                android:layout_width="500dp"
-                                android:background="@drawable/edit_text_background"
-                                android:layout_alignParentLeft="true"
-                                android:layout_alignParentStart="true"
-                                android:layout_alignParentTop="false"
-                                android:layout_centerVertical="true" />
-                        </RelativeLayout>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <RelativeLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:paddingLeft="40dp"
-                            android:paddingStart="40dp"
-                            android:paddingEnd="40dp"
-                            android:paddingRight="40dp">
-
-                            <ImageView
-                                app:srcCompat="@drawable/ic_account_circle_black_24dp"
-                                android:layout_centerVertical="true"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-
-                        </RelativeLayout>
-
-
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-
-                            <EditText
-                                android:layout_height="wrap_content"
-                                android:inputType="textMultiLine"
-                                android:ems="10"
-                                android:paddingRight="5dp"
-                                android:paddingEnd="5dp"
-                                android:paddingLeft="5dp"
-                                android:paddingStart="5dp"
-                                android:paddingTop="30dp"
-                                android:paddingBottom="30dp"
-                                android:id="@+id/fisrtNameEditText"
-                                android:hint="First Name"
-                                android:textSize="28sp"
-                                android:freezesText="true"
-                                android:background="@drawable/edit_text_background"
-                                android:layout_alignParentTop="false"
-                                android:layout_alignParentLeft="true"
-                                android:layout_alignParentStart="true"
-                                android:layout_width="500dp"
-                                android:layout_centerVertical="true" />
-
-
-                        </RelativeLayout>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <RelativeLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:paddingLeft="40dp"
-                            android:paddingStart="40dp"
-                            android:paddingEnd="40dp"
-                            android:paddingRight="40dp">
-
-                            <ImageView
-                                app:srcCompat="@drawable/ic_account_circle_black_24dp"
-                                android:layout_centerVertical="true"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-
-                        </RelativeLayout>
-
-
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-
-                            <EditText
-                                android:layout_height="wrap_content"
-                                android:inputType="textMultiLine"
-                                android:ems="10"
-                                android:paddingRight="5dp"
-                                android:paddingEnd="5dp"
-                                android:paddingLeft="5dp"
-                                android:paddingStart="5dp"
-                                android:paddingTop="30dp"
-                                android:paddingBottom="30dp"
-                                android:id="@+id/secondNameEditText"
-                                android:hint="Second Name"
-                                android:textSize="28sp"
-                                android:freezesText="true"
-                                android:layout_width="500dp"
-                                android:background="@drawable/edit_text_background"
-                                android:layout_alignParentTop="false"
-                                android:layout_alignParentLeft="true"
-                                android:layout_alignParentStart="true"
-                                android:layout_centerVertical="true" />
-
-
-                        </RelativeLayout>
-
-                    </LinearLayout>
-
-
-                </LinearLayout>
-
-            </android.support.v7.widget.CardView>
-
-        </LinearLayout>
-
-    </ScrollView>
+            android:layout_alignParentTop="false"
+            android:layout_centerHorizontal="true"
+            android:adjustViewBounds="false"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_centerInParent="true" />
+
+    </RelativeLayout>
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="112dp"
+        app:titleTextColor="@android:color/white"
+        app:layout_scrollFlags="scroll|enterAlways"
+        app:titleTextAppearance="@style/toolbarTextAppearance"
+        app:popupTheme="@style/AppTheme.PopupOverlay" />
 
 </android.support.design.widget.CoordinatorLayout>

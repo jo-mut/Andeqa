@@ -17,7 +17,8 @@ import android.widget.Toast;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.home.PostDetailActivity;
-import com.andeqa.andeqa.models.Single;
+import com.andeqa.andeqa.models.CollectionPost;
+import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.market.TransactionHistoryViewHolder;
 import com.andeqa.andeqa.models.Balance;
 import com.andeqa.andeqa.models.TransactionDetails;
@@ -46,7 +47,8 @@ public class WalletActivity extends AppCompatActivity {
     @Bind(R.id.currentWalletBalanceTextview)TextView mCurrentWalletBalanceTextView;
     @Bind(R.id.emptyRelativeLayout)RelativeLayout mEmptyRelativeLayout;
     //firestore
-    private CollectionReference cinglesReference;
+    private CollectionReference collectionsCollection;
+    private CollectionReference postsCollection;
     private Query transactionQuery;
     private CollectionReference transactionReference;
     private CollectionReference walletReference;
@@ -55,6 +57,7 @@ public class WalletActivity extends AppCompatActivity {
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     private FirebaseAuth firebaseAuth;
     private static final String EXTRA_POST_KEY = "post key";
+    private static final String COLLECTION_ID = "collection id";
     private DecimalFormat formatter =  new DecimalFormat("0.00000000");
     private static final String TAG = WalletActivity.class.getSimpleName();
 
@@ -80,7 +83,8 @@ public class WalletActivity extends AppCompatActivity {
         if (firebaseAuth.getCurrentUser()!= null){
 
             //firestore
-            cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
+            postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             transactionReference = FirebaseFirestore.getInstance().collection(Constants.TRANSACTION_HISTORY);
             transactionQuery = transactionReference.whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid());
             walletReference = FirebaseFirestore.getInstance().collection(Constants.WALLET);
@@ -119,67 +123,88 @@ public class WalletActivity extends AppCompatActivity {
             @Override
             protected void onBindViewHolder(final TransactionHistoryViewHolder holder, int position, TransactionDetails model) {
                 holder.bindTransactionHistory(model);
-                final String postKey = getSnapshots().get(position).getPushId();
+                final String transationId = getSnapshots().get(position).getPushId();
 
 
                 holder.deleteHistoryImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        transactionReference.document(postKey).delete()
+                        transactionReference.document(transationId).delete()
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Toast.makeText(WalletActivity.this, "Successfully deleted", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(WalletActivity.this, "Successfully deleted", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                     }
                 });
 
-                transactionReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                transactionReference.document(transationId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                         if (documentSnapshot.exists()){
                             final TransactionDetails td = documentSnapshot.toObject(TransactionDetails.class);
-                            final String transactionKey = td.getPushId();
+                            final String postId = td.getPushId();
 
-                            cinglesReference.document(transactionKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                            postsCollection.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                 @Override
                                 public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
                                     if (e != null) {
                                         Log.w(TAG, "Listen error", e);
                                         return;
                                     }
 
                                     if (documentSnapshot.exists()){
-                                        final Single single = documentSnapshot.toObject(Single.class);
-                                        Picasso.with(WalletActivity.this)
-                                                .load(single.getImage())
-                                                .networkPolicy(NetworkPolicy.OFFLINE)
-                                                .into(holder.cingleImageView, new Callback() {
-                                                    @Override
-                                                    public void onSuccess() {
+                                        final Post post = documentSnapshot.toObject(Post.class);
+                                        final String collectionId = post.getCollectionId();
 
-                                                    }
+                                        collectionsCollection.document("collection_posts").collection(collectionId)
+                                                .document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                                if (e != null) {
+                                                    Log.w(TAG, "Listen error", e);
+                                                    return;
+                                                }
 
-                                                    @Override
-                                                    public void onError() {
-                                                        Picasso.with(WalletActivity.this)
-                                                                .load(single.getImage())
-                                                                .into(holder.cingleImageView);
+                                                if (documentSnapshot.exists()){
+                                                    final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                                                    Picasso.with(WalletActivity.this)
+                                                            .load(collectionPost.getImage())
+                                                            .networkPolicy(NetworkPolicy.OFFLINE)
+                                                            .into(holder.postImageView, new Callback() {
+                                                                @Override
+                                                                public void onSuccess() {
+
+                                                                }
+
+                                                                @Override
+                                                                public void onError() {
+                                                                    Picasso.with(WalletActivity.this)
+                                                                            .load(collectionPost.getImage())
+                                                                            .into(holder.postImageView);
 
 
-                                                    }
-                                                });
+                                                                }
+                                                            });
 
-                                        holder.cingleImageView.setOnClickListener(new View.OnClickListener() {
+
+
+                                                }
+                                            }
+                                        });
+
+
+                                        holder.postImageView.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View view) {
                                                 Intent intent = new Intent(WalletActivity.this, PostDetailActivity.class);
-                                                intent.putExtra(WalletActivity.EXTRA_POST_KEY, transactionKey);
+                                                intent.putExtra(WalletActivity.EXTRA_POST_KEY, postId);
+                                                intent.putExtra(WalletActivity.COLLECTION_ID, collectionId);
                                                 startActivity(intent);
                                             }
                                         });
+
 
                                     }
                                 }

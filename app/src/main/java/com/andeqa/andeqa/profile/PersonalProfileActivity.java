@@ -59,7 +59,8 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
     private CollectionReference collectionsCollection;
     private CollectionReference relationsReference;
     private CollectionReference usersReference;
-    private Query profilePostCountQuery;
+    private CollectionReference postsCollection;
+    private Query postCountQuery;
     private Query profileCollectionsQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
@@ -102,9 +103,9 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
         if (firebaseAuth.getCurrentUser()!= null){
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
-            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTION);
+            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
             profileCollectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING);
-            profilePostCountQuery = collectionsCollection.whereEqualTo("uid",
+            postCountQuery = postsCollection.whereEqualTo("uid",
                     firebaseAuth.getCurrentUser().getUid());
 
 
@@ -158,7 +159,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
     }
 
     private void fetchData(){
-        profilePostCountQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        postCountQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 

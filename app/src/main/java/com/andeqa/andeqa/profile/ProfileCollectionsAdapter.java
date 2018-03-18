@@ -2,13 +2,11 @@ package com.andeqa.andeqa.profile;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.creation.CreatePostActivity;
 import com.andeqa.andeqa.firestore.FirestoreAdapter;
 import com.andeqa.andeqa.models.Collection;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,8 +39,7 @@ public class ProfileCollectionsAdapter extends FirestoreAdapter<CollectionViewHo
     @Override
     public void onBindViewHolder(final CollectionViewHolder holder, int position) {
         final Collection collection = getSnapshot(position).toObject(Collection.class);
-        final String collectionId = collection.getPushId();
-        Log.d("collection id", collectionId);
+        final String collectionId = collection.getCollectionId();
 
         holder.mCollectionNameTextView.setText(collection.getName());
 
@@ -74,10 +71,10 @@ public class ProfileCollectionsAdapter extends FirestoreAdapter<CollectionViewHo
                     });
         }
 
-        holder.mCollectionsLinearLayout.setOnClickListener(new View.OnClickListener() {
+        holder.collectionsLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, CreatePostActivity.class);
+                Intent intent = new Intent(mContext, CollectionPostsActivity.class);
                 intent.putExtra(ProfileCollectionsAdapter.COLLECTION_ID, collectionId);
                 mContext.startActivity(intent);
             }

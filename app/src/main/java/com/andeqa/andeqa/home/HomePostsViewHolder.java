@@ -22,7 +22,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * Created by J.EL on 11/17/2017.
  */
 
-public class MainPostsViewHolder extends RecyclerView.ViewHolder {
+public class HomePostsViewHolder extends RecyclerView.ViewHolder {
 
     View mView;
     Context mContext;
@@ -51,7 +51,7 @@ public class MainPostsViewHolder extends RecyclerView.ViewHolder {
     public TextView totalLikesCountTextView;
 
 
-    public MainPostsViewHolder(View itemView) {
+    public HomePostsViewHolder(View itemView) {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();

@@ -27,7 +27,7 @@ public class PostSellingViewHolder extends RecyclerView.ViewHolder {
     public TextView usernameTextView;
     public TextView cingleTradeMethodTextView;
     public TextView cingleSenseCreditsTextView;
-    public ProportionalImageView cingleImageView;
+    public ProportionalImageView postImageView;
     public RelativeLayout cingleTradingRelativeLayout;
     public TextView cingleOwnerTextView;
     public CircleImageView ownerImageView;
@@ -43,7 +43,7 @@ public class PostSellingViewHolder extends RecyclerView.ViewHolder {
         mView = itemView;
         mContext = itemView.getContext();
         creatorImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
-        cingleImageView = (ProportionalImageView) mView.findViewById(R.id.postImageView);
+        postImageView = (ProportionalImageView) mView.findViewById(R.id.postImageView);
         cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.senseCreditsCountTextView);
         cingleTradeMethodTextView = (TextView) mView.findViewById(R.id.tradeMethodTextView);
         cingleTradingRelativeLayout = (RelativeLayout) mView.findViewById(R.id.tradingRelativeLayout);

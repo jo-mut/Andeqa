@@ -111,8 +111,25 @@
                         android:layout_alignParentTop="true"
                         android:layout_centerHorizontal="true"
                         android:adjustViewBounds="true"
-                        android:layout_height="400dp" />
+                        android:layout_height="600dp" />
 
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50sp"
+                    android:background="#e4e4e4"
+                    android:id="@+id/saySomethingRelativeLayout">
+
+
+                    <TextView
+                        android:text="Say something about this collectionPost"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="16dp"
+                        android:id="@+id/saySomethingTextView" />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -165,17 +182,17 @@
             android:inputType="textMultiLine"
             android:id="@+id/commentEditText"
             android:textSize="32sp"
-            android:hint="Comment on this single"
+            android:hint="Comment on this collectionPost"
             android:background="@drawable/edit_text_background"
             android:paddingBottom="20dp"
             android:paddingTop="20dp"
             android:paddingLeft="10dp"
+            android:paddingEnd="50dp"
+            android:paddingRight="50dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:paddingRight="10dp"
-            android:freezesText="true"
-            android:layout_marginRight="50sp" />
+            android:freezesText="true" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -184,9 +201,9 @@
             android:textSize="24sp"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
-            android:layout_marginTop="2dp"
-            android:layout_below="@+id/commentEditText"/>
+            android:layout_marginTop="2dp" />
 
 
     </RelativeLayout>

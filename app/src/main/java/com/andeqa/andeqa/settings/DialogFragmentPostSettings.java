@@ -19,7 +19,6 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.market.DialogRedeemCredits;
 import com.andeqa.andeqa.market.ListOnMarketActivity;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -29,8 +28,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-
-import static com.google.firebase.firestore.FieldValue.delete;
 
 
 /**
@@ -44,15 +41,20 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
     @Bind(R.id.redeemCreditsRelativeLayout)RelativeLayout mRedeemCreditsRelativeLayout;
 
     private static final String EXTRA_POST_KEY = "post key";
-    private String mPostKey;
+    private String mPostId;
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore
-    private CollectionReference cinglesReference;
+    private CollectionReference postsCollection;
+    private CollectionReference collectionsCollection;
     private CollectionReference senseCreditReference;
     private CollectionReference ifairReference;
     private CollectionReference ownerReference;
     private static final String TAG = DialogFragmentPostSettings.class.getSimpleName();
+
+    private static final String COLLECTION_ID = "collection id";
+    private static final String EXTRA_POST_ID = "post id";
+    private String mCollectionId;
 
 
     public static DialogFragmentPostSettings newInstance(String title){
@@ -97,16 +99,21 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
 
             Bundle bundle = getArguments();
             if (bundle != null){
-                mPostKey = bundle.getString(DialogFragmentPostSettings.EXTRA_POST_KEY);
+                mCollectionId = bundle.getString(DialogFragmentPostSettings.COLLECTION_ID);
+                mPostId = bundle.getString(DialogFragmentPostSettings.EXTRA_POST_ID);
 
-                Log.d("the passed poskey", mPostKey);
+                Log.d("the passed poskey", mPostId);
 
             }else {
                 throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
             }
 
+
+
             //firestore
-            cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS)
+                    .document("collection_posts").collection(mCollectionId);
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
             ifairReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             ownerReference = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
@@ -137,14 +144,15 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
 
         if (v == mTradeCingleRelativeLayout){
             Intent intent = new Intent(getActivity(), ListOnMarketActivity.class);
-            intent.putExtra(DialogFragmentPostSettings.EXTRA_POST_KEY, mPostKey);
+            intent.putExtra(DialogFragmentPostSettings.EXTRA_POST_KEY, mPostId);
+            intent.putExtra(DialogFragmentPostSettings.COLLECTION_ID, mCollectionId);
             startActivity(intent);
         }
 
         if (v == mRedeemCreditsRelativeLayout){
             //LAUCH THE DIALOG TO REDEEM CREDITS
             Bundle bundle = new Bundle();
-            bundle.putString(DialogFragmentPostSettings.EXTRA_POST_KEY, mPostKey);
+            bundle.putString(DialogFragmentPostSettings.EXTRA_POST_KEY, mPostId);
             FragmentManager fragmentManager = getChildFragmentManager();
             DialogRedeemCredits dialogRedeemCredits = DialogRedeemCredits
                     .newInstance("redeem credits");
@@ -155,7 +163,7 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
     }
 
     public void showSaleLayout(){
-        ifairReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        ifairReference.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -175,7 +183,7 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
 
 
     public void deleteCingle(){
-        cinglesReference.document(mPostKey)
+        postsCollection.document(mPostId)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -185,25 +193,27 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
                 }
 
                 if (documentSnapshot.exists()){
-                    cinglesReference.document(mPostKey).delete();
+                    postsCollection.document(mPostId).delete();
+                    collectionsCollection.document(mPostId)
+                            .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                            if (e != null) {
+                                Log.w(TAG, "Listen error", e);
+                                return;
+                            }
+
+                            if (documentSnapshot.exists()){
+                                collectionsCollection.document(mPostId).delete();
+                            }
+                        }
+                    });
                 }
             }
         });
 
-        ownerReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    ownerReference.document(mPostKey).delete();
-                }
-            }
-        });
-        senseCreditReference.document(mPostKey)
+        // delete post in collection and delete post in overall document
+        collectionsCollection.document(mPostId)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -213,12 +223,56 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
                         }
 
                         if (documentSnapshot.exists()){
-                            senseCreditReference.document(mPostKey).delete();
+                            collectionsCollection.document(mPostId).delete();
+                            postsCollection.document(mPostId)
+                                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                @Override
+                                public void onEvent(DocumentSnapshot documentSnapshot,
+                                                    FirebaseFirestoreException e) {
+                                    if (e != null) {
+                                        Log.w(TAG, "Listen error", e);
+                                        return;
+                                    }
+
+
+                                    if (documentSnapshot.exists()){
+                                        postsCollection.document(mPostId).delete();
+                                    }
+                                }
+                            });
                         }
                     }
                 });
 
-        ifairReference.document(mPostKey)
+        ownerReference.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (documentSnapshot.exists()){
+                    ownerReference.document(mPostId).delete();
+                }
+            }
+        });
+        senseCreditReference.document(mPostId)
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (documentSnapshot.exists()){
+                            senseCreditReference.document(mPostId).delete();
+                        }
+                    }
+                });
+
+        ifairReference.document(mPostId)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -229,7 +283,7 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
                         }
 
                         if (documentSnapshot.exists()) {
-                            ifairReference.document(mPostKey).delete();
+                            ifairReference.document(mPostId).delete();
                         }
                     }
                 });

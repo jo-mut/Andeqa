@@ -105,7 +105,7 @@
                 android:id="@+id/postImageView"
                 android:layout_width="match_parent"
                 android:adjustViewBounds="false"
-                android:layout_height="400dp" />
+                android:layout_height="350dp" />
 
 
         </RelativeLayout>
@@ -117,13 +117,13 @@
             app:cardCornerRadius="0dp">
 
             <LinearLayout
+                android:layout_margin="5dp"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:paddingTop="5dp"
                     android:id="@+id/toolsRelativeLayout"
                     android:layout_height="50dp">
 
@@ -287,7 +287,6 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="5dp"
                     android:layout_width="match_parent"
-                    android:padding="5dp"
                     android:layout_height="30dp">
 
                     <android.support.v7.widget.RecyclerView
@@ -302,23 +301,25 @@
 
 
                     <TextView
-                        android:id="@+id/totalLikesCountTextView"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentLeft="false"
-                        android:layout_alignParentStart="false"
-                        android:background="@drawable/border_color_primary"
-                        android:scaleType="centerCrop"
-                        android:cropToPadding="false"
+                        android:text=""
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/border_color_primary"
+                        android:id="@+id/totalLikesCountTextView"
+                        android:textColor="@android:color/black"
+                        android:textSize="12sp"
+                        android:padding="5dp"
+                        android:textStyle="normal|bold"
                         android:layout_toRightOf="@+id/likesRecyclerView"
                         android:layout_toEndOf="@+id/likesRecyclerView"
+                        android:layout_centerInParent="false"
+                        android:layout_centerVertical="false"
+                        android:layout_centerHorizontal="false"
+                        android:layout_marginEnd="5dp"
                         android:layout_marginLeft="5dp"
-                        android:textSize="12sp"
-                        android:text=""
-                        android:paddingLeft="4dp"
-                        android:paddingRight="4dp"
-                        android:textStyle="normal|bold" />
+                        android:layout_marginRight="5dp"
+                        android:layout_marginStart="5dp"
+                        android:textAlignment="center" />
 
                 </RelativeLayout>
 
@@ -329,6 +330,7 @@
                     android:id="@+id/cingleTitleRelativeLayout">
 
                     <TextView
+                        android:text=""
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
@@ -337,18 +339,15 @@
                         android:id="@+id/titleTextView"
                         android:textStyle="normal|bold"
                         android:textColor="@android:color/black"
-                        android:textSize="16sp"
-                        android:layout_marginLeft="3dp"
-                        android:paddingBottom="5dp" />
+                        android:textSize="16sp"/>
 
                 </RelativeLayout>
-
 
                 <RelativeLayout
                     android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:padding="3dp"
+                    android:layout_marginBottom="10dp"
                     android:id="@+id/descriptionRelativeLayout">
 
                     <TextView
@@ -360,11 +359,9 @@
                         android:textSize="14sp"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:paddingBottom="10dp" />
+                        android:layout_alignParentStart="true"/>
 
                 </RelativeLayout>
-
 
             </LinearLayout>
 

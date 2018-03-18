@@ -1,7 +1,6 @@
 package com.andeqa.andeqa.home;
 
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -31,15 +30,14 @@ import butterknife.ButterKnife;
 public class FullImageViewActivity extends AppCompatActivity implements View.OnClickListener{
     private static final String TAG = FullImageViewActivity.class.getSimpleName();
     @Bind(R.id.postImageView)ProportionalImageView mCingleImageView;
-    @Bind(R.id.app_bar_layout)AppBarLayout mAppBarLayoutView;
+    @Bind(R.id.toolbar)Toolbar mToolbar;
 
     private FirebaseAuth firebaseAuth;
-    private String mPostKey;
     //firebase
     private DatabaseReference cinglesRef;
     private DatabaseReference likesRef;
     //firestore
-    private CollectionReference cinglesReference;
+    private CollectionReference collectionsCollection;
     private CollectionReference likesReference;
     private CollectionReference commentsReference;
     private Query cingleQuery;
@@ -47,9 +45,11 @@ public class FullImageViewActivity extends AppCompatActivity implements View.OnC
     private Query commentsCountQuery;
     //adapters
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
-    private static final String EXTRA_POST_KEY = "post key";
+    private static final String COLLECTION_ID = "collection id";
+    private static final String EXTRA_POST_ID = "post id";
+    private String mPostId;
+    private String mCollectionId;
     public boolean showOnClick = true;
-    public Toolbar toolbar;
 
 
     @Override
@@ -57,12 +57,10 @@ public class FullImageViewActivity extends AppCompatActivity implements View.OnC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.full_image_view_activity);
         ButterKnife.bind(this);
+        setSupportActionBar(mToolbar);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
@@ -76,17 +74,23 @@ public class FullImageViewActivity extends AppCompatActivity implements View.OnC
         if (firebaseAuth.getCurrentUser()!=null){
             mCingleImageView.setOnClickListener(this);
 
-            mPostKey = getIntent().getStringExtra(EXTRA_POST_KEY);
-            if(mPostKey == null){
-                throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
+            mPostId = getIntent().getStringExtra(EXTRA_POST_ID);
+            if(mPostId == null){
+                throw new IllegalArgumentException("pass an post id");
+            }
+
+            mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
+            if(mCollectionId == null){
+                throw new IllegalArgumentException("pass a collection id");
             }
 
             likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
             commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
-            cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS)
+                    .document("collection_posts").collection(mCollectionId);
             commentsCountQuery = commentsReference;
             //firebase
-            cinglesRef = FirebaseDatabase.getInstance().getReference(Constants.POSTS);
+            cinglesRef = FirebaseDatabase.getInstance().getReference(Constants.COLLECTIONS);
             likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
 
             cinglesRef.keepSynced(true);
@@ -98,7 +102,7 @@ public class FullImageViewActivity extends AppCompatActivity implements View.OnC
 
     private void setUpCingleDetails(){
 
-        cinglesReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        collectionsCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -139,11 +143,11 @@ public class FullImageViewActivity extends AppCompatActivity implements View.OnC
     public void onClick(View v){
         if (v == mCingleImageView){
             if (showOnClick){
-                mAppBarLayoutView.setVisibility(View.GONE);
+                mToolbar.setVisibility(View.GONE);
                 showOnClick = false;
             }else {
                 showOnClick = true;
-                mAppBarLayoutView.setVisibility(View.VISIBLE);
+                mToolbar.setVisibility(View.VISIBLE);
             }
         }
 

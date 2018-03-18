@@ -31,7 +31,7 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
     @Bind(R.id.createPostImageView)ImageView mCreatePostImageView;
     private static final String TAG = CollectionPostsActivity.class.getSimpleName();
     //firestore reference
-    private CollectionReference postsCollection;
+    private CollectionReference collectionsCollection;
     private Query collectionPostsQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
@@ -76,12 +76,13 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
 
             collectionId = getIntent().getStringExtra(COLLECTION_ID);
             if(collectionId == null){
-                throw new IllegalArgumentException("pass an EXTRA_UID");
+                throw new IllegalArgumentException("pass an collection id");
             }
 
-            postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS)
+            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS)
                     .document("collection_posts").collection(collectionId);
-            collectionPostsQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING);
+            collectionPostsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
+                    .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid());
 
             setCollectionPosts();
             if (savedInstanceState != null){
@@ -170,9 +171,12 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
 
     @Override
     public void onClick(View v){
-        Intent intent = new Intent(CollectionPostsActivity.this, CreatePostActivity.class);
-        intent.putExtra(CollectionPostsActivity.COLLECTION_ID, collectionId);
-        startActivity(intent);
+        if (v == mCreatePostImageView){
+            Intent intent = new Intent(CollectionPostsActivity.this, CreatePostActivity.class);
+            intent.putExtra(CollectionPostsActivity.COLLECTION_ID, collectionId);
+            startActivity(intent);
+        }
+
     }
 
     @Override

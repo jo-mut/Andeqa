@@ -55,7 +55,6 @@ public class DialogRedeemCredits extends DialogFragment implements View.OnClickL
     private static final String EXTRA_POST_KEY = "post key";
     private FirebaseAuth firebaseAuth;
     //firestore
-    private CollectionReference cinglesReference;
     private CollectionReference transactionReference;
     private CollectionReference senseCreditReference;
     private CollectionReference postWalletReference;
@@ -101,7 +100,6 @@ public class DialogRedeemCredits extends DialogFragment implements View.OnClickL
         if (firebaseAuth.getCurrentUser() != null){
 
             //firestore
-            cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             transactionReference = FirebaseFirestore.getInstance().collection(Constants.TRANSACTION_HISTORY);
             postWalletReference = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
             walletReference = FirebaseFirestore.getInstance().collection(Constants.WALLET);

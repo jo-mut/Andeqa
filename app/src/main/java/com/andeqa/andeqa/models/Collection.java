@@ -9,7 +9,7 @@ public class Collection {
     long number;
     String name;
     String note;
-    String pushId;
+    String collectionId;
     String uid;
     String type;
     String image;
@@ -41,12 +41,12 @@ public class Collection {
         this.number = number;
     }
 
-    public String getPushId() {
-        return pushId;
+    public String getCollectionId() {
+        return collectionId;
     }
 
-    public void setPushId(String pushId) {
-        this.pushId = pushId;
+    public void setCollectionId(String collectionId) {
+        this.collectionId = collectionId;
     }
 
 

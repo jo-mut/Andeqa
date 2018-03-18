@@ -5,13 +5,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
+    android:fitsSystemWindows="false"
     tools:context="com.andeqa.andeqa.home.NavigationDrawerActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:fitsSystemWindows="true"
         android:layout_height="42dp"
         android:theme="@style/AppTheme.AppBarOverlay"
         android:background="@color/colorPrimary">
@@ -19,7 +18,7 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            app:titleTextAppearance="@style/nameToolbarTextSize"
+            app:titleTextAppearance="@style/toolbarTextAppearance"
             android:titleTextColor="@android:color/white"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/colorPrimary"

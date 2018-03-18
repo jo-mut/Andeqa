@@ -7,12 +7,10 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -21,10 +19,7 @@ import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.home.NavigationDrawerActivity;
-import com.andeqa.andeqa.models.Cinggulan;
 import com.andeqa.andeqa.models.Collection;
-import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.TransactionDetails;
 import com.andeqa.andeqa.profile.PersonalProfileActivity;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -33,27 +28,19 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.Date;
-import java.util.Random;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-
-import static android.R.attr.editable;
-import static android.os.Build.VERSION_CODES.N;
 
 public class CreateCollectionActivity extends AppCompatActivity implements View.OnClickListener{
     @Bind(R.id.collectionNameEditText)EditText mCollectionNameEditText;
@@ -112,13 +99,13 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
             //initialize firestore
             firebaseFirestore =  FirebaseFirestore.getInstance();
             //get the reference to posts(collection reference)
-            postsCollection = firebaseFirestore.collection(Constants.POSTS);
+            postsCollection = firebaseFirestore.collection(Constants.COLLECTIONS);
             ownersReference = firebaseFirestore.collection(Constants.POST_OWNERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTION);
+            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
 
             //firebase
-            postReference = FirebaseDatabase.getInstance().getReference(Constants.POSTS);
+            postReference = FirebaseDatabase.getInstance().getReference(Constants.COLLECTIONS);
 
             //textwatchers
             mCollectionNameEditText.setFilters(new InputFilter[]{new InputFilter
@@ -208,21 +195,8 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
         collectionCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot documentSnapshots) {
-                Collection collection = new Collection();
+                final Collection collection = new Collection();
                 final long timeStamp = new Date().getTime();
-
-                final int count = documentSnapshots.getDocuments().size();
-                //save the collection
-                collection.setType("collection");
-                collection.setName(mCollectionNameEditText.getText().toString().trim());
-                collection.setNote(mCollectionNoteEditText.getText().toString().trim());
-                collection.setNumber(count + 1);
-                collection.setUid(firebaseAuth.getCurrentUser().getUid());
-                collection.setPushId(collectionId);
-                collection.setTime(timeStamp);
-                collectionCollection.document(collectionId).set(collection);
-
-
                 //set the single ownership
                 TransactionDetails transactionDetails = new TransactionDetails();
                 transactionDetails.setPushId(collectionId);
@@ -236,7 +210,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                 if (photoUri != null){
                     StorageReference storageReference = FirebaseStorage
                             .getInstance().getReference()
-                            .child(Constants.POSTS)
+                            .child(Constants.COLLECTIONS)
                             .child(pushId);
 
                     UploadTask uploadTask = storageReference.putFile(photoUri);
@@ -249,6 +223,18 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                             cl.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                 @Override
                                 public void onSuccess(QuerySnapshot documentSnapshots) {
+
+                                    final int count = documentSnapshots.getDocuments().size();
+                                    //save the collection
+                                    collection.setType("collection");
+                                    collection.setName(mCollectionNameEditText.getText().toString().trim());
+                                    collection.setNote(mCollectionNoteEditText.getText().toString().trim());
+                                    collection.setNumber(count + 1);
+                                    collection.setUid(firebaseAuth.getCurrentUser().getUid());
+                                    collection.setCollectionId(collectionId);
+                                    collection.setTime(timeStamp);
+                                    collection.setImage(downloadUrl.toString());
+                                    collectionCollection.document(collectionId).set(collection);
 
                                     mCollectionNameEditText.setText("");
                                     mCollectionNoteEditText.setText("");
@@ -281,9 +267,26 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                     });
 
                 }else {
+                    final int count = documentSnapshots.getDocuments().size();
+                    //save the collection
+                    collection.setType("collection");
+                    collection.setName(mCollectionNameEditText.getText().toString().trim());
+                    collection.setNote(mCollectionNoteEditText.getText().toString().trim());
+                    collection.setNumber(count + 1);
+                    collection.setUid(firebaseAuth.getCurrentUser().getUid());
+                    collection.setCollectionId(collectionId);
+                    collection.setTime(timeStamp);
+                    collectionCollection.document(collectionId).set(collection);
+
                     progressDialog.dismiss();
                     mCollectionNameEditText.setText("");
                     mCollectionNoteEditText.setText("");
+
+
+                    Intent intent = new Intent(CreateCollectionActivity.this, PersonalProfileActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
                 }
 
 

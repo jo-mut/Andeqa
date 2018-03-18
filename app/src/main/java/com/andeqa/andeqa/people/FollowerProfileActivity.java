@@ -5,6 +5,8 @@ import android.os.Parcelable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -17,11 +19,12 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Room;
 import com.andeqa.andeqa.models.Timeline;
-import com.andeqa.andeqa.profile.CollectionPostsActivity;
 import com.andeqa.andeqa.message.MessagesAccountActivity;
 import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.models.Cinggulan;
 import com.andeqa.andeqa.models.Relation;
+import com.andeqa.andeqa.profile.PersonalProfileActivity;
+import com.andeqa.andeqa.profile.ProfileCollectionsAdapter;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -50,7 +53,7 @@ public class FollowerProfileActivity extends AppCompatActivity
         implements View.OnClickListener{
     private static final String TAG = FollowerProfileActivity.class.getSimpleName();
 
-    @Bind(R.id.collectionsRecyclerView)RecyclerView mProfileCinglesRecyclerView;
+    @Bind(R.id.collectionsRecyclerView)RecyclerView mCollectionsRecyclerView;
     @Bind(R.id.profileImageView)CircleImageView mProifleImageView;
     @Bind(R.id.fullNameTextView)TextView mFullNameTextView;
     @Bind(R.id.bioTextView)TextView mBioTextView;
@@ -62,20 +65,23 @@ public class FollowerProfileActivity extends AppCompatActivity
     @Bind(R.id.collapsing_toolbar)CollapsingToolbarLayout collapsingToolbarLayout;
     @Bind(R.id.sendMessageImageView)ImageView mSendMessageImageView;
 
-    private CollectionReference cinglesReference;
+    private CollectionReference collectionsCollection;
+    private Query collectionPostsQuery;
+    private Query profileCollectionsQuery;
     private CollectionReference relationsReference;
     private CollectionReference usersReference;
     private CollectionReference timelineCollection;
     private CollectionReference messagesUsersCollection;
-    private com.google.firebase.firestore.Query profileCinglesQuery;
-    private Query profileCinglesCountQuery;
+    private Query postCountQuery;
+    private CollectionReference postsCollection;
     //firebase
     private DatabaseReference databaseReference;
     //firebase auth
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     //firestore adapters
-    private CollectionPostsActivity collectionPostsActivity;
+    private ProfileCollectionsAdapter profileCollectionsAdapter;
+    private LinearLayoutManager layoutManager;
     private static final String KEY_LAYOUT_POSITION = "layout pooition";
     private Parcelable recyclerViewState;
     private  static final int MAX_WIDTH = 200;
@@ -121,11 +127,13 @@ public class FollowerProfileActivity extends AppCompatActivity
 
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
-            cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            messagesUsersCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
-            profileCinglesQuery = cinglesReference.orderBy("timeStamp", Query.Direction.DESCENDING)
+            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
+            postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            collectionPostsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
                     .whereEqualTo("uid", mUid);
-            profileCinglesCountQuery = cinglesReference.whereEqualTo("uid", mUid);
+            messagesUsersCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
+            postCountQuery = postsCollection.whereEqualTo("uid", mUid);
+            profileCollectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             //firebase
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
@@ -145,7 +153,7 @@ public class FollowerProfileActivity extends AppCompatActivity
 
 
     private void fetchData(){
-        profileCinglesCountQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        postCountQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
@@ -309,7 +317,7 @@ public class FollowerProfileActivity extends AppCompatActivity
 
 
     private void recyclerViewScrolling(){
-        mProfileCinglesRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        mCollectionsRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -457,7 +465,32 @@ public class FollowerProfileActivity extends AppCompatActivity
                     });
         }
 
-
     }
+
+    private void setCollections(){
+        profileCollectionsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (!documentSnapshots.isEmpty()){
+                    profileCollectionsAdapter = new ProfileCollectionsAdapter(profileCollectionsQuery, FollowerProfileActivity.this);
+                    profileCollectionsAdapter.startListening();
+                    layoutManager = new GridLayoutManager(FollowerProfileActivity.this, 2);
+                    mCollectionsRecyclerView.setLayoutManager(layoutManager);
+                    mCollectionsRecyclerView.setAdapter(profileCollectionsAdapter);
+                    mCollectionsRecyclerView.setHasFixedSize(false);
+                    mCollectionsRecyclerView.setNestedScrollingEnabled(false);
+
+                }
+
+            }
+        });
+    }
+
 
 }

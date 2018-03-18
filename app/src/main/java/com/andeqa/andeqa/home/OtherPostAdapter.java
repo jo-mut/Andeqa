@@ -118,7 +118,7 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
         firebaseAuth = FirebaseAuth.getInstance();
        if (firebaseAuth.getCurrentUser() != null){
            //firestore
-           cinglesReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+           cinglesReference = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
            ownerReference = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
            usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
            ifairReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);

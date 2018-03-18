@@ -153,7 +153,7 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
 
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-        postCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+        postCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
         senseCreditCollection = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
         commentCollection = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
 
@@ -266,7 +266,7 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
         firebaseAuth = FirebaseAuth.getInstance();
 
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-        postCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+        postCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
         senseCreditCollection = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
 

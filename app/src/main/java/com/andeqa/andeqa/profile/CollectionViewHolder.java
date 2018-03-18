@@ -27,7 +27,7 @@ public class CollectionViewHolder extends RecyclerView.ViewHolder {
     @Bind(R.id.collectionCoverImageView)ImageView mCollectionCoverImageView;
     @Bind(R.id.collectionNameTextView)TextView mCollectionNameTextView;
     @Bind(R.id.collectionsFollowersTextView)TextView mCollectionsFollowersTextView;
-    @Bind(R.id.collectionLinearLayout)LinearLayout mCollectionsLinearLayout;
+    @Bind(R.id.collectionLinearLayout)LinearLayout collectionsLinearLayout;
 
     public CollectionViewHolder(View itemView) {
         super(itemView);
