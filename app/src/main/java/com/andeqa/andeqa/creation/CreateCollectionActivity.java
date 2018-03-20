@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
@@ -184,115 +185,119 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
     }
 
     private void  createCollection(){
-        progressDialog.show();
-        final DatabaseReference collectionRef= postReference.push();
-        final String collectionId = collectionRef.getKey();
 
-        //firebase push id to organise post according to time
-        final DatabaseReference reference = postReference.push();
-        final String pushId = reference.getKey();
+        if (!TextUtils.isEmpty(mCollectionNameEditText.getText().toString())){
+            progressDialog.show();
+            final DatabaseReference collectionRef= postReference.push();
+            final String collectionId = collectionRef.getKey();
 
-        collectionCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot documentSnapshots) {
-                final Collection collection = new Collection();
-                final long timeStamp = new Date().getTime();
-                //set the single ownership
-                TransactionDetails transactionDetails = new TransactionDetails();
-                transactionDetails.setPushId(collectionId);
-                transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
-                transactionDetails.setTime(timeStamp);
-                transactionDetails.setType("owner");
-                transactionDetails.setAmount(0.0);
-                transactionDetails.setWalletBalance(0.0);
-                ownersReference.document(collectionId).set(transactionDetails);
+            //firebase push id to organise post according to time
+            final DatabaseReference reference = postReference.push();
+            final String pushId = reference.getKey();
 
-                if (photoUri != null){
-                    StorageReference storageReference = FirebaseStorage
-                            .getInstance().getReference()
-                            .child(Constants.COLLECTIONS)
-                            .child(pushId);
+            collectionCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot documentSnapshots) {
+                    final Collection collection = new Collection();
+                    final long timeStamp = new Date().getTime();
+                    //set the single ownership
+                    TransactionDetails transactionDetails = new TransactionDetails();
+                    transactionDetails.setPushId(collectionId);
+                    transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
+                    transactionDetails.setTime(timeStamp);
+                    transactionDetails.setType("owner");
+                    transactionDetails.setAmount(0.0);
+                    transactionDetails.setWalletBalance(0.0);
+                    ownersReference.document(collectionId).set(transactionDetails);
 
-                    UploadTask uploadTask = storageReference.putFile(photoUri);
-                    uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            final Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                    if (photoUri != null){
+                        StorageReference storageReference = FirebaseStorage
+                                .getInstance().getReference()
+                                .child(Constants.COLLECTIONS)
+                                .child(pushId);
 
-                            CollectionReference cl = postsCollection;
-                            cl.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                @Override
-                                public void onSuccess(QuerySnapshot documentSnapshots) {
+                        UploadTask uploadTask = storageReference.putFile(photoUri);
+                        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                final Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
-                                    final int count = documentSnapshots.getDocuments().size();
-                                    //save the collection
-                                    collection.setType("collection");
-                                    collection.setName(mCollectionNameEditText.getText().toString().trim());
-                                    collection.setNote(mCollectionNoteEditText.getText().toString().trim());
-                                    collection.setNumber(count + 1);
-                                    collection.setUid(firebaseAuth.getCurrentUser().getUid());
-                                    collection.setCollectionId(collectionId);
-                                    collection.setTime(timeStamp);
-                                    collection.setImage(downloadUrl.toString());
-                                    collectionCollection.document(collectionId).set(collection);
+                                CollectionReference cl = postsCollection;
+                                cl.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot documentSnapshots) {
 
-                                    mCollectionNameEditText.setText("");
-                                    mCollectionNoteEditText.setText("");
+                                        final int count = documentSnapshots.getDocuments().size();
+                                        //save the collection
+                                        collection.setType("collection");
+                                        collection.setName(mCollectionNameEditText.getText().toString().trim());
+                                        collection.setNote(mCollectionNoteEditText.getText().toString().trim());
+                                        collection.setNumber(count + 1);
+                                        collection.setUid(firebaseAuth.getCurrentUser().getUid());
+                                        collection.setCollectionId(collectionId);
+                                        collection.setTime(timeStamp);
+                                        collection.setImage(downloadUrl.toString());
+                                        collectionCollection.document(collectionId).set(collection);
 
-                                    Intent intent = new Intent(CreateCollectionActivity.this, PersonalProfileActivity.class);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    startActivity(intent);
-                                    finish();
-                                }
-                            });
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            progressDialog.dismiss();
-                            Toast.makeText(CreateCollectionActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            double progress = (100.0 * taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
-                            progressDialog.setMessage("Creating your collection" + " " + ((int) progress) + "%...");
-                            if (progress == 100.0){
-                                progressDialog.dismiss();
-                                //reset input fields
+                                        mCollectionNameEditText.setText("");
+                                        mCollectionNoteEditText.setText("");
 
-
+                                        Intent intent = new Intent(CreateCollectionActivity.this, PersonalProfileActivity.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                });
                             }
-                        }
-                    });
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                progressDialog.dismiss();
+                                Toast.makeText(CreateCollectionActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                                double progress = (100.0 * taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
+                                progressDialog.setMessage("Creating your collection" + " " + ((int) progress) + "%...");
+                                if (progress == 100.0){
+                                    progressDialog.dismiss();
+                                    //reset input fields
+                                }
+                            }
+                        });
 
-                }else {
-                    final int count = documentSnapshots.getDocuments().size();
-                    //save the collection
-                    collection.setType("collection");
-                    collection.setName(mCollectionNameEditText.getText().toString().trim());
-                    collection.setNote(mCollectionNoteEditText.getText().toString().trim());
-                    collection.setNumber(count + 1);
-                    collection.setUid(firebaseAuth.getCurrentUser().getUid());
-                    collection.setCollectionId(collectionId);
-                    collection.setTime(timeStamp);
-                    collectionCollection.document(collectionId).set(collection);
+                    }else {
+                        final int count = documentSnapshots.getDocuments().size();
+                        //save the collection
+                        collection.setType("collection");
+                        collection.setName(mCollectionNameEditText.getText().toString().trim());
+                        collection.setNote(mCollectionNoteEditText.getText().toString().trim());
+                        collection.setNumber(count + 1);
+                        collection.setUid(firebaseAuth.getCurrentUser().getUid());
+                        collection.setCollectionId(collectionId);
+                        collection.setTime(timeStamp);
+                        collectionCollection.document(collectionId).set(collection);
 
-                    progressDialog.dismiss();
-                    mCollectionNameEditText.setText("");
-                    mCollectionNoteEditText.setText("");
+                        progressDialog.dismiss();
+                        mCollectionNameEditText.setText("");
+                        mCollectionNoteEditText.setText("");
 
 
-                    Intent intent = new Intent(CreateCollectionActivity.this, PersonalProfileActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    finish();
+                        Intent intent = new Intent(CreateCollectionActivity.this, PersonalProfileActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    }
+
                 }
+            });
 
 
-            }
-        });
-
+        }else {
+            Toast.makeText(CreateCollectionActivity.this, "Your collection does'nt have a name",
+                    Toast.LENGTH_SHORT).show();
+        }
 
     }
 

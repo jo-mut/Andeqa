@@ -17,13 +17,12 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Room;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.message.MessagesAccountActivity;
 import com.andeqa.andeqa.models.Single;
-import com.andeqa.andeqa.models.Cinggulan;
 import com.andeqa.andeqa.models.Relation;
-import com.andeqa.andeqa.profile.PersonalProfileActivity;
 import com.andeqa.andeqa.profile.ProfileCollectionsAdapter;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -59,19 +58,18 @@ public class FollowerProfileActivity extends AppCompatActivity
     @Bind(R.id.bioTextView)TextView mBioTextView;
     @Bind(R.id.followersCountTextView) TextView mFollowersCountTextView;
     @Bind(R.id.followingCountTextView)TextView mFollowingCountTextView;
-    @Bind(R.id.postsCountTextView)TextView mCinglesCountTextView;
+    @Bind(R.id.postsCountTextView)TextView mPostCountTextView;
     @Bind(R.id.profileCoverImageView)ImageView mProfileCover;
     @Bind(R.id.followButton)Button mFollowButton;
     @Bind(R.id.collapsing_toolbar)CollapsingToolbarLayout collapsingToolbarLayout;
     @Bind(R.id.sendMessageImageView)ImageView mSendMessageImageView;
 
     private CollectionReference collectionsCollection;
-    private Query collectionPostsQuery;
     private Query profileCollectionsQuery;
-    private CollectionReference relationsReference;
+    private CollectionReference relationsCollection;
     private CollectionReference usersReference;
     private CollectionReference timelineCollection;
-    private CollectionReference messagesUsersCollection;
+    private CollectionReference roomCollection;
     private Query postCountQuery;
     private CollectionReference postsCollection;
     //firebase
@@ -126,20 +124,20 @@ public class FollowerProfileActivity extends AppCompatActivity
             }
 
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
+            relationsCollection = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            collectionPostsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
+            profileCollectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
                     .whereEqualTo("uid", mUid);
-            messagesUsersCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
-            postCountQuery = postsCollection.whereEqualTo("uid", mUid);
-            profileCollectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING);
+            roomCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
+            postCountQuery = postsCollection.orderBy("time").whereEqualTo("uid", mUid);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             //firebase
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
 
             fetchData();
             recyclerViewScrolling();
+            setCollections();
 
             //INITIALIZE CLICK LISTENERS
             mFollowersCountTextView.setOnClickListener(this);
@@ -163,16 +161,16 @@ public class FollowerProfileActivity extends AppCompatActivity
                 }
 
                 if (!documentSnapshots.isEmpty()){
-                    final int cingleCount = documentSnapshots.size();
-                    mCinglesCountTextView.setText(cingleCount + "");
+                    final int postsCount = documentSnapshots.size();
+                    mPostCountTextView.setText(postsCount + "");
                 }else {
-                    mCinglesCountTextView.setText("0");
+                    mPostCountTextView.setText("0");
                 }
             }
         });
 
         //get followers count
-        relationsReference.document("followers")
+        relationsCollection.document("followers")
                 .collection(mUid)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -193,7 +191,7 @@ public class FollowerProfileActivity extends AppCompatActivity
                 });
 
         //get following count
-        relationsReference.document("following")
+        relationsCollection.document("following")
                 .collection(mUid)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -213,7 +211,7 @@ public class FollowerProfileActivity extends AppCompatActivity
                     }
                 });
 
-        relationsReference.document("followers").collection(mUid)
+        relationsCollection.document("followers").collection(mUid)
                 .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -243,13 +241,13 @@ public class FollowerProfileActivity extends AppCompatActivity
                         }
 
                         if (documentSnapshot.exists()){
-                            final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                            String username = cinggulan.getUsername();
-                            String firstName = cinggulan.getFirstName();
-                            String secondName = cinggulan.getSecondName();
-                            final String profileImage = cinggulan.getProfileImage();
-                            String bio = cinggulan.getBio();
-                            final String profileCover = cinggulan.getProfileCover();
+                            final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                            String username = andeqan.getUsername();
+                            String firstName = andeqan.getFirstName();
+                            String secondName = andeqan.getSecondName();
+                            final String profileImage = andeqan.getProfileImage();
+                            String bio = andeqan.getBio();
+                            final String profileCover = andeqan.getProfileCover();
 
                             mFullNameTextView.setText(firstName + " " + secondName);
                             mBioTextView.setText(bio);
@@ -363,7 +361,7 @@ public class FollowerProfileActivity extends AppCompatActivity
 
         if (v == mSendMessageImageView){
             processRoom = true;
-            messagesUsersCollection.document("room")
+            roomCollection.document("room")
                     .collection(mUid).document(firebaseAuth.getCurrentUser().getUid())
                     .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
@@ -407,7 +405,7 @@ public class FollowerProfileActivity extends AppCompatActivity
 
         if (v == mFollowButton){
             processFollow = true;
-            relationsReference.document("followers")
+            relationsCollection.document("followers")
                     .collection(mUid)
                     .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -425,7 +423,7 @@ public class FollowerProfileActivity extends AppCompatActivity
                                     //set followers and following
                                     Relation follower = new Relation();
                                     follower.setUid(firebaseAuth.getCurrentUser().getUid());
-                                    relationsReference.document("followers").collection(mUid)
+                                    relationsCollection.document("followers").collection(mUid)
                                             .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                 @Override
@@ -448,14 +446,14 @@ public class FollowerProfileActivity extends AppCompatActivity
                                             });
                                     final Relation following = new Relation();
                                     following.setUid(mUid);
-                                    relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
+                                    relationsCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
                                             .document(mUid).set(following);
                                     processFollow = false;
                                     mFollowButton.setText("Following");
                                 }else {
-                                    relationsReference.document("followers").collection(mUid)
+                                    relationsCollection.document("followers").collection(mUid)
                                             .document(firebaseAuth.getCurrentUser().getUid()).delete();
-                                    relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
+                                    relationsCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
                                             .document(mUid).delete();
                                     processFollow = false;
                                     mFollowButton.setText("Follow");

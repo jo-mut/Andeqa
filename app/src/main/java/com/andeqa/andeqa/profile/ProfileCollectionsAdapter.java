@@ -28,6 +28,7 @@ public class ProfileCollectionsAdapter extends FirestoreAdapter<CollectionViewHo
     //firebase auth
     private FirebaseAuth firebaseAuth;
     private static final String COLLECTION_ID = "collection id";
+    private static final String EXTRA_USER_UID = "uid";
     private  static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
 
@@ -37,11 +38,18 @@ public class ProfileCollectionsAdapter extends FirestoreAdapter<CollectionViewHo
     }
 
     @Override
+    public int getItemCount() {
+        return super.getItemCount();
+    }
+
+    @Override
     public void onBindViewHolder(final CollectionViewHolder holder, int position) {
         final Collection collection = getSnapshot(position).toObject(Collection.class);
         final String collectionId = collection.getCollectionId();
+        final String uid = collection.getUid();
 
         holder.mCollectionNameTextView.setText(collection.getName());
+        holder.mCollectionsNoteTextView.setText(collection.getNote());
 
         if (collection.getImage() != null){
             Picasso.with(mContext)
@@ -49,7 +57,6 @@ public class ProfileCollectionsAdapter extends FirestoreAdapter<CollectionViewHo
                     .resize(MAX_WIDTH, MAX_HEIGHT)
                     .onlyScaleDown()
                     .centerCrop()
-                    .placeholder(R.drawable.profle_image_background)
                     .networkPolicy(NetworkPolicy.OFFLINE)
                     .into(holder.mCollectionCoverImageView, new Callback() {
                         @Override
@@ -64,7 +71,6 @@ public class ProfileCollectionsAdapter extends FirestoreAdapter<CollectionViewHo
                                     .resize(MAX_WIDTH, MAX_HEIGHT)
                                     .onlyScaleDown()
                                     .centerCrop()
-                                    .placeholder(R.drawable.profle_image_background)
                                     .into(holder.mCollectionCoverImageView);
 
                         }
@@ -76,6 +82,7 @@ public class ProfileCollectionsAdapter extends FirestoreAdapter<CollectionViewHo
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, CollectionPostsActivity.class);
                 intent.putExtra(ProfileCollectionsAdapter.COLLECTION_ID, collectionId);
+                intent.putExtra(ProfileCollectionsAdapter.EXTRA_USER_UID, uid);
                 mContext.startActivity(intent);
             }
         });

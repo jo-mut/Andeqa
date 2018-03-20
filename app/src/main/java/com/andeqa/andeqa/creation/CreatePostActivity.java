@@ -23,12 +23,12 @@ import android.widget.Toast;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.home.NavigationDrawerActivity;
+import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.TransactionDetails;
 import com.andeqa.andeqa.utils.DialogProgressFragment;
 import com.andeqa.andeqa.utils.ProportionalImageView;
-import com.andeqa.andeqa.models.Cinggulan;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -258,8 +258,8 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                 }
 
                 if (documentSnapshot.exists()) {
-                    final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                    final String profileImage = cinggulan.getProfileImage();
+                    final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                    final String profileImage = andeqan.getProfileImage();
 
                     Picasso.with(CreatePostActivity.this)
                             .load(profileImage)

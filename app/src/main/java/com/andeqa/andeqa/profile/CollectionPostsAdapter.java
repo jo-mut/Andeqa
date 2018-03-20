@@ -17,6 +17,7 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.firestore.FirestoreAdapter;
 import com.andeqa.andeqa.home.PostDetailActivity;
+import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.comments.CommentsActivity;
@@ -24,7 +25,6 @@ import com.andeqa.andeqa.home.FullImageViewActivity;
 import com.andeqa.andeqa.likes.LikesActivity;
 import com.andeqa.andeqa.models.Balance;
 import com.andeqa.andeqa.models.PostSale;
-import com.andeqa.andeqa.models.Cinggulan;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Timeline;
@@ -279,9 +279,9 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
                 }
 
                 if (documentSnapshot.exists()) {
-                    final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                    final String username = cinggulan.getUsername();
-                    final String profileImage = cinggulan.getProfileImage();
+                    final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                    final String username = andeqan.getUsername();
+                    final String profileImage = andeqan.getProfileImage();
 
                     holder.accountUsernameTextView.setText(username);
                     Picasso.with(mContext)
@@ -656,8 +656,8 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
                                         }
 
                                         if (documentSnapshot.exists()){
-                                            final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                                            final String profileImage = cinggulan.getProfileImage();
+                                            final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                                            final String profileImage = andeqan.getProfileImage();
 
                                             Picasso.with(mContext)
                                                     .load(profileImage)

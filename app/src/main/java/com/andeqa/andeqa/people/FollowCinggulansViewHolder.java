@@ -11,7 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.Cinggulan;
+import com.andeqa.andeqa.models.Andeqan;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
@@ -42,7 +42,7 @@ public class FollowCinggulansViewHolder extends RecyclerView.ViewHolder{
     }
 
     public void bindCinggulans(final DocumentSnapshot documentSnapshot){
-        final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
+        final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
         mCinggulanImageView = (CircleImageView) mView.findViewById(R.id.profileImageView);
         mBioTextView = (TextView) mView.findViewById(R.id.bioTextView);
         mFullNameTextView = (TextView) mView.findViewById(R.id.fullNameTextView);
@@ -52,7 +52,7 @@ public class FollowCinggulansViewHolder extends RecyclerView.ViewHolder{
         mFollowButtonRelativeLayout = (RelativeLayout) mView.findViewById(R.id.followButtonRelativeLayout);
 
         Picasso.with(mContext)
-                .load(cinggulan.getProfileImage())
+                .load(andeqan.getProfileImage())
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(mCinggulanImageView, new Callback() {
                     @Override
@@ -63,7 +63,7 @@ public class FollowCinggulansViewHolder extends RecyclerView.ViewHolder{
                     @Override
                     public void onError() {
                         Picasso.with(mContext)
-                                .load(cinggulan.getProfileImage())
+                                .load(andeqan.getProfileImage())
                                 .into(mCinggulanImageView, new Callback() {
                                     @Override
                                     public void onSuccess() {
@@ -80,9 +80,9 @@ public class FollowCinggulansViewHolder extends RecyclerView.ViewHolder{
                     }
                 });
 
-        if (cinggulan.getProfileCover() != null){
+        if (andeqan.getProfileCover() != null){
             Picasso.with(mContext)
-                    .load(cinggulan.getProfileCover())
+                    .load(andeqan.getProfileCover())
                     .networkPolicy(NetworkPolicy.OFFLINE)
                     .into(mProfileCoverImageView, new Callback() {
                         @Override
@@ -93,7 +93,7 @@ public class FollowCinggulansViewHolder extends RecyclerView.ViewHolder{
                         @Override
                         public void onError() {
                             Picasso.with(mContext)
-                                    .load(cinggulan.getProfileCover())
+                                    .load(andeqan.getProfileCover())
                                     .into(mProfileCoverImageView, new Callback() {
                                         @Override
                                         public void onSuccess() {
@@ -111,14 +111,14 @@ public class FollowCinggulansViewHolder extends RecyclerView.ViewHolder{
                     });
         }
 
-        mFullNameTextView.setText(cinggulan.getUsername());
+        mFullNameTextView.setText(andeqan.getUsername());
 
-        final String bio = cinggulan.getBio();
+        final String bio = andeqan.getBio();
         if (TextUtils.isEmpty(bio)){
             mBioRelativeLayout.setVisibility(View.GONE);
         }else {
             mBioRelativeLayout.setVisibility(View.VISIBLE);
-            mBioTextView.setText(cinggulan.getBio());
+            mBioTextView.setText(andeqan.getBio());
         }
 
 

@@ -4,7 +4,7 @@ package com.andeqa.andeqa.models;
  * Created by J.EL on 5/4/2017.
  */
 
-public class Cinggulan {
+public class Andeqan {
     String profileImage;
     String profileCover;
     String bio;
@@ -15,14 +15,14 @@ public class Cinggulan {
     String firstName;
     String secondName;
 
-    public Cinggulan(){
+    public Andeqan(){
         //EMPTY CONSTRUCTOR REQUIRED
     }
 
-    public Cinggulan(String profileImage, String bio,
-                     String username, String profileCover,
-                     String pushId, String uid, String email,
-                     String firstName, String secondName) {
+    public Andeqan(String profileImage, String bio,
+                   String username, String profileCover,
+                   String pushId, String uid, String email,
+                   String firstName, String secondName) {
         this.profileImage = profileImage;
         this.bio = bio;
         this.username = username;

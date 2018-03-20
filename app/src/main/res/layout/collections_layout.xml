@@ -24,7 +24,7 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <ImageView
                     android:layout_width="match_parent"
@@ -32,27 +32,37 @@
                     android:id="@+id/collectionCoverImageView"
                     android:scaleType="centerCrop"
                     android:adjustViewBounds="true"
-                    android:layout_height="120dp" />
+                    android:layout_height="100dp" />
 
                 <TextView
-                    android:text=""
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/collectionNameTextView"
-                    android:padding="10dp"
+                    android:padding="5dp"
                     android:textSize="16sp"
                     android:textColor="@android:color/white" />
 
                 <TextView
-                    android:text=""
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/collectionsFollowersTextView"
-                    android:padding="10dp"
+                    android:id="@+id/collectionsNoteTextView"
                     android:textSize="12sp"
-                    android:textColor="@android:color/white" />
-
+                    android:textColor="@android:color/white"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:paddingEnd="5dp"
+                    android:paddingStart="5dp" />
             </LinearLayout>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                app:srcCompat="@drawable/ic_more_vert_white_24dp"
+                android:id="@+id/collectionSettingsImageView"
+                android:adjustViewBounds="true"
+                android:layout_gravity="right|bottom"
+                android:padding="10dp"
+                android:layout_height="wrap_content" />
+
 
         </android.support.v7.widget.CardView>
 

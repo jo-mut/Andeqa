@@ -21,7 +21,7 @@ import android.widget.Toast;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.home.NavigationDrawerActivity;
-import com.andeqa.andeqa.models.Cinggulan;
+import com.andeqa.andeqa.models.Andeqan;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -232,18 +232,18 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
         if (!validName|| !validFirstName || !validSecondName) return;
 
 
-        Cinggulan cinggulan = new Cinggulan();
-        cinggulan.setFirstName(firstName);
-        cinggulan.setSecondName(secondName);
-        cinggulan.setUsername(username);
-        cinggulan.setUid(uid);
-        cinggulan.setEmail(email);
+        Andeqan andeqan = new Andeqan();
+        andeqan.setFirstName(firstName);
+        andeqan.setSecondName(secondName);
+        andeqan.setUsername(username);
+        andeqan.setUid(uid);
+        andeqan.setEmail(email);
 
         DocumentReference pushRef = usersReference.document(uid);
         String pushId = pushRef.getId();
-        cinggulan.setPushId(pushId);
+        andeqan.setPushId(pushId);
         createProfileProgressDialog.dismiss();
-        pushRef.set(cinggulan).addOnSuccessListener(new OnSuccessListener<Void>() {
+        pushRef.set(andeqan).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
 

@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.creation.CreatePostActivity;
+import com.andeqa.andeqa.models.Andeqan;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -32,6 +33,7 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
     private static final String TAG = CollectionPostsActivity.class.getSimpleName();
     //firestore reference
     private CollectionReference collectionsCollection;
+    private CollectionReference usersCollection;
     private Query collectionPostsQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
@@ -47,7 +49,9 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
     private static final String EXTRA_USER_UID = "uid";
 
     private String collectionId;
+    private String mUid;
     private static final String COLLECTION_ID = "collection id";
+
 
 
     @Override
@@ -61,7 +65,7 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
         //FIREBASE AUTH
         firebaseAuth = FirebaseAuth.getInstance();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
@@ -79,10 +83,17 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
                 throw new IllegalArgumentException("pass an collection id");
             }
 
+            mUid = getIntent().getStringExtra(EXTRA_USER_UID);
+            if(mUid == null){
+                throw new IllegalArgumentException("pass an EXTRA_UID");
+            }
+
+
             collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS)
                     .document("collection_posts").collection(collectionId);
             collectionPostsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
-                    .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid());
+                    .whereEqualTo("uid", mUid);
+            usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
 
             setCollectionPosts();
             if (savedInstanceState != null){
@@ -91,6 +102,30 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
             }else {
                 Log.d("Saved Instance", "Instance is completely null");
             }
+
+            if (mUid.equals(firebaseAuth.getCurrentUser().getUid())){
+                mCreatePostImageView.setVisibility(View.VISIBLE);
+                getSupportActionBar().setTitle("Add to collection");
+            }else {
+                usersCollection.document(mUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+
+                        if (documentSnapshot.exists()){
+                            final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                            final String username = andeqan.getUsername();
+                            getSupportActionBar().setTitle(username + "'s" + " collection");
+                        }
+                    }
+                });
+            }
+
 
 
         }
@@ -132,6 +167,7 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
 
     }
 
+
     private void setCollectionPosts(){
         collectionPostsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -145,7 +181,8 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
 
                         if (!documentSnapshots.isEmpty()){
                             // RecyclerView
-                            collectionPostsAdapter = new CollectionPostsAdapter(collectionPostsQuery, CollectionPostsActivity.this);
+                            collectionPostsAdapter = new CollectionPostsAdapter(collectionPostsQuery,
+                                    CollectionPostsActivity.this);
                             collectionPostsAdapter.startListening();
                             mCollectionsPostsRecyclerView.setAdapter(collectionPostsAdapter);
                             mCollectionsPostsRecyclerView.setHasFixedSize(false);

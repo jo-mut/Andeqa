@@ -1,7 +1,6 @@
 package com.andeqa.andeqa.profile;
 
 import android.content.Context;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -21,12 +20,9 @@ public class CollectionViewHolder extends RecyclerView.ViewHolder {
 
     View mView;
     Context mContext;
-    public LinearLayout collectionLinearLayout;
-    public TextView collectionsFollowersTextView;
-    public TextView collectionNameTextView;
     @Bind(R.id.collectionCoverImageView)ImageView mCollectionCoverImageView;
     @Bind(R.id.collectionNameTextView)TextView mCollectionNameTextView;
-    @Bind(R.id.collectionsFollowersTextView)TextView mCollectionsFollowersTextView;
+    @Bind(R.id.collectionsNoteTextView)TextView mCollectionsNoteTextView;
     @Bind(R.id.collectionLinearLayout)LinearLayout collectionsLinearLayout;
 
     public CollectionViewHolder(View itemView) {

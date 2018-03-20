@@ -16,7 +16,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import org.w3c.dom.Text;
 
@@ -24,6 +26,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = MainActivity.class.getSimpleName();
     private CollectionReference usersReference;
     private FirebaseAuth firebaseAuth;
     @Bind(R.id.progressBar)ProgressBar mProgressBar;
@@ -46,12 +49,16 @@ public class MainActivity extends AppCompatActivity {
         mProgressBar.setVisibility(View.VISIBLE);
         if (firebaseAuth.getCurrentUser() != null){
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            Log.d("user is present", "user is present");
-            usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             usersReference.document(firebaseAuth.getCurrentUser().getUid())
-                    .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                    if (e != null) {
+                        Log.w(TAG, "Listen error", e);
+                        return;
+                    }
+
                     if (documentSnapshot.exists()){
                         Log.d("user snapshot", documentSnapshot.toString());
                         Intent intent = new Intent(MainActivity.this, NavigationDrawerActivity.class);

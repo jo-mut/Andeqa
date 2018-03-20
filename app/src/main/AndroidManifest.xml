@@ -180,8 +180,7 @@
             android:label="Create collection"
             android:name=".creation.CreateCollectionActivity" />
         <activity
-            android:label="Add to collection"
-            android:name=".profile.CollectionPostsActivity"></activity>
+            android:name=".profile.CollectionPostsActivity"/>
     </application>
 
 </manifest>

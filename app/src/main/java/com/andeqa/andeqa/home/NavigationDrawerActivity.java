@@ -31,10 +31,9 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.creation.CreateCollectionActivity;
 import com.andeqa.andeqa.creation.CreatePostActivity;
-import com.andeqa.andeqa.creation.CreationActivity;
 import com.andeqa.andeqa.market.MarketFragment;
 import com.andeqa.andeqa.message.MessagesFragment;
-import com.andeqa.andeqa.models.Cinggulan;
+import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.profile.PersonalProfileActivity;
 import com.andeqa.andeqa.timeline.TimelineFragment;
 import com.andeqa.andeqa.utils.BottomNavigationViewBehavior;
@@ -189,11 +188,11 @@ public class NavigationDrawerActivity extends AppCompatActivity
                 }
 
                 if (documentSnapshot.exists()){
-                    final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                    String firstName = cinggulan.getFirstName();
-                    String secondName = cinggulan.getSecondName();
-                    final String profileImage = cinggulan.getProfileImage();
-                    final String profileCover = cinggulan.getProfileCover();
+                    final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                    String firstName = andeqan.getFirstName();
+                    String secondName = andeqan.getSecondName();
+                    final String profileImage = andeqan.getProfileImage();
+                    final String profileCover = andeqan.getProfileCover();
 
                     mFullNameTextView.setText(firstName + " " + secondName);
 

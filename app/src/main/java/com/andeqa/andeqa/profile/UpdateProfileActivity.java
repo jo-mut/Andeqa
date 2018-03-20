@@ -21,7 +21,7 @@ import android.widget.ViewAnimator;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.Cinggulan;
+import com.andeqa.andeqa.models.Andeqan;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -264,8 +264,8 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                             if (documentSnapshot.exists()){
-                                final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                                final String profileImage = cinggulan.getProfileImage();
+                                final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                                final String profileImage = andeqan.getProfileImage();
                                 Log.d("profile image", profileImage);
 
                                 Picasso.with(UpdateProfileActivity.this)
@@ -340,8 +340,8 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                             if (documentSnapshot.exists()){
-                                final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                                final String profileCover= cinggulan.getProfileCover();
+                                final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                                final String profileCover= andeqan.getProfileCover();
                                 Log.d("profile image", profileCover);
 
                                 Picasso.with(UpdateProfileActivity.this)

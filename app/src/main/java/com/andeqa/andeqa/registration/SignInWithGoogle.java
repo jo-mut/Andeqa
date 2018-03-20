@@ -15,7 +15,6 @@ import android.widget.Toast;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.home.NavigationDrawerActivity;
-import com.andeqa.andeqa.models.Cinggulan;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -38,8 +37,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-import static android.os.Build.VERSION_CODES.N;
-
 public class SignInWithGoogle extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener{
     @Bind(R.id.progressBar)ProgressBar progressBar;
@@ -53,11 +50,7 @@ public class SignInWithGoogle extends AppCompatActivity implements
     private FirebaseAuth.AuthStateListener mAuthListener;
     private GoogleApiClient mGoogleApiClient;
     private static final String EMAIL = "email";
-
-
-    ProgressDialog dialog;
-
-    boolean boolean_google;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,10 +60,6 @@ public class SignInWithGoogle extends AppCompatActivity implements
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
-
-        if (firebaseUser != null){
-            usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-        }
 
 
         init();
@@ -154,7 +143,6 @@ public class SignInWithGoogle extends AppCompatActivity implements
         Log.d("LoginActivity", "firebaseAuthWithGoogle:" + acct.getId());
         // [START_EXCLUDE silent]
         try {
-
             dialog.show();
         } catch (Exception e) {
 
@@ -176,39 +164,35 @@ public class SignInWithGoogle extends AppCompatActivity implements
                             Toast.makeText(SignInWithGoogle.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }else {
+                            usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+                            usersCollection.document(firebaseAuth.getCurrentUser().getUid())
+                                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
-                            if (firebaseUser != null){
-                                usersCollection.document(firebaseAuth.getCurrentUser().getUid())
-                                       .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                   @Override
-                                   public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                       if (e != null) {
-                                           Log.w(TAG, "Listen error", e);
-                                           return;
-                                       }
+                                            if (e != null) {
+                                                Log.w(TAG, "Listen error", e);
+                                                return;
+                                            }
 
-                                       if (documentSnapshot.exists()){
-                                           Intent intent = new Intent(SignInWithGoogle.this, NavigationDrawerActivity.class);
-                                           intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                           startActivity(intent);
-                                           finish();
-                                       }else {
-                                           Intent intent = new Intent(SignInWithGoogle.this, SaveGoogleProfileActivity.class);
-                                           intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                           intent.putExtra(SignInWithGoogle.EMAIL, firebaseUser.getEmail());
-                                           startActivity(intent);
-                                           finish();
-                                       }
-                                   }
-                               });
-
-                            }
-
+                                            if (documentSnapshot.exists()){
+                                                Intent intent = new Intent(SignInWithGoogle.this, NavigationDrawerActivity.class);
+                                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                startActivity(intent);
+                                                finish();
+                                            }else {
+                                                Intent intent = new Intent(SignInWithGoogle.this, SaveGoogleProfileActivity.class);
+                                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                intent.putExtra(SignInWithGoogle.EMAIL, firebaseUser.getEmail());
+                                                startActivity(intent);
+                                                finish();
+                                            }
+                                        }
+                                    });
                         }
                         // [START_EXCLUDE]
 
                         try {
-
                             dialog.dismiss();
                         } catch (Exception e) {
 

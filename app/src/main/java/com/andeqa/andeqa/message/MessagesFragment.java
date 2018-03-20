@@ -14,7 +14,7 @@ import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.Cinggulan;
+import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Room;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -156,9 +156,9 @@ public class MessagesFragment extends Fragment {
 
 
                         if (documentSnapshot.exists()){
-                            Cinggulan cinggulan =  documentSnapshot.toObject(Cinggulan.class);
-                            final String profileImage = cinggulan.getProfileImage();
-                            final String username = cinggulan.getUsername();
+                            Andeqan andeqan =  documentSnapshot.toObject(Andeqan.class);
+                            final String profileImage = andeqan.getProfileImage();
+                            final String username = andeqan.getUsername();
 
                             holder.usernameTextView.setText(username);
                             Picasso.with(getContext())

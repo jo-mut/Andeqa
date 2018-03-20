@@ -19,12 +19,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
+import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.PostSale;
-import com.andeqa.andeqa.models.Cinggulan;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.profile.PersonalProfileActivity;
 import com.andeqa.andeqa.people.FollowerProfileActivity;
@@ -120,6 +120,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
             collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS)
                     .document("collection_posts").collection(mCollectionId);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
+            postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             commentReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
@@ -196,9 +197,9 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                             if (documentSnapshot.exists()){
-                                final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                                final String username = cinggulan.getUsername();
-                                final String profileImage = cinggulan.getProfileImage();
+                                final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                                final String username = andeqan.getUsername();
+                                final String profileImage = andeqan.getProfileImage();
 
                                 mAccountUsernameTextView.setText(username);
                                 Picasso.with(ListOnMarketActivity.this)

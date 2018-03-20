@@ -13,7 +13,7 @@ import android.widget.ImageView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.Cinggulan;
+import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Message;
 import com.andeqa.andeqa.models.Room;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -138,8 +138,8 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
                 }
 
                 if (documentSnapshot.exists()){
-                    Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                    final String username = cinggulan.getUsername();
+                    Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                    final String username = andeqan.getUsername();
                     mToolBar.setTitle(username);
                 }
             }
@@ -159,8 +159,8 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
                         }
 
                         if (documentSnapshot.exists()){
-                            Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                            final String profileImage = cinggulan.getProfileImage();
+                            Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                            final String profileImage = andeqan.getProfileImage();
 
                             Picasso.with(MessagesAccountActivity.this)
                                     .load(profileImage)

@@ -17,7 +17,7 @@ import com.andeqa.andeqa.home.PostDetailActivity;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.PostSale;
-import com.andeqa.andeqa.models.Cinggulan;
+import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.TransactionDetails;
 import com.andeqa.andeqa.people.FollowerProfileActivity;
@@ -343,9 +343,9 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
                 }
 
                 if (documentSnapshot.exists()){
-                    Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                    final String profileImage = cinggulan.getProfileImage();
-                    final String username = cinggulan.getUsername();
+                    Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                    final String profileImage = andeqan.getProfileImage();
+                    final String username = andeqan.getUsername();
                     holder.usernameTextView.setText(username);
                     Picasso.with(mContext)
                             .load(profileImage)
@@ -404,9 +404,9 @@ public class SellingAdapter extends FirestoreAdapter<PostSellingViewHolder> {
                             }
 
                             if (documentSnapshot.exists()){
-                                Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                                final String profileImage = cinggulan.getProfileImage();
-                                final String username = cinggulan.getUsername();
+                                Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                                final String profileImage = andeqan.getProfileImage();
+                                final String username = andeqan.getUsername();
                                 holder.cingleOwnerTextView.setText(username);
                                 Picasso.with(mContext)
                                         .load(profileImage)

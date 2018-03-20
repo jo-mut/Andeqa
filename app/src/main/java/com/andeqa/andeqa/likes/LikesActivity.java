@@ -15,7 +15,7 @@ import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.Cinggulan;
+import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Timeline;
@@ -149,11 +149,11 @@ public class LikesActivity extends AppCompatActivity {
                         }
 
                         if (documentSnapshot.exists()){
-                            final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                            final String profileImage = cinggulan.getProfileImage();
-                            final String username = cinggulan.getUsername();
-                            final String firstName = cinggulan.getFirstName();
-                            final String secondName = cinggulan.getSecondName();
+                            final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                            final String profileImage = andeqan.getProfileImage();
+                            final String username = andeqan.getUsername();
+                            final String firstName = andeqan.getFirstName();
+                            final String secondName = andeqan.getSecondName();
 
 
                             holder.usernameTextView.setText(username);

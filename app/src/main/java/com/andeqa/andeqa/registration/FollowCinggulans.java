@@ -15,7 +15,7 @@ import android.widget.ProgressBar;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.home.NavigationDrawerActivity;
-import com.andeqa.andeqa.models.Cinggulan;
+import com.andeqa.andeqa.models.Andeqan;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -74,8 +74,8 @@ public class FollowCinggulans extends AppCompatActivity implements View.OnClickL
                 if (!documentSnapshots.isEmpty()){
                     Log.d("cinggulans size", documentSnapshots.size()+"");
                     for (final DocumentChange change : documentSnapshots.getDocumentChanges()){
-                        Cinggulan cinggulan = change.getDocument().toObject(Cinggulan.class);
-                        final String uid = cinggulan.getUid();
+                        Andeqan andeqan = change.getDocument().toObject(Andeqan.class);
+                        final String uid = andeqan.getUid();
 
                         relationsReference.document("following").collection(uid)
                                 .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid()).get()

@@ -11,16 +11,15 @@ public final class Constants {
     public static final String COMMENTS = "comments";
     public static final String LIKES= "likes";
     public static final String RELATIONS = "relations";
-    public static final String WALLET = "wallet";
-    public static final String POST_WALLET = "post_wallet";
-    public static final String TRANSACTION_HISTORY = "transaction_history";
+    public static final String WALLET = "wallets";
+    public static final String POST_WALLET = "post_wallets";
+    public static final String TRANSACTION_HISTORY = "transaction_histories";
     public static final String POST_OWNERS = "post_owners";
-    public static final String SENSECREDITS = "sense_credit";
-    public static final String SELLING = "selling";
-    public static final String TIMELINE = "timeline";
+    public static final String SENSECREDITS = "sense_credits";
+    public static final String SELLING = "sells";
+    public static final String TIMELINE = "timelines";
     public static final String MESSAGES = "messages";
     public static final String VIEWS = "views";
-    public static final String RANDOM_PUSH_ID = "random_id";
-
+    public static final String RANDOM_PUSH_ID = "random_ids";
 
 }

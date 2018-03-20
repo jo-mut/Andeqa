@@ -23,8 +23,8 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Single;
-import com.andeqa.andeqa.models.Cinggulan;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.models.Comment;
@@ -247,9 +247,9 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                             }
 
                             if (documentSnapshot.exists()){
-                                final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                                final String profileImage = cinggulan.getProfileImage();
-                                final String username = cinggulan.getUsername();
+                                final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                                final String profileImage = andeqan.getProfileImage();
+                                final String username = andeqan.getUsername();
 
                                 mAccountUsernameTextView.setText(username);
                                 Picasso.with(CommentsActivity.this)
@@ -329,9 +329,9 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                         }
 
                         if (documentSnapshot.exists()){
-                            final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                            final String profileImage = cinggulan.getProfileImage();
-                            final String username = cinggulan.getUsername();
+                            final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                            final String profileImage = andeqan.getProfileImage();
+                            final String username = andeqan.getUsername();
 
                             holder.usernameTextView.setText(username);
                             Picasso.with(CommentsActivity.this)
@@ -549,8 +549,8 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                         }
 
                         if (documentSnapshot.exists()){
-                            final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                            final String uid = cinggulan.getUid();
+                            final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                            final String uid = andeqan.getUid();
 
                             final String postId = databaseReference.push().getKey();
 

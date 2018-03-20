@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.firestore.FirestoreAdapter;
-import com.andeqa.andeqa.models.Cinggulan;
+import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Comment;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Relation;
@@ -166,9 +166,9 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
                 }
 
                 if (documentSnapshot.exists()){
-                    Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                    final String username = cinggulan.getUsername();
-                    final String profileImage = cinggulan.getProfileImage();
+                    Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                    final String username = andeqan.getUsername();
+                    final String profileImage = andeqan.getProfileImage();
 
                     Picasso.with(mContext)
                             .load(profileImage)
@@ -279,10 +279,10 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
                 }
 
                 if (documentSnapshot.exists()){
-                    final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                    final String username = cinggulan.getUsername();
-                    final String profileImage = cinggulan.getProfileImage();
-                    final String uid = cinggulan.getUid();
+                    final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                    final String username = andeqan.getUsername();
+                    final String profileImage = andeqan.getProfileImage();
+                    final String uid = andeqan.getUid();
 
                     Picasso.with(mContext)
                             .load(profileImage)
@@ -394,9 +394,9 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
                 }
 
                 if (documentSnapshot.exists()){
-                    Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                    final String username = cinggulan.getUsername();
-                    final String profileImage = cinggulan.getProfileImage();
+                    Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                    final String username = andeqan.getUsername();
+                    final String profileImage = andeqan.getProfileImage();
 
                     Picasso.with(mContext)
                             .load(profileImage)

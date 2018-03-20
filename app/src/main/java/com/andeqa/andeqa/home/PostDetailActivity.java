@@ -28,10 +28,10 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.market.DialogSendCredits;
 import com.andeqa.andeqa.likes.LikesActivity;
+import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Balance;
 import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.models.PostSale;
-import com.andeqa.andeqa.models.Cinggulan;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Timeline;
@@ -320,9 +320,9 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                             }
 
                             if (documentSnapshot.exists()){
-                                final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                                final String username = cinggulan.getUsername();
-                                final String profileImage = cinggulan.getProfileImage();
+                                final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                                final String username = andeqan.getUsername();
+                                final String profileImage = andeqan.getProfileImage();
 
                                 mUsernameTextView.setText(username);
                                 Picasso.with(PostDetailActivity.this)
@@ -679,8 +679,8 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                         }
 
                                         if (documentSnapshot.exists()){
-                                            final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                                            final String profileImage = cinggulan.getProfileImage();
+                                            final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                                            final String profileImage = andeqan.getProfileImage();
 
                                             Picasso.with(PostDetailActivity.this)
                                                     .load(profileImage)
@@ -787,9 +787,9 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                             if (documentSnapshot.exists()) {
-                                Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                                final String username = cinggulan.getUsername();
-                                final String profileImage = cinggulan.getProfileImage();
+                                Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                                final String username = andeqan.getUsername();
+                                final String profileImage = andeqan.getProfileImage();
 
                                 mPostOwnerTextView.setText(username);
                                 Picasso.with(PostDetailActivity.this)

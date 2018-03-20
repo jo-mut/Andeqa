@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.firestore.FirestoreAdapter;
-import com.andeqa.andeqa.models.Cinggulan;
+import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.people.FollowCinggulansViewHolder;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -50,9 +50,9 @@ public class CinggulansAdapter extends FirestoreAdapter<FollowCinggulansViewHold
     @Override
     public void onBindViewHolder(final FollowCinggulansViewHolder holder, int position) {
         holder.bindCinggulans(getSnapshot(position));
-        final Cinggulan cinggulan = getSnapshot(position).toObject(Cinggulan.class);
-        final String uid = cinggulan.getUid();
-        Log.d("follow cinggulan uid", uid);
+        final Andeqan andeqan = getSnapshot(position).toObject(Andeqan.class);
+        final String uid = andeqan.getUid();
+        Log.d("follow andeqan uid", uid);
 
         firebaseAuth = FirebaseAuth.getInstance();
         relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);

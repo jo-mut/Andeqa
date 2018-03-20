@@ -15,7 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.Cinggulan;
+import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.profile.UpdateProfileActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -90,10 +90,10 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 }
 
                 if (documentSnapshot.exists()){
-                    final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                    String username = cinggulan.getUsername();
-                    final String profileImage = cinggulan.getProfileImage();
-                    String bio = cinggulan.getBio();
+                    final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                    String username = andeqan.getUsername();
+                    final String profileImage = andeqan.getProfileImage();
+                    String bio = andeqan.getBio();
 
                     mUsernameTextView.setText(username);
                     mBioTextView.setText(bio);

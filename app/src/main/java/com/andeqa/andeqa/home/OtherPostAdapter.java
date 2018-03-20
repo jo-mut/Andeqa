@@ -15,8 +15,8 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.firestore.FirestoreAdapter;
 import com.andeqa.andeqa.likes.LikesActivity;
+import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Balance;
-import com.andeqa.andeqa.models.Cinggulan;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Single;
@@ -261,11 +261,11 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                             }
 
                             if (documentSnapshot.exists()){
-                                final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
+                                final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
 
-                                holder.usernameTextView.setText(cinggulan.getUsername());
+                                holder.usernameTextView.setText(andeqan.getUsername());
                                 Picasso.with(mContext)
-                                        .load(cinggulan.getProfileImage())
+                                        .load(andeqan.getProfileImage())
                                         .resize(MAX_WIDTH, MAX_HEIGHT)
                                         .onlyScaleDown()
                                         .centerCrop()
@@ -280,7 +280,7 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                                             @Override
                                             public void onError() {
                                                 Picasso.with(mContext)
-                                                        .load(cinggulan.getProfileImage())
+                                                        .load(andeqan.getProfileImage())
                                                         .resize(MAX_WIDTH, MAX_HEIGHT)
                                                         .onlyScaleDown()
                                                         .centerCrop()
@@ -542,9 +542,9 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                             }
 
                             if (documentSnapshot.exists()){
-                                Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                                final String profileImage = cinggulan.getProfileImage();
-                                final String username = cinggulan.getUsername();
+                                Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                                final String profileImage = andeqan.getProfileImage();
+                                final String username = andeqan.getUsername();
                                 holder.postOwnerTextView.setText(username);
                                 Picasso.with(mContext)
                                         .load(profileImage)
@@ -683,8 +683,8 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                                         }
 
                                         if (documentSnapshot.exists()){
-                                            final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                                            final String profileImage = cinggulan.getProfileImage();
+                                            final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                                            final String profileImage = andeqan.getProfileImage();
 
                                             Picasso.with(mContext)
                                                     .load(profileImage)

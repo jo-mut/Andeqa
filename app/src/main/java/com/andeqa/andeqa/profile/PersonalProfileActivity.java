@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.Cinggulan;
+import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.people.FollowersActivity;
 import com.andeqa.andeqa.people.FollowingActivity;
@@ -50,7 +50,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
     @Bind(R.id.bioTextView)TextView mBioTextView;
     @Bind(R.id.followersCountTextView) TextView mFollowersCountTextView;
     @Bind(R.id.followingCountTextView)TextView mFollowingCountTextView;
-    @Bind(R.id.postsCountTextView)TextView mCinglesCountTextView;
+    @Bind(R.id.postsCountTextView)TextView mPostsCountTextView;
     @Bind(R.id.profileCoverImageView)ImageView mProfileCover;
     @Bind(R.id.collapsing_toolbar)CollapsingToolbarLayout collapsingToolbarLayout;
 
@@ -104,8 +104,10 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
-            profileCollectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING);
-            postCountQuery = postsCollection.whereEqualTo("uid",
+            profileCollectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
+                    .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid());
+            postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            postCountQuery = postsCollection.orderBy("time").whereEqualTo("uid",
                     firebaseAuth.getCurrentUser().getUid());
 
 
@@ -169,10 +171,10 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
                 }
 
                 if (!documentSnapshots.isEmpty()){
-                    final int cingleCount = documentSnapshots.size();
-                    mCinglesCountTextView.setText(cingleCount + "");
+                    final int postsCount = documentSnapshots.size();
+                    mPostsCountTextView.setText(postsCount + "");
                 }else {
-                    mCinglesCountTextView.setText("0");
+                    mPostsCountTextView.setText("0");
                 }
             }
         });
@@ -231,12 +233,12 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
                         }
 
                         if (documentSnapshot.exists()){
-                            final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                            String firstName = cinggulan.getFirstName();
-                            String secondName = cinggulan.getSecondName();
-                            final String profileImage = cinggulan.getProfileImage();
-                            String bio = cinggulan.getBio();
-                            final String profileCover = cinggulan.getProfileCover();
+                            final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                            String firstName = andeqan.getFirstName();
+                            String secondName = andeqan.getSecondName();
+                            final String profileImage = andeqan.getProfileImage();
+                            String bio = andeqan.getBio();
+                            final String profileCover = andeqan.getProfileCover();
 
                             mFullNameTextView.setText(firstName + " " + secondName);
                             mBioTextView.setText(bio);

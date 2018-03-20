@@ -14,9 +14,9 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Timeline;
-import com.andeqa.andeqa.models.Cinggulan;
 import com.andeqa.andeqa.profile.PersonalProfileActivity;
 import com.firebase.ui.common.ChangeEventType;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -122,12 +122,12 @@ public class FollowingFragment extends Fragment {
 
 
                         if (documentSnapshot.exists()){
-                            Cinggulan cinggulan =  documentSnapshot.toObject(Cinggulan.class);
-                            final String profileImage = cinggulan.getProfileImage();
-                            final String firstName = cinggulan.getFirstName();
-                            final String secondName = cinggulan.getSecondName();
-                            final String username = cinggulan.getUsername();
-                            final String uid = cinggulan.getUid();
+                            Andeqan andeqan =  documentSnapshot.toObject(Andeqan.class);
+                            final String profileImage = andeqan.getProfileImage();
+                            final String firstName = andeqan.getFirstName();
+                            final String secondName = andeqan.getSecondName();
+                            final String username = andeqan.getUsername();
+                            final String uid = andeqan.getUid();
 
 
                             holder.usernameTextView.setText(username);

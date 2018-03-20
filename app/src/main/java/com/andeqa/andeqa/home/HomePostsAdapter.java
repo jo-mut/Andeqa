@@ -17,13 +17,13 @@ import android.view.ViewGroup;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.firestore.FirestoreAdapter;
+import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.likes.LikesActivity;
 import com.andeqa.andeqa.models.Balance;
-import com.andeqa.andeqa.models.Cinggulan;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.TransactionDetails;
@@ -259,11 +259,9 @@ public class HomePostsAdapter extends FirestoreAdapter<HomePostsViewHolder> {
                     Intent intent = new Intent(mContext, PersonalProfileActivity.class);
                     intent.putExtra(HomePostsAdapter.EXTRA_USER_UID, uid);
                     mContext.startActivity(intent);
-                    Log.d("profile uid", firebaseAuth.getCurrentUser().getUid());
                 }else {
                     Intent intent = new Intent(mContext, FollowerProfileActivity.class);
                     intent.putExtra(HomePostsAdapter.EXTRA_USER_UID, uid);
-                    Log.d("follower uid", uid);
                     mContext.startActivity(intent);
                 }
             }
@@ -300,11 +298,11 @@ public class HomePostsAdapter extends FirestoreAdapter<HomePostsViewHolder> {
                 }
 
                 if (documentSnapshot.exists()){
-                    final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                    holder.accountUsernameTextView.setText(cinggulan.getUsername());
+                    final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                    holder.accountUsernameTextView.setText(andeqan.getUsername());
 
                     Picasso.with(mContext)
-                            .load(cinggulan.getProfileImage())
+                            .load(andeqan.getProfileImage())
                             .resize(MAX_WIDTH, MAX_HEIGHT)
                             .onlyScaleDown()
                             .centerCrop()
@@ -319,7 +317,7 @@ public class HomePostsAdapter extends FirestoreAdapter<HomePostsViewHolder> {
                                 @Override
                                 public void onError() {
                                     Picasso.with(mContext)
-                                            .load(cinggulan.getProfileImage())
+                                            .load(andeqan.getProfileImage())
                                             .resize(MAX_WIDTH, MAX_HEIGHT)
                                             .onlyScaleDown()
                                             .centerCrop()
@@ -653,8 +651,8 @@ public class HomePostsAdapter extends FirestoreAdapter<HomePostsViewHolder> {
                                                 }
 
                                                 if (documentSnapshot.exists()){
-                                                    final Cinggulan cinggulan = documentSnapshot.toObject(Cinggulan.class);
-                                                    final String profileImage = cinggulan.getProfileImage();
+                                                    final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                                                    final String profileImage = andeqan.getProfileImage();
 
                                                     Picasso.with(mContext)
                                                             .load(profileImage)
