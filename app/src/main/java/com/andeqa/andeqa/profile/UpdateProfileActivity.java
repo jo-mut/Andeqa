@@ -264,8 +264,8 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                             if (documentSnapshot.exists()){
-                                final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                                final String profileImage = andeqan.getProfileImage();
+                                final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                                final String profileImage = cinggulan.getProfileImage();
                                 Log.d("profile image", profileImage);
 
                                 Picasso.with(UpdateProfileActivity.this)
@@ -340,8 +340,8 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                             if (documentSnapshot.exists()){
-                                final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                                final String profileCover= andeqan.getProfileCover();
+                                final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                                final String profileCover= cinggulan.getProfileCover();
                                 Log.d("profile image", profileCover);
 
                                 Picasso.with(UpdateProfileActivity.this)

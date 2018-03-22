@@ -123,18 +123,18 @@ public class SaveGoogleProfileActivity extends AppCompatActivity implements View
 
         if (!validName|| !validFirstName || !validSecondName) return;
 
-        Andeqan andeqan = new Andeqan();
-        andeqan.setFirstName(firstName);
-        andeqan.setSecondName(secondName);
-        andeqan.setUsername(username);
-        andeqan.setUid(uid);
-        andeqan.setEmail(email);
+        Andeqan cinggulan = new Andeqan();
+        cinggulan.setFirstName(firstName);
+        cinggulan.setSecondName(secondName);
+        cinggulan.setUsername(username);
+        cinggulan.setUid(uid);
+        cinggulan.setEmail(email);
 
         DocumentReference pushRef = usersReference.document(uid);
         String pushId = pushRef.getId();
-        andeqan.setPushId(pushId);
+        cinggulan.setPushId(pushId);
         createProfileProgressDialog.dismiss();
-        pushRef.set(andeqan).addOnSuccessListener(new OnSuccessListener<Void>() {
+        pushRef.set(cinggulan).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
 

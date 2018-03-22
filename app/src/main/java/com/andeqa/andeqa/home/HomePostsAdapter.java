@@ -70,7 +70,7 @@ public class HomePostsAdapter extends FirestoreAdapter<HomePostsViewHolder> {
     private static final double GOLDEN_RATIO = 1.618;
     private static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
-    private static final int LIMIT = 10;
+    private static final int LIMIT = 3;
     //firestore reference
     private FirebaseFirestore firebaseFirestore;
     private CollectionReference collectionsCollection;
@@ -298,11 +298,11 @@ public class HomePostsAdapter extends FirestoreAdapter<HomePostsViewHolder> {
                 }
 
                 if (documentSnapshot.exists()){
-                    final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                    holder.accountUsernameTextView.setText(andeqan.getUsername());
+                    final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                    holder.accountUsernameTextView.setText(cinggulan.getUsername());
 
                     Picasso.with(mContext)
-                            .load(andeqan.getProfileImage())
+                            .load(cinggulan.getProfileImage())
                             .resize(MAX_WIDTH, MAX_HEIGHT)
                             .onlyScaleDown()
                             .centerCrop()
@@ -317,7 +317,7 @@ public class HomePostsAdapter extends FirestoreAdapter<HomePostsViewHolder> {
                                 @Override
                                 public void onError() {
                                     Picasso.with(mContext)
-                                            .load(andeqan.getProfileImage())
+                                            .load(cinggulan.getProfileImage())
                                             .resize(MAX_WIDTH, MAX_HEIGHT)
                                             .onlyScaleDown()
                                             .centerCrop()
@@ -651,8 +651,8 @@ public class HomePostsAdapter extends FirestoreAdapter<HomePostsViewHolder> {
                                                 }
 
                                                 if (documentSnapshot.exists()){
-                                                    final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                                                    final String profileImage = andeqan.getProfileImage();
+                                                    final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                                                    final String profileImage = cinggulan.getProfileImage();
 
                                                     Picasso.with(mContext)
                                                             .load(profileImage)
@@ -807,7 +807,7 @@ public class HomePostsAdapter extends FirestoreAdapter<HomePostsViewHolder> {
                                                                             Log.d("timeline is empty", postKey);
                                                                             final String postId = databaseReference.push().getKey();
                                                                             timeline.setPushId(postKey);
-                                                                            timeline.setTimeStamp(time);
+                                                                            timeline.setTime(time);
                                                                             timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                             timeline.setType("like");
                                                                             timeline.setPostId(postId);

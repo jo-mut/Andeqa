@@ -247,9 +247,9 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                             }
 
                             if (documentSnapshot.exists()){
-                                final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                                final String profileImage = andeqan.getProfileImage();
-                                final String username = andeqan.getUsername();
+                                final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                                final String profileImage = cinggulan.getProfileImage();
+                                final String username = cinggulan.getUsername();
 
                                 mAccountUsernameTextView.setText(username);
                                 Picasso.with(CommentsActivity.this)
@@ -329,9 +329,9 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                         }
 
                         if (documentSnapshot.exists()){
-                            final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                            final String profileImage = andeqan.getProfileImage();
-                            final String username = andeqan.getUsername();
+                            final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                            final String profileImage = cinggulan.getProfileImage();
+                            final String username = cinggulan.getUsername();
 
                             holder.usernameTextView.setText(username);
                             Picasso.with(CommentsActivity.this)
@@ -416,7 +416,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                                                             final String postId = databaseReference.push().getKey();
 
                                                             timeline.setPushId(postKey);
-                                                            timeline.setTimeStamp(time);
+                                                            timeline.setTime(time);
                                                             timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                             timeline.setType("followers");
                                                             timeline.setPostId(postId);
@@ -549,8 +549,8 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                         }
 
                         if (documentSnapshot.exists()){
-                            final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                            final String uid = andeqan.getUid();
+                            final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                            final String uid = cinggulan.getUid();
 
                             final String postId = databaseReference.push().getKey();
 
@@ -580,7 +580,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                                                 final String creatorUid = single.getUid();
 
                                                 timeline.setPostId(postId);
-                                                timeline.setTimeStamp(time);
+                                                timeline.setTime(time);
                                                 timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                 timeline.setType("comment");
                                                 timeline.setPushId(mPostId);

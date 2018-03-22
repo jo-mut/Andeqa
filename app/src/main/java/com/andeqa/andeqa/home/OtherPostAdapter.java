@@ -261,11 +261,11 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                             }
 
                             if (documentSnapshot.exists()){
-                                final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                                final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
 
-                                holder.usernameTextView.setText(andeqan.getUsername());
+                                holder.usernameTextView.setText(cinggulan.getUsername());
                                 Picasso.with(mContext)
-                                        .load(andeqan.getProfileImage())
+                                        .load(cinggulan.getProfileImage())
                                         .resize(MAX_WIDTH, MAX_HEIGHT)
                                         .onlyScaleDown()
                                         .centerCrop()
@@ -280,7 +280,7 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                                             @Override
                                             public void onError() {
                                                 Picasso.with(mContext)
-                                                        .load(andeqan.getProfileImage())
+                                                        .load(cinggulan.getProfileImage())
                                                         .resize(MAX_WIDTH, MAX_HEIGHT)
                                                         .onlyScaleDown()
                                                         .centerCrop()
@@ -337,7 +337,7 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                                                                                     if (documentSnapshots.isEmpty()){
                                                                                         final String postId = databaseReference.push().getKey();
                                                                                         timeline.setPushId(postKey);
-                                                                                        timeline.setTimeStamp(time);
+                                                                                        timeline.setTime(time);
                                                                                         timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                                         timeline.setType("like");
                                                                                         timeline.setPostId(postId);
@@ -542,9 +542,9 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                             }
 
                             if (documentSnapshot.exists()){
-                                Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                                final String profileImage = andeqan.getProfileImage();
-                                final String username = andeqan.getUsername();
+                                Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                                final String profileImage = cinggulan.getProfileImage();
+                                final String username = cinggulan.getUsername();
                                 holder.postOwnerTextView.setText(username);
                                 Picasso.with(mContext)
                                         .load(profileImage)
@@ -683,8 +683,8 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                                         }
 
                                         if (documentSnapshot.exists()){
-                                            final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                                            final String profileImage = andeqan.getProfileImage();
+                                            final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                                            final String profileImage = cinggulan.getProfileImage();
 
                                             Picasso.with(mContext)
                                                     .load(profileImage)

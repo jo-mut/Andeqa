@@ -11,14 +11,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.Single;
+import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -38,10 +38,8 @@ import static android.media.CamcorderProfile.get;
  * A simple {@link Fragment} subclass.
  */
 public class HomeFragment extends Fragment{
-    @Bind(R.id.singleOutRecyclerView)RecyclerView singleOutRecyclerView;
+    @Bind(R.id.postsRecyclerView)RecyclerView postsRecyclerView;
     @Bind(R.id.placeHolderRelativeLayout)RelativeLayout mPlaceHolderRelativeLayout;
-    @Bind(R.id.progressBar)ProgressBar progressBar;
-
 
     private static final String TAG = HomeFragment.class.getSimpleName();
     private static final String KEY_LAYOUT_POSITION = "layout position";
@@ -49,16 +47,16 @@ public class HomeFragment extends Fragment{
     //firestore reference
     private CollectionReference postsCollection;
     private Query randomPostsQuery;
-    private DocumentSnapshot lastVisible;
+    private Query nextRandomQuery;
 
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //adapters
-    private HomePostsAdapter homePostsAdapter;
+    private PostsAdapter postsAdapter;
     private LinearLayoutManager layoutManager;
-    private int TOTAL_ITEMS = 50;
-    private List<String> postsIds = new ArrayList<>();
-    private List<Single> singles = new ArrayList<>();
+    private int TOTAL_ITEMS = 5;
+    private List<String> snapshotsIds = new ArrayList<>();
+    private List<DocumentSnapshot> snapshots = new ArrayList<>();
 
     public HomeFragment() {
         // Required empty public constructor
@@ -72,16 +70,21 @@ public class HomeFragment extends Fragment{
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.bind(this, view);
 
-
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
             //firestore
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            randomPostsQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
+                    .limit(TOTAL_ITEMS);
 
-            AllPosts();
+            postsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+                @Override
+                public void onLoadMore() {
+                    setNextPosts();
+                }
+            });
 
         }
-
 
         return view;
     }
@@ -90,17 +93,23 @@ public class HomeFragment extends Fragment{
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (singleOutRecyclerView != null){
-            progressBar.setVisibility(View.GONE);
-        }else {
-            progressBar.setVisibility(View.VISIBLE);
-        }
+        setRecyclerView();
+        setPosts();
 
     }
 
+    private void setRecyclerView(){
+        postsAdapter = new PostsAdapter(getContext());
+        postsRecyclerView.setAdapter(postsAdapter);
+        postsAdapter.notifyDataSetChanged();
+        postsRecyclerView.setHasFixedSize(false);
+        layoutManager = new LinearLayoutManager(getContext());
+        postsRecyclerView.setLayoutManager(layoutManager);
 
-    private void AllPosts(){
-        postsCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
+    }
+
+    private void setPosts(){
+        randomPostsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
@@ -109,19 +118,91 @@ public class HomeFragment extends Fragment{
                     return;
                 }
 
-
-                if (!documentSnapshots.isEmpty()){
-                    randomPostsQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING);
-                    homePostsAdapter = new HomePostsAdapter(randomPostsQuery, getContext());
-                    homePostsAdapter.startListening();
-                    singleOutRecyclerView.setAdapter(homePostsAdapter);
-                    singleOutRecyclerView.setHasFixedSize(false);
-                    layoutManager = new LinearLayoutManager(getContext());
-                    singleOutRecyclerView.setLayoutManager(layoutManager);
+                if (!documentSnapshots.isEmpty()) {
+                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                        switch (change.getType()) {
+                            case ADDED:
+                                onDocumentAdded(change);
+                                break;
+                            case MODIFIED:
+                                onDocumentModified(change);
+                                break;
+                            case REMOVED:
+                                onDocumentRemoved(change);
+                                break;
+                        }
+                    }
                 }
 
             }
         });
+    }
+
+    private void setNextPosts(){
+        // Get the last visible document
+        final int snapshotSize = postsAdapter.getItemCount();
+        DocumentSnapshot lastVisible = postsAdapter.getSnapshot(snapshotSize - 1);
+
+        //retrieve the first bacth of snapshots
+        nextRandomQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
+                .startAfter(lastVisible)
+                .limit(TOTAL_ITEMS);
+
+        nextRandomQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (!documentSnapshots.isEmpty()){
+                    //retrieve the first bacth of snapshots
+                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                        switch (change.getType()) {
+                            case ADDED:
+                                onDocumentAdded(change);
+                                break;
+                            case MODIFIED:
+                                onDocumentModified(change);
+                                break;
+                            case REMOVED:
+                                onDocumentRemoved(change);
+                                break;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    protected void onDocumentAdded(DocumentChange change) {
+        snapshotsIds.add(change.getDocument().getId());
+        snapshots.add(change.getDocument());
+        postsAdapter.setRandomPosts(snapshots);
+        postsAdapter.notifyItemInserted(snapshots.size() -1);
+        postsAdapter.getItemCount();
+
+    }
+
+    protected void onDocumentModified(DocumentChange change) {
+        if (change.getOldIndex() == change.getNewIndex()) {
+            // Item changed but remained in same position
+            snapshots.set(change.getOldIndex(), change.getDocument());
+            postsAdapter.notifyItemChanged(change.getOldIndex());
+        } else {
+            // Item changed and changed position
+            snapshots.remove(change.getOldIndex());
+            snapshots.add(change.getNewIndex(), change.getDocument());
+            postsAdapter.notifyItemRangeChanged(0, snapshots.size());
+        }
+    }
+
+    protected void onDocumentRemoved(DocumentChange change) {
+        snapshots.remove(change.getOldIndex());
+        postsAdapter.notifyItemRemoved(change.getOldIndex());
+        postsAdapter.notifyItemRangeChanged(0, snapshots.size());
     }
 
 }

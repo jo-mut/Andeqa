@@ -241,13 +241,13 @@ public class FollowerProfileActivity extends AppCompatActivity
                         }
 
                         if (documentSnapshot.exists()){
-                            final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                            String username = andeqan.getUsername();
-                            String firstName = andeqan.getFirstName();
-                            String secondName = andeqan.getSecondName();
-                            final String profileImage = andeqan.getProfileImage();
-                            String bio = andeqan.getBio();
-                            final String profileCover = andeqan.getProfileCover();
+                            final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                            String username = cinggulan.getUsername();
+                            String firstName = cinggulan.getFirstName();
+                            String secondName = cinggulan.getSecondName();
+                            final String profileImage = cinggulan.getProfileImage();
+                            String bio = cinggulan.getBio();
+                            final String profileCover = cinggulan.getProfileCover();
 
                             mFullNameTextView.setText(firstName + " " + secondName);
                             mBioTextView.setText(bio);
@@ -433,7 +433,7 @@ public class FollowerProfileActivity extends AppCompatActivity
 
                                                     final String postid = databaseReference.push().getKey();
                                                     timeline.setPushId(mUid);
-                                                    timeline.setTimeStamp(time);
+                                                    timeline.setTime(time);
                                                     timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                     timeline.setType("followers");
                                                     timeline.setPostId(postid);

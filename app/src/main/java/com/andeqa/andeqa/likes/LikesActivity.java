@@ -149,11 +149,11 @@ public class LikesActivity extends AppCompatActivity {
                         }
 
                         if (documentSnapshot.exists()){
-                            final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                            final String profileImage = andeqan.getProfileImage();
-                            final String username = andeqan.getUsername();
-                            final String firstName = andeqan.getFirstName();
-                            final String secondName = andeqan.getSecondName();
+                            final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                            final String profileImage = cinggulan.getProfileImage();
+                            final String username = cinggulan.getUsername();
+                            final String firstName = cinggulan.getFirstName();
+                            final String secondName = cinggulan.getSecondName();
 
 
                             holder.usernameTextView.setText(username);
@@ -255,7 +255,7 @@ public class LikesActivity extends AppCompatActivity {
                                                             final String postId = databaseReference.push().getKey();
 
                                                             timeline.setPostId(postId);
-                                                            timeline.setTimeStamp(time);
+                                                            timeline.setTime(time);
                                                             timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                             timeline.setType("followers");
                                                             timeline.setPushId(uid);

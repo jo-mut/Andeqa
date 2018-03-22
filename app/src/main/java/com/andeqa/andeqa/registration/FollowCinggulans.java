@@ -74,8 +74,8 @@ public class FollowCinggulans extends AppCompatActivity implements View.OnClickL
                 if (!documentSnapshots.isEmpty()){
                     Log.d("cinggulans size", documentSnapshots.size()+"");
                     for (final DocumentChange change : documentSnapshots.getDocumentChanges()){
-                        Andeqan andeqan = change.getDocument().toObject(Andeqan.class);
-                        final String uid = andeqan.getUid();
+                        Andeqan cinggulan = change.getDocument().toObject(Andeqan.class);
+                        final String uid = cinggulan.getUid();
 
                         relationsReference.document("following").collection(uid)
                                 .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid()).get()

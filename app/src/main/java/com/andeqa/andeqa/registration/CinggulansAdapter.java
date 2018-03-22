@@ -50,9 +50,9 @@ public class CinggulansAdapter extends FirestoreAdapter<FollowCinggulansViewHold
     @Override
     public void onBindViewHolder(final FollowCinggulansViewHolder holder, int position) {
         holder.bindCinggulans(getSnapshot(position));
-        final Andeqan andeqan = getSnapshot(position).toObject(Andeqan.class);
-        final String uid = andeqan.getUid();
-        Log.d("follow andeqan uid", uid);
+        final Andeqan cinggulan = getSnapshot(position).toObject(Andeqan.class);
+        final String uid = cinggulan.getUid();
+        Log.d("follow cinggulan uid", uid);
 
         firebaseAuth = FirebaseAuth.getInstance();
         relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);

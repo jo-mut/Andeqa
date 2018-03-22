@@ -138,8 +138,8 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
                 }
 
                 if (documentSnapshot.exists()){
-                    Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                    final String username = andeqan.getUsername();
+                    Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                    final String username = cinggulan.getUsername();
                     mToolBar.setTitle(username);
                 }
             }
@@ -159,8 +159,8 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
                         }
 
                         if (documentSnapshot.exists()){
-                            Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                            final String profileImage = andeqan.getProfileImage();
+                            Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                            final String profileImage = cinggulan.getProfileImage();
 
                             Picasso.with(MessagesAccountActivity.this)
                                     .load(profileImage)

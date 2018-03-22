@@ -22,6 +22,7 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.TransactionDetails;
+import com.andeqa.andeqa.profile.CollectionPostsActivity;
 import com.andeqa.andeqa.profile.PersonalProfileActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -242,7 +243,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                                         mCollectionNameEditText.setText("");
                                         mCollectionNoteEditText.setText("");
 
-                                        Intent intent = new Intent(CreateCollectionActivity.this, PersonalProfileActivity.class);
+                                        Intent intent = new Intent(CreateCollectionActivity.this, CollectionPostsActivity.class);
                                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         startActivity(intent);
                                         finish();
@@ -284,7 +285,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                         mCollectionNoteEditText.setText("");
 
 
-                        Intent intent = new Intent(CreateCollectionActivity.this, PersonalProfileActivity.class);
+                        Intent intent = new Intent(CreateCollectionActivity.this, CollectionPostsActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                         finish();

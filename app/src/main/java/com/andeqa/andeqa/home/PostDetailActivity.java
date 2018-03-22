@@ -2,6 +2,7 @@ package com.andeqa.andeqa.home;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,9 +17,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -320,9 +323,9 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                             }
 
                             if (documentSnapshot.exists()){
-                                final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                                final String username = andeqan.getUsername();
-                                final String profileImage = andeqan.getProfileImage();
+                                final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                                final String username = cinggulan.getUsername();
+                                final String profileImage = cinggulan.getProfileImage();
 
                                 mUsernameTextView.setText(username);
                                 Picasso.with(PostDetailActivity.this)
@@ -679,8 +682,8 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                         }
 
                                         if (documentSnapshot.exists()){
-                                            final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                                            final String profileImage = andeqan.getProfileImage();
+                                            final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                                            final String profileImage = cinggulan.getProfileImage();
 
                                             Picasso.with(PostDetailActivity.this)
                                                     .load(profileImage)
@@ -787,9 +790,9 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                             if (documentSnapshot.exists()) {
-                                Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                                final String username = andeqan.getUsername();
-                                final String profileImage = andeqan.getProfileImage();
+                                Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                                final String username = cinggulan.getUsername();
+                                final String profileImage = cinggulan.getProfileImage();
 
                                 mPostOwnerTextView.setText(username);
                                 Picasso.with(PostDetailActivity.this)
@@ -885,6 +888,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         }
 
         if (v == mLikesImageView){
+            displayPopupWindow(v);
             mLikesImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -944,7 +948,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                                                                 if (documentSnapshots.isEmpty()){
                                                                                     final String postId = databaseReference.push().getKey();
                                                                                     timeline.setPushId(mPostId);
-                                                                                    timeline.setTimeStamp(time);
+                                                                                    timeline.setTime(time);
                                                                                     timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                                     timeline.setType("like");
                                                                                     timeline.setPostId(postId);
@@ -1205,6 +1209,25 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.intValue();
+    }
+
+    private void displayPopupWindow(View anchorView) {
+        PopupWindow popup = new PopupWindow(PostDetailActivity.this);
+        View layout = getLayoutInflater().inflate(R.layout.popup_layout, null);
+
+        TextView textView = (TextView) layout.findViewById(R.id.popupTextView);
+        textView.setText("Like this post");
+
+        popup.setContentView(layout);
+        // Set content width and height
+        popup.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+        popup.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+        // Closes the popup window when touch outside of it - when looses focus
+        popup.setOutsideTouchable(true);
+        popup.setFocusable(true);
+        // Show anchored to button
+        popup.setBackgroundDrawable(new BitmapDrawable());
+        popup.showAsDropDown(anchorView);
     }
 
 }

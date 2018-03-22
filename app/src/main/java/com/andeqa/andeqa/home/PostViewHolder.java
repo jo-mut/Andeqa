@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.google.firebase.database.DatabaseReference;
@@ -81,7 +82,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
         totalLikesCountTextView = (TextView) mView.findViewById(R.id.totalLikesCountTextView);
     }
 
-    public void bindRandomCingles(final Single single){
+    public void bindRandomCingles(final CollectionPost collectionPost){
         postImageView = (ProportionalImageView) mView.findViewById(R.id.postImageView);
         descriptionTextView = (TextView) itemView.findViewById(R.id.descriptionTextView);
         titleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
@@ -92,7 +93,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
 
 
         Picasso.with(mContext)
-                .load(single.getImage())
+                .load(collectionPost.getImage())
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(postImageView, new Callback() {
                     @Override
@@ -103,7 +104,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
                     @Override
                     public void onError() {
                         Picasso.with(mContext)
-                                .load(single.getImage())
+                                .load(collectionPost.getImage())
                                 .into(postImageView, new Callback() {
                                     @Override
                                     public void onSuccess() {
@@ -121,14 +122,14 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
                 });
 
 
-        if (!TextUtils.isEmpty(single.getTitle())){
-            titleTextView.setText(single.getTitle());
+        if (!TextUtils.isEmpty(collectionPost.getTitle())){
+            titleTextView.setText(collectionPost.getTitle());
             titleRelativeLayout.setVisibility(View.VISIBLE);
 
         }
 
-        if (!TextUtils.isEmpty(single.getDescription())){
-            descriptionTextView.setText(single.getDescription());
+        if (!TextUtils.isEmpty(collectionPost.getDescription())){
+            descriptionTextView.setText(collectionPost.getDescription());
             descriptionRelativeLayout.setVisibility(View.VISIBLE);
         }
 

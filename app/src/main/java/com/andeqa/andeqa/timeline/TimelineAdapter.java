@@ -166,9 +166,9 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
                 }
 
                 if (documentSnapshot.exists()){
-                    Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                    final String username = andeqan.getUsername();
-                    final String profileImage = andeqan.getProfileImage();
+                    Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                    final String username = cinggulan.getUsername();
+                    final String profileImage = cinggulan.getProfileImage();
 
                     Picasso.with(mContext)
                             .load(profileImage)
@@ -279,10 +279,10 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
                 }
 
                 if (documentSnapshot.exists()){
-                    final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                    final String username = andeqan.getUsername();
-                    final String profileImage = andeqan.getProfileImage();
-                    final String uid = andeqan.getUid();
+                    final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                    final String username = cinggulan.getUsername();
+                    final String profileImage = cinggulan.getProfileImage();
+                    final String uid = cinggulan.getUid();
 
                     Picasso.with(mContext)
                             .load(profileImage)
@@ -394,9 +394,9 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
                 }
 
                 if (documentSnapshot.exists()){
-                    Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                    final String username = andeqan.getUsername();
-                    final String profileImage = andeqan.getProfileImage();
+                    Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                    final String username = cinggulan.getUsername();
+                    final String profileImage = cinggulan.getProfileImage();
 
                     Picasso.with(mContext)
                             .load(profileImage)
@@ -485,7 +485,7 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
 
                                                         final String postid = databaseReference.push().getKey();
                                                         timeline.setPushId(uid);
-                                                        timeline.setTimeStamp(time);
+                                                        timeline.setTime(time);
                                                         timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                         timeline.setType("followers");
                                                         timeline.setPostId(postid);

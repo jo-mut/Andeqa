@@ -188,11 +188,11 @@ public class NavigationDrawerActivity extends AppCompatActivity
                 }
 
                 if (documentSnapshot.exists()){
-                    final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                    String firstName = andeqan.getFirstName();
-                    String secondName = andeqan.getSecondName();
-                    final String profileImage = andeqan.getProfileImage();
-                    final String profileCover = andeqan.getProfileCover();
+                    final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                    String firstName = cinggulan.getFirstName();
+                    String secondName = cinggulan.getSecondName();
+                    final String profileImage = cinggulan.getProfileImage();
+                    final String profileCover = cinggulan.getProfileCover();
 
                     mFullNameTextView.setText(firstName + " " + secondName);
 

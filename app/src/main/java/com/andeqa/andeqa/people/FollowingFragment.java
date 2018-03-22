@@ -122,12 +122,12 @@ public class FollowingFragment extends Fragment {
 
 
                         if (documentSnapshot.exists()){
-                            Andeqan andeqan =  documentSnapshot.toObject(Andeqan.class);
-                            final String profileImage = andeqan.getProfileImage();
-                            final String firstName = andeqan.getFirstName();
-                            final String secondName = andeqan.getSecondName();
-                            final String username = andeqan.getUsername();
-                            final String uid = andeqan.getUid();
+                            Andeqan cinggulan =  documentSnapshot.toObject(Andeqan.class);
+                            final String profileImage = cinggulan.getProfileImage();
+                            final String firstName = cinggulan.getFirstName();
+                            final String secondName = cinggulan.getSecondName();
+                            final String username = cinggulan.getUsername();
+                            final String uid = cinggulan.getUid();
 
 
                             holder.usernameTextView.setText(username);
@@ -230,7 +230,7 @@ public class FollowingFragment extends Fragment {
                                                                                         .set(timeline);
                                                                                 final String postid =  databaseReference.push().getKey();
                                                                                 timeline.setPushId(postKey);
-                                                                                timeline.setTimeStamp(time);
+                                                                                timeline.setTime(time);
                                                                                 timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                                 timeline.setType("followers");
                                                                                 timeline.setPostId(postid);

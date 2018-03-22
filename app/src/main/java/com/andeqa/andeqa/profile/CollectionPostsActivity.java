@@ -118,8 +118,8 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
 
 
                         if (documentSnapshot.exists()){
-                            final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                            final String username = andeqan.getUsername();
+                            final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                            final String username = cinggulan.getUsername();
                             getSupportActionBar().setTitle(username + "'s" + " collection");
                         }
                     }

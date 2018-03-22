@@ -9,7 +9,7 @@ public class Timeline {
     String uid;
     String pushId;
     String postId;
-    long timeStamp;
+    long time;
     String status;
 
     public Timeline() {
@@ -17,12 +17,12 @@ public class Timeline {
     }
 
     public Timeline(String type, String uid, String pushId,
-                    String postId, long timeStamp, String status) {
+                    String postId, long time, String status) {
         this.type = type;
         this.uid = uid;
         this.pushId = pushId;
         this.postId = postId;
-        this.timeStamp = timeStamp;
+        this.time = time;
         this.status = status;
     }
 
@@ -58,12 +58,12 @@ public class Timeline {
         this.postId = postId;
     }
 
-    public long getTimeStamp() {
-        return timeStamp;
+    public long getTime() {
+        return time;
     }
 
-    public void setTimeStamp(long timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setTime(long time) {
+        this.time = time;
     }
 
     public String getStatus() {

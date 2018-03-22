@@ -1,36 +1,45 @@
-package com.andeqa.andeqa.profile;
+package com.andeqa.andeqa.home;
 
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.firestore.FirestoreAdapter;
-import com.andeqa.andeqa.home.PostDetailActivity;
+import com.andeqa.andeqa.comments.CommentsActivity;
+import com.andeqa.andeqa.creation.CreatePostActivity;
+import com.andeqa.andeqa.likes.LikesActivity;
+import com.andeqa.andeqa.likes.WhoLikedViewHolder;
+import com.andeqa.andeqa.models.Balance;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
-import com.andeqa.andeqa.models.Single;
-import com.andeqa.andeqa.comments.CommentsActivity;
-import com.andeqa.andeqa.home.FullImageViewActivity;
-import com.andeqa.andeqa.likes.LikesActivity;
-import com.andeqa.andeqa.models.Balance;
-import com.andeqa.andeqa.models.PostSale;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Like;
+import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.models.TransactionDetails;
-import com.andeqa.andeqa.likes.WhoLikedViewHolder;
 import com.andeqa.andeqa.people.FollowerProfileActivity;
+import com.andeqa.andeqa.profile.PersonalProfileActivity;
 import com.andeqa.andeqa.settings.DialogFragmentPostSettings;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -57,132 +66,169 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static android.media.CamcorderProfile.get;
+
 /**
- * Created by J.EL on 11/14/2017.
+ * Created by J.EL on 3/20/2018.
  */
 
-public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsViewHolder> {
-    private static final String TAG = CollectionPostsAdapter.class.getSimpleName();
+public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
+
+    private static final String TAG =  PostsAdapter.class.getSimpleName();
     private Context mContext;
-    private List<Single> singles = new ArrayList<>();
-    //firestore
+    private static final String EXTRA_POST_ID = "post id";
+    private static final String COLLECTION_ID = "collection id";
+
+    private static final String EXTRA_USER_UID =  "uid";
+    private boolean processLikes = false;
+    private boolean processDislikes = false;
+    private boolean processCredits = false;
+    private static final double DEFAULT_PRICE = 1.5;
+    private static final double GOLDEN_RATIO = 1.618;
+    private static final int MAX_WIDTH = 200;
+    private static final int MAX_HEIGHT = 200;
+    private static final int LIMIT = 10;
+    //firestore reference
     private FirebaseFirestore firebaseFirestore;
-    private CollectionReference postsCollection;
+    private CollectionReference collectionsCollection;
+    private CollectionReference ifairReference;
     private com.google.firebase.firestore.Query commentsCountQuery;
     private CollectionReference ownerReference;
     private CollectionReference usersReference;
     private CollectionReference commentsReference;
-    private CollectionReference ifairReference;
-    private CollectionReference senseCreditReference;
-    private CollectionReference sellingReference;
-    private CollectionReference likesReference;
     private CollectionReference relationsReference;
-    private CollectionReference timelineCollection;
+    private CollectionReference likesReference;
+    private CollectionReference senseCreditReference;
     private CollectionReference postWalletReference;
+    private CollectionReference timelineCollection;
     private Query likesQuery;
     //firebase
     private DatabaseReference databaseReference;
-    //firebase adapter
-    private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     //firebase auth
     private FirebaseAuth firebaseAuth;
-    private boolean processLikes = false;
-    private boolean processDislikes = false;
+    //adapters
+    private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
 
-    private static final double GOLDEN_RATIO = 1.618;
-    private static final double DEFAULT_PRICE = 1.5;
-    private static final String COLLECTION_ID = "collection id";
-    private static final String EXTRA_POST_ID = "post id";
-    private static final String EXTRA_USER_UID = "uid";
-    private  static final int MAX_WIDTH = 200;
-    private static final int MAX_HEIGHT = 200;
+//    private List<Post> posts = new ArrayList<>();
+    private List<DocumentSnapshot> posts = new ArrayList<>();
 
 
-    public CollectionPostsAdapter(Query query, Context mContext) {
-        super(query);
+    public PostsAdapter(Context mContext) {
         this.mContext = mContext;
+    }
+
+    public void setRandomPosts(List<DocumentSnapshot> posts){
+        this.posts = posts;
+        notifyDataSetChanged();
+    }
+
+    protected DocumentSnapshot getSnapshot(int index) {
+        return posts.get(index);
+    }
+
+    public void removeAt(int position){
+        posts.remove(posts.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return super.getItemCount();
+        return posts.size();
     }
 
     @Override
-    public CollectionPostsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public PostViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.post_layout, parent, false);
-        return new CollectionPostsViewHolder(view);
+        return new PostViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final CollectionPostsViewHolder holder, int position) {
-        final CollectionPost collectionPost = getSnapshot(holder.getAdapterPosition()).toObject(CollectionPost.class);
-        final String collectionId = collectionPost.getCollectionId();
-        final String postId = collectionPost.getPushId();
-        final String uid = collectionPost.getUid();
+    public void onBindViewHolder(final PostViewHolder holder, int position) {
+        final Post post = getSnapshot(position).toObject(Post.class);
+        final String postKey = post.getPushId();
+        final String uid = post.getUid();
+        final String collectionId = post.getCollectionId();
 
-
-        //initialize firebase auth
         firebaseAuth = FirebaseAuth.getInstance();
-        if (firebaseAuth.getCurrentUser() != null){
-            //initialize firestore
-            postsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS)
+        if (firebaseAuth.getCurrentUser()!= null){
+            //firestore
+            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS)
                     .document("collection_posts").collection(collectionId);
             ownerReference = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             ifairReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
-            likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
-            relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
-            commentsCountQuery = commentsReference;
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
-            sellingReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
+            relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-            postWalletReference = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
             //firebase
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
-
+            //document reference
+            commentsCountQuery= commentsReference;
+            likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
+            postWalletReference = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
 
         }
 
-        Picasso.with(mContext)
-                .load(collectionPost.getImage())
-                .networkPolicy(NetworkPolicy.OFFLINE)
-                .into(holder.postImageView, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        //successfully loads from CACHE
-                        Log.d("picasso", "successfully loaded");
+        collectionsCollection.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                if (documentSnapshot.exists()){
+                    final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                    Picasso.with(mContext)
+                            .load(collectionPost.getImage())
+                            .networkPolicy(NetworkPolicy.OFFLINE)
+                            .into(holder.postImageView, new Callback() {
+                                @Override
+                                public void onSuccess() {
+                                    Log.v("Picasso", "Fetched image");
+                                }
+
+                                @Override
+                                public void onError() {
+                                    Picasso.with(mContext)
+                                            .load(collectionPost.getImage())
+                                            .into(holder.postImageView, new Callback() {
+                                                @Override
+                                                public void onSuccess() {
+
+                                                }
+
+                                                @Override
+                                                public void onError() {
+                                                    Log.v("Picasso", "Could not fetch image");
+                                                }
+                                            });
+
+
+                                }
+                            });
+
+
+                    if (!TextUtils.isEmpty(collectionPost.getTitle())){
+                        holder.titleTextView.setText(collectionPost.getTitle());
+                        holder.titleRelativeLayout.setVisibility(View.VISIBLE);
+
                     }
 
-                    @Override
-                    public void onError() {
-                        // fetch online because cache is not there
-                        Picasso.with(mContext)
-                                .load(collectionPost.getImage())
-                                .into(holder.postImageView);
+                    if (!TextUtils.isEmpty(collectionPost.getDescription())){
+//                        holder.descriptionTextView.setText(collectionPost.getDescription());
+                        addReadMore(collectionPost.getDescription(), holder.descriptionTextView);
+                        addReadLess(collectionPost.getDescription(), holder.descriptionTextView);
+                        holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
                     }
-                });
 
 
-        if (collectionPost.getTitle().equals("")){
-            holder.cingleTitleRelativeLayout.setVisibility(View.GONE);
-        }else {
-            holder.cingleTitleTextView.setText(collectionPost.getTitle());
-        }
 
-        if (collectionPost.getDescription().equals("")){
-            holder.descriptionRelativeLayout.setVisibility(View.GONE);
-        }else {
-            holder.cingleDescriptionTextView.setText(collectionPost.getDescription());
-        }
-
+                }
+            }
+        });
 
         holder.totalLikesCountTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, LikesActivity.class);
-                intent.putExtra(CollectionPostsAdapter.EXTRA_POST_ID, postId);
+                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postKey);
                 mContext.startActivity(intent);
             }
         });
@@ -190,9 +236,9 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
         holder.commentsImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, CommentsActivity.class);
-                intent.putExtra(CollectionPostsAdapter.COLLECTION_ID, collectionId);
-                intent.putExtra(CollectionPostsAdapter.EXTRA_POST_ID, postId);
+                Intent intent =  new Intent(mContext, CommentsActivity.class);
+                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postKey);
+                intent.putExtra(PostsAdapter.COLLECTION_ID, collectionId);
                 mContext.startActivity(intent);
             }
         });
@@ -201,8 +247,8 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, FullImageViewActivity.class);
-                intent.putExtra(CollectionPostsAdapter.COLLECTION_ID, collectionId);
-                intent.putExtra(CollectionPostsAdapter.EXTRA_POST_ID, postId);
+                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postKey);
+                intent.putExtra(PostsAdapter.COLLECTION_ID, collectionId);
                 mContext.startActivity(intent);
             }
         });
@@ -210,9 +256,9 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
         holder.tradeMethodTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, PostDetailActivity.class);
-                intent.putExtra(CollectionPostsAdapter.COLLECTION_ID, collectionId);
-                intent.putExtra(CollectionPostsAdapter.EXTRA_POST_ID, postId);
+                Intent intent =  new Intent(mContext, PostDetailActivity.class);
+                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postKey);
+                intent.putExtra(PostsAdapter.COLLECTION_ID, collectionId);
                 mContext.startActivity(intent);
             }
         });
@@ -221,8 +267,8 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
-                bundle.putString(CollectionPostsAdapter.COLLECTION_ID, collectionId);
-                bundle.putString(CollectionPostsAdapter.EXTRA_POST_ID, postId);
+                bundle.putString(PostsAdapter.EXTRA_POST_ID, postKey);
+                bundle.putString(PostsAdapter.COLLECTION_ID, collectionId);
                 FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
                 DialogFragmentPostSettings dialogFragmentPostSettings = DialogFragmentPostSettings.newInstance("single settngs");
                 dialogFragmentPostSettings.setArguments(bundle);
@@ -235,23 +281,20 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
             public void onClick(View view) {
                 if ((firebaseAuth.getCurrentUser().getUid()).equals(uid)){
                     Intent intent = new Intent(mContext, PersonalProfileActivity.class);
-                    intent.putExtra(CollectionPostsAdapter.EXTRA_USER_UID, uid);
+                    intent.putExtra(PostsAdapter.EXTRA_USER_UID, uid);
                     mContext.startActivity(intent);
-                    Log.d("profile uid", firebaseAuth.getCurrentUser().getUid());
                 }else {
                     Intent intent = new Intent(mContext, FollowerProfileActivity.class);
-                    intent.putExtra(CollectionPostsAdapter.EXTRA_USER_UID, uid);
-                    Log.d("follower uid", uid);
+                    intent.putExtra(PostsAdapter.EXTRA_USER_UID, uid);
                     mContext.startActivity(intent);
                 }
             }
         });
 
 
-        senseCreditReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        senseCreditReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
                 if (e != null) {
                     Log.w(TAG, "Listen error", e);
                     return;
@@ -261,14 +304,14 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
                     Credit credit = documentSnapshot.toObject(Credit.class);
                     final double senseCredits = credit.getAmount();
                     DecimalFormat formatter = new DecimalFormat("0.00000000");
-                    holder.cingleSenseCreditsTextView.setText("SC" + " " + formatter.format(senseCredits));
+                    holder.senseCreditsTextView.setText("SC" + " " + formatter.format(senseCredits));
 
                 }else {
-                    holder.cingleSenseCreditsTextView.setText("SC 0.00000000");
+                    holder.senseCreditsTextView.setText("SC 0.00000000");
                 }
+
             }
         });
-
 
         usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -278,14 +321,12 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
                     return;
                 }
 
-                if (documentSnapshot.exists()) {
+                if (documentSnapshot.exists()){
                     final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                    final String username = cinggulan.getUsername();
-                    final String profileImage = cinggulan.getProfileImage();
+                    holder.accountUsernameTextView.setText(cinggulan.getUsername());
 
-                    holder.accountUsernameTextView.setText(username);
                     Picasso.with(mContext)
-                            .load(profileImage)
+                            .load(cinggulan.getProfileImage())
                             .resize(MAX_WIDTH, MAX_HEIGHT)
                             .onlyScaleDown()
                             .centerCrop()
@@ -300,7 +341,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
                                 @Override
                                 public void onError() {
                                     Picasso.with(mContext)
-                                            .load(profileImage)
+                                            .load(cinggulan.getProfileImage())
                                             .resize(MAX_WIDTH, MAX_HEIGHT)
                                             .onlyScaleDown()
                                             .centerCrop()
@@ -312,7 +353,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
             }
         });
 
-        ownerReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        ownerReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -334,10 +375,8 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
             }
         });
 
-
-
         //get the number of commments in a single
-        commentsCountQuery.orderBy("postId").whereEqualTo("pushId", postId)
+        commentsCountQuery.orderBy("postId").whereEqualTo("pushId", postKey)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -357,7 +396,8 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
                 });
 
 
-        sellingReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        //check if single is listed on the marketplace
+        ifairReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -367,188 +407,17 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
                 }
 
                 if (documentSnapshot.exists()){
-                    final PostSale postSale = documentSnapshot.toObject(PostSale.class);
                     holder.tradeMethodTextView.setText("@Selling");
                 }else {
-                    holder.tradeMethodTextView.setText("@NotOnSale");
+                    holder.tradeMethodTextView.setText("@NotListed");
 
                 }
 
             }
         });
 
-
-        //check get the count of likes after the top 5
-        likesReference.document(postId).collection("likes").orderBy("uid").startAt(6)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!documentSnapshots.isEmpty()){
-                            final int otherLikes = documentSnapshots.size();
-                            holder.totalLikesCountTextView.setText(otherLikes + " " +
-                                    "more");
-                        }else {
-                            holder.totalLikesCountTextView.setVisibility(View.GONE);
-                        }
-                    }
-                });
-
-        //calculate the percentage of likes to dislikes
-        likesReference.document(postId).collection("dislikes")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot dislikesSnapshots, FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!dislikesSnapshots.isEmpty()){
-                            final int dislikes = dislikesSnapshots.size();
-                            Log.d("dislikes count", dislikes + "");
-                            likesReference.document(postId).collection("likes")
-                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onEvent(QuerySnapshot likesSnapshots, FirebaseFirestoreException e) {
-                                            if (e != null) {
-                                                Log.w(TAG, "Listen error", e);
-                                                return;
-                                            }
-
-                                            if (!likesSnapshots.isEmpty()){
-                                                //calculate likes in percentage
-                                                final int likes = likesSnapshots.size();
-                                                Log.d("likes size", likes + "");
-                                                final int likesPlusDislikes = likes + dislikes;
-                                                Log.d("likes plus dislikes", likesPlusDislikes + "");
-                                                final int percentLikes = 100 * likes/likesPlusDislikes;
-                                                Log.d("likes percentage", percentLikes + "");
-                                                final int roundedPercent = roundPercentage(percentLikes, 2);
-                                                holder.likesPercentageTextView.setText(roundedPercent + "%" + " " + "Likes");
-                                            }else {
-                                                // calculate likes in percentage
-                                                holder.likesPercentageTextView.setText("0%" + " " + "Likes");
-                                            }
-                                        }
-                                    });
-                        }else {
-                            final int dislikes = dislikesSnapshots.size();
-                            Log.d("dislikes count", dislikes + "");
-                            likesReference.document(postId).collection("likes")
-                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onEvent(QuerySnapshot likesSnapshots, FirebaseFirestoreException e) {
-                                            if (e != null) {
-                                                Log.w(TAG, "Listen error", e);
-                                                return;
-                                            }
-
-                                            if (!likesSnapshots.isEmpty()){
-                                                //calculate likes in percentage
-                                                final int likes = likesSnapshots.size();
-                                                Log.d("likes size", likes + "");
-                                                final int likesPlusDislikes = likes + dislikes;
-                                                Log.d("likes plus dislikes", likesPlusDislikes + "");
-                                                final int percentLikes = 100 * likes/likesPlusDislikes;
-                                                Log.d("likes percentage", percentLikes + "");
-                                                final int roundedPercent = roundPercentage(percentLikes, 2);
-                                                holder.likesPercentageTextView.setText(roundedPercent + "%" + " " + "Likes");
-                                            }else {
-                                                holder.likesPercentageTextView.setText("0%" + " " + "Likes");
-                                            }
-                                        }
-                                    });
-                        }
-
-
-                    }
-                });
-
-        //calculate the percentage of likes to dislikes
-        likesReference.document(postId).collection("likes")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot likesSnapshots, FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!likesSnapshots.isEmpty()){
-                            final int likes = likesSnapshots.size();
-                            Log.d("likes count size", likes + "");
-                            likesReference.document(postId).collection("dislikes")
-                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onEvent(QuerySnapshot dislikesSnapshots, FirebaseFirestoreException e) {
-                                            if (e != null) {
-                                                Log.w(TAG, "Listen error", e);
-                                                return;
-                                            }
-
-                                            if (!dislikesSnapshots.isEmpty()){
-                                                //calculate likes in percentage
-                                                final int dislikes = dislikesSnapshots.size();
-                                                Log.d("dislikes size", dislikes + "");
-                                                final int likesPlusDislikes = likes + dislikes;
-                                                Log.d("disikes plus dislikes", likesPlusDislikes + "");
-                                                final int percentDislikes = 100 * dislikes/likesPlusDislikes;
-                                                Log.d("dislikes percentage", percentDislikes + "");
-                                                final int roundedPercent = roundPercentage(percentDislikes, 2);
-                                                holder.dislikePercentageTextView.setText(roundedPercent + "%" + " " + "  Dislikes");
-                                            }else {
-                                                //calculate likes in percentage
-                                                final int dislikes = dislikesSnapshots.size();
-                                                Log.d("dislikes size", dislikes + "");
-                                                final int likesPlusDislikes = likes + dislikes;
-                                                Log.d("disikes plus dislikes", likesPlusDislikes + "");
-                                                final int percentDislikes = 100 * dislikes/likesPlusDislikes;
-                                                Log.d("dislikes percentage", percentDislikes + "");
-                                                final int roundedPercent = roundPercentage(percentDislikes, 2);
-                                                holder.dislikePercentageTextView.setText(roundedPercent + "%" + " " + "Dislikes");                                            }
-
-                                        }
-                                    });
-                        }else {
-                            final int likes = likesSnapshots.size();
-                            Log.d("likes count size", likes + "");
-                            likesReference.document(postId).collection("dislikes")
-                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onEvent(QuerySnapshot dislikesSnapshots, FirebaseFirestoreException e) {
-                                            if (e != null) {
-                                                Log.w(TAG, "Listen error", e);
-                                                return;
-                                            }
-
-                                            if (!dislikesSnapshots.isEmpty()){
-                                                //calculate likes in percentage
-                                                final int dislikes = dislikesSnapshots.size();
-                                                Log.d("dislikes size", dislikes + "");
-                                                final int likesPlusDislikes = likes + dislikes;
-                                                Log.d("disikes plus dislikes", likesPlusDislikes + "");
-                                                final int percentDislikes = 100 * dislikes/likesPlusDislikes;
-                                                Log.d("dislikes percentage", percentDislikes + "");
-                                                final int roundedPercent = roundPercentage(percentDislikes, 2);
-                                                holder.dislikePercentageTextView.setText(roundedPercent + "%" + " " + "Dislikes");
-                                            }else {
-                                                holder.dislikePercentageTextView.setText("0%" + " " + "Dislikes");                                            }
-
-                                        }
-                                    });
-                        }
-
-
-                    }
-                });
-
-        likesReference.document(postId).collection("likes")
+        //color the like image view if the user has liked
+        likesReference.document(postKey).collection("likes")
                 .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -568,12 +437,318 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
                     }
                 });
 
+        //get the count of likes after the top 5
+        likesReference.document(postKey).collection("likes").orderBy("uid").startAt(6)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!documentSnapshots.isEmpty()){
+                            final int otherLikes = documentSnapshots.size();
+                            holder.totalLikesCountTextView.setText(otherLikes + " " +
+                                    "Likes");
+                            holder.likesRelativeLayout.setVisibility(View.VISIBLE);
+                        }else {
+                            holder.totalLikesCountTextView.setVisibility(View.GONE);
+                            holder.likesRelativeLayout.setVisibility(View.GONE);
+                        }
+                    }
+                });
+
+//        color the like image view if the user has dislikes
+        likesReference.document(postKey).collection("dislikes")
+                .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!documentSnapshots.isEmpty()){
+                            holder.dislikeImageView.setColorFilter(Color.RED);
+                        }else {
+                            holder.dislikeImageView.setColorFilter(Color.BLACK);
+                        }
+
+                    }
+                });
+
+
+        //calculate the percentage of likes to dislikes
+        likesReference.document(postKey).collection("dislikes")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot dislikesSnapshots, FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!dislikesSnapshots.isEmpty()){
+                            final int dislikes = dislikesSnapshots.size();
+                            Log.d("dislikes count", dislikes + "");
+                            likesReference.document(postKey).collection("likes")
+                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onEvent(QuerySnapshot likesSnapshots, FirebaseFirestoreException e) {
+                                            if (e != null) {
+                                                Log.w(TAG, "Listen error", e);
+                                                return;
+                                            }
+
+                                            if (!likesSnapshots.isEmpty()){
+                                                //calculate likes in percentage
+                                                final int likes = likesSnapshots.size();
+                                                Log.d("likes size", likes + "");
+                                                final int likesPlusDislikes = likes + dislikes;
+                                                Log.d("likes plus dislikes", likesPlusDislikes + "");
+                                                final int percentLikes = 100 * likes/likesPlusDislikes;
+                                                Log.d("likes percentage", percentLikes + "");
+                                                final int roundedPercent = roundPercentage(percentLikes, 2);
+                                                holder.likesCountTextView.setText(roundedPercent + "%" + " " + "Likes");
+                                            }else {
+//                                        //calculate likes in percentage
+                                                holder.likesCountTextView.setText("0%" + " " + "Likes");
+                                            }
+                                        }
+                                    });
+                        }else {
+                            final int dislikes = dislikesSnapshots.size();
+                            Log.d("dislikes count", dislikes + "");
+                            likesReference.document(postKey).collection("likes")
+                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onEvent(QuerySnapshot likesSnapshots, FirebaseFirestoreException e) {
+                                            if (e != null) {
+                                                Log.w(TAG, "Listen error", e);
+                                                return;
+                                            }
+
+                                            if (!likesSnapshots.isEmpty()){
+                                                //calculate likes in percentage
+                                                final int likes = likesSnapshots.size();
+                                                Log.d("likes size", likes + "");
+                                                final int likesPlusDislikes = likes + dislikes;
+                                                Log.d("likes plus dislikes", likesPlusDislikes + "");
+                                                final int percentLikes = 100 * likes/likesPlusDislikes;
+                                                Log.d("likes percentage", percentLikes + "");
+                                                final int roundedPercent = roundPercentage(percentLikes, 2);
+                                                holder.likesCountTextView.setText(roundedPercent + "%" + " " + "Likes");
+                                            }else {
+                                                holder.likesCountTextView.setText("0%" + " " + "Likes");
+                                            }
+                                        }
+                                    });
+                        }
+
+
+                    }
+                });
+
+        //calculate the percentage of likes to dislikes
+        likesReference.document(postKey).collection("likes")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot likesSnapshots, FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!likesSnapshots.isEmpty()){
+                            final int likes = likesSnapshots.size();
+                            Log.d("likes count size", likes + "");
+                            likesReference.document(postKey).collection("dislikes")
+                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onEvent(QuerySnapshot dislikesSnapshots, FirebaseFirestoreException e) {
+                                            if (e != null) {
+                                                Log.w(TAG, "Listen error", e);
+                                                return;
+                                            }
+
+                                            if (!dislikesSnapshots.isEmpty()){
+                                                //calculate likes in percentage
+                                                final int dislikes = dislikesSnapshots.size();
+                                                Log.d("dislikes size", dislikes + "");
+                                                final int likesPlusDislikes = likes + dislikes;
+                                                Log.d("disikes plus dislikes", likesPlusDislikes + "");
+                                                final int percentDislikes = 100 * dislikes/likesPlusDislikes;
+                                                Log.d("dislikes percentage", percentDislikes + "");
+                                                final int roundedPercent = roundPercentage(percentDislikes, 2);
+                                                holder.dislikeCountTextView.setText(roundedPercent + "%" + " " + "  Dislikes");
+                                            }else {
+                                                //calculate likes in percentage
+                                                final int dislikes = dislikesSnapshots.size();
+                                                Log.d("dislikes size", dislikes + "");
+                                                final int likesPlusDislikes = likes + dislikes;
+                                                Log.d("disikes plus dislikes", likesPlusDislikes + "");
+                                                final int percentDislikes = 100 * dislikes/likesPlusDislikes;
+                                                Log.d("dislikes percentage", percentDislikes + "");
+                                                final int roundedPercent = roundPercentage(percentDislikes, 2);
+                                                holder.dislikeCountTextView.setText(roundedPercent + "%" + " " + "Dislikes");                                            }
+
+                                        }
+                                    });
+                        }else {
+                            final int likes = likesSnapshots.size();
+                            Log.d("likes count size", likes + "");
+                            likesReference.document(postKey).collection("dislikes")
+                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onEvent(QuerySnapshot dislikesSnapshots, FirebaseFirestoreException e) {
+                                            if (e != null) {
+                                                Log.w(TAG, "Listen error", e);
+                                                return;
+                                            }
+
+                                            if (!dislikesSnapshots.isEmpty()){
+                                                //calculate likes in percentage
+                                                final int dislikes = dislikesSnapshots.size();
+                                                Log.d("dislikes size", dislikes + "");
+                                                final int likesPlusDislikes = likes + dislikes;
+                                                Log.d("disikes plus dislikes", likesPlusDislikes + "");
+                                                final int percentDislikes = 100 * dislikes/likesPlusDislikes;
+                                                Log.d("dislikes percentage", percentDislikes + "");
+                                                final int roundedPercent = roundPercentage(percentDislikes, 2);
+                                                holder.dislikeCountTextView.setText(roundedPercent + "%" + " " + "Dislikes");
+                                            }else {
+                                                holder.dislikeCountTextView.setText("0%" + " " + "Dislikes");                                            }
+
+                                        }
+                                    });
+                        }
+
+
+                    }
+                });
+
+
+        likesReference.document(postKey).collection("likes")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(final QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!documentSnapshots.isEmpty()){
+                            if (documentSnapshots.size() > 0){
+                                likesQuery = likesReference.document(postKey).collection("likes").orderBy("uid").limit(5);
+                                FirestoreRecyclerOptions<Like> options = new FirestoreRecyclerOptions.Builder<Like>()
+                                        .setQuery(likesQuery, Like.class)
+                                        .build();
+
+                                firestoreRecyclerAdapter = new FirestoreRecyclerAdapter<Like, WhoLikedViewHolder>(options) {
+
+                                    @Override
+                                    protected void onBindViewHolder(final WhoLikedViewHolder viewHolder, int position, Like model) {
+                                        Like like = getSnapshots().getSnapshot(viewHolder.getAdapterPosition()).toObject(Like.class);
+                                        final String uid = like.getUid();
+
+                                        viewHolder.whoLikedImageView.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                Intent intent = new Intent(mContext, LikesActivity.class);
+                                                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postKey);
+                                                mContext.startActivity(intent);
+                                            }
+                                        });
+
+                                        //get the profile of the user who just liked
+                                        usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                                                if (e != null) {
+                                                    Log.w(TAG, "Listen error", e);
+                                                    return;
+                                                }
+
+                                                if (documentSnapshot.exists()){
+                                                    final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                                                    final String profileImage = cinggulan.getProfileImage();
+
+                                                    Picasso.with(mContext)
+                                                            .load(profileImage)
+                                                            .fit()
+                                                            .centerCrop()
+                                                            .placeholder(R.drawable.profle_image_background)
+                                                            .networkPolicy(NetworkPolicy.OFFLINE)
+                                                            .into(viewHolder.whoLikedImageView, new Callback() {
+                                                                @Override
+                                                                public void onSuccess() {
+
+                                                                }
+
+                                                                @Override
+                                                                public void onError() {
+                                                                    Picasso.with(mContext)
+                                                                            .load(profileImage)
+                                                                            .fit()
+                                                                            .centerCrop()
+                                                                            .placeholder(R.drawable.profle_image_background)
+                                                                            .into(viewHolder.whoLikedImageView);
+
+
+                                                                }
+                                                            });
+
+                                                }
+                                            }
+                                        });
+
+
+                                    }
+
+                                    @Override
+                                    public ObservableSnapshotArray<Like> getSnapshots() {
+                                        return super.getSnapshots();
+                                    }
+
+                                    @Override
+                                    public WhoLikedViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                                        View view = LayoutInflater.from(parent.getContext()).inflate
+                                                (R.layout.who_liked_count, parent, false);
+                                        return new WhoLikedViewHolder(view);
+
+                                    }
+
+                                    @Override
+                                    public int getItemCount() {
+                                        return super.getItemCount();
+                                    }
+                                };
+
+                                holder.likesRecyclerView.setAdapter(firestoreRecyclerAdapter);
+                                firestoreRecyclerAdapter.startListening();
+                                holder.likesRecyclerView.setHasFixedSize(false);
+                                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext,
+                                        LinearLayoutManager.HORIZONTAL, true);
+                                layoutManager.setAutoMeasureEnabled(true);
+                                holder.likesRecyclerView.setNestedScrollingEnabled(false);
+                                holder.likesRecyclerView.setLayoutManager(layoutManager);
+
+                            }
+                        }
+                    }
+                });
 
         holder.dislikeImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 processDislikes = true;
-                likesReference.document(postId).collection("dislikes")
+                likesReference.document(postKey).collection("dislikes")
                         .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
                         .addSnapshotListener(new EventListener<QuerySnapshot>() {
                             @Override
@@ -590,13 +765,13 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
                                         Like like = new Like();
                                         like.setUid(firebaseAuth.getCurrentUser().getUid());
                                         like.setPushId(firebaseAuth.getCurrentUser().getUid());
-                                        likesReference.document(postId).collection("dislikes")
+                                        likesReference.document(postKey).collection("dislikes")
                                                 .document(firebaseAuth.getCurrentUser().getUid()).set(like);
                                         processDislikes = false;
                                         holder.dislikeImageView.setColorFilter(Color.RED);
 
                                     }else {
-                                        likesReference.document(postId).collection("dislikes")
+                                        likesReference.document(postKey).collection("dislikes")
                                                 .document(firebaseAuth.getCurrentUser().getUid()).delete();
                                         processDislikes = false;
                                         holder.dislikeImageView.setColorFilter(Color.BLACK);
@@ -610,128 +785,11 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
         });
 
 
-        likesReference.document(postId)
-                .collection("likes").addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (!documentSnapshots.isEmpty()){
-                    if (documentSnapshots.size() > 0){
-                        holder.likesRelativeLayout.setVisibility(View.VISIBLE);
-                        likesQuery = likesReference.document(postId).collection("likes").orderBy("uid");
-                        FirestoreRecyclerOptions<Like> options = new FirestoreRecyclerOptions.Builder<Like>()
-                                .setQuery(likesQuery, Like.class)
-                                .build();
-
-                        firestoreRecyclerAdapter = new FirestoreRecyclerAdapter<Like, WhoLikedViewHolder>(options) {
-
-                            @Override
-                            protected void onBindViewHolder(final WhoLikedViewHolder holder, int position, Like model) {
-                                holder.bindWhoLiked(getSnapshots().getSnapshot(position));
-                                Like like = getSnapshots().getSnapshot(position).toObject(Like.class);
-                                final String uid = like.getUid();
-
-                                holder.whoLikedImageView.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        Intent intent = new Intent(mContext, LikesActivity.class);
-                                        intent.putExtra(CollectionPostsAdapter.COLLECTION_ID, collectionId);
-                                        mContext.startActivity(intent);
-                                    }
-                                });
-
-                                //get the profile of the user who just liked
-                                usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                                        if (e != null) {
-                                            Log.w(TAG, "Listen error", e);
-                                            return;
-                                        }
-
-                                        if (documentSnapshot.exists()){
-                                            final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                                            final String profileImage = cinggulan.getProfileImage();
-
-                                            Picasso.with(mContext)
-                                                    .load(profileImage)
-                                                    .fit()
-                                                    .centerCrop()
-                                                    .placeholder(R.drawable.profle_image_background)
-                                                    .networkPolicy(NetworkPolicy.OFFLINE)
-                                                    .into(holder.whoLikedImageView, new Callback() {
-                                                        @Override
-                                                        public void onSuccess() {
-
-                                                        }
-
-                                                        @Override
-                                                        public void onError() {
-                                                            Picasso.with(mContext)
-                                                                    .load(profileImage)
-                                                                    .fit()
-                                                                    .centerCrop()
-                                                                    .placeholder(R.drawable.profle_image_background)
-                                                                    .into(holder.whoLikedImageView);
-
-
-                                                        }
-                                                    });
-
-                                        }
-                                    }
-                                });
-
-
-                            }
-
-                            @Override
-                            public ObservableSnapshotArray<Like> getSnapshots() {
-                                return super.getSnapshots();
-                            }
-
-                            @Override
-                            public WhoLikedViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                                View view = LayoutInflater.from(parent.getContext()).inflate
-                                        (R.layout.who_liked_count, parent, false);
-                                return new WhoLikedViewHolder(view);
-
-                            }
-
-                            @Override
-                            public int getItemCount() {
-                                return super.getItemCount();
-                            }
-                        };
-
-                        holder.likesRecyclerView.setAdapter(firestoreRecyclerAdapter);
-                        firestoreRecyclerAdapter.startListening();
-                        holder.likesRecyclerView.setHasFixedSize(false);
-                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext,
-                                LinearLayoutManager.HORIZONTAL, true);
-                        layoutManager.setAutoMeasureEnabled(true);
-                        holder.likesRecyclerView.setNestedScrollingEnabled(false);
-                        holder.likesRecyclerView.setLayoutManager(layoutManager);
-
-                    }else {
-                        holder.likesRelativeLayout.setVisibility(View.GONE);
-                    }
-                }
-            }
-        });
-
-
         holder.likesImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 processLikes = true;
-                likesReference.document(postId).collection("likes")
+                likesReference.document(postKey).collection("likes")
                         .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
                         .addSnapshotListener(new EventListener<QuerySnapshot>() {
                             @Override
@@ -745,10 +803,10 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
 
                                 if (processLikes){
                                     if (documentSnapshots.isEmpty()){
-                                        Like like = new Like();
+                                        final Like like = new Like();
                                         like.setUid(firebaseAuth.getCurrentUser().getUid());
                                         like.setPushId(firebaseAuth.getCurrentUser().getUid());
-                                        likesReference.document(postId).collection("likes")
+                                        likesReference.document(postKey).collection("likes")
                                                 .document(firebaseAuth.getCurrentUser().getUid()).set(like)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
@@ -757,18 +815,21 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
                                                         final long time = new Date().getTime();
 
                                                         timelineCollection.document(uid).collection("timeline")
-                                                                .whereEqualTo("type", "like").whereEqualTo("pushId", postId)
+                                                                .whereEqualTo("postKey", postKey)
                                                                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                                                     @Override
                                                                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
                                                                         if (e != null) {
                                                                             Log.w(TAG, "Listen error", e);
                                                                             return;
                                                                         }
 
+
                                                                         if (documentSnapshots.isEmpty()){
+                                                                            Log.d("timeline is empty", postKey);
                                                                             final String postId = databaseReference.push().getKey();
-                                                                            timeline.setPushId(postId);
+                                                                            timeline.setPushId(postKey);
                                                                             timeline.setTime(time);
                                                                             timeline.setUid(firebaseAuth.getCurrentUser().getUid());
                                                                             timeline.setType("like");
@@ -786,13 +847,14 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
                                                                     }
                                                                 });
 
+
                                                     }
                                                 });
                                         processLikes = false;
                                         holder.likesImageView.setColorFilter(Color.RED);
 
                                     }else {
-                                        likesReference.document(postId).collection("likes")
+                                        likesReference.document(postKey).collection("likes")
                                                 .document(firebaseAuth.getCurrentUser().getUid()).delete();
                                         processLikes = false;
                                         holder.likesImageView.setColorFilter(Color.BLACK);
@@ -800,7 +862,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
                                     }
                                 }
 
-                                likesReference.document(postId).collection("likes")
+                                likesReference.document(postKey).collection("likes")
                                         .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                             @Override
                                             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -832,7 +894,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
 
                                                         Log.d("finalpoints > 0", finalPoints + "");
 
-                                                        postWalletReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                                        postWalletReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                                             @Override
                                                             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                                                                 if (e != null) {
@@ -852,13 +914,13 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
                                                                     final double totalSenseCredits = senseCredits - amountRedeemed;
                                                                     Log.d("total sense credit", totalSenseCredits + "");
 
-                                                                    senseCreditReference.document(postId).update("amount", totalSenseCredits);
+                                                                    senseCreditReference.document(postKey).update("amount", totalSenseCredits);
                                                                 }else {
                                                                     Credit credit = new Credit();
-                                                                    credit.setPushId(postId);
+                                                                    credit.setPushId(postKey);
                                                                     credit.setAmount(finalPoints);
                                                                     credit.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                    senseCreditReference.document(postId).set(credit);
+                                                                    senseCreditReference.document(postKey).set(credit);
                                                                     Log.d("new sense credits", finalPoints + "");
                                                                 }
                                                             }
@@ -868,7 +930,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
                                                 }else {
                                                     final double finalPoints = 0.00;
                                                     Log.d("finalpoints <= 0", finalPoints + "");
-                                                    postWalletReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                                    postWalletReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                                         @Override
                                                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                                                             if (e != null) {
@@ -887,13 +949,13 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
                                                                 final double totalSenseCredits = senseCredits - amountRedeemed;
                                                                 Log.d("total sense credit", totalSenseCredits + "");
 
-                                                                senseCreditReference.document(postId).update("amount", totalSenseCredits);
+                                                                senseCreditReference.document(postKey).update("amount", totalSenseCredits);
                                                             }else {
                                                                 Credit credit = new Credit();
-                                                                credit.setPushId(postId);
+                                                                credit.setPushId(postKey);
                                                                 credit.setAmount(finalPoints);
                                                                 credit.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                senseCreditReference.document(postId).set(credit);
+                                                                senseCreditReference.document(postKey).set(credit);
                                                             }
                                                         }
                                                     });
@@ -908,15 +970,8 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
         });
 
 
-    }
 
 
-    private static int roundPercentage(int value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
-
-        BigDecimal bd = new BigDecimal(value);
-        bd = bd.setScale(places, RoundingMode.HALF_UP);
-        return bd.intValue();
     }
 
     //region listeners
@@ -927,6 +982,64 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
+
+    private static int roundPercentage(int value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.intValue();
+    }
+
+    private void addReadMore(final String text, final TextView textView) {
+        if (text.substring(0, 120) != null){
+            SpannableString ss = new SpannableString(text.substring(0, 119) + "...read more");
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View view) {
+                    addReadLess(text, textView);
+                }
+                @Override
+                public void updateDrawState(TextPaint ds) {
+                    super.updateDrawState(ds);
+                    ds.setUnderlineText(false);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        ds.setColor(mContext.getResources().getColor(R.color.colorPrimary, mContext.getTheme()));
+                    } else {
+                        ds.setColor(mContext.getResources().getColor(R.color.colorPrimary));
+                    }
+                }
+            };
+            ss.setSpan(clickableSpan, ss.length() - 10, ss.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            textView.setText(ss);
+            textView.setMovementMethod(LinkMovementMethod.getInstance());
+        }
+
+    }
+
+    private void addReadLess(final String text, final TextView textView) {
+        SpannableString ss = new SpannableString(text + " read less");
+        addReadMore(text, textView);
+
+        ClickableSpan clickableSpan = new ClickableSpan() {
+            @Override
+            public void onClick(View view) {
+                addReadMore(text, textView);
+            }
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                super.updateDrawState(ds);
+                ds.setUnderlineText(false);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    ds.setColor(mContext.getResources().getColor(R.color.colorPrimary, mContext.getTheme()));
+                } else {
+                    ds.setColor(mContext.getResources().getColor(R.color.colorPrimary));
+                }
+            }
+        };
+        ss.setSpan(clickableSpan, ss.length() - 10, ss.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        textView.setText(ss);
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
 }
-
-

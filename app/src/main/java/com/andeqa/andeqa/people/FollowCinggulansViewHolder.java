@@ -42,7 +42,7 @@ public class FollowCinggulansViewHolder extends RecyclerView.ViewHolder{
     }
 
     public void bindCinggulans(final DocumentSnapshot documentSnapshot){
-        final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+        final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
         mCinggulanImageView = (CircleImageView) mView.findViewById(R.id.profileImageView);
         mBioTextView = (TextView) mView.findViewById(R.id.bioTextView);
         mFullNameTextView = (TextView) mView.findViewById(R.id.fullNameTextView);
@@ -52,7 +52,7 @@ public class FollowCinggulansViewHolder extends RecyclerView.ViewHolder{
         mFollowButtonRelativeLayout = (RelativeLayout) mView.findViewById(R.id.followButtonRelativeLayout);
 
         Picasso.with(mContext)
-                .load(andeqan.getProfileImage())
+                .load(cinggulan.getProfileImage())
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(mCinggulanImageView, new Callback() {
                     @Override
@@ -63,7 +63,7 @@ public class FollowCinggulansViewHolder extends RecyclerView.ViewHolder{
                     @Override
                     public void onError() {
                         Picasso.with(mContext)
-                                .load(andeqan.getProfileImage())
+                                .load(cinggulan.getProfileImage())
                                 .into(mCinggulanImageView, new Callback() {
                                     @Override
                                     public void onSuccess() {
@@ -80,9 +80,9 @@ public class FollowCinggulansViewHolder extends RecyclerView.ViewHolder{
                     }
                 });
 
-        if (andeqan.getProfileCover() != null){
+        if (cinggulan.getProfileCover() != null){
             Picasso.with(mContext)
-                    .load(andeqan.getProfileCover())
+                    .load(cinggulan.getProfileCover())
                     .networkPolicy(NetworkPolicy.OFFLINE)
                     .into(mProfileCoverImageView, new Callback() {
                         @Override
@@ -93,7 +93,7 @@ public class FollowCinggulansViewHolder extends RecyclerView.ViewHolder{
                         @Override
                         public void onError() {
                             Picasso.with(mContext)
-                                    .load(andeqan.getProfileCover())
+                                    .load(cinggulan.getProfileCover())
                                     .into(mProfileCoverImageView, new Callback() {
                                         @Override
                                         public void onSuccess() {
@@ -111,14 +111,14 @@ public class FollowCinggulansViewHolder extends RecyclerView.ViewHolder{
                     });
         }
 
-        mFullNameTextView.setText(andeqan.getUsername());
+        mFullNameTextView.setText(cinggulan.getUsername());
 
-        final String bio = andeqan.getBio();
+        final String bio = cinggulan.getBio();
         if (TextUtils.isEmpty(bio)){
             mBioRelativeLayout.setVisibility(View.GONE);
         }else {
             mBioRelativeLayout.setVisibility(View.VISIBLE);
-            mBioTextView.setText(andeqan.getBio());
+            mBioTextView.setText(cinggulan.getBio());
         }
 
 

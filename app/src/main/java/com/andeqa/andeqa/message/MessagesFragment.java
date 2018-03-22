@@ -156,9 +156,9 @@ public class MessagesFragment extends Fragment {
 
 
                         if (documentSnapshot.exists()){
-                            Andeqan andeqan =  documentSnapshot.toObject(Andeqan.class);
-                            final String profileImage = andeqan.getProfileImage();
-                            final String username = andeqan.getUsername();
+                            Andeqan cinggulan =  documentSnapshot.toObject(Andeqan.class);
+                            final String profileImage = cinggulan.getProfileImage();
+                            final String username = cinggulan.getUsername();
 
                             holder.usernameTextView.setText(username);
                             Picasso.with(getContext())

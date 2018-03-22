@@ -90,10 +90,10 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 }
 
                 if (documentSnapshot.exists()){
-                    final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                    String username = andeqan.getUsername();
-                    final String profileImage = andeqan.getProfileImage();
-                    String bio = andeqan.getBio();
+                    final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                    String username = cinggulan.getUsername();
+                    final String profileImage = cinggulan.getProfileImage();
+                    String bio = cinggulan.getBio();
 
                     mUsernameTextView.setText(username);
                     mBioTextView.setText(bio);

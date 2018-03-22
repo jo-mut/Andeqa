@@ -197,9 +197,9 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                             if (documentSnapshot.exists()){
-                                final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                                final String username = andeqan.getUsername();
-                                final String profileImage = andeqan.getProfileImage();
+                                final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                                final String username = cinggulan.getUsername();
+                                final String profileImage = cinggulan.getProfileImage();
 
                                 mAccountUsernameTextView.setText(username);
                                 Picasso.with(ListOnMarketActivity.this)
