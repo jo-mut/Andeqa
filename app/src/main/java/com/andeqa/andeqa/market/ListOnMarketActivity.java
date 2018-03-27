@@ -22,12 +22,11 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Single;
+import com.andeqa.andeqa.profile.ProfileActivity;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.PostSale;
+import com.andeqa.andeqa.models.Market;
 import com.andeqa.andeqa.models.Credit;
-import com.andeqa.andeqa.profile.PersonalProfileActivity;
-import com.andeqa.andeqa.people.FollowerProfileActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -182,14 +181,9 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                     mUserProfileImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                Intent intent = new Intent(ListOnMarketActivity.this, PersonalProfileActivity.class);
-                                startActivity(intent);
-                            }else {
-                                Intent intent = new Intent(ListOnMarketActivity.this, FollowerProfileActivity.class);
-                                intent.putExtra(ListOnMarketActivity.EXTRA_USER_UID, uid);
-                                startActivity(intent);
-                            }
+                            Intent intent = new Intent(ListOnMarketActivity.this, ProfileActivity.class);
+                            intent.putExtra(ListOnMarketActivity.EXTRA_USER_UID, uid);
+                            startActivity(intent);
                         }
                     });
 
@@ -302,15 +296,15 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                                         }
                                     }else {
                                         //SET CINGLE ON SALE IN SELLING
-                                        final PostSale postSale =  new PostSale();
-                                        postSale.setUid(firebaseAuth.getCurrentUser().getUid());
-                                        postSale.setPushId(mPostKey);
-                                        postSale.setSalePrice(intSalePrice);
-                                        postSale.setRandomNumber((double) new Random().nextDouble());
-                                        postSale.setTime(timeStamp);
+                                        final Market market =  new Market();
+                                        market.setUid(firebaseAuth.getCurrentUser().getUid());
+                                        market.setPushId(mPostKey);
+                                        market.setSalePrice(intSalePrice);
+                                        market.setRandomNumber((double) new Random().nextDouble());
+                                        market.setTime(timeStamp);
 
 
-                                        selllingCollection.document(mPostKey).set(postSale).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        selllingCollection.document(mPostKey).set(market).addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()){

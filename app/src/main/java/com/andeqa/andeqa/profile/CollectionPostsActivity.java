@@ -15,14 +15,19 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.creation.CreatePostActivity;
 import com.andeqa.andeqa.models.Andeqan;
+import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -43,7 +48,7 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
     private Parcelable recyclerViewState;
     private  static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
-    private int TOTAL_ITEMS = 4;
+    private int TOTAL_ITEMS = 10;
     private DocumentSnapshot lastVisible;
     private LinearLayoutManager layoutManager;
     private static final String EXTRA_USER_UID = "uid";
@@ -51,6 +56,8 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
     private String collectionId;
     private String mUid;
     private static final String COLLECTION_ID = "collection id";
+    private List<String> mSnapshotsIds = new ArrayList<>();
+    private List<DocumentSnapshot> mSnapshots = new ArrayList<>();
 
 
 
@@ -96,6 +103,7 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
 
             setCollectionPosts();
+            setRecyclerView();
             if (savedInstanceState != null){
                 recyclerViewState = savedInstanceState.getParcelable(KEY_LAYOUT_POSITION);
                 Log.d("Profile saved Instance", "Instance is not null");
@@ -103,6 +111,7 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
                 Log.d("Saved Instance", "Instance is completely null");
             }
 
+            //add appropriate title to the action bar
             if (mUid.equals(firebaseAuth.getCurrentUser().getUid())){
                 mCreatePostImageView.setVisibility(View.VISIBLE);
                 getSupportActionBar().setTitle("Add to collection");
@@ -116,7 +125,6 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
                             return;
                         }
 
-
                         if (documentSnapshot.exists()){
                             final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
                             final String username = cinggulan.getUsername();
@@ -126,50 +134,28 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
                 });
             }
 
-
+            mCollectionsPostsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+                @Override
+                public void onLoadMore() {
+                    setNextCollectionPosts();
+                }
+            });
 
         }
     }
 
-    private void recyclerViewScrolling(){
-        mCollectionsPostsRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                if (!recyclerView.canScrollVertically(-1)) {
-                    onScrolledToTop();
-                } else if (!recyclerView.canScrollVertically(1)) {
-                    onScrolledToBottom();
-                } else if (dy < 0) {
-                    onScrolledUp();
-                } else if (dy > 0) {
-                    onScrolledDown();
-                }
-            }
-        });
+    private void setRecyclerView(){
+        // RecyclerView
+        collectionPostsAdapter = new CollectionPostsAdapter(CollectionPostsActivity.this);
+        mCollectionsPostsRecyclerView.setAdapter(collectionPostsAdapter);
+        mCollectionsPostsRecyclerView.setHasFixedSize(false);
+        layoutManager = new LinearLayoutManager(CollectionPostsActivity.this);
+        mCollectionsPostsRecyclerView.setLayoutManager(layoutManager);
     }
-
-    public void onScrolledUp() {}
-
-    public void onScrolledDown() {}
-
-    public void onScrolledToTop() {
-
-    }
-
-    public void onScrolledToBottom() {
-
-    }
-
 
     private void setCollectionPosts(){
-        collectionPostsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        collectionPostsQuery.limit(TOTAL_ITEMS)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
@@ -180,23 +166,95 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
 
 
                         if (!documentSnapshots.isEmpty()){
-                            // RecyclerView
-                            collectionPostsAdapter = new CollectionPostsAdapter(collectionPostsQuery,
-                                    CollectionPostsActivity.this);
-                            collectionPostsAdapter.startListening();
-                            mCollectionsPostsRecyclerView.setAdapter(collectionPostsAdapter);
-                            mCollectionsPostsRecyclerView.setHasFixedSize(false);
-                            layoutManager = new LinearLayoutManager(CollectionPostsActivity.this);
-                            mCollectionsPostsRecyclerView.setLayoutManager(layoutManager);
-                            Log.d("data is present",documentSnapshots.toString());
-                        }else {
-                            Log.d("data not present",documentSnapshots.toString());
+                            //retrieve the first bacth of mSnapshots
+                            for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                                switch (change.getType()) {
+                                    case ADDED:
+                                        onDocumentAdded(change);
+                                        break;
+                                    case MODIFIED:
+                                        onDocumentModified(change);
+                                        break;
+                                    case REMOVED:
+                                        onDocumentRemoved(change);
+                                        break;
+                                }
+                            }
                         }
 
                     }
                 });
 
     }
+
+    private void setNextCollectionPosts(){
+        // Get the last visible document
+        final int snapshotSize = collectionPostsAdapter.getItemCount();
+        DocumentSnapshot lastVisible = collectionPostsAdapter.getSnapshot(snapshotSize - 1);
+
+        //retrieve the first bacth of mSnapshots
+        Query nextCollectionPostsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
+                .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+                .startAfter(lastVisible)
+                .limit(TOTAL_ITEMS);
+
+        nextCollectionPostsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (!documentSnapshots.isEmpty()){
+                    //retrieve the first bacth of mSnapshots
+                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                        switch (change.getType()) {
+                            case ADDED:
+                                onDocumentAdded(change);
+                                break;
+                            case MODIFIED:
+                                onDocumentModified(change);
+                                break;
+                            case REMOVED:
+                                onDocumentRemoved(change);
+                                break;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    protected void onDocumentAdded(DocumentChange change) {
+        mSnapshotsIds.add(change.getDocument().getId());
+        mSnapshots.add(change.getDocument());
+        collectionPostsAdapter.setCollectionPosts(mSnapshots);
+        collectionPostsAdapter.notifyItemInserted(mSnapshots.size() -1);
+        collectionPostsAdapter.getItemCount();
+
+    }
+
+    protected void onDocumentModified(DocumentChange change) {
+        if (change.getOldIndex() == change.getNewIndex()) {
+            // Item changed but remained in same position
+            mSnapshots.set(change.getOldIndex(), change.getDocument());
+            collectionPostsAdapter.notifyItemChanged(change.getOldIndex());
+        } else {
+            // Item changed and changed position
+            mSnapshots.remove(change.getOldIndex());
+            mSnapshots.add(change.getNewIndex(), change.getDocument());
+            collectionPostsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+        }
+    }
+
+    protected void onDocumentRemoved(DocumentChange change) {
+        mSnapshots.remove(change.getOldIndex());
+        collectionPostsAdapter.notifyItemRemoved(change.getOldIndex());
+        collectionPostsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+    }
+
 
     @Override
     public void onResume() {

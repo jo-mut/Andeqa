@@ -3,19 +3,26 @@ package com.andeqa.andeqa.profile;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.firestore.FirestoreAdapter;
 import com.andeqa.andeqa.home.PostDetailActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
@@ -24,13 +31,12 @@ import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.home.FullImageViewActivity;
 import com.andeqa.andeqa.likes.LikesActivity;
 import com.andeqa.andeqa.models.Balance;
-import com.andeqa.andeqa.models.PostSale;
+import com.andeqa.andeqa.models.Market;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.models.TransactionDetails;
 import com.andeqa.andeqa.likes.WhoLikedViewHolder;
-import com.andeqa.andeqa.people.FollowerProfileActivity;
 import com.andeqa.andeqa.settings.DialogFragmentPostSettings;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -61,7 +67,7 @@ import java.util.List;
  * Created by J.EL on 11/14/2017.
  */
 
-public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsViewHolder> {
+public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPostsViewHolder> {
     private static final String TAG = CollectionPostsAdapter.class.getSimpleName();
     private Context mContext;
     private List<Single> singles = new ArrayList<>();
@@ -96,16 +102,25 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
     private static final String EXTRA_USER_UID = "uid";
     private  static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
+    private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
 
 
-    public CollectionPostsAdapter(Query query, Context mContext) {
-        super(query);
+    public CollectionPostsAdapter(Context mContext) {
         this.mContext = mContext;
     }
 
     @Override
     public int getItemCount() {
-        return super.getItemCount();
+        return documentSnapshots.size();
+    }
+
+    protected void setCollectionPosts(List<DocumentSnapshot> mSnapshots){
+        this.documentSnapshots = mSnapshots;
+        notifyDataSetChanged();
+    }
+
+    public DocumentSnapshot getSnapshot(int index) {
+        return documentSnapshots.get(index);
     }
 
     @Override
@@ -171,12 +186,12 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
             holder.cingleTitleTextView.setText(collectionPost.getTitle());
         }
 
-        if (collectionPost.getDescription().equals("")){
-            holder.descriptionRelativeLayout.setVisibility(View.GONE);
-        }else {
-            holder.cingleDescriptionTextView.setText(collectionPost.getDescription());
+        if (!TextUtils.isEmpty(collectionPost.getDescription())){
+//                        holder.descriptionTextView.setText(collectionPost.getDescription());
+            addReadMore(collectionPost.getDescription(), holder.descriptionTextView);
+            addReadLess(collectionPost.getDescription(), holder.descriptionTextView);
+            holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
         }
-
 
         holder.totalLikesCountTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -233,17 +248,9 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
         holder.profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if ((firebaseAuth.getCurrentUser().getUid()).equals(uid)){
-                    Intent intent = new Intent(mContext, PersonalProfileActivity.class);
-                    intent.putExtra(CollectionPostsAdapter.EXTRA_USER_UID, uid);
-                    mContext.startActivity(intent);
-                    Log.d("profile uid", firebaseAuth.getCurrentUser().getUid());
-                }else {
-                    Intent intent = new Intent(mContext, FollowerProfileActivity.class);
-                    intent.putExtra(CollectionPostsAdapter.EXTRA_USER_UID, uid);
-                    Log.d("follower uid", uid);
-                    mContext.startActivity(intent);
-                }
+                Intent intent = new Intent(mContext, ProfileActivity.class);
+                intent.putExtra(CollectionPostsAdapter.EXTRA_USER_UID, uid);
+                mContext.startActivity(intent);
             }
         });
 
@@ -367,7 +374,7 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
                 }
 
                 if (documentSnapshot.exists()){
-                    final PostSale postSale = documentSnapshot.toObject(PostSale.class);
+                    final Market market = documentSnapshot.toObject(Market.class);
                     holder.tradeMethodTextView.setText("@Selling");
                 }else {
                     holder.tradeMethodTextView.setText("@NotOnSale");
@@ -927,6 +934,58 @@ public class CollectionPostsAdapter extends FirestoreAdapter<CollectionPostsView
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
+
+    private void addReadMore(final String text, final TextView textView) {
+        if (text.substring(0, 120) != null){
+            SpannableString ss = new SpannableString(text.substring(0, 119) + "...read more");
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View view) {
+                    addReadLess(text, textView);
+                }
+                @Override
+                public void updateDrawState(TextPaint ds) {
+                    super.updateDrawState(ds);
+                    ds.setUnderlineText(false);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        ds.setColor(mContext.getResources().getColor(R.color.colorPrimary, mContext.getTheme()));
+                    } else {
+                        ds.setColor(mContext.getResources().getColor(R.color.colorPrimary));
+                    }
+                }
+            };
+            ss.setSpan(clickableSpan, ss.length() - 10, ss.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            textView.setText(ss);
+            textView.setMovementMethod(LinkMovementMethod.getInstance());
+        }
+
+    }
+
+    private void addReadLess(final String text, final TextView textView) {
+        SpannableString ss = new SpannableString(text + " read less");
+        addReadMore(text, textView);
+
+        ClickableSpan clickableSpan = new ClickableSpan() {
+            @Override
+            public void onClick(View view) {
+                addReadMore(text, textView);
+            }
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                super.updateDrawState(ds);
+                ds.setUnderlineText(false);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    ds.setColor(mContext.getResources().getColor(R.color.colorPrimary, mContext.getTheme()));
+                } else {
+                    ds.setColor(mContext.getResources().getColor(R.color.colorPrimary));
+                }
+            }
+        };
+        ss.setSpan(clickableSpan, ss.length() - 10, ss.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        textView.setText(ss);
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
 }
 
 

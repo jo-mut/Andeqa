@@ -79,7 +79,7 @@
         </service>
 
         <activity
-            android:name=".profile.PersonalProfileActivity"
+            android:name=".profile.ProfileActivity"
             android:label="Profile"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
@@ -93,11 +93,6 @@
             </intent-filter>
         </receiver>
 
-        <activity
-            android:name=".people.FollowerProfileActivity"
-            android:label="Profile"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
         <activity
             android:name=".people.FollowersActivity"
             android:label="Followers"

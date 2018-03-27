@@ -20,11 +20,10 @@ import com.andeqa.andeqa.models.Balance;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Single;
-import com.andeqa.andeqa.models.PostSale;
+import com.andeqa.andeqa.models.Market;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.models.TransactionDetails;
-import com.andeqa.andeqa.people.FollowerProfileActivity;
-import com.andeqa.andeqa.profile.PersonalProfileActivity;
+import com.andeqa.andeqa.profile.ProfileActivity;
 import com.andeqa.andeqa.likes.WhoLikedViewHolder;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -238,17 +237,9 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                     holder.profileImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            if ((firebaseAuth.getCurrentUser().getUid()).equals(uid)){
-                                Intent intent = new Intent(mContext, PersonalProfileActivity.class);
-                                intent.putExtra(OtherPostAdapter.EXTRA_USER_UID, uid);
-                                mContext.startActivity(intent);
-                                d("profile uid", firebaseAuth.getCurrentUser().getUid());
-                            }else {
-                                Intent intent = new Intent(mContext, FollowerProfileActivity.class);
-                                intent.putExtra(OtherPostAdapter.EXTRA_USER_UID, uid);
-                                d("follower uid", uid);
-                                mContext.startActivity(intent);
-                            }
+                            Intent intent = new Intent(mContext, ProfileActivity.class);
+                            intent.putExtra(OtherPostAdapter.EXTRA_USER_UID, uid);
+                            mContext.startActivity(intent);
                         }
                     });
 
@@ -489,9 +480,9 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                 }
 
                 if (documentSnapshot.exists()){
-                    final PostSale postSale = documentSnapshot.toObject(PostSale.class);
+                    final Market market = documentSnapshot.toObject(Market.class);
                     DecimalFormat formatter = new DecimalFormat("0.00000000");
-                    holder.postSalePriceTextView.setText("SC" + " " + formatter.format(postSale.getSalePrice()));
+                    holder.postSalePriceTextView.setText("SC" + " " + formatter.format(market.getSalePrice()));
                     holder.tradeMethodTextView.setText("@Selling");
                 }else {
                     holder.postSalePriceTitleRelativeLayout.setVisibility(View.GONE);
@@ -518,17 +509,9 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                     holder.ownerImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            if ((firebaseAuth.getCurrentUser().getUid()).equals(ownerUid)){
-                                Intent intent = new Intent(mContext, PersonalProfileActivity.class);
-                                intent.putExtra(OtherPostAdapter.EXTRA_USER_UID, ownerUid);
-                                mContext.startActivity(intent);
-                                d("profile uid", firebaseAuth.getCurrentUser().getUid());
-                            }else {
-                                Intent intent = new Intent(mContext, FollowerProfileActivity.class);
-                                intent.putExtra(OtherPostAdapter.EXTRA_USER_UID, ownerUid);
-                                d("follower uid", ownerUid);
-                                mContext.startActivity(intent);
-                            }
+                            Intent intent = new Intent(mContext, ProfileActivity.class);
+                            intent.putExtra(OtherPostAdapter.EXTRA_USER_UID, ownerUid);
+                            mContext.startActivity(intent);
                         }
                     });
 

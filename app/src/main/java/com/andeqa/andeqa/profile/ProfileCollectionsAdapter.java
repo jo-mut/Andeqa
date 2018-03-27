@@ -2,25 +2,30 @@ package com.andeqa.andeqa.profile;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.firestore.FirestoreAdapter;
 import com.andeqa.andeqa.models.Collection;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static android.media.CamcorderProfile.get;
 
 /**
  * Created by J.EL on 2/28/2018.
  */
 
-public class ProfileCollectionsAdapter extends FirestoreAdapter<CollectionViewHolder> {
+public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionViewHolder> {
     private static final String TAG = ProfileCollectionsAdapter.class.getSimpleName();
     private Context mContext;
     //firestore
@@ -31,16 +36,26 @@ public class ProfileCollectionsAdapter extends FirestoreAdapter<CollectionViewHo
     private static final String EXTRA_USER_UID = "uid";
     private  static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
+    private List<DocumentSnapshot> profileCollections = new ArrayList<>();
 
-    public ProfileCollectionsAdapter(Query query, Context mContext) {
-        super(query);
+    public ProfileCollectionsAdapter(Context mContext) {
         this.mContext = mContext;
     }
 
     @Override
     public int getItemCount() {
-        return super.getItemCount();
+        return profileCollections.size();
     }
+
+    protected void setProfileCollections(List<DocumentSnapshot> mSnapshots){
+        this.profileCollections = mSnapshots;
+        notifyDataSetChanged();
+    }
+
+    protected DocumentSnapshot getSnapshot(int index) {
+        return profileCollections.get(index);
+    }
+
 
     @Override
     public void onBindViewHolder(final CollectionViewHolder holder, int position) {

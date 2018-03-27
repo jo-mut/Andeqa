@@ -9,7 +9,11 @@ import android.widget.TextView;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Comment;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static android.R.attr.id;
 
 /**
  * Created by J.EL on 6/16/2017.
@@ -24,11 +28,14 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
     public CircleImageView profileImageView;
     public Button followButton;
     public TextView fullNameTextView;
+    @Bind(R.id.commentTextView)TextView mCommentTextView;
+
 
     public CommentViewHolder(View itemView) {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
+        ButterKnife.bind(this, mView);
         usernameTextView = (TextView)itemView.findViewById(R.id.usernameTextView);
         commentCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
@@ -36,11 +43,5 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
         fullNameTextView = (TextView) itemView.findViewById(R.id.fullNameTextView);
     }
 
-    public void bindComment(final Comment comment){
-        TextView commentTextView = (TextView) mView.findViewById(R.id.commentTextView);
 
-        commentTextView.setText(comment.getCommentText());
-
-
-    }
 }

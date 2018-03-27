@@ -16,7 +16,7 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Timeline;
-import com.andeqa.andeqa.profile.PersonalProfileActivity;
+import com.andeqa.andeqa.profile.ProfileActivity;
 import com.firebase.ui.common.ChangeEventType;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -53,7 +53,7 @@ public class FollowersActivity extends AppCompatActivity {
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     private FirebaseAuth firebaseAuth;
     private boolean processFollow = false;
-    private static final String TAG = FollowersFragment.class.getSimpleName();
+    private static final String TAG = FollowersActivity.class.getSimpleName();
     private static final String EXTRA_USER_UID = "uid";
     private String mUid;
 
@@ -159,14 +159,9 @@ public class FollowersActivity extends AppCompatActivity {
                             holder.profileImageView.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                        Intent intent = new Intent(FollowersActivity.this, PersonalProfileActivity.class);
-                                        startActivity(intent);
-                                    }else {
-                                        Intent intent = new Intent(FollowersActivity.this, FollowerProfileActivity.class);
-                                        intent.putExtra(FollowersActivity.EXTRA_USER_UID, uid);
-                                        startActivity(intent);
-                                    }
+                                    Intent intent = new Intent(FollowersActivity.this, ProfileActivity.class);
+                                    intent.putExtra(FollowersActivity.EXTRA_USER_UID, uid);
+                                    startActivity(intent);
                                 }
                             });
 

@@ -24,19 +24,17 @@ import android.widget.Toast;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Balance;
-import com.andeqa.andeqa.models.PostSale;
+import com.andeqa.andeqa.models.Market;
 import com.andeqa.andeqa.models.TransactionDetails;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import butterknife.Bind;
@@ -142,9 +140,9 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot.exists()){
-                            final PostSale postSale = documentSnapshot.toObject(PostSale.class);
+                            final Market market = documentSnapshot.toObject(Market.class);
 
-                            final double salePrice = postSale.getSalePrice();
+                            final double salePrice = market.getSalePrice();
 
                             if (amountTransferred < salePrice){
                                 mAmountEnteredEditText.setError("Your credits are insufficient");

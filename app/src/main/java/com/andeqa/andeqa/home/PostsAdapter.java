@@ -3,7 +3,6 @@ package com.andeqa.andeqa.home;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -20,14 +19,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.comments.CommentsActivity;
-import com.andeqa.andeqa.creation.CreatePostActivity;
 import com.andeqa.andeqa.likes.LikesActivity;
 import com.andeqa.andeqa.likes.WhoLikedViewHolder;
 import com.andeqa.andeqa.models.Balance;
@@ -38,8 +34,7 @@ import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.models.TransactionDetails;
-import com.andeqa.andeqa.people.FollowerProfileActivity;
-import com.andeqa.andeqa.profile.PersonalProfileActivity;
+import com.andeqa.andeqa.profile.ProfileActivity;
 import com.andeqa.andeqa.settings.DialogFragmentPostSettings;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -64,6 +59,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
 import static android.media.CamcorderProfile.get;
@@ -109,8 +105,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
     //adapters
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
 
-//    private List<Post> posts = new ArrayList<>();
-    private List<DocumentSnapshot> posts = new ArrayList<>();
+//    private List<Post> documentSnapshots = new ArrayList<>();
+    private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
 
 
     public PostsAdapter(Context mContext) {
@@ -118,21 +114,18 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
     }
 
     public void setRandomPosts(List<DocumentSnapshot> posts){
-        this.posts = posts;
+        this.documentSnapshots = posts;
         notifyDataSetChanged();
     }
 
     protected DocumentSnapshot getSnapshot(int index) {
-        return posts.get(index);
+        return documentSnapshots.get(index);
     }
 
-    public void removeAt(int position){
-        posts.remove(posts.get(position));
-    }
 
     @Override
     public int getItemCount() {
-        return posts.size();
+        return documentSnapshots.size();
     }
 
     @Override
@@ -279,15 +272,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
         holder.profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if ((firebaseAuth.getCurrentUser().getUid()).equals(uid)){
-                    Intent intent = new Intent(mContext, PersonalProfileActivity.class);
-                    intent.putExtra(PostsAdapter.EXTRA_USER_UID, uid);
-                    mContext.startActivity(intent);
-                }else {
-                    Intent intent = new Intent(mContext, FollowerProfileActivity.class);
-                    intent.putExtra(PostsAdapter.EXTRA_USER_UID, uid);
-                    mContext.startActivity(intent);
-                }
+                Intent intent = new Intent(mContext, ProfileActivity.class);
+                intent.putExtra(PostsAdapter.EXTRA_USER_UID, uid);
+                mContext.startActivity(intent);
             }
         });
 
@@ -430,8 +417,10 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
 
                         if (!documentSnapshots.isEmpty()){
                             holder.likesImageView.setColorFilter(Color.RED);
+                            holder.likesRelativeLayout.setVisibility(View.VISIBLE);
                         }else {
                             holder.likesImageView.setColorFilter(Color.BLACK);
+                            holder.likesRelativeLayout.setVisibility(View.GONE);
                         }
 
                     }
@@ -992,12 +981,50 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
     }
 
     private void addReadMore(final String text, final TextView textView) {
-        if (text.substring(0, 120) != null){
-            SpannableString ss = new SpannableString(text.substring(0, 119) + "...read more");
+
+       final String [] strings = text.split("");
+
+       final int size = strings.length;
+
+       if (size <= 120){
+           //setence will not have read more
+       }else {
+           SpannableString ss = new SpannableString(text.substring(0, 119) + "...read more");
+           ClickableSpan clickableSpan = new ClickableSpan() {
+               @Override
+               public void onClick(View view) {
+                   addReadLess(text, textView);
+               }
+               @Override
+               public void updateDrawState(TextPaint ds) {
+                   super.updateDrawState(ds);
+                   ds.setUnderlineText(false);
+                   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                       ds.setColor(mContext.getResources().getColor(R.color.colorPrimary, mContext.getTheme()));
+                   } else {
+                       ds.setColor(mContext.getResources().getColor(R.color.colorPrimary));
+                   }
+               }
+           };
+           ss.setSpan(clickableSpan, ss.length() - 10, ss.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+           textView.setText(ss);
+           textView.setMovementMethod(LinkMovementMethod.getInstance());
+       }
+    }
+
+    private void addReadLess(final String text, final TextView textView) {
+        final String [] strings = text.split("");
+
+        final int size = strings.length;
+
+        if (size > 120){
+            SpannableString ss = new SpannableString(text + " read less");
+            addReadMore(text, textView);
+
             ClickableSpan clickableSpan = new ClickableSpan() {
                 @Override
                 public void onClick(View view) {
-                    addReadLess(text, textView);
+                    addReadMore(text, textView);
                 }
                 @Override
                 public void updateDrawState(TextPaint ds) {
@@ -1015,31 +1042,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
             textView.setMovementMethod(LinkMovementMethod.getInstance());
         }
 
-    }
 
-    private void addReadLess(final String text, final TextView textView) {
-        SpannableString ss = new SpannableString(text + " read less");
-        addReadMore(text, textView);
-
-        ClickableSpan clickableSpan = new ClickableSpan() {
-            @Override
-            public void onClick(View view) {
-                addReadMore(text, textView);
-            }
-            @Override
-            public void updateDrawState(TextPaint ds) {
-                super.updateDrawState(ds);
-                ds.setUnderlineText(false);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    ds.setColor(mContext.getResources().getColor(R.color.colorPrimary, mContext.getTheme()));
-                } else {
-                    ds.setColor(mContext.getResources().getColor(R.color.colorPrimary));
-                }
-            }
-        };
-        ss.setSpan(clickableSpan, ss.length() - 10, ss.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        textView.setText(ss);
-        textView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
 }

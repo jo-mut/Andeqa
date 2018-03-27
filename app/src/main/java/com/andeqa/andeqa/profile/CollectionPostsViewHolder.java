@@ -27,7 +27,7 @@ public class CollectionPostsViewHolder extends RecyclerView.ViewHolder implement
     public TextView likesPercentageTextView;
     public TextView dislikePercentageTextView;
     public TextView cingleTitleTextView;
-    public TextView cingleDescriptionTextView;
+    public TextView descriptionTextView;
     public TextView accountUsernameTextView;
     public CircleImageView profileImageView;
     public TextView commentsCountTextView;
@@ -52,7 +52,7 @@ public class CollectionPostsViewHolder extends RecyclerView.ViewHolder implement
         likesPercentageTextView =(TextView)itemView.findViewById(R.id.likesPercentageTextView);
         dislikePercentageTextView = (TextView) itemView.findViewById(R.id.dislikesPercentageTextView);
         commentsImageView = (ImageView) itemView.findViewById(R.id.commentsImageView);
-        cingleDescriptionTextView = (TextView) itemView.findViewById(R.id.descriptionTextView);
+        descriptionTextView = (TextView) itemView.findViewById(R.id.descriptionTextView);
         cingleTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         accountUsernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);

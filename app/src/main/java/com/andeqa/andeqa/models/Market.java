@@ -4,7 +4,7 @@ package com.andeqa.andeqa.models;
  * Created by J.EL on 9/8/2017.
  */
 
-public class PostSale {
+public class Market {
     String pushId;
     String uid;
     String datePosted;
@@ -13,12 +13,12 @@ public class PostSale {
     double salePrice;
     long number;
 
-    public PostSale() {
+    public Market() {
 
     }
 
-    public PostSale(String pushId, String uid, String datePosted,
-                    long time, double randomNumber, double
+    public Market(String pushId, String uid, String datePosted,
+                  long time, double randomNumber, double
                               salePrice, long number) {
         this.pushId = pushId;
         this.uid = uid;

@@ -23,8 +23,10 @@ import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.people.FollowersActivity;
 import com.andeqa.andeqa.people.FollowingActivity;
+import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -42,7 +44,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class PersonalProfileActivity extends AppCompatActivity implements View.OnClickListener{
+public class ProfileActivity extends AppCompatActivity implements View.OnClickListener{
     //BIND VIEWS
     @Bind(R.id.collectionsRecyclerView)RecyclerView mCollectionsRecyclerView;
     @Bind(R.id.profileImageView)CircleImageView mProifleImageView;
@@ -54,7 +56,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
     @Bind(R.id.profileCoverImageView)ImageView mProfileCover;
     @Bind(R.id.collapsing_toolbar)CollapsingToolbarLayout collapsingToolbarLayout;
 
-    private static final String TAG = PersonalProfileActivity.class.getSimpleName();
+    private static final String TAG = ProfileActivity.class.getSimpleName();
     //firestore reference
     private CollectionReference collectionsCollection;
     private CollectionReference relationsReference;
@@ -62,6 +64,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
     private CollectionReference postsCollection;
     private Query postCountQuery;
     private Query profileCollectionsQuery;
+    private Query nextCollectionsQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore adapters
@@ -73,10 +76,13 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
     //singles meber variables
     private List<Single> singles = new ArrayList<>();
     private List<String> cinglesIds = new ArrayList<>();
-    private int TOTAL_ITEMS = 4;
     private DocumentSnapshot lastVisible;
     private LinearLayoutManager layoutManager;
     private static final String EXTRA_USER_UID = "uid";
+    private static final int TOTAL_ITEMS = 20;
+    private String mUid;
+    private List<String> collectionsIds = new ArrayList<>();
+    private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
 
 
     @Override
@@ -85,7 +91,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
         setContentView(R.layout.activity_personal_profile);
         ButterKnife.bind(this);
 
-        collapsingToolbarLayout.setTitle("Profile");
+
         //FIREBASE AUTH
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -100,25 +106,63 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
             }
         });
 
+
         if (firebaseAuth.getCurrentUser()!= null){
+
+            mUid = getIntent().getStringExtra(EXTRA_USER_UID);
+            if(mUid == null){
+                throw new IllegalArgumentException("pass an EXTRA_UID");
+            }
+
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
             profileCollectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
-                    .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid());
+                    .whereEqualTo("uid", mUid)
+                    .limit(TOTAL_ITEMS);
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            postCountQuery = postsCollection.orderBy("time").whereEqualTo("uid",
-                    firebaseAuth.getCurrentUser().getUid());
+            postCountQuery = postsCollection.orderBy("time").whereEqualTo("uid", mUid);
 
 
             fetchData();
+            recyclerView();
             setCollections();
+
             if (savedInstanceState != null){
                 recyclerViewState = savedInstanceState.getParcelable(KEY_LAYOUT_POSITION);
                 Log.d("Profile saved Instance", "Instance is not null");
             }else {
                 Log.d("Saved Instance", "Instance is completely null");
             }
+
+            usersReference.document(mUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                    if (e != null) {
+                        Log.w(TAG, "Listen error", e);
+                        return;
+                    }
+
+                    if (documentSnapshot.exists()){
+                        Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                        if (firebaseAuth.getCurrentUser().getUid().equals(mUid)){
+                            collapsingToolbarLayout.setTitle("Profile");
+                        }else {
+                            collapsingToolbarLayout.setTitle(andeqan.getUsername());
+                        }
+                    }
+
+                }
+            });
+
+            mCollectionsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+                @Override
+                public void onLoadMore() {
+                    setNextCollections();
+                }
+            });
+
             //INITIALIZE CLICK LISTENERS
             mFollowersCountTextView.setOnClickListener(this);
             mFollowingCountTextView.setOnClickListener(this);
@@ -143,7 +187,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
         int id = item.getItemId();
 
         if (id == R.id.action_wallet){
-            Intent intent = new Intent(PersonalProfileActivity.this, WalletActivity.class);
+            Intent intent = new Intent(ProfileActivity.this, WalletActivity.class);
             startActivity(intent);
         }
 
@@ -154,7 +198,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
         }
 
         if (id == R.id.action_account_settings){
-            Intent intent = new Intent(PersonalProfileActivity.this, UpdateProfileActivity.class);
+            Intent intent = new Intent(ProfileActivity.this, UpdateProfileActivity.class);
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
@@ -181,7 +225,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
 
         //get followers count
         relationsReference.document("followers")
-                .collection(firebaseAuth.getCurrentUser().getUid())
+                .collection(mUid)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -202,7 +246,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
 
         //get following count
         relationsReference.document("following")
-                .collection(firebaseAuth.getCurrentUser().getUid())
+                .collection(mUid)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -222,7 +266,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
                 });
 
 
-        usersReference.document(firebaseAuth.getCurrentUser().getUid())
+        usersReference.document(mUid)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -242,7 +286,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
 
                             mFullNameTextView.setText(firstName + " " + secondName);
                             mBioTextView.setText(bio);
-                            Picasso.with(PersonalProfileActivity.this)
+                            Picasso.with(ProfileActivity.this)
                                     .load(profileImage)
                                     .resize(MAX_WIDTH, MAX_HEIGHT)
                                     .onlyScaleDown()
@@ -257,7 +301,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
 
                                         @Override
                                         public void onError() {
-                                            Picasso.with(PersonalProfileActivity.this)
+                                            Picasso.with(ProfileActivity.this)
                                                     .load(profileImage)
                                                     .resize(MAX_WIDTH, MAX_HEIGHT)
                                                     .onlyScaleDown()
@@ -268,7 +312,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
                                         }
                                     });
 
-                            Picasso.with(PersonalProfileActivity.this)
+                            Picasso.with(ProfileActivity.this)
                                     .load(profileCover)
                                     .fit()
                                     .centerCrop()
@@ -281,7 +325,7 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
 
                                         @Override
                                         public void onError() {
-                                            Picasso.with(PersonalProfileActivity.this)
+                                            Picasso.with(ProfileActivity.this)
                                                     .load(profileCover)
                                                     .fit()
                                                     .centerCrop()
@@ -305,6 +349,14 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
                 });
     }
 
+    private void recyclerView(){
+        profileCollectionsAdapter = new ProfileCollectionsAdapter(ProfileActivity.this);
+        layoutManager = new GridLayoutManager(ProfileActivity.this, 2);
+        mCollectionsRecyclerView.setLayoutManager(layoutManager);
+        mCollectionsRecyclerView.setAdapter(profileCollectionsAdapter);
+        mCollectionsRecyclerView.setHasFixedSize(false);
+        mCollectionsRecyclerView.setNestedScrollingEnabled(false);
+    }
 
     private void setCollections(){
         profileCollectionsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -317,18 +369,92 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
                 }
 
                 if (!documentSnapshots.isEmpty()){
-                    profileCollectionsAdapter = new ProfileCollectionsAdapter(profileCollectionsQuery, PersonalProfileActivity.this);
-                    profileCollectionsAdapter.startListening();
-                    layoutManager = new GridLayoutManager(PersonalProfileActivity.this, 2);
-                    mCollectionsRecyclerView.setLayoutManager(layoutManager);
-                    mCollectionsRecyclerView.setAdapter(profileCollectionsAdapter);
-                    mCollectionsRecyclerView.setHasFixedSize(false);
-                    mCollectionsRecyclerView.setNestedScrollingEnabled(false);
-
+                    //retrieve the first bacth of documentSnapshots
+                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                        switch (change.getType()) {
+                            case ADDED:
+                                onDocumentAdded(change);
+                                break;
+                            case MODIFIED:
+                                onDocumentModified(change);
+                                break;
+                            case REMOVED:
+                                onDocumentRemoved(change);
+                                break;
+                        }
+                    }
                 }
 
             }
         });
+    }
+
+    private void setNextCollections(){
+        // Get the last visible document
+        final int snapshotSize = profileCollectionsAdapter.getItemCount();
+        DocumentSnapshot lastVisible = profileCollectionsAdapter.getSnapshot(snapshotSize - 1);
+
+        //retrieve the first bacth of documentSnapshots
+        nextCollectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
+                .whereEqualTo("uid", mUid)
+                .startAfter(lastVisible)
+                .limit(TOTAL_ITEMS);
+
+        nextCollectionsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (!documentSnapshots.isEmpty()){
+                    //retrieve the first bacth of documentSnapshots
+                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                        switch (change.getType()) {
+                            case ADDED:
+                                onDocumentAdded(change);
+                                break;
+                            case MODIFIED:
+                                onDocumentModified(change);
+                                break;
+                            case REMOVED:
+                                onDocumentRemoved(change);
+                                break;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    protected void onDocumentAdded(DocumentChange change) {
+        collectionsIds.add(change.getDocument().getId());
+        documentSnapshots.add(change.getDocument());
+        profileCollectionsAdapter.setProfileCollections(documentSnapshots);
+        profileCollectionsAdapter.notifyItemInserted(documentSnapshots.size() -1);
+        profileCollectionsAdapter.getItemCount();
+
+    }
+
+    protected void onDocumentModified(DocumentChange change) {
+        if (change.getOldIndex() == change.getNewIndex()) {
+            // Item changed but remained in same position
+            documentSnapshots.set(change.getOldIndex(), change.getDocument());
+            profileCollectionsAdapter.notifyItemChanged(change.getOldIndex());
+        } else {
+            // Item changed and changed position
+            documentSnapshots.remove(change.getOldIndex());
+            documentSnapshots.add(change.getNewIndex(), change.getDocument());
+            profileCollectionsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+        }
+    }
+
+    protected void onDocumentRemoved(DocumentChange change) {
+        documentSnapshots.remove(change.getOldIndex());
+        profileCollectionsAdapter.notifyItemRemoved(change.getOldIndex());
+        profileCollectionsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
     }
 
 
@@ -364,14 +490,14 @@ public class PersonalProfileActivity extends AppCompatActivity implements View.O
     @Override
     public void onClick(View v){
         if (v == mFollowingCountTextView) {
-            Intent intent = new Intent(PersonalProfileActivity.this, FollowingActivity.class);
-            intent.putExtra(PersonalProfileActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
+            Intent intent = new Intent(ProfileActivity.this, FollowingActivity.class);
+            intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
             startActivity(intent);
         }
 
         if (v == mFollowersCountTextView){
-            Intent intent = new Intent(PersonalProfileActivity.this, FollowersActivity.class);
-            intent.putExtra(PersonalProfileActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
+            Intent intent = new Intent(ProfileActivity.this, FollowersActivity.class);
+            intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
             startActivity(intent);
         }
 

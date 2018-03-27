@@ -20,8 +20,7 @@ import com.andeqa.andeqa.models.Comment;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Timeline;
-import com.andeqa.andeqa.people.FollowerProfileActivity;
-import com.andeqa.andeqa.profile.PersonalProfileActivity;
+import com.andeqa.andeqa.profile.ProfileActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -235,7 +234,7 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
         holder.profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, FollowerProfileActivity.class);
+                Intent intent = new Intent(mContext, ProfileActivity.class);
                 intent.putExtra(TimelineAdapter.EXTRA_USER_UID, uid);
                 mContext.startActivity(intent);
             }
@@ -346,7 +345,7 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
         holder.profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, FollowerProfileActivity.class);
+                Intent intent = new Intent(mContext, ProfileActivity.class);
                 intent.putExtra(TimelineAdapter.EXTRA_USER_UID, uid);
                 mContext.startActivity(intent);
             }
@@ -518,14 +517,9 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
         holder.profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                    Intent intent = new Intent(mContext, PersonalProfileActivity.class);
-                    mContext.startActivity(intent);
-                }else {
-                    Intent intent = new Intent(mContext, FollowerProfileActivity.class);
-                    intent.putExtra(TimelineAdapter.EXTRA_USER_UID, uid);
-                    mContext.startActivity(intent);
-                }
+                Intent intent = new Intent(mContext, ProfileActivity.class);
+                intent.putExtra(TimelineAdapter.EXTRA_USER_UID, uid);
+                mContext.startActivity(intent);
             }
         });
 

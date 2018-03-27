@@ -34,7 +34,8 @@ import com.andeqa.andeqa.creation.CreatePostActivity;
 import com.andeqa.andeqa.market.MarketFragment;
 import com.andeqa.andeqa.message.MessagesFragment;
 import com.andeqa.andeqa.models.Andeqan;
-import com.andeqa.andeqa.profile.PersonalProfileActivity;
+import com.andeqa.andeqa.profile.ProfileActivity;
+import com.andeqa.andeqa.settings.SettingsActivity;
 import com.andeqa.andeqa.timeline.TimelineFragment;
 import com.andeqa.andeqa.utils.BottomNavigationViewBehavior;
 import com.andeqa.andeqa.utils.BottomNavigationViewHelper;
@@ -62,6 +63,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
     private static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
     private static final int IMAGE_GALLERY_REQUEST = 112;
+    private static final String EXTRA_USER_UID = "uid";
     private Uri photoUri;
     private static final String TAG = NavigationDrawerActivity.class.getSimpleName();
     private int mSelectedItem;
@@ -258,13 +260,14 @@ public class NavigationDrawerActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.action_profile){
-            Intent intent = new Intent(NavigationDrawerActivity.this, PersonalProfileActivity.class);
+            Intent intent = new Intent(NavigationDrawerActivity.this, ProfileActivity.class);
+            intent.putExtra(NavigationDrawerActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
             startActivity(intent);
         }
 
         if (id == R.id.action_settings){
-//            Intent intent = new Intent(NavigationDrawerActivity.this, SettingsActivity.class);
-//            startActivity(intent);
+            Intent intent = new Intent(NavigationDrawerActivity.this, SettingsActivity.class);
+            startActivity(intent);
         }
 
         if (id == R.id.action_about){

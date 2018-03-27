@@ -19,8 +19,7 @@ import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Timeline;
-import com.andeqa.andeqa.people.FollowerProfileActivity;
-import com.andeqa.andeqa.profile.PersonalProfileActivity;
+import com.andeqa.andeqa.profile.ProfileActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -191,14 +190,9 @@ public class LikesActivity extends AppCompatActivity {
                 holder.profileImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                            Intent intent = new Intent(LikesActivity.this, PersonalProfileActivity.class);
-                            startActivity(intent);
-                        }else {
-                            Intent intent = new Intent(LikesActivity.this, FollowerProfileActivity.class);
-                            intent.putExtra(LikesActivity.EXTRA_USER_UID, uid);
-                            startActivity(intent);
-                        }
+                        Intent intent = new Intent(LikesActivity.this, ProfileActivity.class);
+                        intent.putExtra(LikesActivity.EXTRA_USER_UID, uid);
+                        startActivity(intent);
                     }
                 });
 

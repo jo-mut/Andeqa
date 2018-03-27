@@ -34,13 +34,12 @@ import com.andeqa.andeqa.likes.LikesActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Balance;
 import com.andeqa.andeqa.models.Single;
-import com.andeqa.andeqa.models.PostSale;
+import com.andeqa.andeqa.models.Market;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.models.TransactionDetails;
-import com.andeqa.andeqa.people.FollowerProfileActivity;
-import com.andeqa.andeqa.profile.PersonalProfileActivity;
+import com.andeqa.andeqa.profile.ProfileActivity;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.andeqa.andeqa.likes.WhoLikedViewHolder;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -271,14 +270,9 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                     mProfileImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                Intent intent = new Intent(PostDetailActivity.this, PersonalProfileActivity.class);
-                                startActivity(intent);
-                            }else {
-                                Intent intent = new Intent(PostDetailActivity.this, FollowerProfileActivity.class);
-                                intent.putExtra(PostDetailActivity.EXTRA_USER_UID, uid);
-                                startActivity(intent);
-                            }
+                            Intent intent = new Intent(PostDetailActivity.this, ProfileActivity.class);
+                            intent.putExtra(PostDetailActivity.EXTRA_USER_UID, uid);
+                            startActivity(intent);
                         }
                     });
 
@@ -371,10 +365,10 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                 }
 
                 if (documentSnapshot.exists()){
-                    final PostSale postSale = documentSnapshot.toObject(PostSale.class);
+                    final Market market = documentSnapshot.toObject(Market.class);
                     DecimalFormat formatter = new DecimalFormat("0.00000000");
                     mSalePriceTextView.setText("SC" + " " +
-                            formatter.format(postSale.getSalePrice()));
+                            formatter.format(market.getSalePrice()));
                     mPostSalePriceRelativeLayout.setVisibility(View.VISIBLE);
                     ownerReference.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
@@ -824,17 +818,9 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                     mOwnerImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            if ((firebaseAuth.getCurrentUser().getUid()).equals(ownerUid)){
-                                Intent intent = new Intent(PostDetailActivity.this, PersonalProfileActivity.class);
-                                intent.putExtra(PostDetailActivity.EXTRA_USER_UID, ownerUid);
-                                startActivity(intent);
-                                d("profile uid", firebaseAuth.getCurrentUser().getUid());
-                            }else {
-                                Intent intent = new Intent(PostDetailActivity.this, FollowerProfileActivity.class);
-                                intent.putExtra(PostDetailActivity.EXTRA_USER_UID, ownerUid);
-                                d("follower uid", ownerUid);
-                                startActivity(intent);
-                            }
+                            Intent intent = new Intent(PostDetailActivity.this, ProfileActivity.class);
+                            intent.putExtra(PostDetailActivity.EXTRA_USER_UID, ownerUid);
+                            startActivity(intent);
                         }
                     });
                 }

@@ -15,14 +15,20 @@ import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -32,7 +38,7 @@ import butterknife.ButterKnife;
  * A simple {@link Fragment} subclass.
  */
 public class MarketFragment extends Fragment{
-    @Bind(R.id.marketRecyclerView)RecyclerView mIfairCingleRecyclerView;
+    @Bind(R.id.marketRecyclerView)RecyclerView sellingRecyclerView;
     @Bind(R.id.placeHolderRelativeLayout)RelativeLayout mPlaceHolderRelativeLayout;
 
     private static final String TAG = "SingleOutFragment";
@@ -45,14 +51,15 @@ public class MarketFragment extends Fragment{
     private static final int MAX_HEIGHT = 200;
     private Parcelable recyclerViewState;
     //firestore
-    private CollectionReference ifairReference;
+    private CollectionReference sellingCollection;
     private com.google.firebase.firestore.Query sellingQuery;
     //adapters
-    private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     private SellingAdapter sellingAdapter;
     private FirebaseAuth firebaseAuth;
-    private int TOTAL_ITEMS = 50;
+    private int TOTAL_ITEMS = 10;
     private DocumentSnapshot lastVisible;
+    private List<String> snapshotsIds = new ArrayList<>();
+    private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
 
 
     public MarketFragment() {
@@ -70,8 +77,15 @@ public class MarketFragment extends Fragment{
 
         if (firebaseAuth.getCurrentUser()!= null){
             //firestore
-            ifairReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
-            sellingQuery = ifairReference.orderBy("randomNumber");
+            sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
+            sellingQuery = sellingCollection.orderBy("randomNumber").limit(TOTAL_ITEMS);
+
+            sellingRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+                @Override
+                public void onLoadMore() {
+                    setNextCollections();
+                }
+            });
 
         }
 
@@ -84,7 +98,9 @@ public class MarketFragment extends Fragment{
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setTheFirstBacthSellingCingles();
+
+        setRecyclerView();
+        setCollections();
         if (savedInstanceState != null){
             recyclerViewState = savedInstanceState.getParcelable(KEY_LAYOUT_POSITION);
             Log.d("Saved Instance", "Instance is not null");
@@ -93,7 +109,15 @@ public class MarketFragment extends Fragment{
         }
     }
 
-    private void setTheFirstBacthSellingCingles(){
+    private void setRecyclerView(){
+        sellingAdapter = new SellingAdapter(getContext());
+        sellingRecyclerView.setAdapter(sellingAdapter);
+        sellingRecyclerView.setHasFixedSize(false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        sellingRecyclerView.setLayoutManager(layoutManager);
+    }
+
+    private void setCollections(){
         sellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -103,22 +127,97 @@ public class MarketFragment extends Fragment{
                     return;
                 }
 
-
                 if (!documentSnapshots.isEmpty()){
-                    // RecyclerView
-                    sellingAdapter = new SellingAdapter(sellingQuery, getContext());
-                    sellingAdapter.startListening();
-                    mIfairCingleRecyclerView.setAdapter(sellingAdapter);
-                    mIfairCingleRecyclerView.setHasFixedSize(false);
-                    LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-                    mIfairCingleRecyclerView.setLayoutManager(layoutManager);
+                    //retrieve the first bacth of documentSnapshots
+                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                        switch (change.getType()) {
+                            case ADDED:
+                                onDocumentAdded(change);
+                                break;
+                            case MODIFIED:
+                                onDocumentModified(change);
+                                break;
+                            case REMOVED:
+                                onDocumentRemoved(change);
+                                break;
+                        }
+                    }
                 }else {
                     mPlaceHolderRelativeLayout.setVisibility(View.VISIBLE);
                 }
+
             }
         });
+    }
+
+    private void setNextCollections(){
+        // Get the last visible document
+        final int snapshotSize = sellingAdapter.getItemCount();
+        DocumentSnapshot lastVisible = sellingAdapter.getSnapshot(snapshotSize - 1);
+
+        //retrieve the first bacth of documentSnapshots
+        Query nextSellingQuery = sellingCollection.orderBy("randomNumber", Query.Direction.DESCENDING)
+                .startAfter(lastVisible)
+                .limit(TOTAL_ITEMS);
+
+        nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (!documentSnapshots.isEmpty()){
+                    //retrieve the first bacth of documentSnapshots
+                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                        switch (change.getType()) {
+                            case ADDED:
+                                onDocumentAdded(change);
+                                break;
+                            case MODIFIED:
+                                onDocumentModified(change);
+                                break;
+                            case REMOVED:
+                                onDocumentRemoved(change);
+                                break;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    protected void onDocumentAdded(DocumentChange change) {
+        snapshotsIds.add(change.getDocument().getId());
+        documentSnapshots.add(change.getDocument());
+        sellingAdapter.setPostsOnSale(documentSnapshots);
+        sellingAdapter.notifyItemInserted(documentSnapshots.size() -1);
+        sellingAdapter.getItemCount();
 
     }
+
+    protected void onDocumentModified(DocumentChange change) {
+        if (change.getOldIndex() == change.getNewIndex()) {
+            // Item changed but remained in same position
+            documentSnapshots.set(change.getOldIndex(), change.getDocument());
+            sellingAdapter.notifyItemChanged(change.getOldIndex());
+        } else {
+            // Item changed and changed position
+            documentSnapshots.remove(change.getOldIndex());
+            documentSnapshots.add(change.getNewIndex(), change.getDocument());
+            sellingAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+        }
+    }
+
+    protected void onDocumentRemoved(DocumentChange change) {
+        documentSnapshots.remove(change.getOldIndex());
+        sellingAdapter.notifyItemRemoved(change.getOldIndex());
+        sellingAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+    }
+
+
 
 
     @Override

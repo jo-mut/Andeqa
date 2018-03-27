@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.PostSale;
+import com.andeqa.andeqa.models.Market;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -57,7 +57,7 @@ public class PostSellingViewHolder extends RecyclerView.ViewHolder {
         buyPostButton = (Button) mView.findViewById(R.id.buyPostButton);
     }
 
-    public void bindIfairCingle(final PostSale postSale){
+    public void bindIfairCingle(final Market market){
 
 
 

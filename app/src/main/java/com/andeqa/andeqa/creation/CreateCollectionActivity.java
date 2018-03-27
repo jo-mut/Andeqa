@@ -23,7 +23,6 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.TransactionDetails;
 import com.andeqa.andeqa.profile.CollectionPostsActivity;
-import com.andeqa.andeqa.profile.PersonalProfileActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;

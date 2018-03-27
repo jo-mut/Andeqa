@@ -54,9 +54,9 @@ public class HomeFragment extends Fragment{
     //adapters
     private PostsAdapter postsAdapter;
     private LinearLayoutManager layoutManager;
-    private int TOTAL_ITEMS = 5;
-    private List<String> snapshotsIds = new ArrayList<>();
-    private List<DocumentSnapshot> snapshots = new ArrayList<>();
+    private int TOTAL_ITEMS = 10;
+    private List<String> mSnapshotsIds = new ArrayList<>();
+    private List<DocumentSnapshot> mSnapshots = new ArrayList<>();
 
     public HomeFragment() {
         // Required empty public constructor
@@ -143,7 +143,7 @@ public class HomeFragment extends Fragment{
         final int snapshotSize = postsAdapter.getItemCount();
         DocumentSnapshot lastVisible = postsAdapter.getSnapshot(snapshotSize - 1);
 
-        //retrieve the first bacth of snapshots
+        //retrieve the first bacth of mSnapshots
         nextRandomQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
                 .startAfter(lastVisible)
                 .limit(TOTAL_ITEMS);
@@ -158,7 +158,7 @@ public class HomeFragment extends Fragment{
                 }
 
                 if (!documentSnapshots.isEmpty()){
-                    //retrieve the first bacth of snapshots
+                    //retrieve the first bacth of mSnapshots
                     for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
                         switch (change.getType()) {
                             case ADDED:
@@ -178,10 +178,10 @@ public class HomeFragment extends Fragment{
     }
 
     protected void onDocumentAdded(DocumentChange change) {
-        snapshotsIds.add(change.getDocument().getId());
-        snapshots.add(change.getDocument());
-        postsAdapter.setRandomPosts(snapshots);
-        postsAdapter.notifyItemInserted(snapshots.size() -1);
+        mSnapshotsIds.add(change.getDocument().getId());
+        mSnapshots.add(change.getDocument());
+        postsAdapter.setRandomPosts(mSnapshots);
+        postsAdapter.notifyItemInserted(mSnapshots.size() -1);
         postsAdapter.getItemCount();
 
     }
@@ -189,20 +189,20 @@ public class HomeFragment extends Fragment{
     protected void onDocumentModified(DocumentChange change) {
         if (change.getOldIndex() == change.getNewIndex()) {
             // Item changed but remained in same position
-            snapshots.set(change.getOldIndex(), change.getDocument());
+            mSnapshots.set(change.getOldIndex(), change.getDocument());
             postsAdapter.notifyItemChanged(change.getOldIndex());
         } else {
             // Item changed and changed position
-            snapshots.remove(change.getOldIndex());
-            snapshots.add(change.getNewIndex(), change.getDocument());
-            postsAdapter.notifyItemRangeChanged(0, snapshots.size());
+            mSnapshots.remove(change.getOldIndex());
+            mSnapshots.add(change.getNewIndex(), change.getDocument());
+            postsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
         }
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
-        snapshots.remove(change.getOldIndex());
+        mSnapshots.remove(change.getOldIndex());
         postsAdapter.notifyItemRemoved(change.getOldIndex());
-        postsAdapter.notifyItemRangeChanged(0, snapshots.size());
+        postsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
     }
 
 }
