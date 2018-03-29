@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setFonts(){
         Typeface appNameFont = Typeface.createFromAsset(getAssets(),
-                "fonts/Lucida Handwriting Italic.ttf");
+                "fonts/Kurale-Regular.ttf");
         mAppNameTextView.setTypeface(appNameFont);
     }
 }

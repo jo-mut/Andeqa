@@ -272,7 +272,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
         if (id == R.id.action_about){
             Intent intent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://cinggl@cinggl.com"));
+                    Uri.parse("https://andeqa@andeqa.com"));
             startActivity(intent);
         }
 
@@ -281,7 +281,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
             sendIntent.setAction(Intent.ACTION_SEND);
             sendIntent.putExtra(Intent.EXTRA_TEXT,
                     "Hey! Check out Cinggl and share your best moments, beautiful ideas and discover even more than you know" +
-                            " at: https://play.google.com/store/apps/details?id=com.cinggl.cinggl");
+                            " at: https://play.google.com/store/apps/details?id=");
             sendIntent.setType("text/plain");
             startActivity(sendIntent);
         }
@@ -298,7 +298,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
             }
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("message/rfc822");
-            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"cinggl@yahoo.com"});
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"andeqa@andeqa.com"});
             intent.putExtra(Intent.EXTRA_SUBJECT, "Query from android app");
             intent.putExtra(Intent.EXTRA_TEXT, body);
             this.startActivity(Intent.createChooser(intent, this.getString(R.string.choose_email_client)));
