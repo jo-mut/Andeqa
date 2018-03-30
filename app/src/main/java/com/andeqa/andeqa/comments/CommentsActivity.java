@@ -403,19 +403,17 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
-    public void onStart() {
-        super.onStop();
-
+    protected void onStart() {
+        super.onStart();
     }
-
-
-
 
     @Override
     public void onStop(){
         super.onStop();
 
     }
+
+
 
     @Override
     public void onResume() {

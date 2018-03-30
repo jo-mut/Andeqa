@@ -2,6 +2,7 @@ package com.andeqa.andeqa.home;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -75,7 +76,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
     private ImageView mProfileCover;
     private CircleImageView mProfileImageView;
     private TextView mFullNameTextView;
-    private TextView mSecondNameTextView;
     private TextView mEmailTextView;
 
     //bottom navigation fragments
@@ -110,7 +110,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
         mProfileCover = (ImageView) header.findViewById(R.id.profileCoverImageView);
         mProfileImageView = (CircleImageView) header.findViewById(R.id.profileImageView);
         mFullNameTextView = (TextView) header.findViewById(R.id.fullNameTextView);
-        mSecondNameTextView = (TextView) header.findViewById(R.id.secondNameTextView);
         mEmailTextView = (TextView) header.findViewById(R.id.emailTextView);
 
         if (firebaseAuth.getCurrentUser() != null){
@@ -333,12 +332,15 @@ public class NavigationDrawerActivity extends AppCompatActivity
         }
     }
 
+
     private void updateToolbarText(CharSequence text){
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null){
             actionBar.setTitle(text);
         }
     }
+
+
 
     private void selectFragment(MenuItem item){
         //initialize each corresponding fragment
@@ -401,10 +403,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
         if (v == mFloatingActionButton){
             Intent intent = new Intent(NavigationDrawerActivity.this, CreateCollectionActivity.class);
             startActivity(intent);
-//            Intent intent = new Intent();
-//            intent.setAction(Intent.ACTION_GET_CONTENT);
-//            intent.setType("image/*");
-//            startActivityForResult(intent, IMAGE_GALLERY_REQUEST);
+
         }
     }
 

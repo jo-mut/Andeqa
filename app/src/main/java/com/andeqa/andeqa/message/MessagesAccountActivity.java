@@ -16,11 +16,13 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Message;
 import com.andeqa.andeqa.models.Room;
+import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -32,7 +34,9 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -48,7 +52,7 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
     @Bind(R.id.senderImageView)CircleImageView mSenderImageView;
     //firestore references
     private CollectionReference messagesCollection;
-    private CollectionReference messagingUsersCollection;
+    private CollectionReference roomCollection;
     private CollectionReference usersCollection;
     private CollectionReference usersReference;
 
@@ -69,6 +73,10 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
     private LinearLayoutManager layoutManager;
     private String roomId;
     private boolean processMessage = false;
+
+    private List<String> messagesIds = new ArrayList<>();
+    private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
+    private static final int TOTAL_ITEMS = 50;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,15 +119,22 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
             //initialize references
             messagesCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            messagingUsersCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
+            roomCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             messagesQuery = messagesCollection.document("rooms").collection(roomId);
 
 
             getProfile();
             getSenderProfile();
-            getMessages();
-//            scrollToBottom();
+            setMessages();
+            scrollToPosition();
+
+            mMessagesRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+                @Override
+                public void onLoadMore() {
+                    setNextCollections();
+                }
+            });
 
         }
 
@@ -144,6 +159,11 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
                 }
             }
         });
+    }
+
+    //scroll to the latest message when acivity launches
+    private void scrollToPosition(){
+        mMessagesRecyclerView.scrollToPosition(documentSnapshots.size() -1);
     }
 
     /**get current user profile*/
@@ -193,10 +213,52 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
                 });
     }
 
-    /**get all the messages between two users chatting*/
-    private void getMessages(){
-        messagesQuery.orderBy("timeStamp")
+
+    private void setMessages(){
+        messagesQuery.orderBy("time").limit(TOTAL_ITEMS)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!documentSnapshots.isEmpty()){
+                            //retrieve the first bacth of documentSnapshots
+                            for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                                switch (change.getType()) {
+                                    case ADDED:
+                                        onDocumentAdded(change);
+                                        break;
+                                    case MODIFIED:
+                                        onDocumentModified(change);
+                                        break;
+                                    case REMOVED:
+                                        onDocumentRemoved(change);
+                                        break;
+                                }
+                            }
+
+
+
+                        }
+
+                    }
+                });
+    }
+
+    private void setNextCollections(){
+        // Get the last visible document
+        final int snapshotSize = messagingAdapter.getItemCount();
+        DocumentSnapshot lastVisible = messagingAdapter.getSnapshot(snapshotSize - 1);
+
+        //retrieve the first bacth of documentSnapshots
+        Query nextSellingQuery = messagesCollection.orderBy("time").startAfter(lastVisible)
+                .limit(TOTAL_ITEMS);
+
+        nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
@@ -206,25 +268,53 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
                 }
 
                 if (!documentSnapshots.isEmpty()){
-                    Log.d("messages count", documentSnapshots.size() + "");
-                    messagingAdapter = new MessagingAdapter(messagesQuery, MessagesAccountActivity.this);
-                    messagingAdapter.startListening();
-                    layoutManager = new LinearLayoutManager(MessagesAccountActivity.this);
-                    mMessagesRecyclerView.setHasFixedSize(false);
-                    mMessagesRecyclerView.setLayoutManager(layoutManager);
-                    messagingAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-                        @Override
-                        public void onItemRangeChanged(int positionStart, int itemCount) {
-                            mMessagesRecyclerView.smoothScrollToPosition(messagingAdapter.getItemCount());
+                    //retrieve the first bacth of documentSnapshots
+                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                        switch (change.getType()) {
+                            case ADDED:
+                                onDocumentAdded(change);
+                                break;
+                            case MODIFIED:
+                                onDocumentModified(change);
+                                break;
+                            case REMOVED:
+                                onDocumentRemoved(change);
+                                break;
                         }
-                    });
-
-                    mMessagesRecyclerView.setAdapter(messagingAdapter);
-
+                    }
                 }
             }
         });
     }
+
+    protected void onDocumentAdded(DocumentChange change) {
+        messagesIds.add(change.getDocument().getId());
+        documentSnapshots.add(change.getDocument());
+        messagingAdapter.setProfileMessages(documentSnapshots);
+        messagingAdapter.notifyItemInserted(documentSnapshots.size() -1);
+        messagingAdapter.getItemCount();
+
+    }
+
+    protected void onDocumentModified(DocumentChange change) {
+        if (change.getOldIndex() == change.getNewIndex()) {
+            // Item changed but remained in same position
+            documentSnapshots.set(change.getOldIndex(), change.getDocument());
+            messagingAdapter.notifyItemChanged(change.getOldIndex());
+        } else {
+            // Item changed and changed position
+            documentSnapshots.remove(change.getOldIndex());
+            documentSnapshots.add(change.getNewIndex(), change.getDocument());
+            messagingAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+        }
+    }
+
+    protected void onDocumentRemoved(DocumentChange change) {
+        documentSnapshots.remove(change.getOldIndex());
+        messagingAdapter.notifyItemRemoved(change.getOldIndex());
+        messagingAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+    }
+
 
 
     /**send messages to a specific user*/
@@ -237,7 +327,7 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
             final String documentId = databaseReference.push().getKey();
 
             processMessage = true;
-            messagesCollection.document("rooms").collection(roomId)
+            messagesCollection.document("chat_rooms").collection(roomId)
                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
                 public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -248,13 +338,13 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
 
                     if (processMessage){
                        if (!documentSnapshots.isEmpty()){
-                           DocumentReference documentReference = messagesCollection.document("rooms")
+                           DocumentReference documentReference = messagesCollection.document("chat_rooms")
                                    .collection(roomId).document(documentId);
                            final Message message = new Message();
                            message.setMessage(text_message);
                            message.setSenderUid(firebaseAuth.getCurrentUser().getUid());
                            message.setRecepientUid(mUid);
-                           message.setTimeStamp(time);
+                           message.setTime(time);
                            message.setPushId(documentId);
                            message.setType("Message");
                            message.setRoomId(roomId);
@@ -262,13 +352,13 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
                            processMessage = false;
 
                        }else {
-                           DocumentReference documentReference = messagesCollection.document("rooms")
+                           DocumentReference documentReference = messagesCollection.document("chat_rooms")
                                    .collection(roomId).document(documentId);
                            final Message message = new Message();
                            message.setMessage(text_message);
                            message.setSenderUid(firebaseAuth.getCurrentUser().getUid());
                            message.setRecepientUid(mUid);
-                           message.setTimeStamp(time);
+                           message.setTime(time);
                            message.setPushId(documentId);
                            message.setType("Message");
                            message.setRoomId(roomId);
@@ -280,7 +370,7 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
                 }
             });
 
-            DocumentReference messagingReference = messagingUsersCollection.document("room")
+            DocumentReference messagingReference = roomCollection.document("chat_rooms")
                     .collection(mUid).document(firebaseAuth.getCurrentUser().getUid());
             Room room = new Room();
             room.setUid(firebaseAuth.getCurrentUser().getUid());

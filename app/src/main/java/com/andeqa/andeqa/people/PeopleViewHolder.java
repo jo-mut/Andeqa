@@ -33,8 +33,5 @@ public class PeopleViewHolder extends RecyclerView.ViewHolder {
         usernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
     }
 
-    public void bindPeople(final Relation relation){
 
-
-    }
 }

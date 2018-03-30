@@ -13,10 +13,12 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.comments.CommentsAdapter;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.profile.ProfileActivity;
+import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.firebase.ui.common.ChangeEventType;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -26,6 +28,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -36,7 +39,9 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -44,18 +49,16 @@ import butterknife.ButterKnife;
 public class FollowersActivity extends AppCompatActivity {
     //firestore references
     private CollectionReference relationsReference;
-    private CollectionReference usersReference;
-    private CollectionReference timelineCollection;
     private Query followersQuery;
-    //firebase
-    private DatabaseReference databaseReference;
-    //adapters
-    private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     private FirebaseAuth firebaseAuth;
-    private boolean processFollow = false;
     private static final String TAG = FollowersActivity.class.getSimpleName();
     private static final String EXTRA_USER_UID = "uid";
     private String mUid;
+    private static final int TOTAL_ITEMS = 25;
+    private FollowersAdapter followersAdapter;
+
+    private List<String> followersIds = new ArrayList<>();
+    private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
 
     @Bind(R.id.followersRecyclerView)RecyclerView mFollowersRecyclerView;
 
@@ -84,226 +87,133 @@ public class FollowersActivity extends AppCompatActivity {
                 throw new IllegalArgumentException("pass an EXTRA_USER_UID");
             }
 
-            usersReference= FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             followersQuery = relationsReference.document("followers").collection(mUid);
-            timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-            databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
 
-            retrieveFollowers();
-            firestoreRecyclerAdapter.startListening();
+            setRecyclerView();
+            setCollections();
+
+            mFollowersRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+                @Override
+                public void onLoadMore() {
+                    setNextCollections();
+                }
+            });
+
         }
+    }
+
+    private void setRecyclerView(){
+        followersAdapter = new FollowersAdapter(this);
+        mFollowersRecyclerView.setAdapter(followersAdapter);
+        mFollowersRecyclerView.setHasFixedSize(false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setAutoMeasureEnabled(true);
+        mFollowersRecyclerView.setLayoutManager(layoutManager);
     }
 
 
 
-    private void retrieveFollowers(){
-        followersQuery.orderBy("uid");
-        FirestoreRecyclerOptions<Relation> options = new FirestoreRecyclerOptions.Builder<Relation>()
-                .setQuery(followersQuery, Relation.class)
-                .build();
-
-        firestoreRecyclerAdapter = new FirestoreRecyclerAdapter<Relation, PeopleViewHolder>(options) {
-            @Override
-            protected void onBindViewHolder(final PeopleViewHolder holder, int position, Relation model) {
-                holder.bindPeople(model);
-                //postKey is the uid of the cinggulan user is following
-                final String postKey = getSnapshots().get(position).getUid();
-                Log.d("follower postKey", postKey);
-
-                //postkey is same as uid
-                usersReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+    private void setCollections(){
+        followersQuery.orderBy("time").limit(TOTAL_ITEMS)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
-                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
                         if (e != null) {
                             Log.w(TAG, "Listen error", e);
                             return;
                         }
 
-                        if (documentSnapshot.exists()){
-                            Andeqan cinggulan =  documentSnapshot.toObject(Andeqan.class);
-                            final String profileImage = cinggulan.getProfileImage();
-                            final String firstName = cinggulan.getFirstName();
-                            final String secondName = cinggulan.getSecondName();
-                            final String username = cinggulan.getUsername();
-                            final String uid = cinggulan.getUid();
-
-
-                            holder.usernameTextView.setText(username);
-                            holder.fullNameTextView.setText(firstName + " " + secondName);
-                            Picasso.with(FollowersActivity.this)
-                                    .load(profileImage)
-                                    .fit()
-                                    .centerCrop()
-                                    .placeholder(R.drawable.profle_image_background)
-                                    .networkPolicy(NetworkPolicy.OFFLINE)
-                                    .into(holder.profileImageView, new Callback() {
-                                        @Override
-                                        public void onSuccess() {
-
-                                        }
-
-                                        @Override
-                                        public void onError() {
-                                            Picasso.with(FollowersActivity.this)
-                                                    .load(profileImage)
-                                                    .fit()
-                                                    .centerCrop()
-                                                    .placeholder(R.drawable.profle_image_background)
-                                                    .into(holder.profileImageView);
-
-
-                                        }
-                                    });
-
-                            holder.profileImageView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    Intent intent = new Intent(FollowersActivity.this, ProfileActivity.class);
-                                    intent.putExtra(FollowersActivity.EXTRA_USER_UID, uid);
-                                    startActivity(intent);
+                        if (!documentSnapshots.isEmpty()){
+                            //retrieve the first bacth of documentSnapshots
+                            for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                                switch (change.getType()) {
+                                    case ADDED:
+                                        onDocumentAdded(change);
+                                        break;
+                                    case MODIFIED:
+                                        onDocumentModified(change);
+                                        break;
+                                    case REMOVED:
+                                        onDocumentRemoved(change);
+                                        break;
                                 }
-                            });
-
-                            //show if following or not
-                            relationsReference.document("followers").collection(postKey)
-                                    .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
-                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                                            if (documentSnapshots.isEmpty()){
-                                                holder.followButton.setText("Follow");
-                                            }else {
-                                                holder.followButton.setText("Following");
-                                            }
-                                        }
-                                    });
-
-                            //follow or unfollow
-                            if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                holder.followButton.setVisibility(View.GONE);
-                            }else {
-                                holder.followButton.setVisibility(View.VISIBLE);
-                                holder.followButton.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        processFollow = true;
-                                        relationsReference.document("followers")
-                                                .collection(postKey)
-                                                .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
-                                                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                                    @Override
-                                                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-
-                                                        if (e != null) {
-                                                            Log.w(TAG, "Listen error", e);
-                                                            return;
-                                                        }
-
-                                                        if (processFollow){
-                                                            if (documentSnapshots.isEmpty()){
-                                                                //set followers and following
-                                                                Relation follower = new Relation();
-                                                                follower.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                relationsReference.document("followers").collection(postKey)
-                                                                        .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
-                                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                            @Override
-                                                                            public void onSuccess(Void aVoid) {
-                                                                                Timeline timeline = new Timeline();
-                                                                                final long time = new Date().getTime();
-                                                                                final String postid =  databaseReference.push().getKey();
-                                                                                timeline.setPushId(mUid);
-                                                                                timeline.setTime(time);
-                                                                                timeline.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                                timeline.setType("followers");
-                                                                                timeline.setPostId(postid);
-                                                                                timeline.setStatus("unRead");
-
-                                                                                timelineCollection.document(mUid).collection("timeline")
-                                                                                        .document(firebaseAuth.getCurrentUser().getUid())
-                                                                                        .set(timeline);
-                                                                            }
-                                                                        });
-                                                                final Relation following = new Relation();
-                                                                following.setUid(postKey);
-                                                                relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
-                                                                        .document(postKey).set(following);
-                                                                processFollow = false;
-                                                                holder.followButton.setText("Following");
-                                                            }else {
-                                                                relationsReference.document("followers").collection(postKey)
-                                                                        .document(firebaseAuth.getCurrentUser().getUid()).delete();
-                                                                relationsReference.document("following").collection(mUid)
-                                                                        .document(postKey).delete();
-                                                                processFollow = false;
-                                                                holder.followButton.setText("Follow");
-                                                            }
-                                                        }
-                                                    }
-                                                });
-
-                                    }
-                                });
-
                             }
                         }
 
                     }
                 });
+    }
 
+    private void setNextCollections(){
+        // Get the last visible document
+        final int snapshotSize = followersAdapter.getItemCount();
+        DocumentSnapshot lastVisible = followersAdapter.getSnapshot(snapshotSize - 1);
 
+        //retrieve the first bacth of documentSnapshots
+        Query nextSellingQuery = relationsReference.document("followers").collection(mUid)
+                .startAfter(lastVisible)
+                .limit(TOTAL_ITEMS);
 
-            }
-
+        nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public PeopleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.poeple_list, parent, false);
-                return new PeopleViewHolder(view);
-            }
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-            @Override
-            public void onDataChanged() {
-                super.onDataChanged();
-            }
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
 
-            @Override
-            public void onError(FirebaseFirestoreException e) {
-                super.onError(e);
+                if (!documentSnapshots.isEmpty()){
+                    //retrieve the first bacth of documentSnapshots
+                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                        switch (change.getType()) {
+                            case ADDED:
+                                onDocumentAdded(change);
+                                break;
+                            case MODIFIED:
+                                onDocumentModified(change);
+                                break;
+                            case REMOVED:
+                                onDocumentRemoved(change);
+                                break;
+                        }
+                    }
+                }
             }
+        });
+    }
 
-            @Override
-            public void onChildChanged(ChangeEventType type, DocumentSnapshot snapshot, int newIndex, int oldIndex) {
-                super.onChildChanged(type, snapshot, newIndex, oldIndex);
-            }
-
-            @Override
-            public int getItemCount() {
-                return super.getItemCount();
-            }
-
-            @Override
-            public Relation getItem(int position) {
-                return super.getItem(position);
-            }
-
-            @Override
-            public ObservableSnapshotArray<Relation> getSnapshots() {
-                return super.getSnapshots();
-            }
-        };
-
-        mFollowersRecyclerView.setAdapter(firestoreRecyclerAdapter);
-        mFollowersRecyclerView.setHasFixedSize(false);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setReverseLayout(true);
-        layoutManager.setStackFromEnd(true);
-        layoutManager.onSaveInstanceState();
-        layoutManager.setAutoMeasureEnabled(true);
-        mFollowersRecyclerView.setLayoutManager(layoutManager);
+    protected void onDocumentAdded(DocumentChange change) {
+        followersIds.add(change.getDocument().getId());
+        documentSnapshots.add(change.getDocument());
+        followersAdapter.setProfileFollowers(documentSnapshots);
+        followersAdapter.notifyItemInserted(documentSnapshots.size() -1);
+        followersAdapter.getItemCount();
 
     }
+
+    protected void onDocumentModified(DocumentChange change) {
+        if (change.getOldIndex() == change.getNewIndex()) {
+            // Item changed but remained in same position
+            documentSnapshots.set(change.getOldIndex(), change.getDocument());
+            followersAdapter.notifyItemChanged(change.getOldIndex());
+        } else {
+            // Item changed and changed position
+            documentSnapshots.remove(change.getOldIndex());
+            documentSnapshots.add(change.getNewIndex(), change.getDocument());
+            followersAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+        }
+    }
+
+    protected void onDocumentRemoved(DocumentChange change) {
+        documentSnapshots.remove(change.getOldIndex());
+        followersAdapter.notifyItemRemoved(change.getOldIndex());
+        followersAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+    }
+
+
 
     @Override
     protected void onStop() {
@@ -318,6 +228,6 @@ public class FollowersActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        firestoreRecyclerAdapter.stopListening();
+
     }
 }

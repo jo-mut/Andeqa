@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.firestore.FirestoreAdapter;
 import com.andeqa.andeqa.models.Message;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -26,31 +25,33 @@ import static android.media.CamcorderProfile.get;
  * Created by J.EL on 1/4/2018.
  */
 
-public class MessagingAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
+public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = MessagingAdapter.class.getSimpleName();
     private Context mContext;
     private static final String KEY_LAYOUT_POSITION = "layout pooition";
     private static final String EXTRA_USER_UID = "uid";
     private static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
-    public static final int SEND_TYPE=0;
-    public static final int RECEIVE_TYPE=1;
+    private static final int SEND_TYPE=0;
+    private static final int RECEIVE_TYPE=1;
     private FirebaseAuth firebaseAuth;
     private CollectionReference messagingUsersCollection;
     private Query messagingUsersQuery;
-    public boolean showOnClick = true;
-    private List<DocumentSnapshot> mSnapshots = new ArrayList<>();
+    private boolean showOnClick = true;
+    private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
 
 
-
-    public MessagingAdapter(Query query, Context mContext) {
-        super(query);
+    public MessagingAdapter(Context mContext) {
         this.mContext = mContext;
     }
 
-    @Override
+    public void setProfileMessages(List<DocumentSnapshot> messages){
+        this.documentSnapshots = messages;
+        notifyDataSetChanged();
+    }
+
     protected DocumentSnapshot getSnapshot(int index) {
-        return super.getSnapshot(index);
+        return documentSnapshots.get(index);
     }
 
     @Override
@@ -61,7 +62,7 @@ public class MessagingAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        return super.getItemCount();
+        return documentSnapshots.size();
     }
 
     @Override
@@ -117,8 +118,8 @@ public class MessagingAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> 
         final String pushId = message.getPushId();
 
         holder.messageTextView.setText(message.getMessage());
-        holder.timeTextView.setText(DateFormat.format("HH:mm", message.getTimeStamp()));
-        holder.dateTextView.setText(DateFormat.format("dd-MMM-yy", message.getTimeStamp()));
+        holder.timeTextView.setText(DateFormat.format("HH:mm", message.getTime()));
+        holder.dateTextView.setText(DateFormat.format("dd-MMM-yy", message.getTime()));
 
 
 
@@ -144,8 +145,8 @@ public class MessagingAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> 
 
         Message message = getSnapshot(position).toObject(Message.class);
         holder.messageTextView.setText(message.getMessage());
-        holder.timeTextView.setText(DateFormat.format("HH:mm", message.getTimeStamp()));
-        holder.dateTextView.setText(DateFormat.format("dd-MMM-yy", message.getTimeStamp()));
+        holder.timeTextView.setText(DateFormat.format("HH:mm", message.getTime()));
+        holder.dateTextView.setText(DateFormat.format("dd-MMM-yy", message.getTime()));
 
         holder.receiveRelativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override

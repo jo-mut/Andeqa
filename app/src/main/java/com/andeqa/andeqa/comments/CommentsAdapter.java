@@ -2,11 +2,18 @@ package com.andeqa.andeqa.comments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
@@ -67,7 +74,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     }
 
 
-    public DocumentSnapshot getSnapshot(int index) {
+    protected DocumentSnapshot getSnapshot(int index) {
         return documentSnapshots.get(index);
     }
 
@@ -103,7 +110,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
         }
 
         //set the comment
-        holder.mCommentTextView.setText(comment.getCommentText());
+        addReadMore(comment.getCommentText(), holder.mCommentTextView);
+        addReadLess(comment.getCommentText(), holder.mCommentTextView);
 
         holder.profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -245,5 +253,70 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
     }
 
+
+    private void addReadMore(final String text, final TextView textView) {
+
+        final String [] strings = text.split("");
+
+        final int size = strings.length;
+
+        if (size <= 120){
+            //setence will not have read more
+        }else {
+            SpannableString ss = new SpannableString(text.substring(0, 119) + "...read more");
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View view) {
+                    addReadLess(text, textView);
+                }
+                @Override
+                public void updateDrawState(TextPaint ds) {
+                    super.updateDrawState(ds);
+                    ds.setUnderlineText(false);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        ds.setColor(mContext.getResources().getColor(R.color.colorPrimary, mContext.getTheme()));
+                    } else {
+                        ds.setColor(mContext.getResources().getColor(R.color.colorPrimary));
+                    }
+                }
+            };
+            ss.setSpan(clickableSpan, ss.length() - 10, ss.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            textView.setText(ss);
+            textView.setMovementMethod(LinkMovementMethod.getInstance());
+        }
+    }
+
+    private void addReadLess(final String text, final TextView textView) {
+        final String [] strings = text.split("");
+
+        final int size = strings.length;
+
+        if (size > 120){
+            SpannableString ss = new SpannableString(text + " read less");
+            addReadMore(text, textView);
+
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View view) {
+                    addReadMore(text, textView);
+                }
+                @Override
+                public void updateDrawState(TextPaint ds) {
+                    super.updateDrawState(ds);
+                    ds.setUnderlineText(false);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        ds.setColor(mContext.getResources().getColor(R.color.colorPrimary, mContext.getTheme()));
+                    } else {
+                        ds.setColor(mContext.getResources().getColor(R.color.colorPrimary));
+                    }
+                }
+            };
+            ss.setSpan(clickableSpan, ss.length() - 10, ss.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            textView.setText(ss);
+            textView.setMovementMethod(LinkMovementMethod.getInstance());
+        }
+
+
+    }
 
 }

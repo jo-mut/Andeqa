@@ -15,7 +15,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * Created by J.EL on 1/4/2018.
  */
 
-public class MessageViewHolder extends RecyclerView.ViewHolder {
+public class RoomViewHolder extends RecyclerView.ViewHolder {
     View mView;
     Context mContext;
     public CircleImageView profileImageView;
@@ -25,7 +25,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     public RelativeLayout roomRelativeLayout;
     public View statusView;
 
-    public MessageViewHolder(View itemView) {
+    public RoomViewHolder(View itemView) {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
@@ -38,9 +38,6 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
 
     }
 
-    public void bindMessagingUser(final Room room){
 
-
-    }
 }
 

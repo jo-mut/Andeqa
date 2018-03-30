@@ -12,20 +12,20 @@ public class Message {
     String pushId;
     String type;
     String roomId;
-    long timeStamp;
+    long time;
 
     public Message() {
     }
 
     public Message(String senderUid, String recepientUid, String message,
-                   String pushId, String type, String roomId, long timeStamp) {
+                   String pushId, String type, String roomId, long time) {
         this.senderUid = senderUid;
         this.recepientUid = recepientUid;
         this.message = message;
         this.pushId = pushId;
         this.type = type;
         this.roomId = roomId;
-        this.timeStamp = timeStamp;
+        this.time = time;
 
     }
 
@@ -78,11 +78,11 @@ public class Message {
         this.roomId = roomId;
     }
 
-    public long getTimeStamp() {
-        return timeStamp;
+    public long getTime() {
+        return time;
     }
 
-    public void setTimeStamp(long timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setTime(long timeStamp) {
+        this.time = timeStamp;
     }
 }

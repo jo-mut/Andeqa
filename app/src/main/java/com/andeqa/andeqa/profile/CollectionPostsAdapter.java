@@ -187,7 +187,6 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
         }
 
         if (!TextUtils.isEmpty(collectionPost.getDescription())){
-//                        holder.descriptionTextView.setText(collectionPost.getDescription());
             addReadMore(collectionPost.getDescription(), holder.descriptionTextView);
             addReadLess(collectionPost.getDescription(), holder.descriptionTextView);
             holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
