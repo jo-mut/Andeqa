@@ -9,16 +9,11 @@ public class Comment {
     String commentText;
     String pushId;
     String postId;
+    long time;
 
     public Comment() {
     }
 
-    public Comment(String uid, String commentText, String pushId, String postId) {
-        this.uid = uid;
-        this.commentText = commentText;
-        this.pushId = pushId;
-        this.postId = postId;
-    }
 
     public String getUid() {
         return uid;
@@ -50,5 +45,13 @@ public class Comment {
 
     public void setPostId(String postId) {
         this.postId = postId;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
     }
 }

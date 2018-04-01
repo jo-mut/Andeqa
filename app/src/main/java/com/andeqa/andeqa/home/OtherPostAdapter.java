@@ -164,7 +164,7 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
         holder.postImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, FullImageViewActivity.class);
+                Intent intent = new Intent(mContext, ImageViewActivity.class);
                 intent.putExtra(OtherPostAdapter.EXTRA_POST_KEY, postKey);
                 mContext.startActivity(intent);
             }

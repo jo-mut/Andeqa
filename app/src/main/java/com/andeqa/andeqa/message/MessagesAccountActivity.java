@@ -121,13 +121,12 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             roomCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            messagesQuery = messagesCollection.document("rooms").collection(roomId);
+            messagesQuery = messagesCollection.document("chat_rooms").collection(roomId);
 
-
+            setRecyclerView();
             getProfile();
             getSenderProfile();
             setMessages();
-            scrollToPosition();
 
             mMessagesRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
                 @Override
@@ -161,10 +160,6 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
         });
     }
 
-    //scroll to the latest message when acivity launches
-    private void scrollToPosition(){
-        mMessagesRecyclerView.scrollToPosition(documentSnapshots.size() -1);
-    }
 
     /**get current user profile*/
     private void getSenderProfile(){
@@ -213,6 +208,17 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
                 });
     }
 
+    private void setRecyclerView(){
+        messagingAdapter = new MessagingAdapter(this);
+        mMessagesRecyclerView.setAdapter(messagingAdapter);
+        mMessagesRecyclerView.setHasFixedSize(false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setAutoMeasureEnabled(true);
+        mMessagesRecyclerView.setLayoutManager(layoutManager);
+        mMessagesRecyclerView.scrollToPosition(documentSnapshots.size() -1);
+    }
+
+
 
     private void setMessages(){
         messagesQuery.orderBy("time").limit(TOTAL_ITEMS)
@@ -241,8 +247,6 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
                                 }
                             }
 
-
-
                         }
 
                     }
@@ -255,7 +259,8 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
         DocumentSnapshot lastVisible = messagingAdapter.getSnapshot(snapshotSize - 1);
 
         //retrieve the first bacth of documentSnapshots
-        Query nextSellingQuery = messagesCollection.orderBy("time").startAfter(lastVisible)
+        Query nextSellingQuery =messagesCollection.document("chat_rooms").collection(roomId)
+                .orderBy("time").startAfter(lastVisible)
                 .limit(TOTAL_ITEMS);
 
         nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -325,6 +330,8 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
             final long time = new Date().getTime();
 
             final String documentId = databaseReference.push().getKey();
+            final DocumentReference documentReference = messagesCollection.document("chat_rooms")
+                    .collection(roomId).document(documentId);
 
             processMessage = true;
             messagesCollection.document("chat_rooms").collection(roomId)
@@ -338,8 +345,7 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
 
                     if (processMessage){
                        if (!documentSnapshots.isEmpty()){
-                           DocumentReference documentReference = messagesCollection.document("chat_rooms")
-                                   .collection(roomId).document(documentId);
+
                            final Message message = new Message();
                            message.setMessage(text_message);
                            message.setSenderUid(firebaseAuth.getCurrentUser().getUid());
@@ -352,8 +358,6 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
                            processMessage = false;
 
                        }else {
-                           DocumentReference documentReference = messagesCollection.document("chat_rooms")
-                                   .collection(roomId).document(documentId);
                            final Message message = new Message();
                            message.setMessage(text_message);
                            message.setSenderUid(firebaseAuth.getCurrentUser().getUid());
@@ -370,7 +374,7 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
                 }
             });
 
-            DocumentReference messagingReference = roomCollection.document("chat_rooms")
+            DocumentReference messagingReference = roomCollection.document("rooms")
                     .collection(mUid).document(firebaseAuth.getCurrentUser().getUid());
             Room room = new Room();
             room.setUid(firebaseAuth.getCurrentUser().getUid());

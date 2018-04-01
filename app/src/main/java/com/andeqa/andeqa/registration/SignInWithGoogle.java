@@ -70,7 +70,7 @@ public class SignInWithGoogle extends AppCompatActivity implements
 
     private void setFonts(){
         Typeface appNameFont = Typeface.createFromAsset(getAssets(),
-                "fonts/Lucida Handwriting Italic.ttf");
+                "fonts/Kurale-Regular.ttf");
         mAppNameTextView.setTypeface(appNameFont);
     }
 

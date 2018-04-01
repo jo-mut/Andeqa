@@ -53,7 +53,7 @@
         </activity>
         <activity
             android:name=".profile.UpdateProfileActivity"
-            android:label="Update your profile"
+            android:label="Account settings"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
@@ -109,7 +109,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".home.FullImageViewActivity"
+            android:name=".home.ImageViewActivity"
             android:label="Post" />
         <activity
             android:name=".profile.WalletActivity"
@@ -172,10 +172,13 @@
             android:label="@string/title_activity_create"
             android:theme="@style/AppTheme" />
         <activity
-            android:label="Create collection"
-            android:name=".creation.CreateCollectionActivity" />
+            android:name=".creation.CreateCollectionActivity"
+            android:label="Create collection" />
         <activity
-            android:name=".profile.CollectionPostsActivity"/>
+            android:name=".profile.CollectionPostsActivity" />
+        <activity
+            android:label="Collection settings"
+            android:name=".profile.CollectionSettingsActivity"/>
     </application>
 
 </manifest>

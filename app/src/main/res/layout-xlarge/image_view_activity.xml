@@ -5,9 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:fitsSystemWindows="false"
     android:background="#000000"
-    tools:context="com.andeqa.andeqa.home.FullImageViewActivity">
+    android:fitsSystemWindows="false"
+    tools:context="com.andeqa.andeqa.home.ImageViewActivity">
+
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -28,16 +29,10 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="112dp"
         app:titleTextColor="@android:color/white"
         app:layout_scrollFlags="scroll|enterAlways"
         app:titleTextAppearance="@style/toolbarTextAppearance"
         app:popupTheme="@style/AppTheme.PopupOverlay" />
 
 </android.support.design.widget.CoordinatorLayout>
-
-
-
-
-
-

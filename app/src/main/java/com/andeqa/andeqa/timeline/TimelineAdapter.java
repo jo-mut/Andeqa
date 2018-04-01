@@ -37,13 +37,15 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by J.EL on 1/18/2018.
  */
 
-public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
+public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final String TAG = TimelineAdapter.class.getSimpleName();
     private Context mContext;
@@ -65,29 +67,31 @@ public class TimelineAdapter extends FirestoreAdapter<RecyclerView.ViewHolder> {
     private CollectionReference senseCreditCollection;
     private CollectionReference commentCollection;
     private DatabaseReference databaseReference;
+    private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
 
 
-
-
-    public TimelineAdapter(Query query, Context mContext) {
-        super(query);
+    public TimelineAdapter(Context mContext) {
         this.mContext = mContext;
     }
 
-    @Override
-    protected DocumentSnapshot getSnapshot(int index) {
-        return super.getSnapshot(index);
+    protected void setTimelineActivities(List<DocumentSnapshot> mSnapshots){
+        this.documentSnapshots = mSnapshots;
+        notifyDataSetChanged();
     }
+
 
     @Override
     public long getItemId(int position) {
         return super.getItemId(position);
+    }
 
+    protected DocumentSnapshot getSnapshot(int index) {
+        return getSnapshot(index);
     }
 
     @Override
     public int getItemCount() {
-        return super.getItemCount();
+        return documentSnapshots.size();
     }
 
     @Override

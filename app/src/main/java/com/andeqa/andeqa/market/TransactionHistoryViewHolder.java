@@ -10,6 +10,8 @@ import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.TransactionDetails;
 
+import java.text.DecimalFormat;
+
 
 /**
  * Created by J.EL on 9/8/2017.
@@ -34,13 +36,4 @@ public class TransactionHistoryViewHolder extends RecyclerView.ViewHolder {
 
     }
 
-    public void bindTransactionHistory(final TransactionDetails transactionDetails){
-        TextView amountTransferredTextView = (TextView) mView.findViewById(R.id.amountTransferredTextView);
-//
-//        DecimalFormat formatter =  new DecimalFormat("0.00000000");
-//        amountTransferredTextView.setText("You have redeemed" + " SC " + formatter.format
-//                (transactionDetails.getAmount()) +  " on " +
-//                transactionDetails.getDat + ". Your new wallet balance is " +
-//                "SC " + formatter.format(transactionDetails.getWalletBalance()));
-    }
 }

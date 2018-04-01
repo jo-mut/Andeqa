@@ -44,7 +44,6 @@ public abstract class FirestoreAdapter <VH extends RecyclerView.ViewHolder>
     @Override
     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-
         if (e != null) {
             Log.w(TAG, "onEvent:error", e);
             onError(e);

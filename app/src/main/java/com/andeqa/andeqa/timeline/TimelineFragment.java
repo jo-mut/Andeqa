@@ -14,14 +14,21 @@ import android.widget.RelativeLayout;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.message.MessagesFragment;
+import com.andeqa.andeqa.message.RoomAdapter;
+import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -43,6 +50,10 @@ public class TimelineFragment extends Fragment {
     private int TOTAL_ITEMS = 30;
 
 
+    private List<String> activitiesIds = new ArrayList<>();
+    private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
+
+
 
     public TimelineFragment() {
         // Required empty public constructor
@@ -62,34 +73,137 @@ public class TimelineFragment extends Fragment {
                 .collection("timeline").orderBy("timeStamp", Query.Direction.DESCENDING)
                 .limit(TOTAL_ITEMS);
 
-        getTimeline();
+        setRecyclerView();
+        setCollections();
+
+        mTimelineRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+            @Override
+            public void onLoadMore() {
+                setNextCollections();
+            }
+        });
 
         return  view;
     }
 
-    private void getTimeline(){
-       timelineQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-           @Override
-           public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-               if (e != null) {
-                   Log.w(TAG, "Listen error", e);
-                   return;
-               }
-
-               if (!documentSnapshots.isEmpty()){
-                   timelineAdapter = new TimelineAdapter(timelineQuery, getContext());
-                   timelineAdapter.startListening();
-                   mTimelineRecyclerView.setAdapter(timelineAdapter);
-                   LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-                   mTimelineRecyclerView.setLayoutManager(layoutManager);
-               }else {
-                   mPlaceHolderRelativeLayout.setVisibility(View.VISIBLE);
-               }
-
-           }
-       });
+    private void setRecyclerView(){
+        timelineAdapter = new TimelineAdapter(getContext());
+        mTimelineRecyclerView.setAdapter(timelineAdapter);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        layoutManager.setAutoMeasureEnabled(true);
+        mTimelineRecyclerView.setHasFixedSize(false);
+        mTimelineRecyclerView.setLayoutManager(layoutManager);
     }
 
+
+
+    private void setCollections(){
+        timelineQuery.limit(TOTAL_ITEMS)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!documentSnapshots.isEmpty()){
+                            //retrieve the first bacth of documentSnapshots
+                            for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                                switch (change.getType()) {
+                                    case ADDED:
+                                        onDocumentAdded(change);
+                                        break;
+                                    case MODIFIED:
+                                        onDocumentModified(change);
+                                        break;
+                                    case REMOVED:
+                                        onDocumentRemoved(change);
+                                        break;
+                                }
+                            }
+                        }else {
+                            mPlaceHolderRelativeLayout.setVisibility(View.VISIBLE);
+                        }
+
+                    }
+                });
+    }
+
+    private void setNextCollections(){
+        // Get the last visible document
+        final int snapshotSize = timelineAdapter.getItemCount();
+        DocumentSnapshot lastVisible = timelineAdapter.getSnapshot(snapshotSize - 1);
+
+        //retrieve the first bacth of documentSnapshots
+        Query nextSellingQuery = timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
+                .collection("timeline").orderBy("timeStamp", Query.Direction.DESCENDING)
+                .startAfter(lastVisible)
+                .limit(TOTAL_ITEMS);
+
+        nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (!documentSnapshots.isEmpty()){
+                    //retrieve the first bacth of documentSnapshots
+                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                        switch (change.getType()) {
+                            case ADDED:
+                                onDocumentAdded(change);
+                                break;
+                            case MODIFIED:
+                                onDocumentModified(change);
+                                break;
+                            case REMOVED:
+                                onDocumentRemoved(change);
+                                break;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    protected void onDocumentAdded(DocumentChange change) {
+        activitiesIds.add(change.getDocument().getId());
+        documentSnapshots.add(change.getDocument());
+        timelineAdapter.setTimelineActivities(documentSnapshots);
+        timelineAdapter.notifyItemInserted(documentSnapshots.size() -1);
+        timelineAdapter.getItemCount();
+
+    }
+
+    protected void onDocumentModified(DocumentChange change) {
+        if (change.getOldIndex() == change.getNewIndex()) {
+            // Item changed but remained in same position
+            documentSnapshots.set(change.getOldIndex(), change.getDocument());
+            timelineAdapter.notifyItemChanged(change.getOldIndex());
+        } else {
+            // Item changed and changed position
+            documentSnapshots.remove(change.getOldIndex());
+            documentSnapshots.add(change.getNewIndex(), change.getDocument());
+            timelineAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+        }
+    }
+
+    protected void onDocumentRemoved(DocumentChange change) {
+        documentSnapshots.remove(change.getOldIndex());
+        timelineAdapter.notifyItemRemoved(change.getOldIndex());
+        timelineAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        documentSnapshots.clear();
+    }
 
 }

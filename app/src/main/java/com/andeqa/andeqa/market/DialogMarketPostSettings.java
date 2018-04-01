@@ -33,11 +33,13 @@ public class DialogMarketPostSettings extends DialogFragment implements View.OnC
     @Bind(R.id.noRelativeLayout)RelativeLayout mNoRelativeLayout;
     @Bind(R.id.YesRelativeLayout)RelativeLayout mYesRelativeLayout;
 
-    private CollectionReference sellingCollection;
+    private CollectionReference marketCollection;
     private FirebaseAuth firebaseAuth;
 
-    private String mPostKey;
-    private static final String EXTRA_POST_KEY = "post key";
+    private String mPostId;
+    private String mCollectionId;
+    private static final String COLLECTION_ID = "collection id";
+    private static final String EXTRA_POST_ID = "post id";
     private static final String TAG = DialogMarketPostSettings.class.getSimpleName();
 
     public static DialogMarketPostSettings newInstance(String title){
@@ -67,14 +69,14 @@ public class DialogMarketPostSettings extends DialogFragment implements View.OnC
 
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
-            sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
+            marketCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
         }
 
         Bundle bundle = getArguments();
         if (bundle != null){
-            mPostKey = bundle.getString(DialogMarketPostSettings.EXTRA_POST_KEY);
+            mCollectionId = bundle.getString(DialogMarketPostSettings.COLLECTION_ID);
+            mPostId = bundle.getString(DialogMarketPostSettings.EXTRA_POST_ID);
 
-            Log.d("the passed poskey", mPostKey);
 
         }else {
             throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
@@ -102,7 +104,7 @@ public class DialogMarketPostSettings extends DialogFragment implements View.OnC
     @Override
     public void onClick(View v){
         if (v == mYesRelativeLayout){
-            sellingCollection.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            marketCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
                 public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -112,7 +114,7 @@ public class DialogMarketPostSettings extends DialogFragment implements View.OnC
                     }
 
                     if (documentSnapshot.exists()){
-                        sellingCollection.document(mPostKey).delete();
+                        marketCollection.document(mPostId).delete();
                     }
                 }
             });

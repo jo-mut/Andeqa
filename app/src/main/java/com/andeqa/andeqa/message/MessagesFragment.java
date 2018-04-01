@@ -66,7 +66,7 @@ public class MessagesFragment extends Fragment {
 
         if (firebaseAuth.getCurrentUser() != null){
             roomsCollections = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
-            roomsQuery = roomsCollections.document("chat_rooms")
+            roomsQuery = roomsCollections.document("rooms")
                     .collection(firebaseAuth.getCurrentUser().getUid());
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
 
@@ -86,7 +86,7 @@ public class MessagesFragment extends Fragment {
     }
 
     private void showPlaceHolder(){
-        roomsCollections.document("chat_rooms")
+        roomsCollections.document("rooms")
                 .collection(firebaseAuth.getCurrentUser().getUid())
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -215,5 +215,9 @@ public class MessagesFragment extends Fragment {
         roomAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
     }
 
-
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        documentSnapshots.clear();
+    }
 }

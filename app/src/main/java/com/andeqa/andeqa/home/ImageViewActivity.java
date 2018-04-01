@@ -27,8 +27,8 @@ import com.squareup.picasso.Picasso;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class FullImageViewActivity extends AppCompatActivity implements View.OnClickListener{
-    private static final String TAG = FullImageViewActivity.class.getSimpleName();
+public class ImageViewActivity extends AppCompatActivity implements View.OnClickListener{
+    private static final String TAG = ImageViewActivity.class.getSimpleName();
     @Bind(R.id.postImageView)ProportionalImageView mCingleImageView;
     @Bind(R.id.toolbar)Toolbar mToolbar;
 
@@ -37,7 +37,7 @@ public class FullImageViewActivity extends AppCompatActivity implements View.OnC
     private DatabaseReference cinglesRef;
     private DatabaseReference likesRef;
     //firestore
-    private CollectionReference collectionsCollection;
+    private CollectionReference collectionPost;
     private CollectionReference likesReference;
     private CollectionReference commentsReference;
     private Query cingleQuery;
@@ -55,7 +55,7 @@ public class FullImageViewActivity extends AppCompatActivity implements View.OnC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.full_image_view_activity);
+        setContentView(R.layout.image_view_activity);
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
 
@@ -86,8 +86,8 @@ public class FullImageViewActivity extends AppCompatActivity implements View.OnC
 
             likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
             commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
-            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS)
-                    .document("collection_posts").collection(mCollectionId);
+            collectionPost = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                    .document("collections").collection(mCollectionId);
             commentsCountQuery = commentsReference;
             //firebase
             cinglesRef = FirebaseDatabase.getInstance().getReference(Constants.COLLECTIONS);
@@ -102,7 +102,7 @@ public class FullImageViewActivity extends AppCompatActivity implements View.OnC
 
     private void setUpCingleDetails(){
 
-        collectionsCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        collectionPost.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -116,7 +116,7 @@ public class FullImageViewActivity extends AppCompatActivity implements View.OnC
                     Log.d("detailed image", image);
 
                     //set the single image
-                    Picasso.with(FullImageViewActivity.this)
+                    Picasso.with(ImageViewActivity.this)
                             .load(image)
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(mCingleImageView, new Callback() {
@@ -127,7 +127,7 @@ public class FullImageViewActivity extends AppCompatActivity implements View.OnC
 
                                 @Override
                                 public void onError() {
-                                    Picasso.with(FullImageViewActivity.this)
+                                    Picasso.with(ImageViewActivity.this)
                                             .load(image)
                                             .into(mCingleImageView);
                                 }

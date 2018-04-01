@@ -48,7 +48,7 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
     @Bind(R.id.sendAmountButton)Button mSendAmountButton;
 
     private String mPostKey;
-    private static final String EXTRA_POST_KEY = "post key";
+    private static final String EXTRA_POST_KEY = "post id";
     private boolean processPay = false;
     //firestore
     private CollectionReference cingleOwnersReference;

@@ -56,7 +56,7 @@ public class HomeFragment extends Fragment{
     private LinearLayoutManager layoutManager;
     private int TOTAL_ITEMS = 10;
     private List<String> mSnapshotsIds = new ArrayList<>();
-    private List<DocumentSnapshot> mSnapshots = new ArrayList<>();
+    private List<DocumentSnapshot> posts = new ArrayList<>();
 
     public HomeFragment() {
         // Required empty public constructor
@@ -77,6 +77,9 @@ public class HomeFragment extends Fragment{
             randomPostsQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
                     .limit(TOTAL_ITEMS);
 
+            setRecyclerView();
+            setPosts();
+
             postsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
                 @Override
                 public void onLoadMore() {
@@ -92,9 +95,6 @@ public class HomeFragment extends Fragment{
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        setRecyclerView();
-        setPosts();
 
     }
 
@@ -143,7 +143,7 @@ public class HomeFragment extends Fragment{
         final int snapshotSize = postsAdapter.getItemCount();
         DocumentSnapshot lastVisible = postsAdapter.getSnapshot(snapshotSize - 1);
 
-        //retrieve the first bacth of mSnapshots
+        //retrieve the first bacth of posts
         nextRandomQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
                 .startAfter(lastVisible)
                 .limit(TOTAL_ITEMS);
@@ -158,7 +158,7 @@ public class HomeFragment extends Fragment{
                 }
 
                 if (!documentSnapshots.isEmpty()){
-                    //retrieve the first bacth of mSnapshots
+                    //retrieve the first bacth of posts
                     for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
                         switch (change.getType()) {
                             case ADDED:
@@ -179,9 +179,9 @@ public class HomeFragment extends Fragment{
 
     protected void onDocumentAdded(DocumentChange change) {
         mSnapshotsIds.add(change.getDocument().getId());
-        mSnapshots.add(change.getDocument());
-        postsAdapter.setRandomPosts(mSnapshots);
-        postsAdapter.notifyItemInserted(mSnapshots.size() -1);
+        posts.add(change.getDocument());
+        postsAdapter.setRandomPosts(posts);
+        postsAdapter.notifyItemInserted(posts.size() -1);
         postsAdapter.getItemCount();
 
     }
@@ -189,20 +189,27 @@ public class HomeFragment extends Fragment{
     protected void onDocumentModified(DocumentChange change) {
         if (change.getOldIndex() == change.getNewIndex()) {
             // Item changed but remained in same position
-            mSnapshots.set(change.getOldIndex(), change.getDocument());
+            posts.set(change.getOldIndex(), change.getDocument());
             postsAdapter.notifyItemChanged(change.getOldIndex());
         } else {
             // Item changed and changed position
-            mSnapshots.remove(change.getOldIndex());
-            mSnapshots.add(change.getNewIndex(), change.getDocument());
-            postsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+            posts.remove(change.getOldIndex());
+            posts.add(change.getNewIndex(), change.getDocument());
+            postsAdapter.notifyItemRangeChanged(0, posts.size());
         }
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
-        mSnapshots.remove(change.getOldIndex());
+        posts.remove(change.getOldIndex());
         postsAdapter.notifyItemRemoved(change.getOldIndex());
-        postsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+        postsAdapter.notifyItemRangeChanged(0, posts.size());
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        posts.clear();
     }
 
 }

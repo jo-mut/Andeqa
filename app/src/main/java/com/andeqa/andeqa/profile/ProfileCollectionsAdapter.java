@@ -63,8 +63,14 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
         final String collectionId = collection.getCollectionId();
         final String uid = collection.getUid();
 
+        firebaseAuth = FirebaseAuth.getInstance();
+
         holder.mCollectionNameTextView.setText(collection.getName());
         holder.mCollectionsNoteTextView.setText(collection.getNote());
+
+        if (firebaseAuth.getCurrentUser().getUid().equals(uid)){
+            holder.mCollectionsSettingsImageView.setVisibility(View.VISIBLE);
+        }
 
         if (collection.getImage() != null){
             Picasso.with(mContext)
@@ -98,6 +104,15 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
                 Intent intent = new Intent(mContext, CollectionPostsActivity.class);
                 intent.putExtra(ProfileCollectionsAdapter.COLLECTION_ID, collectionId);
                 intent.putExtra(ProfileCollectionsAdapter.EXTRA_USER_UID, uid);
+                mContext.startActivity(intent);
+            }
+        });
+
+        holder.mCollectionsSettingsImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(mContext, CollectionSettingsActivity.class);
+                intent.putExtra(ProfileCollectionsAdapter.COLLECTION_ID, collectionId);
                 mContext.startActivity(intent);
             }
         });

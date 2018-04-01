@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -16,10 +15,8 @@ import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -89,7 +86,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
     private FirebaseFirestore firebaseFirestore;
     private CollectionReference postsCollection;
     private CollectionReference singlesCollection;
-    private CollectionReference ownersReference;
+    private CollectionReference postOwnersCollection;
     private CollectionReference usersReference;
     private DatabaseReference randomReference;
     private CollectionReference collectionsCollection;
@@ -119,10 +116,10 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
             firebaseFirestore =  FirebaseFirestore.getInstance();
             //get the reference to posts(collection reference)
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            ownersReference = firebaseFirestore.collection(Constants.POST_OWNERS);
+            postOwnersCollection = firebaseFirestore.collection(Constants.POST_OWNERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            randomReference = FirebaseDatabase.getInstance().getReference(Constants.COLLECTIONS);
-            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
+            randomReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
+            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
 
             mCingleTitleEditText.setFilters(new InputFilter[]{new InputFilter
                     .LengthFilter(DEFAULT_TITLE_LENGTH_LIMIT)});
@@ -404,7 +401,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                                     collectionPost.setUid(firebaseAuth.getCurrentUser().getUid());
                                     collectionPost.setType("collection_post");
                                     collectionPost.setCollectionId(collectionId);
-                                    collectionsCollection.document("collection_posts").collection(collectionId)
+                                    collectionsCollection.document("collections").collection(collectionId)
                                             .document(pushId).set(collectionPost);
 
                                     //reset input fields
@@ -420,7 +417,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                                     transactionDetails.setType("owner");
                                     transactionDetails.setAmount(0.0);
                                     transactionDetails.setWalletBalance(0.0);
-                                    ownersReference.document(pushId).set(transactionDetails);
+                                    postOwnersCollection.document(pushId).set(transactionDetails);
 
                                     Intent intent = new Intent(CreatePostActivity.this, NavigationDrawerActivity.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

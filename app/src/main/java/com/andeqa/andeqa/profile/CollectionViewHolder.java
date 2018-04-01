@@ -24,6 +24,7 @@ public class CollectionViewHolder extends RecyclerView.ViewHolder {
     @Bind(R.id.collectionNameTextView)TextView mCollectionNameTextView;
     @Bind(R.id.collectionsNoteTextView)TextView mCollectionsNoteTextView;
     @Bind(R.id.collectionLinearLayout)LinearLayout collectionsLinearLayout;
+    @Bind(R.id.collectionSettingsImageView)ImageView mCollectionsSettingsImageView;
 
     public CollectionViewHolder(View itemView) {
         super(itemView);
@@ -33,8 +34,6 @@ public class CollectionViewHolder extends RecyclerView.ViewHolder {
 
     }
 
-    public void bindCollection(){
 
-    }
 }
 

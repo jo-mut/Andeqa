@@ -116,8 +116,8 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                 throw new IllegalArgumentException("pass a collection id");
             }
 
-            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS)
-                    .document("collection_posts").collection(mCollectionId);
+            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                    .document("collections").collection(mCollectionId);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);

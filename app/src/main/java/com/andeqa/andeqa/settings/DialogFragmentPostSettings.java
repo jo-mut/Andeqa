@@ -46,10 +46,10 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
     private FirebaseAuth firebaseAuth;
     //firestore
     private CollectionReference postsCollection;
-    private CollectionReference collectionsCollection;
+    private CollectionReference collectionsPosts;
     private CollectionReference senseCreditReference;
-    private CollectionReference ifairReference;
-    private CollectionReference ownerReference;
+    private CollectionReference marketCollections;
+    private CollectionReference postOnwersCollection;
     private static final String TAG = DialogFragmentPostSettings.class.getSimpleName();
 
     private static final String COLLECTION_ID = "collection id";
@@ -112,11 +112,11 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
 
             //firestore
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS)
-                    .document("collection_posts").collection(mCollectionId);
+            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                    .document("collections").collection(mCollectionId);
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
-            ifairReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
-            ownerReference = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
+            marketCollections = FirebaseFirestore.getInstance().collection(Constants.SELLING);
+            postOnwersCollection = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
 
             showSaleLayout();
 
@@ -163,7 +163,7 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
     }
 
     public void showSaleLayout(){
-        ifairReference.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        marketCollections.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -194,7 +194,7 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
 
                 if (documentSnapshot.exists()){
                     postsCollection.document(mPostId).delete();
-                    collectionsCollection.document(mPostId)
+                    collectionsPosts.document(mPostId)
                             .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -204,7 +204,7 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
                             }
 
                             if (documentSnapshot.exists()){
-                                collectionsCollection.document(mPostId).delete();
+                                collectionsPosts.document(mPostId).delete();
                             }
                         }
                     });
@@ -213,7 +213,7 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
         });
 
         // delete post in collection and delete post in overall document
-        collectionsCollection.document(mPostId)
+        collectionsPosts.document(mPostId)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -223,7 +223,7 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
                         }
 
                         if (documentSnapshot.exists()){
-                            collectionsCollection.document(mPostId).delete();
+                            collectionsPosts.document(mPostId).delete();
                             postsCollection.document(mPostId)
                                     .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                 @Override
@@ -244,7 +244,7 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
                     }
                 });
 
-        ownerReference.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        postOnwersCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -253,7 +253,7 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
                 }
 
                 if (documentSnapshot.exists()){
-                    ownerReference.document(mPostId).delete();
+                    postOnwersCollection.document(mPostId).delete();
                 }
             }
         });
@@ -272,7 +272,7 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
                     }
                 });
 
-        ifairReference.document(mPostId)
+        marketCollections.document(mPostId)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -283,7 +283,7 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
                         }
 
                         if (documentSnapshot.exists()) {
-                            ifairReference.document(mPostId).delete();
+                            marketCollections.document(mPostId).delete();
                         }
                     }
                 });

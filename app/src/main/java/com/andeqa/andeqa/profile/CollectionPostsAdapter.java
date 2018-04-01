@@ -28,7 +28,7 @@ import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.comments.CommentsActivity;
-import com.andeqa.andeqa.home.FullImageViewActivity;
+import com.andeqa.andeqa.home.ImageViewActivity;
 import com.andeqa.andeqa.likes.LikesActivity;
 import com.andeqa.andeqa.models.Balance;
 import com.andeqa.andeqa.models.Market;
@@ -73,7 +73,7 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
     private List<Single> singles = new ArrayList<>();
     //firestore
     private FirebaseFirestore firebaseFirestore;
-    private CollectionReference postsCollection;
+    private CollectionReference collectionsPosts;
     private com.google.firebase.firestore.Query commentsCountQuery;
     private CollectionReference ownerReference;
     private CollectionReference usersReference;
@@ -141,12 +141,13 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
             //initialize firestore
-            postsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS)
-                    .document("collection_posts").collection(collectionId);
+            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                    .document("collection").collection(collectionId);
             ownerReference = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             ifairReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
-            commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
+            commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS)
+                    .document("post_ids").collection(postId);
             likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             commentsCountQuery = commentsReference;
@@ -156,7 +157,6 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
             postWalletReference = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
             //firebase
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
-
 
         }
 
@@ -214,7 +214,7 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
         holder.postImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, FullImageViewActivity.class);
+                Intent intent = new Intent(mContext, ImageViewActivity.class);
                 intent.putExtra(CollectionPostsAdapter.COLLECTION_ID, collectionId);
                 intent.putExtra(CollectionPostsAdapter.EXTRA_POST_ID, postId);
                 mContext.startActivity(intent);
@@ -252,6 +252,7 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
                 mContext.startActivity(intent);
             }
         });
+
 
 
         senseCreditReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {

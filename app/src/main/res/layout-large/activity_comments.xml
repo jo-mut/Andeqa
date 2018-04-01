@@ -123,7 +123,7 @@
 
 
                     <TextView
-                        android:text="Say something about this collectionPost"
+                        android:text="Say something about this post"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
@@ -160,21 +160,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/commentCountTextView"
-            android:textSize="18sp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="5dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_marginTop="2dp" />
-
-
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -183,21 +168,22 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:id="@+id/sendCommentImageView"
-            android:padding="5dp"
+            android:padding="10dp"
             android:tint="@color/colorAccent"
             android:layout_centerVertical="true"
             android:layout_centerInParent="false"
             android:layout_centerHorizontal="false"
-            android:layout_alignWithParentIfMissing="false"
-            android:layout_marginRight="10sp" />
+            android:layout_alignWithParentIfMissing="false" />
 
         <EditText
+            android:layout_toLeftOf="@+id/sendCommentImageView"
+            android:layout_toStartOf="@+id/sendCommentImageView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
             android:id="@+id/commentEditText"
             android:textSize="24sp"
-            android:hint="Comment on this collectionPost"
+            android:hint="Comment on this post"
             android:background="@drawable/edit_text_background"
             android:paddingBottom="20dp"
             android:paddingTop="20dp"

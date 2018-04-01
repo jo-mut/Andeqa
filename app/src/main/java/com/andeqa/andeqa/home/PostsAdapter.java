@@ -59,7 +59,6 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
 import static android.media.CamcorderProfile.get;
@@ -86,10 +85,10 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
     private static final int LIMIT = 10;
     //firestore reference
     private FirebaseFirestore firebaseFirestore;
-    private CollectionReference collectionsCollection;
+    private CollectionReference postsCollection;
     private CollectionReference ifairReference;
     private com.google.firebase.firestore.Query commentsCountQuery;
-    private CollectionReference ownerReference;
+    private CollectionReference postOwnersCollection;
     private CollectionReference usersReference;
     private CollectionReference commentsReference;
     private CollectionReference relationsReference;
@@ -105,7 +104,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
     //adapters
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
 
-//    private List<Post> documentSnapshots = new ArrayList<>();
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
 
 
@@ -117,6 +115,18 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
         this.documentSnapshots = posts;
         notifyDataSetChanged();
     }
+
+
+    @Override
+    public long getItemId(int position) {
+        return super.getItemId(position);
+    }
+
+    protected void clearSnapshots(){
+        documentSnapshots.clear();
+        notifyDataSetChanged();
+    }
+
 
     protected DocumentSnapshot getSnapshot(int index) {
         return documentSnapshots.get(index);
@@ -144,12 +154,13 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser()!= null){
             //firestore
-            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS)
-                    .document("collection_posts").collection(collectionId);
-            ownerReference = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
+            postsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                    .document("collections").collection(collectionId);
+            postOwnersCollection = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             ifairReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
-            commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
+            commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS)
+                    .document("post_ids").collection(postKey);
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
@@ -162,7 +173,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
 
         }
 
-        collectionsCollection.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        postsCollection.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -238,7 +249,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
         holder.postImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, FullImageViewActivity.class);
+                Intent intent = new Intent(mContext, ImageViewActivity.class);
                 intent.putExtra(PostsAdapter.EXTRA_POST_ID, postKey);
                 intent.putExtra(PostsAdapter.COLLECTION_ID, collectionId);
                 mContext.startActivity(intent);
@@ -339,7 +350,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
             }
         });
 
-        ownerReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        postOwnersCollection.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -1040,7 +1051,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
             textView.setText(ss);
             textView.setMovementMethod(LinkMovementMethod.getInstance());
         }
-
 
     }
 

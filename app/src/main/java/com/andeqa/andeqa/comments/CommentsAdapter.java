@@ -31,6 +31,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
@@ -52,6 +53,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     //firebase
     private DatabaseReference databaseReference;
     //firestore
+    private Query mQuery;
+    private ListenerRegistration mRegistration;
     private CollectionReference usersCollection;
     private CollectionReference relationsCollection;
     private CollectionReference timelineCollection;
@@ -63,7 +66,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
 
 
-
     public CommentsAdapter(Context mContext) {
         this.mContext = mContext;
     }
@@ -73,6 +75,15 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
         notifyDataSetChanged();
     }
 
+    protected void clearSnapshots(){
+        documentSnapshots.clear();
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return super.getItemId(position);
+    }
 
     protected DocumentSnapshot getSnapshot(int index) {
         return documentSnapshots.get(index);
@@ -91,10 +102,11 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
     }
 
+
+
     @Override
     public void onBindViewHolder(final CommentViewHolder holder, int position) {
-        Comment comment = getSnapshot(position).toObject(Comment.class);
-        final String pushId = comment.getPushId();
+        Comment comment = getSnapshot(holder.getAdapterPosition()).toObject(Comment.class);
         final String uid = comment.getUid();
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -109,9 +121,11 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
         }
 
-        //set the comment
-        addReadMore(comment.getCommentText(), holder.mCommentTextView);
-        addReadLess(comment.getCommentText(), holder.mCommentTextView);
+//        //set the comment
+//        addReadMore(comment.getCommentText(), holder.mCommentTextView);
+//        addReadLess(comment.getCommentText(), holder.mCommentTextView);
+
+        holder.mCommentTextView.setText(comment.getCommentText());
 
         holder.profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,9 +147,9 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
                 }
 
                 if (documentSnapshot.exists()){
-                    final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                    final String profileImage = cinggulan.getProfileImage();
-                    final String username = cinggulan.getUsername();
+                    final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                    final String profileImage = andeqan.getProfileImage();
+                    final String username = andeqan.getUsername();
 
                     holder.usernameTextView.setText(username);
                     Picasso.with(mContext)
@@ -253,6 +267,10 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
     }
 
+    @Override
+    public void onViewRecycled(CommentViewHolder holder) {
+        super.onViewRecycled(holder);
+    }
 
     private void addReadMore(final String text, final TextView textView) {
 
@@ -317,6 +335,17 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
         }
 
 
+    }
+
+
+    public void stopListening() {
+        if (mRegistration != null) {
+            mRegistration.remove();
+            mRegistration = null;
+        }
+
+        documentSnapshots.clear();
+        notifyDataSetChanged();
     }
 
 }

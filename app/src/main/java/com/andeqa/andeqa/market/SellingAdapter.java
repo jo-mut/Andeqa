@@ -15,6 +15,7 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.home.PostDetailActivity;
 import com.andeqa.andeqa.models.Andeqan;
+import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Market;
@@ -49,7 +50,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
     private Context mContext;
     private List<Market> markets = new ArrayList<>();
     //firestore
-    private CollectionReference collectionsCollection;
+    private CollectionReference collectionsPosts;
     private CollectionReference postsCollection;
     private CollectionReference sellingCollection;
     private CollectionReference usersReference;
@@ -61,17 +62,14 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
     //firebase
     private DatabaseReference cinglesRef;
     //adapters
-    private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     private FirebaseAuth firebaseAuth;
     private static final String KEY_LAYOUT_POSITION = "layout pooition";
-    private static final String EXTRA_POST_KEY = "post id";
+    private static final String EXTRA_POST_ID = "post id";
     private static final String EXTRA_USER_UID = "uid";
     private static final String COLLECTION_ID = "collection id";
     private static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
-
-
 
     public SellingAdapter(Context mContext) {
         this.mContext = mContext;
@@ -85,6 +83,11 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
     @Override
     public int getItemCount() {
         return documentSnapshots.size();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return super.getItemId(position);
     }
 
     public DocumentSnapshot getSnapshot(int index) {
@@ -110,7 +113,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
         if (firebaseAuth.getCurrentUser() != null){
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
+            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
             sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             cingleWalletReference = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
             ownerReference = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
@@ -146,14 +149,14 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
                 }
 
                 if (documentSnapshot.exists()){
-                    final Post post = documentSnapshot.toObject(Post.class);
-                    final String collectionId = post.getCollectionId();
+                    final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                    final String collectionId = collectionPost.getCollectionId();
 
                     holder.cingleTradeMethodTextView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             Intent intent =  new Intent(mContext, PostDetailActivity.class);
-                            intent.putExtra(SellingAdapter.EXTRA_POST_KEY, postKey);
+                            intent.putExtra(SellingAdapter.EXTRA_POST_ID, postKey);
                             intent.putExtra(SellingAdapter.COLLECTION_ID, collectionId);
                             mContext.startActivity(intent);
                         }
@@ -163,7 +166,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
                         @Override
                         public void onClick(View view) {
                             Intent intent = new Intent(mContext, PostDetailActivity.class);
-                            intent.putExtra(SellingAdapter.EXTRA_POST_KEY, postKey);
+                            intent.putExtra(SellingAdapter.EXTRA_POST_ID, postKey);
                             intent.putExtra(SellingAdapter.COLLECTION_ID, collectionId);
                             mContext.startActivity(intent);
                         }
@@ -194,7 +197,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
                             @Override
                             public void onClick(View view) {
                                 Bundle bundle = new Bundle();
-                                bundle.putString(SellingAdapter.EXTRA_POST_KEY, postKey);
+                                bundle.putString(SellingAdapter.EXTRA_POST_ID, postKey);
                                 bundle.putString(SellingAdapter.COLLECTION_ID, collectionId);
                                 FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
                                 DialogMarketPostSettings dialogMarketPostSettings = DialogMarketPostSettings.newInstance("post settings");
@@ -211,7 +214,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
                         @Override
                         public void onClick(View view) {
                             Bundle bundle = new Bundle();
-                            bundle.putString(SellingAdapter.EXTRA_POST_KEY, postKey);
+                            bundle.putString(SellingAdapter.EXTRA_POST_ID, postKey);
                             bundle.putString(SellingAdapter.COLLECTION_ID, collectionId);
                             FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
                             DialogSendCredits dialogSendCredits = DialogSendCredits.newInstance("sens credits");
@@ -221,7 +224,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
                     });
 
 
-                    collectionsCollection.document("collection_posts").collection(collectionId)
+                    collectionsPosts.document("collections").collection(collectionId)
                             .document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {

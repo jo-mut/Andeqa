@@ -37,7 +37,10 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -122,9 +125,30 @@ public class WalletActivity extends AppCompatActivity {
         firestoreRecyclerAdapter = new FirestoreRecyclerAdapter<TransactionDetails, TransactionHistoryViewHolder>(options) {
             @Override
             protected void onBindViewHolder(final TransactionHistoryViewHolder holder, int position, TransactionDetails model) {
-                holder.bindTransactionHistory(model);
+                TransactionDetails transactionDetails = getSnapshots().getSnapshot(position).toObject(TransactionDetails.class);
+                final long time = transactionDetails.getTime();
+                final double balance = transactionDetails.getWalletBalance();
+                final double amount = transactionDetails.getAmount();
                 final String transationId = getSnapshots().get(position).getPushId();
 
+                //get the current date
+                DateFormat simpleDateFormat = new SimpleDateFormat("d");
+                String date = simpleDateFormat.format(new Date());
+
+                if (date.endsWith("1") && !date.endsWith("11"))
+                    simpleDateFormat = new SimpleDateFormat("d'st' MMM, yyyy");
+                else if (date.endsWith("2") && !date.endsWith("12"))
+                    simpleDateFormat = new SimpleDateFormat("d'nd' MMM, yyyy");
+                else if (date.endsWith("3") && !date.endsWith("13"))
+                    simpleDateFormat = new SimpleDateFormat("d'rd' MMM, yyyy");
+                else
+                    simpleDateFormat = new SimpleDateFormat("d'th' MMM, yyyy");
+
+                DecimalFormat formatter =  new DecimalFormat("0.00000000");
+                holder.amountTransferredTextView.setText("You have redeemed" + " SC " + formatter.format
+                (amount) +  " on " +
+                simpleDateFormat.format(time) + ". Your new wallet balance is " +
+                "SC " + formatter.format(balance));
 
                 holder.deleteHistoryImageView.setOnClickListener(new View.OnClickListener() {
                     @Override

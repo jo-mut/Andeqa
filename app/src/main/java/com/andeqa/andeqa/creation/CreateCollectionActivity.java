@@ -67,10 +67,14 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
     //FIRESTORE
     private FirebaseFirestore firebaseFirestore;
     private CollectionReference postsCollection;
-    private CollectionReference ownersReference;
+    private CollectionReference collectionOwnersCollection;
     private CollectionReference usersReference;
     private DatabaseReference postReference;
     private CollectionReference collectionCollection;
+
+    private static final String COLLECTION_ID = "collection id";
+    private static final String EXTRA_USER_UID = "uid";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +105,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
             firebaseFirestore =  FirebaseFirestore.getInstance();
             //get the reference to posts(collection reference)
             postsCollection = firebaseFirestore.collection(Constants.COLLECTIONS);
-            ownersReference = firebaseFirestore.collection(Constants.POST_OWNERS);
+            collectionOwnersCollection = firebaseFirestore.collection(Constants.COLLECTION_OWNERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             collectionCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
 
@@ -208,7 +212,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                     transactionDetails.setType("owner");
                     transactionDetails.setAmount(0.0);
                     transactionDetails.setWalletBalance(0.0);
-                    ownersReference.document(collectionId).set(transactionDetails);
+                    collectionOwnersCollection.document(collectionId).set(transactionDetails);
 
                     if (photoUri != null){
                         StorageReference storageReference = FirebaseStorage
@@ -243,6 +247,8 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                                         mCollectionNoteEditText.setText("");
 
                                         Intent intent = new Intent(CreateCollectionActivity.this, CollectionPostsActivity.class);
+                                        intent.putExtra(CreateCollectionActivity.COLLECTION_ID, collectionId);
+                                        intent.putExtra(CreateCollectionActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
                                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         startActivity(intent);
                                         finish();
@@ -285,6 +291,8 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
 
 
                         Intent intent = new Intent(CreateCollectionActivity.this, CollectionPostsActivity.class);
+                        intent.putExtra(CreateCollectionActivity.COLLECTION_ID, collectionId);
+                        intent.putExtra(CreateCollectionActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                         finish();

@@ -45,7 +45,7 @@ public class MarketFragment extends Fragment{
     private int currentPage = 0;
     private LinearLayoutManager layoutManager;
     private static final String KEY_LAYOUT_POSITION = "layout pooition";
-    private static final String EXTRA_POST_KEY = "post key";
+    private static final String EXTRA_POST_ID = "post id";
     private static final String EXTRA_USER_UID = "uid";
     private static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
@@ -59,7 +59,7 @@ public class MarketFragment extends Fragment{
     private int TOTAL_ITEMS = 10;
     private DocumentSnapshot lastVisible;
     private List<String> snapshotsIds = new ArrayList<>();
-    private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
+    private List<DocumentSnapshot> marketSnapshot = new ArrayList<>();
 
 
     public MarketFragment() {
@@ -87,6 +87,8 @@ public class MarketFragment extends Fragment{
                 }
             });
 
+            setRecyclerView();
+            setCollections();
         }
 
         return  view;
@@ -99,8 +101,6 @@ public class MarketFragment extends Fragment{
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        setRecyclerView();
-        setCollections();
         if (savedInstanceState != null){
             recyclerViewState = savedInstanceState.getParcelable(KEY_LAYOUT_POSITION);
             Log.d("Saved Instance", "Instance is not null");
@@ -191,9 +191,9 @@ public class MarketFragment extends Fragment{
 
     protected void onDocumentAdded(DocumentChange change) {
         snapshotsIds.add(change.getDocument().getId());
-        documentSnapshots.add(change.getDocument());
-        sellingAdapter.setPostsOnSale(documentSnapshots);
-        sellingAdapter.notifyItemInserted(documentSnapshots.size() -1);
+        marketSnapshot.add(change.getDocument());
+        sellingAdapter.setPostsOnSale(marketSnapshot);
+        sellingAdapter.notifyItemInserted(marketSnapshot.size() -1);
         sellingAdapter.getItemCount();
 
     }
@@ -201,28 +201,26 @@ public class MarketFragment extends Fragment{
     protected void onDocumentModified(DocumentChange change) {
         if (change.getOldIndex() == change.getNewIndex()) {
             // Item changed but remained in same position
-            documentSnapshots.set(change.getOldIndex(), change.getDocument());
+            marketSnapshot.set(change.getOldIndex(), change.getDocument());
             sellingAdapter.notifyItemChanged(change.getOldIndex());
         } else {
             // Item changed and changed position
-            documentSnapshots.remove(change.getOldIndex());
-            documentSnapshots.add(change.getNewIndex(), change.getDocument());
-            sellingAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+            marketSnapshot.remove(change.getOldIndex());
+            marketSnapshot.add(change.getNewIndex(), change.getDocument());
+            sellingAdapter.notifyItemRangeChanged(0, marketSnapshot.size());
         }
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
-        documentSnapshots.remove(change.getOldIndex());
+        marketSnapshot.remove(change.getOldIndex());
         sellingAdapter.notifyItemRemoved(change.getOldIndex());
-        sellingAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+        sellingAdapter.notifyItemRangeChanged(0, marketSnapshot.size());
     }
 
-
-
-
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-
+    public void onDestroyView() {
+        super.onDestroyView();
+        marketSnapshot.clear();
     }
 
     @Override

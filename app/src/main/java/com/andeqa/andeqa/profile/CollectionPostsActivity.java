@@ -10,11 +10,13 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.creation.CreatePostActivity;
 import com.andeqa.andeqa.models.Andeqan;
+import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -25,6 +27,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +40,13 @@ import butterknife.ButterKnife;
 public class CollectionPostsActivity extends AppCompatActivity implements View.OnClickListener {
     @Bind(R.id.collectionsPostsRecyclerView)RecyclerView mCollectionsPostsRecyclerView;
     @Bind(R.id.createPostImageView)ImageView mCreatePostImageView;
+    @Bind(R.id.collectionCoverImageView)ImageView mCollectionCoverImageView;
+    @Bind(R.id.collectionNoteTextView)TextView mCollectionNoteTextView;
+    @Bind(R.id.collectionNameTextView)TextView mCollectionNameTextView;
     private static final String TAG = CollectionPostsActivity.class.getSimpleName();
     //firestore reference
-    private CollectionReference collectionsCollection;
+    private CollectionReference collectionsPosts;
+    private CollectionReference collectionCollection;
     private CollectionReference usersCollection;
     private Query collectionPostsQuery;
     //firebase auth
@@ -46,8 +55,8 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
     private CollectionPostsAdapter collectionPostsAdapter;
     private static final String KEY_LAYOUT_POSITION = "layout pooition";
     private Parcelable recyclerViewState;
-    private  static final int MAX_WIDTH = 200;
-    private static final int MAX_HEIGHT = 200;
+    private  static final int MAX_WIDTH = 400;
+    private static final int MAX_HEIGHT = 400;
     private int TOTAL_ITEMS = 10;
     private DocumentSnapshot lastVisible;
     private LinearLayoutManager layoutManager;
@@ -96,14 +105,16 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
             }
 
 
-            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS)
-                    .document("collection_posts").collection(collectionId);
-            collectionPostsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
+            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                    .document("collections").collection(collectionId);
+            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
+            collectionPostsQuery = collectionsPosts.orderBy("time", Query.Direction.DESCENDING)
                     .whereEqualTo("uid", mUid);
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
 
             setCollectionPosts();
             setRecyclerView();
+            setCollectionsInfo();
             if (savedInstanceState != null){
                 recyclerViewState = savedInstanceState.getParcelable(KEY_LAYOUT_POSITION);
                 Log.d("Profile saved Instance", "Instance is not null");
@@ -151,6 +162,53 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
         mCollectionsPostsRecyclerView.setHasFixedSize(false);
         layoutManager = new LinearLayoutManager(CollectionPostsActivity.this);
         mCollectionsPostsRecyclerView.setLayoutManager(layoutManager);
+        mCollectionsPostsRecyclerView.setNestedScrollingEnabled(false);
+    }
+
+    private void setCollectionsInfo(){
+        collectionCollection.document(collectionId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (documentSnapshot.exists()){
+                    Collection collection = documentSnapshot.toObject(Collection.class);
+                    final String name = collection.getName();
+                    final String note = collection.getNote();
+                    final String cover = collection.getImage();
+
+                    mCollectionNameTextView.setText(name);
+                    mCollectionNoteTextView.setText(note);
+                    Picasso.with(CollectionPostsActivity.this)
+                            .load(cover)
+                            .resize(MAX_WIDTH, MAX_HEIGHT)
+                            .onlyScaleDown()
+                            .centerCrop()
+                            .networkPolicy(NetworkPolicy.OFFLINE)
+                            .into(mCollectionCoverImageView, new Callback() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onError() {
+                                    Picasso.with(CollectionPostsActivity.this)
+                                            .load(cover)
+                                            .resize(MAX_WIDTH, MAX_HEIGHT)
+                                            .onlyScaleDown()
+                                            .centerCrop()
+                                            .into(mCollectionCoverImageView);
+                                }
+                            });
+
+                }
+            }
+        });
     }
 
     private void setCollectionPosts(){
@@ -193,7 +251,7 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
         DocumentSnapshot lastVisible = collectionPostsAdapter.getSnapshot(snapshotSize - 1);
 
         //retrieve the first bacth of mSnapshots
-        Query nextCollectionPostsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
+        Query nextCollectionPostsQuery = collectionsPosts.orderBy("time", Query.Direction.DESCENDING)
                 .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
                 .startAfter(lastVisible)
                 .limit(TOTAL_ITEMS);

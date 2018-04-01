@@ -3,6 +3,7 @@ package com.andeqa.andeqa.home;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,9 +11,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
+import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +38,7 @@ import com.andeqa.andeqa.market.DialogSendCredits;
 import com.andeqa.andeqa.likes.LikesActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Balance;
+import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.models.Market;
 import com.andeqa.andeqa.models.Credit;
@@ -63,6 +69,7 @@ import com.squareup.picasso.Picasso;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import butterknife.Bind;
@@ -104,14 +111,14 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
     //firestore reference
     private FirebaseFirestore firebaseFirestore;
-    private CollectionReference collecctionsCollection;
+    private CollectionReference postsCollections;
     private com.google.firebase.firestore.Query randomQuery;
     private com.google.firebase.firestore.Query commentsCountQuery;
     private CollectionReference usersReference;
     private CollectionReference commentsReference;
-    private CollectionReference ownerReference;
+    private CollectionReference postOwnersCollection;
     private CollectionReference senseCreditReference;
-    private CollectionReference ifairReference;
+    private CollectionReference sellingCollection;
     private CollectionReference likesReference;
     private CollectionReference postWalletReference;
     private CollectionReference timelineCollection;
@@ -181,13 +188,13 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             mTotalLikesCountTextView.setOnClickListener(this);
 
             //firestore
-            collecctionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS)
-                    .document("collection_posts").collection(mCollectionId);
-            ownerReference = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
-            ownerReference = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
+            postsCollections = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                    .document("collections").collection(mCollectionId);
+            postOwnersCollection = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
-            ifairReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
+            commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS)
+                    .document("post_ids").collection(mPostId);
+            sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             randomQuery = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS)
                     .orderBy("randomNumber");
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
@@ -251,7 +258,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             }
         });
 
-        collecctionsCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        postsCollections.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -260,11 +267,10 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                 }
 
                 if (documentSnapshot.exists()){
-                    final Single single = documentSnapshot.toObject(Single.class);
-                    final String image = single.getImage();
-                    final String uid = single.getUid();
-                    final String title = single.getTitle();
-                    final String description = single.getDescription();
+                    final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                    final String image = collectionPost.getImage();
+                    final String uid = collectionPost.getUid();
+                    final String title = collectionPost.getTitle();
 
                     //LAUCNH PROFILE IF ITS NOT DELETED ELSE CATCH THE EXCEPTION
                     mProfileImageView.setOnClickListener(new View.OnClickListener() {
@@ -284,10 +290,27 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                         mCingleTitleTextView.setText(title);
                     }
 
-                    if (!TextUtils.isEmpty(single.getDescription())){
+                    if (!TextUtils.isEmpty(collectionPost.getDescription())){
                         mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
-                        mDescriptionTextView.setText(description);
+                        addReadLess(collectionPost.getDescription(),mDescriptionTextView);
+                        addReadMore(collectionPost.getDescription(), mDescriptionTextView);
                     }
+
+
+                    //get the current date
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d");
+                    String date = simpleDateFormat.format(new Date());
+
+                    if (date.endsWith("1") && !date.endsWith("11"))
+                        simpleDateFormat = new SimpleDateFormat("d'st' MMM yyyy");
+                    else if (date.endsWith("2") && !date.endsWith("12"))
+                        simpleDateFormat = new SimpleDateFormat("d'nd' MMM yyyy");
+                    else if (date.endsWith("3") && !date.endsWith("13"))
+                        simpleDateFormat = new SimpleDateFormat("d'rd' MMM yyyy");
+                    else
+                        simpleDateFormat = new SimpleDateFormat("d'th' MMM yyyy");
+
+                    mDatePostedTextView.setText(simpleDateFormat.format(collectionPost.getTime()));
 
 
                     //set the single image
@@ -355,7 +378,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
     /**Single can only be bought by someone else except for the owner of that cingle*/
     private void showBuyButton(){
-        ifairReference.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        sellingCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -370,7 +393,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                     mSalePriceTextView.setText("SC" + " " +
                             formatter.format(market.getSalePrice()));
                     mPostSalePriceRelativeLayout.setVisibility(View.VISIBLE);
-                    ownerReference.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    postOwnersCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                             if (e != null) {
@@ -432,8 +455,10 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
                         if (!documentSnapshots.isEmpty()){
                             mTotalLikesCountTextView.setText(documentSnapshots.size() + " " + "Likes");
+                            mLikesRecyclerView.setVisibility(View.VISIBLE);
                         }else {
                             mTotalLikesCountTextView.setText("0" + " " + "Likes");
+                            mLikesRecyclerView.setVisibility(View.GONE);
                         }
 
                     }
@@ -642,7 +667,6 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
                 if (!documentSnapshots.isEmpty()){
                     if (documentSnapshots.size() > 0){
-                        mLikesRecyclerView.setVisibility(View.VISIBLE);
                         likesQuery = likesReference.document(mPostId).collection("likes").orderBy("uid");
                         FirestoreRecyclerOptions<Like> options = new FirestoreRecyclerOptions.Builder<Like>()
                                 .setQuery(likesQuery, Like.class)
@@ -739,8 +763,6 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                         mLikesRecyclerView.setNestedScrollingEnabled(false);
                         mLikesRecyclerView.setLayoutManager(layoutManager);
 
-                    }else {
-                        mLikesRecyclerView.setVisibility(View.GONE);
                     }
                 }
             }
@@ -751,7 +773,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
     /**set the the text on buy button*/
     private void setTextOnButton(){
-        ifairReference.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        sellingCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (documentSnapshot.exists()){
@@ -768,7 +790,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     /**display the price of the cingle*/
     private void setCingleInfo() {
         /**display the person who currently owns the cingle*/
-        ownerReference.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        postOwnersCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -846,7 +868,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         }
 
         if (v == mPostImageView){
-            Intent intent = new Intent(PostDetailActivity.this, FullImageViewActivity.class);
+            Intent intent = new Intent(PostDetailActivity.this, ImageViewActivity.class);
             intent.putExtra(PostDetailActivity.EXTRA_POST_ID, mPostId);
             intent.putExtra(PostDetailActivity.COLLECTION_ID, mCollectionId);
             startActivity(intent);
@@ -901,7 +923,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                 @Override
                                                 public void onSuccess(Void aVoid) {
-                                                    collecctionsCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                                    postsCollections.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                                         @Override
                                                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -1081,7 +1103,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void showEditImageView(){
-        ownerReference.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        postOwnersCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -1130,7 +1152,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                         if (intSalePrice < senseCredits){
                             mEditSalePriceEditText.setError("Sale price is less than Single Sense Crdits!");
                         }else {
-                            ifairReference.document(mPostId).update("salePrice", intSalePrice);
+                            sellingCollection.document(mPostId).update("salePrice", intSalePrice);
 
                         }
                     }
@@ -1215,5 +1237,70 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         popup.setBackgroundDrawable(new BitmapDrawable());
         popup.showAsDropDown(anchorView);
     }
+
+    private void addReadMore(final String text, final TextView textView) {
+
+        final String [] strings = text.split("");
+
+        final int size = strings.length;
+
+        if (size <= 120){
+            //setence will not have read more
+        }else {
+            SpannableString ss = new SpannableString(text.substring(0, 119) + "...read more");
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View view) {
+                    addReadLess(text, textView);
+                }
+                @Override
+                public void updateDrawState(TextPaint ds) {
+                    super.updateDrawState(ds);
+                    ds.setUnderlineText(false);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        ds.setColor(getResources().getColor(R.color.colorPrimary, getTheme()));
+                    } else {
+                        ds.setColor(getResources().getColor(R.color.colorPrimary));
+                    }
+                }
+            };
+            ss.setSpan(clickableSpan, ss.length() - 10, ss.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            textView.setText(ss);
+            textView.setMovementMethod(LinkMovementMethod.getInstance());
+        }
+    }
+
+    private void addReadLess(final String text, final TextView textView) {
+        final String [] strings = text.split("");
+
+        final int size = strings.length;
+
+        if (size > 120){
+            SpannableString ss = new SpannableString(text + " read less");
+            addReadMore(text, textView);
+
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View view) {
+                    addReadMore(text, textView);
+                }
+                @Override
+                public void updateDrawState(TextPaint ds) {
+                    super.updateDrawState(ds);
+                    ds.setUnderlineText(false);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        ds.setColor(getResources().getColor(R.color.colorPrimary, getTheme()));
+                    } else {
+                        ds.setColor(getResources().getColor(R.color.colorPrimary));
+                    }
+                }
+            };
+            ss.setSpan(clickableSpan, ss.length() - 10, ss.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            textView.setText(ss);
+            textView.setMovementMethod(LinkMovementMethod.getInstance());
+        }
+
+    }
+
 
 }

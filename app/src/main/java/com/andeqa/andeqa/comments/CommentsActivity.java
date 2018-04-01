@@ -1,16 +1,13 @@
 package com.andeqa.andeqa.comments;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -22,13 +19,13 @@ import android.widget.TextView;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Andeqan;
+import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.models.Comment;
 import com.andeqa.andeqa.profile.ProfileActivity;
 import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ProportionalImageView;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -39,6 +36,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
@@ -63,7 +61,6 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     @Bind(R.id.placeHolderRelativeLayout)RelativeLayout mPlaceHolderRelativeLayout;
     @Bind(R.id.titleTextView)TextView mCingleTitleTextView;
     @Bind(R.id.cingleTitleRelativeLayout)RelativeLayout mCingleTitleRelativeLayout;
-    @Bind(R.id.commentCountTextView)TextView mCommentCountTextView;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -73,11 +70,12 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     private DatabaseReference databaseReference;
     //firestore
     private CollectionReference commentsCollection;
-    private CollectionReference collectionsCollection;
+    private CollectionReference collectionsPostsCollection;
     private Query commentQuery;
     private CollectionReference usersCollection;
     private CollectionReference relationsCollection;
     private CollectionReference timelineCollection;
+    private ListenerRegistration mListenerRegistration;
 
     //adapters
     private CommentsAdapter commentsAdapter;
@@ -93,7 +91,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     private static final int DEFAULT_COMMENT_LENGTH_LIMIT = 500;
     private static final int TOTAL_ITEMS = 25;
     private List<String> commentsIds = new ArrayList<>();
-    private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
+    private List<DocumentSnapshot> comments = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,8 +128,8 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
             }
 
             //firestore
-            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS)
-                    .document("collection_posts").collection(mCollectionId);
+            collectionsPostsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                    .document("collections").collection(mCollectionId);
             commentsCollection = FirebaseFirestore.getInstance().collection(Constants.COMMENTS)
                     .document("post_ids").collection(mPostId);
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
@@ -143,7 +141,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
             mCommentEditText.setFilters(new InputFilter[]{new InputFilter
                     .LengthFilter(DEFAULT_COMMENT_LENGTH_LIMIT)});
-            textWatchers();
+
 
             setData();
             setRecyclerView();
@@ -160,39 +158,11 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private void textWatchers(){
-        //TITLE TEXT WATCHER
-        mCommentEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                int count = DEFAULT_COMMENT_LENGTH_LIMIT - editable.length();
-                mCommentCountTextView.setText(Integer.toString(count));
-
-                if (count < 0){
-                }else if (count < 300){
-                    mCommentCountTextView.setTextColor(Color.GRAY);
-                }else {
-                    mCommentCountTextView.setTextColor(Color.BLACK);
-                }
-
-            }
-        });
-
-    }
 
     public void setData() {
         //get the cingle that user wants to comment on
-        collectionsCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        collectionsPostsCollection.document(mPostId)
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -201,11 +171,10 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                 }
 
                 if (documentSnapshot.exists()){
-                    final Single single = documentSnapshot.toObject(Single.class);
-
-                    final String uid = single.getUid();
-                    final String image = single.getImage();
-                    final String title = single.getTitle();
+                    final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                    final String uid = collectionPost.getUid();
+                    final String image = collectionPost.getImage();
+                    final String title = collectionPost.getTitle();
 
 
                     //LAUCNH PROFILE IF ITS NOT DELETED ELSE CATCH THE EXCEPTION
@@ -318,6 +287,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                     for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
                         switch (change.getType()) {
                             case ADDED:
+                                comments.clear();
                                 onDocumentAdded(change);
                                 break;
                             case MODIFIED:
@@ -328,8 +298,6 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                                 break;
                         }
                     }
-                }else {
-                    mPlaceHolderRelativeLayout.setVisibility(View.VISIBLE);
                 }
 
             }
@@ -342,7 +310,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         DocumentSnapshot lastVisible = commentsAdapter.getSnapshot(snapshotSize - 1);
 
         //retrieve the first bacth of documentSnapshots
-        Query nextSellingQuery = commentsCollection.startAfter(lastVisible)
+        Query nextSellingQuery = commentsCollection.orderBy("time").startAfter(lastVisible)
                 .limit(TOTAL_ITEMS);
 
         nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -376,9 +344,9 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
     protected void onDocumentAdded(DocumentChange change) {
         commentsIds.add(change.getDocument().getId());
-        documentSnapshots.add(change.getDocument());
-        commentsAdapter.setPostComments(documentSnapshots);
-        commentsAdapter.notifyItemInserted(documentSnapshots.size() -1);
+        comments.add(change.getDocument());
+        commentsAdapter.setPostComments(comments);
+        commentsAdapter.notifyItemInserted(comments.size() -1);
         commentsAdapter.getItemCount();
 
     }
@@ -386,20 +354,20 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     protected void onDocumentModified(DocumentChange change) {
         if (change.getOldIndex() == change.getNewIndex()) {
             // Item changed but remained in same position
-            documentSnapshots.set(change.getOldIndex(), change.getDocument());
+            comments.set(change.getOldIndex(), change.getDocument());
             commentsAdapter.notifyItemChanged(change.getOldIndex());
         } else {
             // Item changed and changed position
-            documentSnapshots.remove(change.getOldIndex());
-            documentSnapshots.add(change.getNewIndex(), change.getDocument());
-            commentsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+            comments.remove(change.getOldIndex());
+            comments.add(change.getNewIndex(), change.getDocument());
+            commentsAdapter.notifyItemRangeChanged(0, comments.size());
         }
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
-        documentSnapshots.remove(change.getOldIndex());
+        comments.remove(change.getOldIndex());
         commentsAdapter.notifyItemRemoved(change.getOldIndex());
-        commentsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+        commentsAdapter.notifyItemRangeChanged(0, comments.size());
     }
 
     @Override
@@ -423,6 +391,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     //let a cingulan add a comment to a cingle
     @Override
     public void onClick(View v){
+        final long time = new Date().getTime();
         final String uid = firebaseAuth.getCurrentUser().getUid();
         final String commentText = mCommentEditText.getText().toString().trim();
         if(!TextUtils.isEmpty(commentText)){
@@ -447,44 +416,43 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                             comment.setCommentText(commentText);
                             comment.setPushId(mPostId);
                             comment.setPostId(postId);
-                            commentsCollection.document(postId).set(comment)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            comment.setTime(time);
+                            commentsCollection.add(comment);
+
+                            final Timeline timeline = new Timeline();
+                            final long time = new Date().getTime();
+
+                            //record the comment on the timeline
+                            collectionsPostsCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                 @Override
-                                public void onSuccess(Void aVoid) {
-                                    final Timeline timeline = new Timeline();
-                                    final long time = new Date().getTime();
+                                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
-                                    collectionsCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                    if (e != null) {
+                                        Log.w(TAG, "Listen error", e);
+                                        return;
+                                    }
 
-                                            if (e != null) {
-                                                Log.w(TAG, "Listen error", e);
-                                                return;
-                                            }
+                                    if (documentSnapshot.exists()){
+                                        Single single = documentSnapshot.toObject(Single.class);
+                                        final String creatorUid = single.getUid();
 
-                                            if (documentSnapshot.exists()){
-                                                Single single = documentSnapshot.toObject(Single.class);
-                                                final String creatorUid = single.getUid();
-
-                                                timeline.setPostId(postId);
-                                                timeline.setTime(time);
-                                                timeline.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                timeline.setType("comment");
-                                                timeline.setPushId(mPostId);
-                                                timeline.setStatus("unRead");
-                                                if (creatorUid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                                    //do nothing
-                                                }else {
-                                                    timelineCollection.document(creatorUid)
-                                                            .collection("timeline").document(postId).set(timeline);
-                                                }
-
-                                            }
+                                        timeline.setPostId(postId);
+                                        timeline.setTime(time);
+                                        timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                        timeline.setType("comment");
+                                        timeline.setPushId(mPostId);
+                                        timeline.setStatus("unRead");
+                                        if (creatorUid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                            //do nothing
+                                        }else {
+                                            timelineCollection.document(creatorUid)
+                                                    .collection("timeline").document(postId).set(timeline);
                                         }
-                                    });
+
+                                    }
                                 }
                             });
+
                             mCommentEditText.setText("");
 
                         }

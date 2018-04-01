@@ -123,7 +123,7 @@
 
 
                     <TextView
-                        android:text="Say something about this collectionPost"
+                        android:text="Say something about this post"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
@@ -161,18 +161,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/commentCountTextView"
-            android:textSize="9sp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="2dp"
-            android:layout_below="@+id/commentEditText"/>
-
-
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -186,27 +174,27 @@
             android:layout_centerVertical="true"
             android:layout_centerInParent="false"
             android:layout_centerHorizontal="false"
-            android:layout_alignWithParentIfMissing="false"
-            android:layout_marginRight="10sp" />
+            android:layout_alignWithParentIfMissing="false" />
 
         <EditText
+            android:layout_toLeftOf="@+id/sendCommentImageView"
+            android:layout_toStartOf="@+id/sendCommentImageView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
             android:id="@+id/commentEditText"
             android:textSize="12sp"
-            android:hint="Comment on this collectionPost"
+            android:hint="Comment on this post"
             android:background="@drawable/edit_text_background"
-            android:paddingBottom="20dp"
-            android:paddingTop="20dp"
-            android:paddingLeft="10dp"
+            android:paddingBottom="15dp"
+            android:paddingTop="15dp"
+            android:paddingLeft="5dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:paddingRight="10dp"
+            android:paddingRight="5dp"
             android:freezesText="true"
-            android:layout_marginRight="50sp" />
-
+            android:layout_marginRight="5dp" />
 
     </RelativeLayout>
 

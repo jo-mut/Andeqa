@@ -6,7 +6,9 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:fitsSystemWindows="true"
+    android:orientation="vertical"
     tools:context="com.andeqa.andeqa.profile.ProfileActivity">
+
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"
@@ -33,8 +35,11 @@
                     android:id="@+id/profileCoverImageView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
                     android:alpha="0.1"
+                    android:scaleType="centerCrop"
                     android:src="@color/transparentColor" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
@@ -48,7 +53,10 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="80dp" />
 
+
+
                 <RelativeLayout
+                    android:id="@+id/fullNameRelativeLayout"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
                     android:layout_marginTop="220dp">
@@ -70,13 +78,12 @@
 
                 </RelativeLayout>
 
-
                 <RelativeLayout
                     android:id="@+id/countsLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="30dp"
-                    android:layout_marginTop="280dp">
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="300dp">
 
 
                     <TextView
@@ -143,7 +150,8 @@
                         android:layout_alignParentBottom="false"
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="10dp"
-                        android:textColor="@android:color/white" />
+                        android:textColor="@android:color/white"
+                        tools:ignore="HardcodedText" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -179,33 +187,39 @@
                         android:layout_centerInParent="false"
                         android:layout_marginLeft="40dp"
                         android:layout_marginTop="10dp"
-                        android:textColor="@android:color/white" />
+                        android:textColor="@android:color/white"
+                        tools:ignore="HardcodedText" />
+
+                    <Button
+                        android:visibility="gone"
+                        android:text=""
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:id="@+id/followButton"
+                        android:layout_below="@+id/followingTextView"
+                        android:minHeight="30dp"
+                        android:minWidth="120dp"
+                        android:textSize="14sp"
+                        android:background="@drawable/colour_btn_background"
+                        android:layout_centerHorizontal="true" />
 
                 </RelativeLayout>
 
+
                 <RelativeLayout
+                    android:layout_below="@+id/countsLayout"
                     android:id="@+id/bioRelativeLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:elevation="4dp"
-                    android:layout_below="@+id/countsLayout"
-                    android:layout_marginBottom="50dp">
-
-                    <View
-                        android:id="@+id/layoutDivider"
-                        android:layout_width="match_parent"
-                        android:layout_height="0.1dp"
-                        android:background="@android:color/white"
-                        android:layout_marginLeft="150dp"
-                        android:layout_marginRight="150dp"
-                        android:layout_marginBottom="15dp" />
+                    android:layout_marginBottom="50dp"
+                    tools:ignore="UnusedAttribute">
 
                     <TextView
-                        android:layout_below="@+id/layoutDivider"
                         android:id="@+id/bioTextView"
-                        android:textColor="@android:color/white"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textColor="@android:color/white"
                         android:layout_centerHorizontal="true"
                         android:textSize="14sp"
                         android:padding="10dp"
@@ -213,25 +227,31 @@
 
                 </RelativeLayout>
 
+                <ImageView
+                    android:visibility="gone"
+                    android:layout_toRightOf="@+id/profileImageView"
+                    android:layout_toEndOf="@+id/profileImageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="130dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:tint="@android:color/white"
+                    app:srcCompat="@drawable/ic_chat_bubble_black_24dp"
+                    android:id="@+id/sendMessageImageView" />
+
             </RelativeLayout>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
-                android:layout_gravity="top"
-                app:layout_scrollFlags="scroll|enterAlways"
-                app:titleTextAppearance="@style/toolbarTextAppearance"
-                app:titleMarginStart="-50sp"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                app:popupTheme="@style/AppTheme.PopupOverlay"
-                app:titleTextColor="@android:color/white"
+                android:layout_height="?attr/actionBarSize"
+                android:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
                 android:title="Collapsing Toolbar"
-                app:layout_collapseMode="pin"/>
+                app:layout_collapseMode="pin"
+                tools:ignore="HardcodedText,UnusedAttribute" />
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
-
-
-
 
     <android.support.v4.widget.NestedScrollView
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -246,6 +266,5 @@
             android:layout_height="wrap_content"/>
 
     </android.support.v4.widget.NestedScrollView>
-
 </android.support.design.widget.CoordinatorLayout>
 
