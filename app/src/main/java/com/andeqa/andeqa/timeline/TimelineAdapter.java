@@ -86,7 +86,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     protected DocumentSnapshot getSnapshot(int index) {
-        return getSnapshot(index);
+        return documentSnapshots.get(index);
     }
 
     @Override
@@ -158,7 +158,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
         postCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
         senseCreditCollection = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
-        commentCollection = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
 
         usersCollection.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -272,6 +271,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         postCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
         senseCreditCollection = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
+        commentCollection = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
 
         usersCollection.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -313,7 +313,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                 }
                             });
 
-                    commentCollection.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    commentCollection.document("push_ids").collection(pushId)
+                            .document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                             if (e != null) {
@@ -325,7 +326,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                 Comment comment = documentSnapshot.toObject(Comment.class);
                                 final String commmentText = comment.getCommentText();
                                 String boldText = username;
-                                String normalText = " commented on your post. " + "'" + commmentText + "'";
+                                String normalText = " commented on your post. " + '"' + commmentText + '"';
                                 SpannableString str = new SpannableString(boldText + normalText);
                                 str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                                 holder.usernameTextView.setText(str);

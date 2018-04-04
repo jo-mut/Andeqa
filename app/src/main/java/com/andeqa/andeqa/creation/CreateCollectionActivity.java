@@ -22,7 +22,7 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.TransactionDetails;
-import com.andeqa.andeqa.profile.CollectionPostsActivity;
+import com.andeqa.andeqa.profile.CollectionsPostsActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -195,10 +195,6 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
             final DatabaseReference collectionRef= postReference.push();
             final String collectionId = collectionRef.getKey();
 
-            //firebase push id to organise post according to time
-            final DatabaseReference reference = postReference.push();
-            final String pushId = reference.getKey();
-
             collectionCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot documentSnapshots) {
@@ -218,7 +214,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                         StorageReference storageReference = FirebaseStorage
                                 .getInstance().getReference()
                                 .child(Constants.COLLECTIONS)
-                                .child(pushId);
+                                .child(collectionId);
 
                         UploadTask uploadTask = storageReference.putFile(photoUri);
                         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -246,7 +242,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                                         mCollectionNameEditText.setText("");
                                         mCollectionNoteEditText.setText("");
 
-                                        Intent intent = new Intent(CreateCollectionActivity.this, CollectionPostsActivity.class);
+                                        Intent intent = new Intent(CreateCollectionActivity.this, CollectionsPostsActivity.class);
                                         intent.putExtra(CreateCollectionActivity.COLLECTION_ID, collectionId);
                                         intent.putExtra(CreateCollectionActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
                                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -290,7 +286,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                         mCollectionNoteEditText.setText("");
 
 
-                        Intent intent = new Intent(CreateCollectionActivity.this, CollectionPostsActivity.class);
+                        Intent intent = new Intent(CreateCollectionActivity.this, CollectionsPostsActivity.class);
                         intent.putExtra(CreateCollectionActivity.COLLECTION_ID, collectionId);
                         intent.putExtra(CreateCollectionActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -316,7 +312,6 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
             if(requestCode == IMAGE_GALLERY_REQUEST && data != null){
                 photoUri = data.getData();
                 if (photoUri != null){
-                    mCollectionCoverTextView.setVisibility(View.GONE);
                     Picasso.with(this)
                             .load(photoUri)
                             .into(mCollectionCoverImageView,
@@ -347,7 +342,8 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
-            startActivityForResult(intent, IMAGE_GALLERY_REQUEST);        }
+            startActivityForResult(intent, IMAGE_GALLERY_REQUEST);
+        }
     }
 
 }

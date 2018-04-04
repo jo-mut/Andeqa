@@ -97,7 +97,6 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
         //initilize click listeners
         mSendMessageImageView.setOnClickListener(this);
 
-
         //initialize firebase auth
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
@@ -128,15 +127,14 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
             getSenderProfile();
             setMessages();
 
-            mMessagesRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
-                @Override
-                public void onLoadMore() {
-                    setNextCollections();
-                }
-            });
+//            mMessagesRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+//                @Override
+//                public void onLoadMore() {
+//                    setNextCollections();
+//                }
+//            });
 
         }
-
 
     }
 
@@ -215,7 +213,6 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setAutoMeasureEnabled(true);
         mMessagesRecyclerView.setLayoutManager(layoutManager);
-        mMessagesRecyclerView.scrollToPosition(documentSnapshots.size() -1);
     }
 
 
@@ -260,7 +257,8 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
 
         //retrieve the first bacth of documentSnapshots
         Query nextSellingQuery =messagesCollection.document("chat_rooms").collection(roomId)
-                .orderBy("time").startAfter(lastVisible)
+                .orderBy("time")
+                .startAfter(lastVisible)
                 .limit(TOTAL_ITEMS);
 
         nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -321,7 +319,6 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
     }
 
 
-
     /**send messages to a specific user*/
     private void sendMessage(){
         if (!TextUtils.isEmpty(mSendMessageEditText.getText())){
@@ -374,8 +371,11 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
                 }
             });
 
-            DocumentReference messagingReference = roomCollection.document("rooms")
+            DocumentReference receipientReference = roomCollection.document("rooms")
                     .collection(mUid).document(firebaseAuth.getCurrentUser().getUid());
+            DocumentReference senderReference = roomCollection.document("rooms")
+                    .collection(firebaseAuth.getCurrentUser().getUid())
+                    .document(mUid);
             Room room = new Room();
             room.setUid(firebaseAuth.getCurrentUser().getUid());
             room.setMessage(text_message);
@@ -383,7 +383,8 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
             room.setPushId(firebaseAuth.getCurrentUser().getUid());
             room.setRoomId(roomId);
             room.setStatus("unRead");
-            messagingReference.set(room);
+            receipientReference.set(room);
+            senderReference.set(room);
             mSendMessageEditText.setText("");
 
         }else {
@@ -398,5 +399,11 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
         if (v == mSendMessageImageView){
             sendMessage();
         }
+    }
+
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
     }
 }

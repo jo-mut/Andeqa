@@ -936,7 +936,14 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
     }
 
     private void addReadMore(final String text, final TextView textView) {
-        if (text.substring(0, 120) != null){
+
+        final String [] strings = text.split("");
+
+        final int size = strings.length;
+
+        if (size <= 120){
+            //setence will not have read more
+        }else {
             SpannableString ss = new SpannableString(text.substring(0, 119) + "...read more");
             ClickableSpan clickableSpan = new ClickableSpan() {
                 @Override
@@ -958,32 +965,38 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
             textView.setText(ss);
             textView.setMovementMethod(LinkMovementMethod.getInstance());
         }
-
     }
 
     private void addReadLess(final String text, final TextView textView) {
-        SpannableString ss = new SpannableString(text + " read less");
-        addReadMore(text, textView);
+        final String [] strings = text.split("");
 
-        ClickableSpan clickableSpan = new ClickableSpan() {
-            @Override
-            public void onClick(View view) {
-                addReadMore(text, textView);
-            }
-            @Override
-            public void updateDrawState(TextPaint ds) {
-                super.updateDrawState(ds);
-                ds.setUnderlineText(false);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    ds.setColor(mContext.getResources().getColor(R.color.colorPrimary, mContext.getTheme()));
-                } else {
-                    ds.setColor(mContext.getResources().getColor(R.color.colorPrimary));
+        final int size = strings.length;
+
+        if (size > 120){
+            SpannableString ss = new SpannableString(text + " read less");
+            addReadMore(text, textView);
+
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View view) {
+                    addReadMore(text, textView);
                 }
-            }
-        };
-        ss.setSpan(clickableSpan, ss.length() - 10, ss.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        textView.setText(ss);
-        textView.setMovementMethod(LinkMovementMethod.getInstance());
+                @Override
+                public void updateDrawState(TextPaint ds) {
+                    super.updateDrawState(ds);
+                    ds.setUnderlineText(false);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        ds.setColor(mContext.getResources().getColor(R.color.colorPrimary, mContext.getTheme()));
+                    } else {
+                        ds.setColor(mContext.getResources().getColor(R.color.colorPrimary));
+                    }
+                }
+            };
+            ss.setSpan(clickableSpan, ss.length() - 10, ss.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            textView.setText(ss);
+            textView.setMovementMethod(LinkMovementMethod.getInstance());
+        }
+
     }
 
 }

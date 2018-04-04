@@ -37,9 +37,9 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
     private static final String EXTRA_USER_UID = "uid";
     private MessagingAdapter messagingAdapter;
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
-    private CollectionReference messagingUsersCollection;
+    private CollectionReference roomCollection;
     private CollectionReference usersCollection;
-    private Query messagingUsersQuery;
+    private Query roomQuery;
     private FirebaseAuth firebaseAuth;
     private Context mContext;
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
@@ -56,7 +56,8 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
 
     @Override
     public RoomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_list_layout, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.message_list_layout, parent, false);
         return new RoomViewHolder(view);
     }
 
@@ -74,11 +75,13 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
         final String roomId = room.getRoomId();
         final String status = room.getStatus();
 
+        Log.d("room id", roomId);
+
         firebaseAuth = FirebaseAuth.getInstance();
 
         if (firebaseAuth.getCurrentUser() != null){
-            messagingUsersCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
-            messagingUsersQuery = messagingUsersCollection.document("room")
+            roomCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
+            roomQuery = roomCollection.document("rooms")
                     .collection(firebaseAuth.getCurrentUser().getUid());
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
 
@@ -89,7 +92,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
             holder.roomRelativeLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    messagingUsersCollection.document("room")
+                    roomCollection.document("rooms")
                             .collection(firebaseAuth.getCurrentUser().getUid())
                             .document(postKey).update("status", "read");
                     Intent intent = new Intent(mContext, MessagesAccountActivity.class);

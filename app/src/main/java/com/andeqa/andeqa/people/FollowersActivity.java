@@ -115,7 +115,7 @@ public class FollowersActivity extends AppCompatActivity {
 
 
     private void setCollections(){
-        followersQuery.orderBy("time").limit(TOTAL_ITEMS)
+        followersQuery.orderBy("uid").limit(TOTAL_ITEMS)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -153,6 +153,7 @@ public class FollowersActivity extends AppCompatActivity {
 
         //retrieve the first bacth of documentSnapshots
         Query nextSellingQuery = relationsReference.document("followers").collection(mUid)
+                .orderBy("uid")
                 .startAfter(lastVisible)
                 .limit(TOTAL_ITEMS);
 

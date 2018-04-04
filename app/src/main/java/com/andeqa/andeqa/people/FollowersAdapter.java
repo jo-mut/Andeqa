@@ -95,7 +95,7 @@ public class FollowersAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
 
             usersReference= FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
-            followersQuery = relationsReference.document("followers").collection(mUid);
+            followersQuery = relationsReference.document("followers").collection(postKey);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
 

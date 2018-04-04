@@ -17,6 +17,7 @@ import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.profile.ProfileActivity;
+import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.firebase.ui.common.ChangeEventType;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -94,6 +95,16 @@ public class FollowingActivity extends AppCompatActivity {
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             followingQuery = relationsReference.document("following").collection(mUid);
 
+            setRecyclerView();
+            setCollections();
+
+            mFollowingRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+                @Override
+                public void onLoadMore() {
+                    setNextCollections();
+                }
+            });
+
         }
     }
 
@@ -109,7 +120,7 @@ public class FollowingActivity extends AppCompatActivity {
 
 
     private void setCollections(){
-        followingQuery.orderBy("time").limit(TOTAL_ITEMS)
+        followingQuery.orderBy("uid").limit(TOTAL_ITEMS)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -147,6 +158,7 @@ public class FollowingActivity extends AppCompatActivity {
 
         //retrieve the first bacth of documentSnapshots
         Query nextSellingQuery = relationsReference.document("followers").collection(mUid)
+                .orderBy("uid")
                 .startAfter(lastVisible)
                 .limit(TOTAL_ITEMS);
 

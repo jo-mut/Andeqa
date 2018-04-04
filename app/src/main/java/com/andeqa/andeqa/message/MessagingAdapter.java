@@ -69,7 +69,6 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public int getItemViewType(int position) {
         Message message = getSnapshot(position).toObject(Message.class);
         final String senderUid = message.getSenderUid();
-        final String recepientUid = message.getRecepientUid();
         firebaseAuth = FirebaseAuth.getInstance();
 
         if (senderUid.equals(firebaseAuth.getCurrentUser().getUid())){

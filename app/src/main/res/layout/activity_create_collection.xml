@@ -29,7 +29,7 @@
             android:textColor="@android:color/white"
             android:textStyle="normal|bold"
             android:layout_gravity="right"
-            android:padding="10sp"
+            android:padding="10dp"
             android:textAllCaps="false"
             android:textSize="18sp" />
 
@@ -50,7 +50,7 @@
             android:id="@+id/collectionNameEditText"
             android:textSize="18sp"
             android:padding="15dp"
-            android:hint="Your collection's name"
+            android:hint="Enter your collection's name"
             android:textStyle="normal|bold"
             android:background="@drawable/input_background" />
 
@@ -74,7 +74,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:id="@+id/collectionNoteRelatvieLayout">
+        android:id="@+id/collectionNoteRelativeLayout">
 
         <EditText
             android:layout_width="match_parent"

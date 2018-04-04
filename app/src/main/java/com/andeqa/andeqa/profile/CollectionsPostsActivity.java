@@ -37,13 +37,13 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class CollectionPostsActivity extends AppCompatActivity implements View.OnClickListener {
+public class CollectionsPostsActivity extends AppCompatActivity implements View.OnClickListener {
     @Bind(R.id.collectionsPostsRecyclerView)RecyclerView mCollectionsPostsRecyclerView;
     @Bind(R.id.createPostImageView)ImageView mCreatePostImageView;
     @Bind(R.id.collectionCoverImageView)ImageView mCollectionCoverImageView;
     @Bind(R.id.collectionNoteTextView)TextView mCollectionNoteTextView;
     @Bind(R.id.collectionNameTextView)TextView mCollectionNameTextView;
-    private static final String TAG = CollectionPostsActivity.class.getSimpleName();
+    private static final String TAG = CollectionsPostsActivity.class.getSimpleName();
     //firestore reference
     private CollectionReference collectionsPosts;
     private CollectionReference collectionCollection;
@@ -157,10 +157,10 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
 
     private void setRecyclerView(){
         // RecyclerView
-        collectionPostsAdapter = new CollectionPostsAdapter(CollectionPostsActivity.this);
+        collectionPostsAdapter = new CollectionPostsAdapter(CollectionsPostsActivity.this);
         mCollectionsPostsRecyclerView.setAdapter(collectionPostsAdapter);
         mCollectionsPostsRecyclerView.setHasFixedSize(false);
-        layoutManager = new LinearLayoutManager(CollectionPostsActivity.this);
+        layoutManager = new LinearLayoutManager(CollectionsPostsActivity.this);
         mCollectionsPostsRecyclerView.setLayoutManager(layoutManager);
         mCollectionsPostsRecyclerView.setNestedScrollingEnabled(false);
     }
@@ -183,7 +183,7 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
 
                     mCollectionNameTextView.setText(name);
                     mCollectionNoteTextView.setText(note);
-                    Picasso.with(CollectionPostsActivity.this)
+                    Picasso.with(CollectionsPostsActivity.this)
                             .load(cover)
                             .resize(MAX_WIDTH, MAX_HEIGHT)
                             .onlyScaleDown()
@@ -197,7 +197,7 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
 
                                 @Override
                                 public void onError() {
-                                    Picasso.with(CollectionPostsActivity.this)
+                                    Picasso.with(CollectionsPostsActivity.this)
                                             .load(cover)
                                             .resize(MAX_WIDTH, MAX_HEIGHT)
                                             .onlyScaleDown()
@@ -325,8 +325,8 @@ public class CollectionPostsActivity extends AppCompatActivity implements View.O
     @Override
     public void onClick(View v){
         if (v == mCreatePostImageView){
-            Intent intent = new Intent(CollectionPostsActivity.this, CreatePostActivity.class);
-            intent.putExtra(CollectionPostsActivity.COLLECTION_ID, collectionId);
+            Intent intent = new Intent(CollectionsPostsActivity.this, CreatePostActivity.class);
+            intent.putExtra(CollectionsPostsActivity.COLLECTION_ID, collectionId);
             startActivity(intent);
         }
 

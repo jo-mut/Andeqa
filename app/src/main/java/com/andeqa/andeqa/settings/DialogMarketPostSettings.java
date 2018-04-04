@@ -1,4 +1,4 @@
-package com.andeqa.andeqa.market;
+package com.andeqa.andeqa.settings;
 
 
 import android.app.Dialog;

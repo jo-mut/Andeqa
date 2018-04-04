@@ -15,17 +15,7 @@ public class Room {
     public Room() {
 
     }
-
-
-    public Room(String uid, String message, long time,
-                String pushId, String roomId, String status) {
-        this.uid = uid;
-        this.message = message;
-        this.time = time;
-        this.pushId = pushId;
-        this.roomId = roomId;
-        this.status = status;
-    }
+    
 
     public String getUid() {
         return uid;

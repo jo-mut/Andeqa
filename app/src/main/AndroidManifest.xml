@@ -175,10 +175,10 @@
             android:name=".creation.CreateCollectionActivity"
             android:label="Create collection" />
         <activity
-            android:name=".profile.CollectionPostsActivity" />
+            android:name=".profile.CollectionsPostsActivity" />
         <activity
             android:label="Collection settings"
-            android:name=".profile.CollectionSettingsActivity"/>
+            android:name=".settings.CollectionSettingsActivity"/>
     </application>
 
 </manifest>

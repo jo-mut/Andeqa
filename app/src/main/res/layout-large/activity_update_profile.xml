@@ -97,11 +97,29 @@
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_height="84dp"
                 android:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
                 android:title="Collapsing Toolbar"
                 app:layout_collapseMode="pin"
-                tools:ignore="HardcodedText,UnusedAttribute" />
+                tools:ignore="HardcodedText,UnusedAttribute">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_done_white_24dp"
+                        android:id="@+id/doneEditingImageView"
+                        android:padding="10dp"
+                        android:layout_centerVertical="true" />
+
+                </RelativeLayout>
+
+            </android.support.v7.widget.Toolbar>
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 

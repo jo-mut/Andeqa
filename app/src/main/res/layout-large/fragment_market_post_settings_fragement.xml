@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="5dp"
-    tools:context="com.andeqa.andeqa.market.DialogMarketPostSettings"
+    tools:context="com.andeqa.andeqa.settings.DialogMarketPostSettings"
     android:background="@android:color/white">
 
 <!-- TODO: Update blank fragment layout -->

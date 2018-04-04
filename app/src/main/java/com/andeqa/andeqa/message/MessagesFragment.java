@@ -72,36 +72,16 @@ public class MessagesFragment extends Fragment {
 
             setRecyclerView();
             setCollections();
-            showPlaceHolder();
 
-            mRoomsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
-                @Override
-                public void onLoadMore() {
-                    setNextCollections();
-                }
-            });
+//            mRoomsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+//                @Override
+//                public void onLoadMore() {
+//                    setNextCollections();
+//                }
+//            });
         }
 
         return view;
-    }
-
-    private void showPlaceHolder(){
-        roomsCollections.document("rooms")
-                .collection(firebaseAuth.getCurrentUser().getUid())
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshots.isEmpty()){
-                    mPlaceHolderRelativeLayout.setVisibility(View.VISIBLE);
-                }
-            }
-        });
     }
 
     private void setRecyclerView(){
@@ -155,7 +135,9 @@ public class MessagesFragment extends Fragment {
         DocumentSnapshot lastVisible = roomAdapter.getSnapshot(snapshotSize - 1);
 
         //retrieve the first bacth of documentSnapshots
-        Query nextSellingQuery = roomsCollections.orderBy("time").startAfter(lastVisible)
+        Query nextSellingQuery = roomsCollections.document("rooms")
+                .collection(firebaseAuth.getCurrentUser().getUid())
+                .orderBy("time").startAfter(lastVisible)
                 .limit(TOTAL_ITEMS);
 
         nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {

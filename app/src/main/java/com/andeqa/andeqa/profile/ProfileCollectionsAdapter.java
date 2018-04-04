@@ -2,13 +2,21 @@ package com.andeqa.andeqa.profile;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Collection;
+import com.andeqa.andeqa.settings.CollectionSettingsActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -66,7 +74,18 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
         firebaseAuth = FirebaseAuth.getInstance();
 
         holder.mCollectionNameTextView.setText(collection.getName());
-        holder.mCollectionsNoteTextView.setText(collection.getNote());
+
+        //prevent collection note from overlapping other layouts
+        final String [] strings = collection.getNote().split("");
+
+        final int size = strings.length;
+
+        if (size <= 75){
+            //setence will not have read more
+            holder.mCollectionsNoteTextView.setText(collection.getNote());
+        }else {
+            holder.mCollectionsNoteTextView.setText(collection.getNote().substring(0, 74) + "...");
+        }
 
         if (firebaseAuth.getCurrentUser().getUid().equals(uid)){
             holder.mCollectionsSettingsImageView.setVisibility(View.VISIBLE);
@@ -101,7 +120,7 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
         holder.collectionsLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, CollectionPostsActivity.class);
+                Intent intent = new Intent(mContext, CollectionsPostsActivity.class);
                 intent.putExtra(ProfileCollectionsAdapter.COLLECTION_ID, collectionId);
                 intent.putExtra(ProfileCollectionsAdapter.EXTRA_USER_UID, uid);
                 mContext.startActivity(intent);
@@ -112,6 +131,7 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, CollectionSettingsActivity.class);
+                intent.putExtra(ProfileCollectionsAdapter.COLLECTION_ID, collectionId);
                 intent.putExtra(ProfileCollectionsAdapter.COLLECTION_ID, collectionId);
                 mContext.startActivity(intent);
             }
@@ -125,4 +145,5 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.collections_layout, parent, false);
         return new CollectionViewHolder(view );
     }
+
 }

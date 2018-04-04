@@ -93,7 +93,7 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
 
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            followingQuery = relationsReference.document("following").collection(mUid);
+            followingQuery = relationsReference.document("following").collection(postKey);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             //firebase
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);

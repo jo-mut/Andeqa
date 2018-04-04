@@ -70,7 +70,7 @@ public class TimelineFragment extends Fragment {
 
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
         timelineQuery = timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
-                .collection("timeline").orderBy("timeStamp", Query.Direction.DESCENDING)
+                .collection("timeline").orderBy("time", Query.Direction.DESCENDING)
                 .limit(TOTAL_ITEMS);
 
         setRecyclerView();
@@ -139,7 +139,7 @@ public class TimelineFragment extends Fragment {
 
         //retrieve the first bacth of documentSnapshots
         Query nextSellingQuery = timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
-                .collection("timeline").orderBy("timeStamp", Query.Direction.DESCENDING)
+                .collection("timeline").orderBy("time", Query.Direction.DESCENDING)
                 .startAfter(lastVisible)
                 .limit(TOTAL_ITEMS);
 

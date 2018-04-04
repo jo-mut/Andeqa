@@ -75,11 +75,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
         notifyDataSetChanged();
     }
 
-    protected void clearSnapshots(){
-        documentSnapshots.clear();
-        notifyDataSetChanged();
-    }
-
     @Override
     public long getItemId(int position) {
         return super.getItemId(position);
@@ -102,8 +97,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
     }
 
-
-
     @Override
     public void onBindViewHolder(final CommentViewHolder holder, int position) {
         Comment comment = getSnapshot(holder.getAdapterPosition()).toObject(Comment.class);
@@ -121,9 +114,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
         }
 
-//        //set the comment
-//        addReadMore(comment.getCommentText(), holder.mCommentTextView);
-//        addReadLess(comment.getCommentText(), holder.mCommentTextView);
 
         holder.mCommentTextView.setText(comment.getCommentText());
 
@@ -311,8 +301,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
         if (size > 120){
             SpannableString ss = new SpannableString(text + " read less");
-            addReadMore(text, textView);
-
             ClickableSpan clickableSpan = new ClickableSpan() {
                 @Override
                 public void onClick(View view) {
@@ -334,18 +322,5 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
             textView.setMovementMethod(LinkMovementMethod.getInstance());
         }
 
-
     }
-
-
-    public void stopListening() {
-        if (mRegistration != null) {
-            mRegistration.remove();
-            mRegistration = null;
-        }
-
-        documentSnapshots.clear();
-        notifyDataSetChanged();
-    }
-
 }

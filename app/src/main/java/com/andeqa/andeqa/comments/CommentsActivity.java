@@ -148,12 +148,12 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
             setCollections();
 
 
-            mCommentsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
-                @Override
-                public void onLoadMore() {
-                    setNextCollections();
-                }
-            });
+//            mCommentsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+//                @Override
+//                public void onLoadMore() {
+//                    setNextCollections();
+//                }
+//            });
 
         }
     }
@@ -287,7 +287,6 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                     for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
                         switch (change.getType()) {
                             case ADDED:
-                                comments.clear();
                                 onDocumentAdded(change);
                                 break;
                             case MODIFIED:
@@ -298,6 +297,8 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                                 break;
                         }
                     }
+                }else {
+                    mPlaceHolderRelativeLayout.setVisibility(View.VISIBLE);
                 }
 
             }
@@ -417,7 +418,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                             comment.setPushId(mPostId);
                             comment.setPostId(postId);
                             comment.setTime(time);
-                            commentsCollection.add(comment);
+                            commentsCollection.document(postId).set(comment);
 
                             final Timeline timeline = new Timeline();
                             final long time = new Date().getTime();
@@ -464,5 +465,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         }
 
     }
+
+
 
 }
