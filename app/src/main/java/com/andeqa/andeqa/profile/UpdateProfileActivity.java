@@ -2,11 +2,14 @@ package com.andeqa.andeqa.profile;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -55,6 +58,8 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     @Bind(R.id.profileCoverImageView)ImageView mProfileCoverImageView;
     @Bind(R.id.updateProfilePictureImageButton)ImageButton mUpdateProfilePictureImageButton;
     @Bind(R.id.updateCoverTextView)TextView mUpdateCoverTextView;
+    @Bind(R.id.statusCountTextView)TextView mStatusCountTextView;
+    @Bind(R.id.doneEditingImageView)ImageView mDoneEditingImageView;
 
     private static  final int GALLERY_PROFILE_PHOTO_REQUEST = 111;
     private static final int GALLERY_PROFILE_COVER_PHOTO = 222;
@@ -71,6 +76,8 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     private static final int MAX_HEIGHT = 200;
     private static final int MAX_COVER_WIDTH = 400;
     private static final int MAX_COVER_HEIGHT = 400;
+    private static final int DEFAULT_TITLE_LENGTH_LIMIT = 250;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,10 +95,12 @@ public class UpdateProfileActivity extends AppCompatActivity implements
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
 
             updateProfileProgessDialog();
+            textWatchers();
 
 //            mDeleteAccountRelativeLayout.setOnClickListener(this);
             mUpdateProfilePictureImageButton.setOnClickListener(this);
             mUpdateCoverTextView.setOnClickListener(this);
+            mDoneEditingImageView.setOnClickListener(this);
         }
 
 
@@ -106,7 +115,38 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     }
 
 
-    @Override
+    private void textWatchers(){
+        //TITLE TEXT WATCHER
+        mBioEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                int count = DEFAULT_TITLE_LENGTH_LIMIT - editable.length();
+                mBioEditText.setText(Integer.toString(count));
+
+                if (count == 0){
+                    mBioEditText.setTextColor(Color.RED);
+                }else if (count <= 250){
+                    mBioEditText.setTextColor(Color.BLACK);
+                }else{
+                    //do nothing
+                }
+
+            }
+        });
+    }
+
+
+        @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.update_profile_menu, menu);
@@ -117,12 +157,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_done){
-            updateUsernameAndBio();
 
-            Toast.makeText(UpdateProfileActivity.this, "Successfully updated", Toast.LENGTH_SHORT).show();
-
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -136,6 +171,12 @@ public class UpdateProfileActivity extends AppCompatActivity implements
             intent.setAction(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
             startActivityForResult(intent, GALLERY_PROFILE_PHOTO_REQUEST);
+        }
+
+        if (v ==  mDoneEditingImageView){
+            updateUsernameAndBio();
+
+            Toast.makeText(UpdateProfileActivity.this, "Successfully updated", Toast.LENGTH_SHORT).show();
         }
 
 //        if (v == mDeleteAccountRelativeLayout){

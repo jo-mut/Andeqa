@@ -76,7 +76,6 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
     private FirebaseAuth firebaseAuth;
 
     private static final int DEFAULT_TITLE_LENGTH_LIMIT = 100;
-    private static final int DEFAULT_DESCRIPTION_LENGTH_LIMIT = 500;
     private static final int IMAGE_GALLERY_REQUEST = 112;
     private static final String COLLECTION_ID = "collection id";
     private String collectionId;
@@ -123,8 +122,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
             mCingleTitleEditText.setFilters(new InputFilter[]{new InputFilter
                     .LengthFilter(DEFAULT_TITLE_LENGTH_LIMIT)});
-            mCingleDescriptionEditText.setFilters(new  InputFilter[]{new InputFilter
-                    .LengthFilter(DEFAULT_DESCRIPTION_LENGTH_LIMIT)});
+
             textWatchers();
             fetchUserData();
             uploadingToFirebaseDialog();
@@ -159,39 +157,6 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                     mTitleCountTextView.setTextColor(Color.GRAY);
                 }else {
                     mTitleCountTextView.setTextColor(Color.BLACK);
-                }
-
-            }
-        });
-
-        //DESCRIPTION TEXT WATCHER
-        mCingleDescriptionEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                int count = DEFAULT_DESCRIPTION_LENGTH_LIMIT- editable.length();
-                mDescriptionCountTextView.setText(Integer.toString(count));
-
-                if (count < 0){
-                }else if (count < 100){
-                    mDescriptionCountTextView.setTextColor(Color.GRAY);
-                }else if (count < 200){
-                    mDescriptionCountTextView.setTextColor(Color.RED);
-                }else if (count < 300){
-                    mDescriptionCountTextView.setTextColor(Color.BLUE);
-                }else if (count < 400){
-                    mDescriptionCountTextView.setTextColor(Color.GREEN);
-                }else {
-                    mDescriptionCountTextView.setTextColor(Color.BLACK);
                 }
 
             }

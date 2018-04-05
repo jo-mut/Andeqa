@@ -15,7 +15,7 @@ public class Room {
     public Room() {
 
     }
-    
+
 
     public String getUid() {
         return uid;

@@ -12,6 +12,7 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -21,18 +22,24 @@ import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.models.Collection;
+import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.profile.CollectionsPostsActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
@@ -71,6 +78,8 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
     private static final int DEFAULT_TITLE_LENGTH_LIMIT = 25;
     private static final int DEFAULT_DESCRIPTION_LENGTH_LIMIT = 100;
     private static final int IMAGE_GALLERY_REQUEST = 112;
+    private  static final int MAX_WIDTH = 400;
+    private static final int MAX_HEIGHT = 400;
 
     private static final String COLLECTION_ID = "collection id";
     private static final String EXTRA_USER_UID = "uid";
@@ -112,6 +121,7 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
                     .LengthFilter(DEFAULT_DESCRIPTION_LENGTH_LIMIT)});
             textWatchers();
             uploadingToFirebaseDialog();
+            colectionInfo();
         }
 
     }
@@ -178,6 +188,54 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
     public void uploadingToFirebaseDialog(){
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(true);
+        progressDialog.setMessage("Updating your collection");
+    }
+
+    public void colectionInfo(){
+        collectionCollection.document(collectionId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+
+                if (documentSnapshot.exists()){
+                    Collection collection = documentSnapshot.toObject(Collection.class);
+                    final String image = collection.getImage();
+                    final String name = collection.getName();
+                    final String note = collection.getNote();
+
+                    mCollectionNameTextView.setText(name);
+                    mCollectionNoteTextView.setText(note);
+                    Picasso.with(CollectionSettingsActivity.this)
+                            .load(image)
+                            .resize(MAX_WIDTH, MAX_HEIGHT)
+                            .onlyScaleDown()
+                            .centerCrop()
+                            .networkPolicy(NetworkPolicy.OFFLINE)
+                            .into(mCollectionCoverImageView, new Callback() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onError() {
+                                    Picasso.with(CollectionSettingsActivity.this)
+                                            .load(image)
+                                            .resize(MAX_WIDTH, MAX_HEIGHT)
+                                            .onlyScaleDown()
+                                            .centerCrop()
+                                            .into(mCollectionCoverImageView);
+                                }
+                            });
+
+                }
+            }
+        });
     }
 
     private void collectionSettings(){
@@ -207,16 +265,10 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
                 @Override
                 public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                     double progress = (100.0 * taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
-                    progressDialog.setMessage("Creating your collection" + " " + ((int) progress) + "%...");
+                    progressDialog.setMessage("Updating your collection" + " " + ((int) progress) + "%...");
                     if (progress == 100.0){
                         progressDialog.dismiss();
                         //reset input fields
-                        Intent intent = new Intent(CollectionSettingsActivity.this, CollectionsPostsActivity.class);
-                        intent.putExtra(CollectionSettingsActivity.COLLECTION_ID, collectionId);
-                        intent.putExtra(CollectionSettingsActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        finish();
                     }
                 }
             });
@@ -230,12 +282,14 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
         if (!TextUtils.isEmpty(mCollectionNameEditText.getText())){
             collectionCollection.document(collectionId)
                     .update("name", mCollectionNameEditText.getText().toString());
+            mCollectionNameTextView.setText(mCollectionNameEditText.getText().toString());
             mCollectionNameEditText.setText("");
         }
 
         if (!TextUtils.isEmpty(mCollectionNoteEditText.getText())){
             collectionCollection.document(collectionId)
                     .update("note", mCollectionNoteEditText.getText().toString());
+            mCollectionNoteTextView.setText(mCollectionNoteEditText.getText().toString());
             mCollectionNoteEditText.setText("");
         }
 

@@ -169,6 +169,6 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
 
     @Override
     public int getItemCount() {
-        return 0;
+        return documentSnapshots.size();
     }
 }

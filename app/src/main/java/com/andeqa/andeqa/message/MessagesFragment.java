@@ -40,12 +40,10 @@ public class MessagesFragment extends Fragment {
 
     private static final String TAG = MessagesFragment.class.getSimpleName();
     private CollectionReference roomsCollections;
-    private CollectionReference usersCollection;
     private Query roomsQuery;
     private FirebaseAuth firebaseAuth;
     private RoomAdapter roomAdapter;
     private static final int TOTAL_ITEMS = 25;
-
 
     private List<String> roomIds = new ArrayList<>();
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
@@ -68,7 +66,6 @@ public class MessagesFragment extends Fragment {
             roomsCollections = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
             roomsQuery = roomsCollections.document("rooms")
                     .collection(firebaseAuth.getCurrentUser().getUid());
-            usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
 
             setRecyclerView();
             setCollections();
@@ -87,13 +84,12 @@ public class MessagesFragment extends Fragment {
     private void setRecyclerView(){
         roomAdapter = new RoomAdapter(getContext());
         mRoomsRecyclerView.setAdapter(roomAdapter);
+        roomAdapter.notifyDataSetChanged();
         mRoomsRecyclerView.setHasFixedSize(false);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setAutoMeasureEnabled(true);
         mRoomsRecyclerView.setLayoutManager(layoutManager);
     }
-
-
 
     private void setCollections(){
         roomsQuery.orderBy("time").limit(TOTAL_ITEMS)
@@ -121,6 +117,8 @@ public class MessagesFragment extends Fragment {
                                         break;
                                 }
                             }
+
+                            Log.d("chats rooms size", documentSnapshots.size() + "");
                         }else {
                             mPlaceHolderRelativeLayout.setVisibility(View.VISIBLE);
                         }

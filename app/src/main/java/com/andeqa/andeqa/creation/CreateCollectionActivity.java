@@ -170,7 +170,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                 mNoteCountTextView.setText(Integer.toString(count));
 
                 if (count == 0){
-                    mNameCountTextView.setTextColor(Color.RED);
+                    mNoteCountTextView.setTextColor(Color.RED);
                 }else if (count <= 100){
                     mNoteCountTextView.setTextColor(Color.BLACK);
                 }else{

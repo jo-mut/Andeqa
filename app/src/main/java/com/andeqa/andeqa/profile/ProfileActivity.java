@@ -150,7 +150,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             //firebase
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
 
-
             fetchData();
             recyclerView();
             setCollections();
@@ -167,7 +166,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 mSendMessageImageView.setVisibility(View.VISIBLE);
                 mFollowButton.setVisibility(View.VISIBLE);
             }
-
 
             usersCollections.document(mUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
@@ -190,12 +188,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 }
             });
 
-            mCollectionsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
-                @Override
-                public void onLoadMore() {
-                    setNextCollections();
-                }
-            });
+//            mCollectionsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+//                @Override
+//                public void onLoadMore() {
+//                    setNextCollections();
+//                }
+//            });
 
             //INITIALIZE CLICK LISTENERS
             mFollowersCountTextView.setOnClickListener(this);
