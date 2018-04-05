@@ -1,5 +1,6 @@
 package com.andeqa.andeqa.message;
 
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -50,6 +51,8 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
     @Bind(R.id.toolbar)Toolbar mToolBar;
     @Bind(R.id.sendMessageImageView)ImageView mSendMessageImageView;
     @Bind(R.id.senderImageView)CircleImageView mSenderImageView;
+    @Bind(R.id.swipeRefreshLayout)SwipeRefreshLayout mSwipeRefreshLayout;
+
     //firestore references
     private CollectionReference messagesCollection;
     private CollectionReference roomCollection;

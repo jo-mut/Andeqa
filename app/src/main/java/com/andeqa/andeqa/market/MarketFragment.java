@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -37,8 +38,9 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MarketFragment extends Fragment{
+public class MarketFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
     @Bind(R.id.marketRecyclerView)RecyclerView sellingRecyclerView;
+    @Bind(R.id.swipeRefreshLayout)SwipeRefreshLayout mSwipeRefreshLayout;
     @Bind(R.id.placeHolderRelativeLayout)RelativeLayout mPlaceHolderRelativeLayout;
 
     private static final String TAG = "SingleOutFragment";
@@ -73,8 +75,10 @@ public class MarketFragment extends Fragment{
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_market, container, false);
         ButterKnife.bind(this, view);
-        firebaseAuth = FirebaseAuth.getInstance();
 
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+
+        firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser()!= null){
             //firestore
             sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
@@ -107,6 +111,11 @@ public class MarketFragment extends Fragment{
         }else {
             Log.d("Saved Instance", "Instance is completely null");
         }
+    }
+
+    @Override
+    public void onRefresh() {
+        setNextCollections();
     }
 
     private void setRecyclerView(){
@@ -151,6 +160,7 @@ public class MarketFragment extends Fragment{
     }
 
     private void setNextCollections(){
+        mSwipeRefreshLayout.setRefreshing(true);
         // Get the last visible document
         final int snapshotSize = sellingAdapter.getItemCount();
         DocumentSnapshot lastVisible = sellingAdapter.getSnapshot(snapshotSize - 1);
@@ -184,6 +194,10 @@ public class MarketFragment extends Fragment{
                                 break;
                         }
                     }
+
+                    mSwipeRefreshLayout.setRefreshing(true);
+                }else {
+                    mSwipeRefreshLayout.setRefreshing(true);
                 }
             }
         });

@@ -13,6 +13,19 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content">
 
+      <android.support.v4.widget.SwipeRefreshLayout
+          android:id="@+id/swipeRefreshLayout"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content">
+
+          <android.support.v7.widget.RecyclerView
+              android:overScrollMode="never"
+              android:id="@+id/postsRecyclerView"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"/>
+
+      </android.support.v4.widget.SwipeRefreshLayout>
+
       <RelativeLayout
           android:visibility="gone"
           android:layout_alignParentBottom="true"
@@ -28,13 +41,6 @@
               android:id="@+id/progressBar" />
 
       </RelativeLayout>
-
-      <android.support.v7.widget.RecyclerView
-          android:overScrollMode="never"
-          android:id="@+id/postsRecyclerView"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"/>
-
 
       <RelativeLayout
           android:visibility="gone"

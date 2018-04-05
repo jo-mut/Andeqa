@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -37,8 +38,9 @@ import static android.media.CamcorderProfile.get;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment{
+public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
     @Bind(R.id.postsRecyclerView)RecyclerView postsRecyclerView;
+    @Bind(R.id.swipeRefreshLayout)SwipeRefreshLayout mSwipeRefreshLayout;
     @Bind(R.id.placeHolderRelativeLayout)RelativeLayout mPlaceHolderRelativeLayout;
 
     private static final String TAG = HomeFragment.class.getSimpleName();
@@ -54,7 +56,7 @@ public class HomeFragment extends Fragment{
     //adapters
     private PostsAdapter postsAdapter;
     private LinearLayoutManager layoutManager;
-    private int TOTAL_ITEMS = 10;
+    private int TOTAL_ITEMS = 2;
     private List<String> mSnapshotsIds = new ArrayList<>();
     private List<DocumentSnapshot> posts = new ArrayList<>();
 
@@ -69,6 +71,7 @@ public class HomeFragment extends Fragment{
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.bind(this, view);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
@@ -79,13 +82,6 @@ public class HomeFragment extends Fragment{
 
             setRecyclerView();
             setPosts();
-
-            postsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
-                @Override
-                public void onLoadMore() {
-                    setNextPosts();
-                }
-            });
 
         }
 
@@ -98,12 +94,18 @@ public class HomeFragment extends Fragment{
 
     }
 
+    @Override
+    public void onRefresh() {
+        setNextPosts();
+    }
+
     private void setRecyclerView(){
         postsAdapter = new PostsAdapter(getContext());
         postsRecyclerView.setAdapter(postsAdapter);
         postsAdapter.notifyDataSetChanged();
         postsRecyclerView.setHasFixedSize(false);
         layoutManager = new LinearLayoutManager(getContext());
+        layoutManager.setReverseLayout(true);
         postsRecyclerView.setLayoutManager(layoutManager);
 
     }
@@ -140,6 +142,7 @@ public class HomeFragment extends Fragment{
 
     private void setNextPosts(){
         // Get the last visible document
+        mSwipeRefreshLayout.setRefreshing(true);
         final int snapshotSize = postsAdapter.getItemCount();
         DocumentSnapshot lastVisible = postsAdapter.getSnapshot(snapshotSize - 1);
 
@@ -172,6 +175,9 @@ public class HomeFragment extends Fragment{
                                 break;
                         }
                     }
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }else {
+                    mSwipeRefreshLayout.setRefreshing(false);
                 }
             }
         });

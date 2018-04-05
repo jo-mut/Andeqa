@@ -1,6 +1,7 @@
 package com.andeqa.andeqa.comments;
 
 import android.content.Intent;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -51,7 +52,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class CommentsActivity extends AppCompatActivity implements View.OnClickListener {
+public class CommentsActivity extends AppCompatActivity implements
+        View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
     @Bind(R.id.sendCommentImageView)ImageView mSendCommentImageView;
     @Bind(R.id.commentEditText)EditText mCommentEditText;
     @Bind(R.id.commentsRecyclerView)RecyclerView mCommentsRecyclerView;
@@ -61,6 +63,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     @Bind(R.id.placeHolderRelativeLayout)RelativeLayout mPlaceHolderRelativeLayout;
     @Bind(R.id.titleTextView)TextView mCingleTitleTextView;
     @Bind(R.id.cingleTitleRelativeLayout)RelativeLayout mCingleTitleRelativeLayout;
+    @Bind(R.id.swipeRefreshLayout)SwipeRefreshLayout mSwipeRefreshLayout;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -112,6 +115,8 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
             mSendCommentImageView.setOnClickListener(this);
@@ -148,16 +153,13 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
             setCollections();
 
 
-//            mCommentsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
-//                @Override
-//                public void onLoadMore() {
-//                    setNextCollections();
-//                }
-//            });
-
         }
     }
 
+    @Override
+    public void onRefresh() {
+        setNextCollections();
+    }
 
     public void setData() {
         //get the cingle that user wants to comment on
@@ -306,6 +308,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void setNextCollections(){
+        mSwipeRefreshLayout.setRefreshing(true);
         // Get the last visible document
         final int snapshotSize = commentsAdapter.getItemCount();
         DocumentSnapshot lastVisible = commentsAdapter.getSnapshot(snapshotSize - 1);
@@ -338,6 +341,9 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                                 break;
                         }
                     }
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }else {
+                    mSwipeRefreshLayout.setRefreshing(false);
                 }
             }
         });

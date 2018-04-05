@@ -4,10 +4,12 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -95,6 +97,8 @@ public class UpdateProfileActivity extends AppCompatActivity implements
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
 
             updateProfileProgessDialog();
+            mBioEditText.setFilters(new InputFilter[]{new InputFilter
+                    .LengthFilter(DEFAULT_TITLE_LENGTH_LIMIT)});
             textWatchers();
 
 //            mDeleteAccountRelativeLayout.setOnClickListener(this);
@@ -131,12 +135,12 @@ public class UpdateProfileActivity extends AppCompatActivity implements
             @Override
             public void afterTextChanged(Editable editable) {
                 int count = DEFAULT_TITLE_LENGTH_LIMIT - editable.length();
-                mBioEditText.setText(Integer.toString(count));
+                mStatusCountTextView.setText(Integer.toString(count));
 
                 if (count == 0){
-                    mBioEditText.setTextColor(Color.RED);
+                    mStatusCountTextView.setTextColor(Color.RED);
                 }else if (count <= 250){
-                    mBioEditText.setTextColor(Color.BLACK);
+                    mStatusCountTextView.setTextColor(Color.BLACK);
                 }else{
                     //do nothing
                 }

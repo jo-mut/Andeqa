@@ -231,10 +231,10 @@
                             android:hint="Bio line"
                             android:freezesText="true"
                             android:textSize="24sp"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true"
                             android:layout_alignParentTop="false"
                             android:layout_width="400dp"
+                            android:layout_toStartOf="@+id/statusCountTextView"
+                            android:layout_toLeftOf="@+id/statusCountTextView"
                             android:layout_centerVertical="true" />
 
                         <TextView
@@ -242,6 +242,7 @@
                             android:layout_height="wrap_content"
                             android:id="@+id/statusCountTextView"
                             android:textSize="18sp"
+                            android:padding="5dp"
                             android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true"
                             android:layout_marginRight="5dp"

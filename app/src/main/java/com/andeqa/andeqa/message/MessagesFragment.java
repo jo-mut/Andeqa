@@ -3,6 +3,7 @@ package com.andeqa.andeqa.message;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -33,10 +34,12 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MessagesFragment extends Fragment {
+public class MessagesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     @Bind(R.id.roomsRecyclerView)RecyclerView mRoomsRecyclerView;
     @Bind(R.id.placeHolderRelativeLayout)RelativeLayout mPlaceHolderRelativeLayout;
+    @Bind(R.id.swipeRefreshLayout)SwipeRefreshLayout mSwipeRefreshLayout;
+
 
     private static final String TAG = MessagesFragment.class.getSimpleName();
     private CollectionReference roomsCollections;
@@ -60,6 +63,8 @@ public class MessagesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_messages, container, false);
         ButterKnife.bind(this, view);
 
+        mSwipeRefreshLayout.setRefreshing(true);
+
         firebaseAuth = FirebaseAuth.getInstance();
 
         if (firebaseAuth.getCurrentUser() != null){
@@ -70,15 +75,14 @@ public class MessagesFragment extends Fragment {
             setRecyclerView();
             setCollections();
 
-//            mRoomsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
-//                @Override
-//                public void onLoadMore() {
-//                    setNextCollections();
-//                }
-//            });
         }
 
         return view;
+    }
+
+    @Override
+    public void onRefresh() {
+        setNextCollections();
     }
 
     private void setRecyclerView(){
@@ -128,6 +132,7 @@ public class MessagesFragment extends Fragment {
     }
 
     private void setNextCollections(){
+        mSwipeRefreshLayout.setRefreshing(true);
         // Get the last visible document
         final int snapshotSize = roomAdapter.getItemCount();
         DocumentSnapshot lastVisible = roomAdapter.getSnapshot(snapshotSize - 1);
@@ -162,6 +167,10 @@ public class MessagesFragment extends Fragment {
                                 break;
                         }
                     }
+
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }else {
+                    mSwipeRefreshLayout.setRefreshing(false);
                 }
             }
         });

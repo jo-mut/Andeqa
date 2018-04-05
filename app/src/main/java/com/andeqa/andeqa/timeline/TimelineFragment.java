@@ -3,6 +3,7 @@ package com.andeqa.andeqa.timeline;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -36,7 +37,8 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TimelineFragment extends Fragment {
+public class TimelineFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+    @Bind(R.id.swipeRefreshLayout)SwipeRefreshLayout mSwipeRefreshLayout;
     @Bind(R.id.timelineRecyclerView)RecyclerView mTimelineRecyclerView;
     @Bind(R.id.placeHolderRelativeLayout)RelativeLayout mPlaceHolderRelativeLayout;
 
@@ -66,6 +68,9 @@ public class TimelineFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_timeline, container, false);
         ButterKnife.bind(this, view);
+
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+
         firebaseAuth = FirebaseAuth.getInstance();
 
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
@@ -86,6 +91,10 @@ public class TimelineFragment extends Fragment {
         return  view;
     }
 
+    @Override
+    public void onRefresh() {
+        setNextCollections();
+    }
 
     private void setRecyclerView(){
         timelineAdapter = new TimelineAdapter(getContext());
@@ -95,6 +104,7 @@ public class TimelineFragment extends Fragment {
         mTimelineRecyclerView.setHasFixedSize(false);
         mTimelineRecyclerView.setLayoutManager(layoutManager);
     }
+
 
 
 
@@ -133,6 +143,7 @@ public class TimelineFragment extends Fragment {
     }
 
     private void setNextCollections(){
+        mSwipeRefreshLayout.setRefreshing(true);
         // Get the last visible document
         final int snapshotSize = timelineAdapter.getItemCount();
         DocumentSnapshot lastVisible = timelineAdapter.getSnapshot(snapshotSize - 1);
@@ -167,6 +178,10 @@ public class TimelineFragment extends Fragment {
                                 break;
                         }
                     }
+
+                    mSwipeRefreshLayout.setRefreshing(true);
+                }else {
+                    mSwipeRefreshLayout.setRefreshing(true);
                 }
             }
         });

@@ -2,6 +2,7 @@ package com.andeqa.andeqa.people;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -46,7 +47,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class FollowersActivity extends AppCompatActivity {
+public class FollowersActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     //firestore references
     private CollectionReference relationsReference;
     private Query followersQuery;
@@ -61,6 +62,8 @@ public class FollowersActivity extends AppCompatActivity {
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
 
     @Bind(R.id.followersRecyclerView)RecyclerView mFollowersRecyclerView;
+    @Bind(R.id.swipeRefreshLayout)SwipeRefreshLayout mSwipeRefreshLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +82,9 @@ public class FollowersActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        mSwipeRefreshLayout.setRefreshing(true);
+
         firebaseAuth = FirebaseAuth.getInstance();
 
         if (firebaseAuth.getCurrentUser() != null){
@@ -112,7 +118,10 @@ public class FollowersActivity extends AppCompatActivity {
         mFollowersRecyclerView.setLayoutManager(layoutManager);
     }
 
-
+    @Override
+    public void onRefresh() {
+        setNextCollections();
+    }
 
     private void setCollections(){
         followersQuery.orderBy("uid").limit(TOTAL_ITEMS)
@@ -147,6 +156,7 @@ public class FollowersActivity extends AppCompatActivity {
     }
 
     private void setNextCollections(){
+        mSwipeRefreshLayout.setRefreshing(true);
         // Get the last visible document
         final int snapshotSize = followersAdapter.getItemCount();
         DocumentSnapshot lastVisible = followersAdapter.getSnapshot(snapshotSize - 1);
@@ -181,6 +191,10 @@ public class FollowersActivity extends AppCompatActivity {
                                 break;
                         }
                     }
+
+                    mSwipeRefreshLayout.setRefreshing(true);
+                }else {
+                    mSwipeRefreshLayout.setRefreshing(true);
                 }
             }
         });
