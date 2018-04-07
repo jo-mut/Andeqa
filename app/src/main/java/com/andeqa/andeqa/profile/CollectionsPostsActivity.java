@@ -2,6 +2,7 @@ package com.andeqa.andeqa.profile;
 
 import android.content.Intent;
 import android.os.Parcelable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,7 +38,8 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class CollectionsPostsActivity extends AppCompatActivity implements View.OnClickListener {
+public class CollectionsPostsActivity extends AppCompatActivity
+        implements View.OnClickListener{
     @Bind(R.id.collectionsPostsRecyclerView)RecyclerView mCollectionsPostsRecyclerView;
     @Bind(R.id.createPostImageView)ImageView mCreatePostImageView;
     @Bind(R.id.collectionCoverImageView)ImageView mCollectionCoverImageView;
@@ -245,9 +247,11 @@ public class CollectionsPostsActivity extends AppCompatActivity implements View.
 
     }
 
+
     private void setNextCollectionPosts(){
         // Get the last visible document
         final int snapshotSize = collectionPostsAdapter.getItemCount();
+
         DocumentSnapshot lastVisible = collectionPostsAdapter.getSnapshot(snapshotSize - 1);
 
         //retrieve the first bacth of mSnapshots

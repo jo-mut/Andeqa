@@ -43,7 +43,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MessagesAccountActivity extends AppCompatActivity implements View.OnClickListener {
+public class MessagesAccountActivity extends AppCompatActivity
+        implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
     private static final String TAG = MessagesAccountActivity.class.getSimpleName();
     //bind views
     @Bind(R.id.massagesRecyclerView)RecyclerView mMessagesRecyclerView;
@@ -107,6 +108,8 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
             //get the passed uid
             roomId = getIntent().getStringExtra(EXTRA_ROOM_ID);
 
+            mSwipeRefreshLayout.setOnRefreshListener(this);
+
             if(roomId == null){
                 throw new IllegalArgumentException("pass an ROOM ID");
             }
@@ -129,13 +132,6 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
             getProfile();
             getSenderProfile();
             setMessages();
-
-//            mMessagesRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
-//                @Override
-//                public void onLoadMore() {
-//                    setNextCollections();
-//                }
-//            });
 
         }
 
@@ -253,44 +249,58 @@ public class MessagesAccountActivity extends AppCompatActivity implements View.O
                 });
     }
 
+    @Override
+    public void onRefresh() {
+        setNextCollections();
+    }
+
     private void setNextCollections(){
+        mSwipeRefreshLayout.setRefreshing(true);
         // Get the last visible document
         final int snapshotSize = messagingAdapter.getItemCount();
-        DocumentSnapshot lastVisible = messagingAdapter.getSnapshot(snapshotSize - 1);
 
-        //retrieve the first bacth of documentSnapshots
-        Query nextSellingQuery =messagesCollection.document("chat_rooms").collection(roomId)
-                .orderBy("time")
-                .startAfter(lastVisible)
-                .limit(TOTAL_ITEMS);
+        if (snapshotSize == 0){
+            mSwipeRefreshLayout.setRefreshing(false);
+        }else {
+            DocumentSnapshot lastVisible = messagingAdapter.getSnapshot(snapshotSize - 1);
 
-        nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+            //retrieve the first bacth of documentSnapshots
+            Query nextSellingQuery =messagesCollection.document("chat_rooms").collection(roomId)
+                    .orderBy("time")
+                    .startAfter(lastVisible)
+                    .limit(TOTAL_ITEMS);
 
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
+            nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-                if (!documentSnapshots.isEmpty()){
-                    //retrieve the first bacth of documentSnapshots
-                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                        switch (change.getType()) {
-                            case ADDED:
-                                onDocumentAdded(change);
-                                break;
-                            case MODIFIED:
-                                onDocumentModified(change);
-                                break;
-                            case REMOVED:
-                                onDocumentRemoved(change);
-                                break;
+                    if (e != null) {
+                        Log.w(TAG, "Listen error", e);
+                        return;
+                    }
+
+                    if (!documentSnapshots.isEmpty()){
+                        //retrieve the first bacth of documentSnapshots
+                        for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                            switch (change.getType()) {
+                                case ADDED:
+                                    onDocumentAdded(change);
+                                    break;
+                                case MODIFIED:
+                                    onDocumentModified(change);
+                                    break;
+                                case REMOVED:
+                                    onDocumentRemoved(change);
+                                    break;
+                            }
                         }
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }else {
+                        mSwipeRefreshLayout.setRefreshing(false);
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     protected void onDocumentAdded(DocumentChange change) {

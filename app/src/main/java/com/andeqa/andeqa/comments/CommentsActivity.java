@@ -57,12 +57,6 @@ public class CommentsActivity extends AppCompatActivity implements
     @Bind(R.id.sendCommentImageView)ImageView mSendCommentImageView;
     @Bind(R.id.commentEditText)EditText mCommentEditText;
     @Bind(R.id.commentsRecyclerView)RecyclerView mCommentsRecyclerView;
-    @Bind(R.id.postImageView)ProportionalImageView mCingleImageView;
-    @Bind(R.id.usernameTextView)TextView mAccountUsernameTextView;
-    @Bind(R.id.profileImageView)CircleImageView mProfileImageView;
-    @Bind(R.id.placeHolderRelativeLayout)RelativeLayout mPlaceHolderRelativeLayout;
-    @Bind(R.id.titleTextView)TextView mCingleTitleTextView;
-    @Bind(R.id.cingleTitleRelativeLayout)RelativeLayout mCingleTitleRelativeLayout;
     @Bind(R.id.swipeRefreshLayout)SwipeRefreshLayout mSwipeRefreshLayout;
 
     private FirebaseAuth firebaseAuth;
@@ -76,9 +70,7 @@ public class CommentsActivity extends AppCompatActivity implements
     private CollectionReference collectionsPostsCollection;
     private Query commentQuery;
     private CollectionReference usersCollection;
-    private CollectionReference relationsCollection;
     private CollectionReference timelineCollection;
-    private ListenerRegistration mListenerRegistration;
 
     //adapters
     private CommentsAdapter commentsAdapter;
@@ -137,18 +129,15 @@ public class CommentsActivity extends AppCompatActivity implements
                     .document("collections").collection(mCollectionId);
             commentsCollection = FirebaseFirestore.getInstance().collection(Constants.COMMENTS)
                     .document("post_ids").collection(mPostId);
-            usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            relationsCollection = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
-            timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             commentQuery = commentsCollection.orderBy("time", Query.Direction.DESCENDING);
+            usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+            timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             //firebase
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
 
             mCommentEditText.setFilters(new InputFilter[]{new InputFilter
                     .LengthFilter(DEFAULT_COMMENT_LENGTH_LIMIT)});
 
-
-            setData();
             setRecyclerView();
             setCollections();
 
@@ -161,106 +150,6 @@ public class CommentsActivity extends AppCompatActivity implements
         setNextCollections();
     }
 
-    public void setData() {
-        //get the cingle that user wants to comment on
-        collectionsPostsCollection.document(mPostId)
-                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
-                    final String uid = collectionPost.getUid();
-                    final String image = collectionPost.getImage();
-                    final String title = collectionPost.getTitle();
-
-
-                    //LAUCNH PROFILE IF ITS NOT DELETED ELSE CATCH THE EXCEPTION
-                    mProfileImageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent intent = new Intent(CommentsActivity.this, ProfileActivity.class);
-                            intent.putExtra(CommentsActivity.EXTRA_USER_UID, uid);
-                            startActivity(intent);
-                        }
-                    });
-
-                    //set the title of the single
-                    if (title.equals("")) {
-                        mCingleTitleRelativeLayout.setVisibility(View.GONE);
-                    } else {
-                        mCingleTitleTextView.setText(title);
-                    }
-
-                    //set the single image
-                    Picasso.with(CommentsActivity.this)
-                            .load(image)
-                            .networkPolicy(NetworkPolicy.OFFLINE)
-                            .into(mCingleImageView, new Callback() {
-                                @Override
-                                public void onSuccess() {
-
-                                }
-
-                                @Override
-                                public void onError() {
-                                    Picasso.with(CommentsActivity.this)
-                                            .load(image)
-                                            .into(mCingleImageView);
-                                }
-                            });
-
-                    //get the profile of the user wh just commented
-                    usersCollection.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
-
-                            if (documentSnapshot.exists()){
-                                final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                                final String profileImage = cinggulan.getProfileImage();
-                                final String username = cinggulan.getUsername();
-
-                                mAccountUsernameTextView.setText(username);
-                                Picasso.with(CommentsActivity.this)
-                                        .load(profileImage)
-                                        .fit()
-                                        .centerCrop()
-                                        .placeholder(R.drawable.profle_image_background)
-                                        .networkPolicy(NetworkPolicy.OFFLINE)
-                                        .into(mProfileImageView, new Callback() {
-                                            @Override
-                                            public void onSuccess() {
-
-                                            }
-
-                                            @Override
-                                            public void onError() {
-                                                Picasso.with(CommentsActivity.this)
-                                                        .load(profileImage)
-                                                        .fit()
-                                                        .centerCrop()
-                                                        .placeholder(R.drawable.profle_image_background)
-                                                        .into(mProfileImageView);
-                                            }
-                                        });
-
-                            }
-                        }
-                    });
-
-                }
-            }
-        });
-    }
 
     private void setRecyclerView(){
         commentsAdapter = new CommentsAdapter(this);
@@ -299,8 +188,6 @@ public class CommentsActivity extends AppCompatActivity implements
                                 break;
                         }
                     }
-                }else {
-                    mPlaceHolderRelativeLayout.setVisibility(View.VISIBLE);
                 }
 
             }
@@ -311,42 +198,48 @@ public class CommentsActivity extends AppCompatActivity implements
         mSwipeRefreshLayout.setRefreshing(true);
         // Get the last visible document
         final int snapshotSize = commentsAdapter.getItemCount();
-        DocumentSnapshot lastVisible = commentsAdapter.getSnapshot(snapshotSize - 1);
 
-        //retrieve the first bacth of documentSnapshots
-        Query nextSellingQuery = commentsCollection.orderBy("time").startAfter(lastVisible)
-                .limit(TOTAL_ITEMS);
+        if (snapshotSize == 0){
+            //do nothing
+            mSwipeRefreshLayout.setRefreshing(false);
+        }else{
+            DocumentSnapshot lastVisible = commentsAdapter.getSnapshot(snapshotSize - 1);
+            //retrieve the first bacth of documentSnapshots
+            Query nextSellingQuery = commentsCollection.orderBy("time").startAfter(lastVisible)
+                    .limit(TOTAL_ITEMS);
 
-        nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+            nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (!documentSnapshots.isEmpty()){
-                    //retrieve the first bacth of documentSnapshots
-                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                        switch (change.getType()) {
-                            case ADDED:
-                                onDocumentAdded(change);
-                                break;
-                            case MODIFIED:
-                                onDocumentModified(change);
-                                break;
-                            case REMOVED:
-                                onDocumentRemoved(change);
-                                break;
-                        }
+                    if (e != null) {
+                        Log.w(TAG, "Listen error", e);
+                        return;
                     }
-                    mSwipeRefreshLayout.setRefreshing(false);
-                }else {
-                    mSwipeRefreshLayout.setRefreshing(false);
+
+                    if (!documentSnapshots.isEmpty()){
+                        //retrieve the first bacth of documentSnapshots
+                        for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                            switch (change.getType()) {
+                                case ADDED:
+                                    onDocumentAdded(change);
+                                    break;
+                                case MODIFIED:
+                                    onDocumentModified(change);
+                                    break;
+                                case REMOVED:
+                                    onDocumentRemoved(change);
+                                    break;
+                            }
+                        }
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }else {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
                 }
-            }
-        });
+            });
+        }
+
     }
 
     protected void onDocumentAdded(DocumentChange change) {

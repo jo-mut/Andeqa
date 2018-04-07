@@ -182,6 +182,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                     Picasso.with(mContext)
                             .load(collectionPost.getImage())
                             .networkPolicy(NetworkPolicy.OFFLINE)
+                            .placeholder(R.drawable.image_place_holder)
                             .into(holder.postImageView, new Callback() {
                                 @Override
                                 public void onSuccess() {
@@ -192,6 +193,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                                 public void onError() {
                                     Picasso.with(mContext)
                                             .load(collectionPost.getImage())
+                                            .placeholder(R.drawable.image_place_holder)
                                             .into(holder.postImageView, new Callback() {
                                                 @Override
                                                 public void onSuccess() {
@@ -216,8 +218,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                     }
 
                     if (!TextUtils.isEmpty(collectionPost.getDescription())){
-                        addReadMore(collectionPost.getDescription(), holder.descriptionTextView);
                         addReadLess(collectionPost.getDescription(), holder.descriptionTextView);
+                        addReadMore(collectionPost.getDescription(), holder.descriptionTextView);
                         holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
                     }
 

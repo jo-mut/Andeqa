@@ -69,7 +69,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     private static final String TAG = ProfileActivity.class.getSimpleName();
     //firestore reference
-    private CollectionReference collectionsCollection;
+    private CollectionReference collectionCollection;
     private CollectionReference relationsCollections;
     private CollectionReference usersCollections;
     private CollectionReference postsCollection;
@@ -77,7 +77,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     private Query postCountQuery;
     private Query profileCollectionsQuery;
-    private Query nextCollectionsQuery;
     private CollectionReference roomsCollection;
     //firebase
     private DatabaseReference databaseReference;
@@ -107,6 +106,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private boolean processFollow = false;
     private String roomId;
     private boolean processRoom = false;
+    private boolean hideMenu = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +117,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         //FIREBASE AUTH
         firebaseAuth = FirebaseAuth.getInstance();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
@@ -138,8 +138,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
             usersCollections = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             relationsCollections = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
-            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
-            profileCollectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
+            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
+            profileCollectionsQuery = collectionCollection.orderBy("time", Query.Direction.DESCENDING)
                     .whereEqualTo("uid", mUid)
                     .limit(TOTAL_ITEMS);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
@@ -181,6 +181,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                         if (firebaseAuth.getCurrentUser().getUid().equals(mUid)){
                             collapsingToolbarLayout.setTitle("Profile");
                         }else {
+                            toolbar.getMenu().clear();
                             collapsingToolbarLayout.setTitle(andeqan.getUsername());
                         }
                     }
@@ -188,12 +189,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 }
             });
 
-//            mCollectionsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
-//                @Override
-//                public void onLoadMore() {
-//                    setNextCollections();
-//                }
-//            });
+            mCollectionsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+                @Override
+                public void onLoadMore() {
+                    setNextCollections();
+                }
+            });
 
             //INITIALIZE CLICK LISTENERS
             mFollowersCountTextView.setOnClickListener(this);
@@ -207,17 +208,23 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.profile_menu, menu);
+        if (firebaseAuth.getCurrentUser().getUid().equals(mUid)){
+            getMenuInflater().inflate(R.menu.profile_menu, menu);
+
+        }
+
         return true;
+
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         // Handle action b item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
         if (id == R.id.action_wallet){
@@ -235,6 +242,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             Intent intent = new Intent(ProfileActivity.this, UpdateProfileActivity.class);
             startActivity(intent);
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -439,6 +447,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                 break;
                         }
                     }
+
+                    Log.d("name of collection", "data is present");
+
+                }else {
+                    Log.d("name of collection", "data is absent");
+
                 }
 
             }
@@ -451,7 +465,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         DocumentSnapshot lastVisible = profileCollectionsAdapter.getSnapshot(snapshotSize - 1);
 
         //retrieve the first bacth of documentSnapshots
-        nextCollectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
+        Query  nextCollectionsQuery = collectionCollection.orderBy("time", Query.Direction.DESCENDING)
                 .whereEqualTo("uid", mUid)
                 .startAfter(lastVisible)
                 .limit(TOTAL_ITEMS);

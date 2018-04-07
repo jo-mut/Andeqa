@@ -114,8 +114,9 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
         }
 
-
-        holder.mCommentTextView.setText(comment.getCommentText());
+        addReadLess(comment.getCommentText(), holder.mCommentTextView);
+        addReadMore(comment.getCommentText(), holder.mCommentTextView);
+//        holder.mCommentTextView.setText(comment.getCommentText());
 
         holder.profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override

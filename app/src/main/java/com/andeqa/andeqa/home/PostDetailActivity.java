@@ -317,6 +317,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                     Picasso.with(PostDetailActivity.this)
                             .load(image)
                             .networkPolicy(NetworkPolicy.OFFLINE)
+                            .placeholder(R.drawable.image_place_holder)
                             .into(mPostImageView, new Callback() {
                                 @Override
                                 public void onSuccess() {
@@ -327,6 +328,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                 public void onError() {
                                     Picasso.with(PostDetailActivity.this)
                                             .load(image)
+                                            .placeholder(R.drawable.image_place_holder)
                                             .into(mPostImageView);
                                 }
                             });

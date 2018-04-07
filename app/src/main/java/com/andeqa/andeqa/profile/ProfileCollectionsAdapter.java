@@ -9,6 +9,7 @@ import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,6 +71,8 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
         final Collection collection = getSnapshot(position).toObject(Collection.class);
         final String collectionId = collection.getCollectionId();
         final String uid = collection.getUid();
+
+        Log.d("collection name", collection.getName());
 
         firebaseAuth = FirebaseAuth.getInstance();
 

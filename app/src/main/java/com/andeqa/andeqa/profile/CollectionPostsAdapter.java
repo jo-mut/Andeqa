@@ -163,6 +163,7 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
         Picasso.with(mContext)
                 .load(collectionPost.getImage())
                 .networkPolicy(NetworkPolicy.OFFLINE)
+                .placeholder(R.drawable.image_place_holder)
                 .into(holder.postImageView, new Callback() {
                     @Override
                     public void onSuccess() {
@@ -175,6 +176,7 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
                         // fetch online because cache is not there
                         Picasso.with(mContext)
                                 .load(collectionPost.getImage())
+                                .placeholder(R.drawable.image_place_holder)
                                 .into(holder.postImageView);
                     }
                 });
@@ -187,8 +189,8 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
         }
 
         if (!TextUtils.isEmpty(collectionPost.getDescription())){
-            addReadMore(collectionPost.getDescription(), holder.descriptionTextView);
             addReadLess(collectionPost.getDescription(), holder.descriptionTextView);
+            addReadMore(collectionPost.getDescription(), holder.descriptionTextView);
             holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
         }
 

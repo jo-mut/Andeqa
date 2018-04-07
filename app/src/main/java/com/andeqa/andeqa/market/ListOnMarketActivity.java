@@ -20,8 +20,8 @@ import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.models.Andeqan;
+import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
-import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.profile.ProfileActivity;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.andeqa.andeqa.R;
@@ -52,7 +52,6 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
     @Bind(R.id.postImageView)ProportionalImageView mCingleImageView;
     @Bind(R.id.usernameTextView)TextView mAccountUsernameTextView;
     @Bind(R.id.profileImageView)CircleImageView mUserProfileImageView;
-    @Bind(R.id.titleTextView)TextView mCingleTitleTextView;
     @Bind(R.id.cingleTitleRelativeLayout)RelativeLayout mCingleTitleRelativeLayout;
     @Bind(R.id.postSalePriceTextView)TextView mCingleSalePriceTextView;
     @Bind(R.id.setCinglePriceButton)Button mSetCinglePriceButton;
@@ -61,7 +60,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private String mPostKey;
-    private static final String EXTRA_POST_KEY = "post key";
+    private static final String EXTRA_POST_ID = "post id";
     private static final String EXTRA_USER_UID = "uid";
     private static final String COLLECTION_ID = "collection id";
     private String mCollectionId;
@@ -106,9 +105,9 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
 
         if (firebaseAuth.getCurrentUser() != null){
 
-            mPostKey = getIntent().getStringExtra(EXTRA_POST_KEY);
+            mPostKey = getIntent().getStringExtra(EXTRA_POST_ID);
             if(mPostKey == null){
-                throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
+                throw new IllegalArgumentException("pass an EXTRA_POST_ID");
             }
 
             mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
@@ -146,19 +145,11 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                 }
 
                 if (documentSnapshot.exists()){
-                    final Single single = documentSnapshot.toObject(Single.class);
-                    final String uid = single.getUid();
-                    final String title = single.getTitle();
-                    final String image = single.getImage();
+                    final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                    final String uid = collectionPost.getUid();
+                    final String title = collectionPost.getTitle();
+                    final String image = collectionPost.getImage();
 
-                    if (single.getTitle().equals("")){
-                        mCingleTitleRelativeLayout.setVisibility(View.GONE);
-                    }else {
-                        mCingleTitleTextView.setText(single.getTitle());
-                    }
-
-                    //set the single title
-                    mCingleTitleTextView.setText(title);
                     //set the single image
                     Picasso.with(ListOnMarketActivity.this)
                             .load(image)

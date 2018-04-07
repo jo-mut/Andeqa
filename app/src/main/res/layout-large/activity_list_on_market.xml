@@ -83,7 +83,7 @@
 
                 <TextView
                     android:paddingTop="20dp"
-                    android:text="Set the sale price of your single and place it on the market"
+                    android:text="Set the sale price of your post and place it on the market"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/setSalePriceTextView"

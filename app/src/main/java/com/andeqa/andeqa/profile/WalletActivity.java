@@ -145,10 +145,9 @@ public class WalletActivity extends AppCompatActivity {
                     simpleDateFormat = new SimpleDateFormat("d'th' MMM, yyyy");
 
                 DecimalFormat formatter =  new DecimalFormat("0.00000000");
-                holder.amountTransferredTextView.setText("You have redeemed" + " SC " + formatter.format
-                (amount) +  " on " +
-                simpleDateFormat.format(time) + ". Your new wallet balance is " +
-                "SC " + formatter.format(balance));
+                holder.amountTransferredTextView.setText("You have redeemed" + " " + formatter.format
+                (amount) + "Sence Credits" +  "on" + " " +  simpleDateFormat.format(time) + "." + " "
+                        + "Your new wallet balance is" + "SC" + " " + formatter.format(balance));
 
                 holder.deleteHistoryImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -256,7 +255,8 @@ public class WalletActivity extends AppCompatActivity {
     }
 
     public void setCurrentWalletBalance(){
-        walletReference.document(firebaseAuth.getCurrentUser().getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        walletReference.document(firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 

@@ -1,4 +1,4 @@
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -25,84 +25,90 @@
 
     </android.support.v7.widget.Toolbar>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayout"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-
-        <android.support.v7.widget.RecyclerView
-            android:overScrollMode="never"
-            android:layout_marginBottom="60dp"
-            android:layout_below="@+id/toolbar"
-            android:id="@+id/massagesRecyclerView"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content">
 
-    </android.support.v4.widget.SwipeRefreshLayout>
 
-    <android.support.v7.widget.CardView
-        android:layout_alignParentBottom="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardElevation="0dp"
-        app:cardMaxElevation="1dp"
-        app:cardCornerRadius="0dp"
-        app:cardPreventCornerOverlap="false">
+            <android.support.v7.widget.RecyclerView
+                android:overScrollMode="never"
+                android:layout_marginBottom="60dp"
+                android:layout_below="@+id/toolbar"
+                android:id="@+id/massagesRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
-        <RelativeLayout
-            android:padding="3dp"
-            android:background="@android:color/white"
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <android.support.v7.widget.CardView
+            android:layout_alignParentBottom="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true">
+            app:cardElevation="0dp"
+            app:cardMaxElevation="1dp"
+            app:cardCornerRadius="0dp"
+            app:cardPreventCornerOverlap="false">
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:background="@drawable/white_rounded_background"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                android:id="@+id/senderImageView"
-                android:layout_centerVertical="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"/>
-
-            <EditText
-                android:background="@drawable/message_edittext_background"
+            <RelativeLayout
+                android:padding="3dp"
+                android:background="@android:color/white"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textMultiLine"
-                android:layout_alignParentBottom="false"
-                android:id="@+id/sendMessageEditText"
-                android:hint="Write a message"
-                android:padding="15dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginEnd="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
-                android:textSize="14sp"
-                android:layout_toRightOf="@+id/senderImageView"
-                android:layout_toEndOf="@+id/senderImageView"
-                android:layout_toLeftOf="@+id/sendMessageImageView"
-                android:layout_toStartOf="@+id/sendMessageImageView"
-                android:layout_centerInParent="true" />
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true">
 
-            <ImageView
-                android:background="@drawable/white_rounded_background"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_menu_send"
-                android:layout_alignParentBottom="false"
-                android:id="@+id/sendMessageImageView"
-                android:tint="@color/colorPrimary"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                android:padding="9dp"
-                android:layout_alignParentEnd="true" />
-        </RelativeLayout>
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:background="@drawable/white_rounded_background"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:id="@+id/senderImageView"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"/>
+
+                <EditText
+                    android:background="@drawable/message_edittext_background"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:layout_alignParentBottom="false"
+                    android:id="@+id/sendMessageEditText"
+                    android:hint="Write a message"
+                    android:padding="15dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
+                    android:textSize="14sp"
+                    android:layout_toRightOf="@+id/senderImageView"
+                    android:layout_toEndOf="@+id/senderImageView"
+                    android:layout_toLeftOf="@+id/sendMessageImageView"
+                    android:layout_toStartOf="@+id/sendMessageImageView"
+                    android:layout_centerInParent="true" />
+
+                <ImageView
+                    android:background="@drawable/white_rounded_background"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_menu_send"
+                    android:layout_alignParentBottom="false"
+                    android:id="@+id/sendMessageImageView"
+                    android:tint="@color/colorPrimary"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:padding="9dp"
+                    android:layout_alignParentEnd="true" />
+            </RelativeLayout>
 
 
-    </android.support.v7.widget.CardView>
+        </android.support.v7.widget.CardView>
 
-</RelativeLayout>
+    </RelativeLayout>
+
+</LinearLayout>

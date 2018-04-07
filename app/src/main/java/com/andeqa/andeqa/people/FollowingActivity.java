@@ -101,13 +101,6 @@ public class FollowingActivity extends AppCompatActivity implements SwipeRefresh
             setRecyclerView();
             setCollections();
 
-            mFollowingRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
-                @Override
-                public void onLoadMore() {
-                    setNextCollections();
-                }
-            });
-
         }
     }
 
@@ -162,44 +155,49 @@ public class FollowingActivity extends AppCompatActivity implements SwipeRefresh
         mSwipeRefreshLayout.setRefreshing(true);
         // Get the last visible document
         final int snapshotSize = followersAdapter.getItemCount();
-        DocumentSnapshot lastVisible = followersAdapter.getSnapshot(snapshotSize - 1);
 
-        //retrieve the first bacth of documentSnapshots
-        Query nextSellingQuery = relationsReference.document("followers").collection(mUid)
-                .orderBy("uid")
-                .startAfter(lastVisible)
-                .limit(TOTAL_ITEMS);
+        if (snapshotSize == 0){
+            mSwipeRefreshLayout.setRefreshing(false);
+        }else {
+            DocumentSnapshot lastVisible = followersAdapter.getSnapshot(snapshotSize - 1);
 
-        nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+            //retrieve the first bacth of documentSnapshots
+            Query nextSellingQuery = relationsReference.document("followers").collection(mUid)
+                    .orderBy("uid")
+                    .startAfter(lastVisible)
+                    .limit(TOTAL_ITEMS);
 
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
+            nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-                if (!documentSnapshots.isEmpty()){
-                    //retrieve the first bacth of documentSnapshots
-                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                        switch (change.getType()) {
-                            case ADDED:
-                                onDocumentAdded(change);
-                                break;
-                            case MODIFIED:
-                                onDocumentModified(change);
-                                break;
-                            case REMOVED:
-                                onDocumentRemoved(change);
-                                break;
-                        }
+                    if (e != null) {
+                        Log.w(TAG, "Listen error", e);
+                        return;
                     }
-                    mSwipeRefreshLayout.setRefreshing(true);
-                }else {
-                    mSwipeRefreshLayout.setRefreshing(true);
+
+                    if (!documentSnapshots.isEmpty()){
+                        //retrieve the first bacth of documentSnapshots
+                        for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                            switch (change.getType()) {
+                                case ADDED:
+                                    onDocumentAdded(change);
+                                    break;
+                                case MODIFIED:
+                                    onDocumentModified(change);
+                                    break;
+                                case REMOVED:
+                                    onDocumentRemoved(change);
+                                    break;
+                            }
+                        }
+                        mSwipeRefreshLayout.setRefreshing(true);
+                    }else {
+                        mSwipeRefreshLayout.setRefreshing(true);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     protected void onDocumentAdded(DocumentChange change) {

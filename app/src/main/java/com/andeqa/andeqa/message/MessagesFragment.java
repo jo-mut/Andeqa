@@ -63,7 +63,7 @@ public class MessagesFragment extends Fragment implements SwipeRefreshLayout.OnR
         View view = inflater.inflate(R.layout.fragment_messages, container, false);
         ButterKnife.bind(this, view);
 
-        mSwipeRefreshLayout.setRefreshing(true);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -88,7 +88,6 @@ public class MessagesFragment extends Fragment implements SwipeRefreshLayout.OnR
     private void setRecyclerView(){
         roomAdapter = new RoomAdapter(getContext());
         mRoomsRecyclerView.setAdapter(roomAdapter);
-        roomAdapter.notifyDataSetChanged();
         mRoomsRecyclerView.setHasFixedSize(false);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setAutoMeasureEnabled(true);
@@ -135,45 +134,50 @@ public class MessagesFragment extends Fragment implements SwipeRefreshLayout.OnR
         mSwipeRefreshLayout.setRefreshing(true);
         // Get the last visible document
         final int snapshotSize = roomAdapter.getItemCount();
-        DocumentSnapshot lastVisible = roomAdapter.getSnapshot(snapshotSize - 1);
 
-        //retrieve the first bacth of documentSnapshots
-        Query nextSellingQuery = roomsCollections.document("rooms")
-                .collection(firebaseAuth.getCurrentUser().getUid())
-                .orderBy("time").startAfter(lastVisible)
-                .limit(TOTAL_ITEMS);
+        if (snapshotSize == 0){
+            mSwipeRefreshLayout.setRefreshing(false);
+        }else {
+            DocumentSnapshot lastVisible = roomAdapter.getSnapshot(snapshotSize - 1);
 
-        nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+            //retrieve the first bacth of documentSnapshots
+            Query nextSellingQuery = roomsCollections.document("rooms")
+                    .collection(firebaseAuth.getCurrentUser().getUid())
+                    .orderBy("time").startAfter(lastVisible)
+                    .limit(TOTAL_ITEMS);
 
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
+            nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-                if (!documentSnapshots.isEmpty()){
-                    //retrieve the first bacth of documentSnapshots
-                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                        switch (change.getType()) {
-                            case ADDED:
-                                onDocumentAdded(change);
-                                break;
-                            case MODIFIED:
-                                onDocumentModified(change);
-                                break;
-                            case REMOVED:
-                                onDocumentRemoved(change);
-                                break;
-                        }
+                    if (e != null) {
+                        Log.w(TAG, "Listen error", e);
+                        return;
                     }
 
-                    mSwipeRefreshLayout.setRefreshing(false);
-                }else {
-                    mSwipeRefreshLayout.setRefreshing(false);
+                    if (!documentSnapshots.isEmpty()){
+                        //retrieve the first bacth of documentSnapshots
+                        for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                            switch (change.getType()) {
+                                case ADDED:
+                                    onDocumentAdded(change);
+                                    break;
+                                case MODIFIED:
+                                    onDocumentModified(change);
+                                    break;
+                                case REMOVED:
+                                    onDocumentRemoved(change);
+                                    break;
+                            }
+                        }
+
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }else {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     protected void onDocumentAdded(DocumentChange change) {

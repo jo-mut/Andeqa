@@ -40,7 +40,6 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
     @Bind(R.id.tradePostRelativeLayout)RelativeLayout mTradeCingleRelativeLayout;
     @Bind(R.id.redeemCreditsRelativeLayout)RelativeLayout mRedeemCreditsRelativeLayout;
 
-    private static final String EXTRA_POST_KEY = "post key";
     private String mPostId;
     //firebase auth
     private FirebaseAuth firebaseAuth;
@@ -108,8 +107,6 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
                 throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
             }
 
-
-
             //firestore
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
@@ -144,7 +141,7 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
 
         if (v == mTradeCingleRelativeLayout){
             Intent intent = new Intent(getActivity(), ListOnMarketActivity.class);
-            intent.putExtra(DialogFragmentPostSettings.EXTRA_POST_KEY, mPostId);
+            intent.putExtra(DialogFragmentPostSettings.EXTRA_POST_ID, mPostId);
             intent.putExtra(DialogFragmentPostSettings.COLLECTION_ID, mCollectionId);
             startActivity(intent);
         }
@@ -152,7 +149,7 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
         if (v == mRedeemCreditsRelativeLayout){
             //LAUCH THE DIALOG TO REDEEM CREDITS
             Bundle bundle = new Bundle();
-            bundle.putString(DialogFragmentPostSettings.EXTRA_POST_KEY, mPostId);
+            bundle.putString(DialogFragmentPostSettings.EXTRA_POST_ID, mPostId);
             FragmentManager fragmentManager = getChildFragmentManager();
             DialogRedeemCredits dialogRedeemCredits = DialogRedeemCredits
                     .newInstance("redeem credits");

@@ -174,11 +174,11 @@
         <activity
             android:name=".creation.CreateCollectionActivity"
             android:label="Create collection" />
+        <activity android:name=".profile.CollectionsPostsActivity" />
         <activity
-            android:name=".profile.CollectionsPostsActivity" />
-        <activity
-            android:label="Collection settings"
-            android:name=".settings.CollectionSettingsActivity"/>
+            android:name=".settings.CollectionSettingsActivity"
+            android:label="Collection settings" />
+        <activity android:name=".market.RedeemCreditsActivity"></activity>
     </application>
 
 </manifest>

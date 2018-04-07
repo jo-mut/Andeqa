@@ -116,22 +116,13 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:srcCompat="@drawable/transparent_background"
+            app:srcCompat="@drawable/add_cover_placeholder"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
             android:id="@+id/collectionCoverImageView"
             android:scaleType="centerCrop" />
 
-        <TextView
-            android:text="Click to add your collections cover image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/collectionCoverTextView"
-            android:textSize="16sp"
-            android:textAlignment="center"
-            android:padding="30dp" />
+
     </RelativeLayout>
 
 </LinearLayout>

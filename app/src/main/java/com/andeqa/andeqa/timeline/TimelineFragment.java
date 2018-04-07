@@ -81,13 +81,6 @@ public class TimelineFragment extends Fragment implements SwipeRefreshLayout.OnR
         setRecyclerView();
         setCollections();
 
-        mTimelineRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
-            @Override
-            public void onLoadMore() {
-                setNextCollections();
-            }
-        });
-
         return  view;
     }
 

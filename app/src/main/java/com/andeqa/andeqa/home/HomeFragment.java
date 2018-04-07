@@ -144,43 +144,48 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         // Get the last visible document
         mSwipeRefreshLayout.setRefreshing(true);
         final int snapshotSize = postsAdapter.getItemCount();
-        DocumentSnapshot lastVisible = postsAdapter.getSnapshot(snapshotSize - 1);
 
-        //retrieve the first bacth of posts
-        nextRandomQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
-                .startAfter(lastVisible)
-                .limit(TOTAL_ITEMS);
+        if (snapshotSize == 0){
+            mSwipeRefreshLayout.setRefreshing(false);
+        }else {
+            DocumentSnapshot lastVisible = postsAdapter.getSnapshot(snapshotSize - 1);
 
-        nextRandomQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+            //retrieve the first bacth of posts
+            nextRandomQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
+                    .startAfter(lastVisible)
+                    .limit(TOTAL_ITEMS);
 
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
+            nextRandomQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-                if (!documentSnapshots.isEmpty()){
-                    //retrieve the first bacth of posts
-                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                        switch (change.getType()) {
-                            case ADDED:
-                                onDocumentAdded(change);
-                                break;
-                            case MODIFIED:
-                                onDocumentModified(change);
-                                break;
-                            case REMOVED:
-                                onDocumentRemoved(change);
-                                break;
-                        }
+                    if (e != null) {
+                        Log.w(TAG, "Listen error", e);
+                        return;
                     }
-                    mSwipeRefreshLayout.setRefreshing(false);
-                }else {
-                    mSwipeRefreshLayout.setRefreshing(false);
+
+                    if (!documentSnapshots.isEmpty()){
+                        //retrieve the first bacth of posts
+                        for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                            switch (change.getType()) {
+                                case ADDED:
+                                    onDocumentAdded(change);
+                                    break;
+                                case MODIFIED:
+                                    onDocumentModified(change);
+                                    break;
+                                case REMOVED:
+                                    onDocumentRemoved(change);
+                                    break;
+                            }
+                        }
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }else {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     protected void onDocumentAdded(DocumentChange change) {

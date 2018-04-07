@@ -84,13 +84,6 @@ public class MarketFragment extends Fragment implements SwipeRefreshLayout.OnRef
             sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             sellingQuery = sellingCollection.orderBy("randomNumber").limit(TOTAL_ITEMS);
 
-            sellingRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
-                @Override
-                public void onLoadMore() {
-                    setNextCollections();
-                }
-            });
-
             setRecyclerView();
             setCollections();
         }
@@ -163,44 +156,49 @@ public class MarketFragment extends Fragment implements SwipeRefreshLayout.OnRef
         mSwipeRefreshLayout.setRefreshing(true);
         // Get the last visible document
         final int snapshotSize = sellingAdapter.getItemCount();
-        DocumentSnapshot lastVisible = sellingAdapter.getSnapshot(snapshotSize - 1);
 
-        //retrieve the first bacth of documentSnapshots
-        Query nextSellingQuery = sellingCollection.orderBy("randomNumber", Query.Direction.DESCENDING)
-                .startAfter(lastVisible)
-                .limit(TOTAL_ITEMS);
+        if (snapshotSize == 0){
+            mSwipeRefreshLayout.setRefreshing(false);
+        }else {
+            DocumentSnapshot lastVisible = sellingAdapter.getSnapshot(snapshotSize - 1);
 
-        nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+            //retrieve the first bacth of documentSnapshots
+            Query nextSellingQuery = sellingCollection.orderBy("randomNumber", Query.Direction.DESCENDING)
+                    .startAfter(lastVisible)
+                    .limit(TOTAL_ITEMS);
 
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
+            nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-                if (!documentSnapshots.isEmpty()){
-                    //retrieve the first bacth of documentSnapshots
-                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                        switch (change.getType()) {
-                            case ADDED:
-                                onDocumentAdded(change);
-                                break;
-                            case MODIFIED:
-                                onDocumentModified(change);
-                                break;
-                            case REMOVED:
-                                onDocumentRemoved(change);
-                                break;
-                        }
+                    if (e != null) {
+                        Log.w(TAG, "Listen error", e);
+                        return;
                     }
 
-                    mSwipeRefreshLayout.setRefreshing(true);
-                }else {
-                    mSwipeRefreshLayout.setRefreshing(true);
+                    if (!documentSnapshots.isEmpty()){
+                        //retrieve the first bacth of documentSnapshots
+                        for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                            switch (change.getType()) {
+                                case ADDED:
+                                    onDocumentAdded(change);
+                                    break;
+                                case MODIFIED:
+                                    onDocumentModified(change);
+                                    break;
+                                case REMOVED:
+                                    onDocumentRemoved(change);
+                                    break;
+                            }
+                        }
+
+                        mSwipeRefreshLayout.setRefreshing(true);
+                    }else {
+                        mSwipeRefreshLayout.setRefreshing(true);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     protected void onDocumentAdded(DocumentChange change) {

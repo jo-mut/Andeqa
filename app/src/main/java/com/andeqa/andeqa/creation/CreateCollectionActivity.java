@@ -15,6 +15,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,7 +51,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
     @Bind(R.id.noteCountTextView)TextView mNoteCountTextView;
     @Bind(R.id.nameCountTextView)TextView mNameCountTextView;
     @Bind(R.id.collectionCoverImageView)ImageView mCollectionCoverImageView;
-    @Bind(R.id.collectionCoverTextView)TextView mCollectionCoverTextView;
+
 
     private String image;
     private Uri photoUri;
@@ -83,7 +84,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
         ButterKnife.bind(this);
 
         mDoneTextView.setOnClickListener(this);
-        mCollectionCoverTextView.setOnClickListener(this);
+        mCollectionCoverImageView.setOnClickListener(this);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -314,6 +315,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                 if (photoUri != null){
                     Picasso.with(this)
                             .load(photoUri)
+                            .placeholder(R.drawable.add_cover_placeholder)
                             .into(mCollectionCoverImageView,
                                     new Callback.EmptyCallback(){
                                 @Override
@@ -338,7 +340,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
             createCollection();
         }
 
-        if (v == mCollectionCoverTextView){
+        if (v == mCollectionCoverImageView){
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");

@@ -237,6 +237,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
                                 Picasso.with(mContext)
                                         .load(collectionPost.getImage())
                                         .networkPolicy(NetworkPolicy.OFFLINE)
+                                        .placeholder(R.drawable.image_place_holder)
                                         .into(holder.postImageView, new Callback() {
                                             @Override
                                             public void onSuccess() {
@@ -247,6 +248,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
                                             public void onError() {
                                                 Picasso.with(mContext)
                                                         .load(collectionPost.getImage())
+                                                        .placeholder(R.drawable.image_place_holder)
                                                         .into(holder.postImageView, new Callback() {
                                                             @Override
                                                             public void onSuccess() {
