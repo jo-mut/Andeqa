@@ -11,7 +11,6 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.firestore.FirestoreAdapter;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Relation;
-import com.andeqa.andeqa.people.FollowCinggulansViewHolder;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;

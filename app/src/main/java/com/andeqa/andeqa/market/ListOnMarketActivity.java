@@ -52,7 +52,6 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
     @Bind(R.id.postImageView)ProportionalImageView mCingleImageView;
     @Bind(R.id.usernameTextView)TextView mAccountUsernameTextView;
     @Bind(R.id.profileImageView)CircleImageView mUserProfileImageView;
-    @Bind(R.id.cingleTitleRelativeLayout)RelativeLayout mCingleTitleRelativeLayout;
     @Bind(R.id.postSalePriceTextView)TextView mCingleSalePriceTextView;
     @Bind(R.id.setCinglePriceButton)Button mSetCinglePriceButton;
     @Bind(R.id.setCingleSalePriceEditText)EditText mSetCingleSalePriceEditText;

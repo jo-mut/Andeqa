@@ -7,6 +7,7 @@ package com.andeqa.andeqa.models;
 public class TransactionDetails {
     String uid;
     String pushId;
+    String postId;
     String type;
     long time;
     double amount;
@@ -64,5 +65,13 @@ public class TransactionDetails {
 
     public void setWalletBalance(double walletBalance) {
         this.walletBalance = walletBalance;
+    }
+
+    public String getPostId() {
+        return postId;
+    }
+
+    public void setPostId(String postId) {
+        this.postId = postId;
     }
 }

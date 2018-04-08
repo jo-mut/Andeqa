@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_set_cingle_price"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.andeqa.andeqa.market.ListOnMarketActivity"
-    android:background="@android:color/white">
+    tools:context="com.andeqa.andeqa.market.RedeemCreditsActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_gravity="top"
         app:titleTextAppearance="@style/toolbarTextAppearance"
-        android:layout_height="56dp"
+        android:layout_height="42dp"
         android:background="@color/colorPrimary"
         app:layout_scrollFlags="scroll|enterAlways"
         app:popupTheme="@style/AppTheme.PopupOverlay"
@@ -37,7 +35,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="65dp"
+                android:layout_height="50dp"
                 android:padding="2dp">
 
                 <TextView
@@ -58,10 +56,10 @@
                     android:id="@+id/profileImageView"
                     android:layout_width="55dp"
                     android:layout_height="55dp"
-                    android:background="@drawable/profle_image_background"
-                    android:layout_centerVertical="true"
                     android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true" />
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/profle_image_background" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -83,46 +81,49 @@
 
                 <TextView
                     android:padding="5dp"
-                    android:text="Set the sale price of your post and place it on the market"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/setSalePriceTextView"
+                    android:textSize="12sp"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"/>
+                    android:layout_alignParentStart="true"
+                    android:id="@+id/enterAmountDescriptionTextView"
+                    android:text="Enter the amount of Sense Credits you want to redeem"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
                 <Button
-                    android:text="Set"
+                    android:text="Redeem"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="false"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
-                    android:id="@+id/setCinglePriceButton"
+                    android:id="@+id/redeemAmountButton"
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
                     android:background="@drawable/colour_btn_background"
-                    android:minHeight="35dp"
-                    android:minWidth="50dip"
+                    android:minHeight="30dp"
+                    android:minWidth="80dip"
+                    android:textSize="12sp"
                     android:layout_below="@+id/setSalePriceTextView"
                     android:layout_alignParentBottom="true" />
 
                 <EditText
+                    android:id="@+id/amountEnteredEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal|number"
+                    android:layout_alignParentBottom="false"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
-                    android:id="@+id/setCingleSalePriceEditText"
-                    android:hint="Set the sale price"
-                    android:layout_below="@+id/setSalePriceTextView"
-                    android:textSize="14sp"
-                    android:layout_alignParentBottom="false"
-                    android:layout_toLeftOf="@+id/setCinglePriceButton"
-                    android:layout_toStartOf="@+id/setCinglePriceButton"
+                    android:layout_below="@+id/enterAmountDescriptionTextView"
                     android:layout_marginRight="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_toLeftOf="@+id/redeemAmountButton"
+                    android:layout_toStartOf="@+id/redeemAmountButton"
+                    android:hint="Enter the ammount"
+                    android:inputType="numberDecimal|number"
+                    android:paddingBottom="15dp"
                     android:paddingTop="15dp"
-                    android:paddingBottom="15dp" />
+                    android:textSize="14sp" />
             </RelativeLayout>
 
 
@@ -134,10 +135,10 @@
                 <com.andeqa.andeqa.utils.ProportionalImageView
                     android:id="@+id/postImageView"
                     android:layout_width="match_parent"
-                    android:layout_height="400dp"
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
-                    android:adjustViewBounds="true" />
+                    android:adjustViewBounds="true"
+                    android:layout_height="300dp" />
 
             </RelativeLayout>
 

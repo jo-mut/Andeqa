@@ -31,6 +31,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -198,7 +199,13 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                                                                                     transactionDetails.setTime(timeStamp);
                                                                                     transactionDetails.setType("redeem");
 
-                                                                                    cingleOwnersReference.document(mPostKey).set(transactionDetails);
+                                                                                    //get the push id
+                                                                                    DocumentReference ref = cingleOwnersReference.document();
+                                                                                    String pushId = ref.getId();
+                                                                                    //set the push id
+                                                                                    transactionDetails.setPostId(pushId);
+                                                                                    ref.set(transactionDetails);
+
                                                                                     //once cingle has been bought remove it from cingle selling
                                                                                     ifairReference.document(mPostKey).delete();
                                                                                 }else {
@@ -221,7 +228,13 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                                                                                     transactionDetails.setWalletBalance(newWalletBalance);
                                                                                     transactionDetails.setTime(timeStamp);
                                                                                     transactionDetails.setType("redeem");
-                                                                                    cingleOwnersReference.document(mPostKey).set(transactionDetails);
+
+                                                                                    //get the push id
+                                                                                    DocumentReference ref = cingleOwnersReference.document();
+                                                                                    String pushId = ref.getId();
+                                                                                    //set the push id
+                                                                                    transactionDetails.setPostId(pushId);
+                                                                                    ref.set(transactionDetails);
                                                                                     //once cingle has been bought remove it from cingle selling
                                                                                     ifairReference.document(mPostKey).delete();
                                                                                 }

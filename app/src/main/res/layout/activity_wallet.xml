@@ -120,7 +120,7 @@
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="18dp"
                         android:id="@+id/emptyTextView"
-                        android:textSize="10sp"
+                        android:textSize="14sp"
                         android:layout_centerVertical="true" />
 
                 </RelativeLayout>

@@ -12,6 +12,9 @@ import com.andeqa.andeqa.models.TransactionDetails;
 
 import java.text.DecimalFormat;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 
 /**
  * Created by J.EL on 9/8/2017.
@@ -30,8 +33,10 @@ public class TransactionHistoryViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
+        ButterKnife.bind(this, mView);
         postImageView = (ProportionalImageView) mView.findViewById(R.id.postImageView);
         deleteHistoryImageView = (ImageView) mView.findViewById(R.id.deleteHistoryImageView);
+        amountTransferredTextView = (TextView) mView.findViewById(R.id.amountTransferredTextView);
 
 
     }

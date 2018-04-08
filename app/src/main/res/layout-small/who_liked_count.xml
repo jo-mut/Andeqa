@@ -17,11 +17,6 @@
             android:background="@drawable/profle_image_background"
             android:scaleType="centerCrop"
             android:cropToPadding="false"
-            android:layout_toRightOf="@+id/likesRecyclerView"
-            android:layout_toEndOf="@+id/likesRecyclerView"
-            android:layout_marginLeft="1dp"
-            android:textSize="9sp"
-            android:text="+9"
             android:layout_height="15dp"
             android:layout_width="15dp" />
 

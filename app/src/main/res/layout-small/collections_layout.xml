@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/collectionLinearLayout">
+
+    <RelativeLayout
+        android:layout_margin="0.1dp"
+        android:layout_width="match_parent"
+        android:layout_height="150dp">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:cardPreventCornerOverlap="false"
+            app:cardCornerRadius="0dp"
+            app:cardElevation="0dp"
+            app:cardMaxElevation="1dp"
+            app:cardBackgroundColor="@color/colorPrimary">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    app:srcCompat="@drawable/transparent_background"
+                    android:id="@+id/collectionCoverImageView"
+                    android:scaleType="centerCrop"
+                    android:adjustViewBounds="true"
+                    android:layout_height="75dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/collectionNameTextView"
+                    android:padding="5dp"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/white" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/collectionsNoteTextView"
+                    android:textSize="12sp"
+                    android:textColor="@android:color/white"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:paddingEnd="5dp"
+                    android:paddingStart="5dp" />
+            </LinearLayout>
+
+            <ImageView
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                app:srcCompat="@drawable/ic_more_vert_white_24dp"
+                android:id="@+id/collectionSettingsImageView"
+                android:adjustViewBounds="true"
+                android:layout_gravity="right|bottom"
+                android:padding="5dp"
+                android:layout_height="wrap_content" />
+
+
+        </android.support.v7.widget.CardView>
+
+    </RelativeLayout>
+</LinearLayout>

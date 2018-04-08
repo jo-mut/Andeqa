@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,8 +16,8 @@ import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.market.DialogRedeemCredits;
 import com.andeqa.andeqa.market.ListOnMarketActivity;
+import com.andeqa.andeqa.market.RedeemCreditsActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -148,13 +147,10 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
 
         if (v == mRedeemCreditsRelativeLayout){
             //LAUCH THE DIALOG TO REDEEM CREDITS
-            Bundle bundle = new Bundle();
-            bundle.putString(DialogFragmentPostSettings.EXTRA_POST_ID, mPostId);
-            FragmentManager fragmentManager = getChildFragmentManager();
-            DialogRedeemCredits dialogRedeemCredits = DialogRedeemCredits
-                    .newInstance("redeem credits");
-            dialogRedeemCredits.setArguments(bundle);
-            dialogRedeemCredits.show(fragmentManager, "redeem post credits");
+            Intent intent = new Intent(getActivity(), RedeemCreditsActivity.class);
+            intent.putExtra(DialogFragmentPostSettings.EXTRA_POST_ID, mPostId);
+            intent.putExtra(DialogFragmentPostSettings.COLLECTION_ID, mCollectionId);
+            startActivity(intent);
         }
 
     }

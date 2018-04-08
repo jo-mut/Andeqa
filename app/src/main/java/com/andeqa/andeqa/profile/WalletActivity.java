@@ -50,7 +50,7 @@ public class WalletActivity extends AppCompatActivity {
     @Bind(R.id.currentWalletBalanceTextview)TextView mCurrentWalletBalanceTextView;
     @Bind(R.id.emptyRelativeLayout)RelativeLayout mEmptyRelativeLayout;
     //firestore
-    private CollectionReference collectionsCollection;
+    private CollectionReference collectionsPosts;
     private CollectionReference postsCollection;
     private Query transactionQuery;
     private CollectionReference transactionReference;
@@ -59,7 +59,7 @@ public class WalletActivity extends AppCompatActivity {
     //adapters
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     private FirebaseAuth firebaseAuth;
-    private static final String EXTRA_POST_KEY = "post key";
+    private static final String EXTRA_POST_ID = "post id";
     private static final String COLLECTION_ID = "collection id";
     private DecimalFormat formatter =  new DecimalFormat("0.00000000");
     private static final String TAG = WalletActivity.class.getSimpleName();
@@ -86,7 +86,7 @@ public class WalletActivity extends AppCompatActivity {
         if (firebaseAuth.getCurrentUser()!= null){
 
             //firestore
-            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
+            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             transactionReference = FirebaseFirestore.getInstance().collection(Constants.TRANSACTION_HISTORY);
             transactionQuery = transactionReference.whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid());
@@ -129,7 +129,8 @@ public class WalletActivity extends AppCompatActivity {
                 final long time = transactionDetails.getTime();
                 final double balance = transactionDetails.getWalletBalance();
                 final double amount = transactionDetails.getAmount();
-                final String transationId = getSnapshots().get(position).getPushId();
+                final String postId = getSnapshots().get(position).getPostId();
+                final String pushId = getSnapshots().get(position).getPushId();
 
                 //get the current date
                 DateFormat simpleDateFormat = new SimpleDateFormat("d");
@@ -145,14 +146,17 @@ public class WalletActivity extends AppCompatActivity {
                     simpleDateFormat = new SimpleDateFormat("d'th' MMM, yyyy");
 
                 DecimalFormat formatter =  new DecimalFormat("0.00000000");
-                holder.amountTransferredTextView.setText("You have redeemed" + " " + formatter.format
-                (amount) + "Sence Credits" +  "on" + " " +  simpleDateFormat.format(time) + "." + " "
-                        + "Your new wallet balance is" + "SC" + " " + formatter.format(balance));
+
+                holder.amountTransferredTextView.setText("Your have redeemed " + formatter.format(amount)
+                        + " Sense Credit from this post at " + android.text.format.DateFormat.format("HH:mm",
+                        transactionDetails.getTime()) + " on " + simpleDateFormat.format(time) + "." + " Your new wallet balance is "
+                        + formatter.format(balance) );
+
 
                 holder.deleteHistoryImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        transactionReference.document(transationId).delete()
+                        transactionReference.document(postId).delete()
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
@@ -162,14 +166,20 @@ public class WalletActivity extends AppCompatActivity {
                     }
                 });
 
-                transactionReference.document(transationId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                postsCollection.document(pushId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                        if (documentSnapshot.exists()){
-                            final TransactionDetails td = documentSnapshot.toObject(TransactionDetails.class);
-                            final String postId = td.getPushId();
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
 
-                            postsCollection.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        if (documentSnapshot.exists()){
+                            final Post post = documentSnapshot.toObject(Post.class);
+                            final String collectionId = post.getCollectionId();
+
+                            collectionsPosts.document("collections").collection(collectionId)
+                                    .document(pushId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                 @Override
                                 public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                                     if (e != null) {
@@ -178,60 +188,55 @@ public class WalletActivity extends AppCompatActivity {
                                     }
 
                                     if (documentSnapshot.exists()){
-                                        final Post post = documentSnapshot.toObject(Post.class);
-                                        final String collectionId = post.getCollectionId();
+                                        final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
 
-                                        collectionsCollection.document("collection_posts").collection(collectionId)
-                                                .document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                            @Override
-                                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                                if (e != null) {
-                                                    Log.w(TAG, "Listen error", e);
-                                                    return;
-                                                }
+                                        Picasso.with(WalletActivity.this)
+                                                .load(collectionPost.getImage())
+                                                .networkPolicy(NetworkPolicy.OFFLINE)
+                                                .placeholder(R.drawable.image_place_holder)
+                                                .into(holder.postImageView, new Callback() {
+                                                    @Override
+                                                    public void onSuccess() {
 
-                                                if (documentSnapshot.exists()){
-                                                    final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
-                                                    Picasso.with(WalletActivity.this)
-                                                            .load(collectionPost.getImage())
-                                                            .networkPolicy(NetworkPolicy.OFFLINE)
-                                                            .into(holder.postImageView, new Callback() {
-                                                                @Override
-                                                                public void onSuccess() {
+                                                    }
 
-                                                                }
+                                                    @Override
+                                                    public void onError() {
+                                                        Picasso.with(WalletActivity.this)
+                                                                .load(collectionPost.getImage())
+                                                                .placeholder(R.drawable.image_place_holder)
+                                                                .into(holder.postImageView, new Callback() {
+                                                                    @Override
+                                                                    public void onSuccess() {
 
-                                                                @Override
-                                                                public void onError() {
-                                                                    Picasso.with(WalletActivity.this)
-                                                                            .load(collectionPost.getImage())
-                                                                            .into(holder.postImageView);
+                                                                    }
 
-
-                                                                }
-                                                            });
+                                                                    @Override
+                                                                    public void onError() {
+                                                                        Log.v("Picasso", "Could not fetch image");
+                                                                    }
+                                                                });
 
 
+                                                    }
+                                                });
 
-                                                }
-                                            }
-                                        });
-
-
-                                        holder.postImageView.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View view) {
-                                                Intent intent = new Intent(WalletActivity.this, PostDetailActivity.class);
-                                                intent.putExtra(WalletActivity.EXTRA_POST_KEY, postId);
-                                                intent.putExtra(WalletActivity.COLLECTION_ID, collectionId);
-                                                startActivity(intent);
-                                            }
-                                        });
 
 
                                     }
                                 }
                             });
+
+                            holder.postImageView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Intent intent = new Intent(WalletActivity.this, PostDetailActivity.class);
+                                    intent.putExtra(WalletActivity.EXTRA_POST_ID, pushId);
+                                    intent.putExtra(WalletActivity.COLLECTION_ID, collectionId);
+                                    startActivity(intent);
+                                }
+                            });
+
 
                         }
                     }

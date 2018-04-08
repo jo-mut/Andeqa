@@ -19,11 +19,7 @@
             android:cropToPadding="false"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:layout_toRightOf="@+id/likesRecyclerView"
-            android:layout_toEndOf="@+id/likesRecyclerView"
-            android:layout_marginLeft="1dp"
-            android:textSize="9sp"
-            android:text="+9" />
+         />
 
 
 

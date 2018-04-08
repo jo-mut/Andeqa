@@ -106,7 +106,7 @@
                 android:paddingLeft="10dp"
                 android:paddingStart="10dp"
                 android:layout_width="match_parent"
-                android:layout_height="120dp">
+                android:layout_height="160dp">
 
                 <View
                     android:background="@android:color/darker_gray"
@@ -147,7 +147,7 @@
                 android:paddingLeft="10dp"
                 android:paddingStart="10dp"
                 android:layout_width="match_parent"
-                android:layout_height="120dp">
+                android:layout_height="160dp">
 
                 <View
                     android:background="@android:color/darker_gray"
@@ -188,7 +188,7 @@
                 android:paddingLeft="10dp"
                 android:paddingStart="10dp"
                 android:layout_width="match_parent"
-                android:layout_height="120dp">
+                android:layout_height="160dp">
 
                 <TextView
                     android:text="@string/privacy_policy"
@@ -217,7 +217,7 @@
                 android:paddingLeft="10dp"
                 android:paddingStart="10dp"
                 android:layout_width="match_parent"
-                android:layout_height="120dp">
+                android:layout_height="160dp">
 
                 <TextView
                     android:text="@string/delete_account"
