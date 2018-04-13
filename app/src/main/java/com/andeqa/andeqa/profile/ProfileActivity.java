@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
@@ -24,7 +25,6 @@ import com.andeqa.andeqa.message.MessagesAccountActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Room;
-import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.people.FollowersActivity;
 import com.andeqa.andeqa.people.FollowingActivity;
@@ -66,6 +66,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Bind(R.id.collapsing_toolbar)CollapsingToolbarLayout collapsingToolbarLayout;
     @Bind(R.id.sendMessageImageView)ImageView mSendMessageImageView;
     @Bind(R.id.followButton)Button mFollowButton;
+    @Bind(R.id.followingCountRelativeLayout)RelativeLayout mFollowingCountRelativeLayout;
+    @Bind(R.id.followersCountRelativeLayout)RelativeLayout mFollowersCountRelativeLayout;
+    @Bind(R.id.bioRelativeLayout)RelativeLayout mBioRelativeLayout;
 
     private static final String TAG = ProfileActivity.class.getSimpleName();
     //firestore reference
@@ -91,7 +94,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private  static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
     //singles meber variables
-    private List<Single> singles = new ArrayList<>();
     private List<String> cinglesIds = new ArrayList<>();
     private DocumentSnapshot lastVisible;
     private LinearLayoutManager layoutManager;
@@ -140,12 +142,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             relationsCollections = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             collectionCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
             profileCollectionsQuery = collectionCollection.orderBy("time", Query.Direction.DESCENDING)
-                    .whereEqualTo("uid", mUid)
+                    .whereEqualTo("userId", mUid)
                     .limit(TOTAL_ITEMS);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             roomsCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            postCountQuery = postsCollection.orderBy("time").whereEqualTo("uid", mUid);
+            postCountQuery = postsCollection.orderBy("time").whereEqualTo("userId", mUid);
 
             //firebase
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
@@ -197,8 +199,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             });
 
             //INITIALIZE CLICK LISTENERS
-            mFollowersCountTextView.setOnClickListener(this);
-            mFollowingCountTextView.setOnClickListener(this);
+            mFollowingCountRelativeLayout.setOnClickListener(this);
+            mFollowersCountRelativeLayout.setOnClickListener(this);
             mSendMessageImageView.setOnClickListener(this);
             mFollowButton.setOnClickListener(this);
 
@@ -289,7 +291,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
 
         relationsCollections.document("followers").collection(mUid)
-                .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+                .whereEqualTo("userId", firebaseAuth.getCurrentUser().getUid())
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -341,15 +343,16 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                         }
 
                         if (documentSnapshot.exists()){
-                            final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                            String firstName = cinggulan.getFirstName();
-                            String secondName = cinggulan.getSecondName();
-                            final String profileImage = cinggulan.getProfileImage();
-                            String bio = cinggulan.getBio();
-                            final String profileCover = cinggulan.getProfileCover();
+                            final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                            String firstName = andeqan.getFirstName();
+                            String secondName = andeqan.getSecondName();
+                            final String profileImage = andeqan.getProfileImage();
+                            String bio = andeqan.getBio();
+                            final String profileCover = andeqan.getProfileCover();
 
                             mFullNameTextView.setText(firstName + " " + secondName);
                             mBioTextView.setText(bio);
+
                             Picasso.with(ProfileActivity.this)
                                     .load(profileImage)
                                     .resize(MAX_WIDTH, MAX_HEIGHT)
@@ -559,13 +562,13 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onClick(View v){
-        if (v == mFollowingCountTextView) {
+        if (v == mFollowingCountRelativeLayout) {
             Intent intent = new Intent(ProfileActivity.this, FollowingActivity.class);
             intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
             startActivity(intent);
         }
 
-        if (v == mFollowersCountTextView){
+        if (v == mFollowersCountRelativeLayout){
             Intent intent = new Intent(ProfileActivity.this, FollowersActivity.class);
             intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
             startActivity(intent);
@@ -627,7 +630,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                 if (documentSnapshots.isEmpty()){
                                     //set followers and following
                                     Relation follower = new Relation();
-                                    follower.setUid(firebaseAuth.getCurrentUser().getUid());
+                                    follower.setUserId(firebaseAuth.getCurrentUser().getUid());
                                     relationsCollections.document("followers").collection(mUid)
                                             .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -636,21 +639,21 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                                     Timeline timeline = new Timeline();
                                                     final long time = new Date().getTime();
 
-                                                    final String postid = databaseReference.push().getKey();
-                                                    timeline.setPushId(mUid);
+                                                    final String activityId = databaseReference.push().getKey();
+                                                    timeline.setPostId(mUid);
                                                     timeline.setTime(time);
-                                                    timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                    timeline.setUserId(firebaseAuth.getCurrentUser().getUid());
                                                     timeline.setType("followers");
-                                                    timeline.setPostId(postid);
+                                                    timeline.setActivityId(activityId);
                                                     timeline.setStatus("unRead");
 
-                                                    timelineCollection.document(mUid).collection("timeline")
+                                                    timelineCollection.document(mUid).collection("activities")
                                                             .document(firebaseAuth.getCurrentUser().getUid())
                                                             .set(timeline);
                                                 }
                                             });
                                     final Relation following = new Relation();
-                                    following.setUid(mUid);
+                                    following.setUserId(mUid);
                                     relationsCollections.document("following").collection(firebaseAuth.getCurrentUser().getUid())
                                             .document(mUid).set(following);
                                     processFollow = false;

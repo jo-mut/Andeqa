@@ -114,7 +114,7 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         messagingUsersCollection.document("room")
                 .collection(firebaseAuth.getCurrentUser().getUid());
         Message message = getSnapshot(position).toObject(Message.class);
-        final String pushId = message.getPushId();
+        final String pushId = message.getMessageId();
 
         holder.messageTextView.setText(message.getMessage());
         holder.timeTextView.setText(DateFormat.format("HH:mm", message.getTime()));

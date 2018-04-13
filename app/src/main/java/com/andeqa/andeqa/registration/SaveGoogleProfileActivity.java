@@ -58,7 +58,6 @@ public class SaveGoogleProfileActivity extends AppCompatActivity implements View
     private static final int MAX_COVER_HEIGHT = 400;
     private static final String EMAIL = "email";
     private Uri profileUri;
-    private String email;
 
 
 
@@ -77,11 +76,6 @@ public class SaveGoogleProfileActivity extends AppCompatActivity implements View
             createAuthProgressDialog();
             verifyingYourEmailDialog();
             createProfileDialog();
-
-            email = getIntent().getStringExtra(EMAIL);
-            if(email == null){
-                throw new IllegalArgumentException("pass EMAIL");
-            }
 
             mUpdateProfilePictureImageButton.setOnClickListener(this);
             mSubmitUserInfoButton.setOnClickListener(this);
@@ -112,6 +106,7 @@ public class SaveGoogleProfileActivity extends AppCompatActivity implements View
     public void createProfile(){
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String uid = user.getUid();
+        final String email = user.getEmail();
 
         final String username = mUsernameEditText.getText().toString().toLowerCase().trim();
         final String firstName = mFirstNameEditText.getText().toString().trim();
@@ -127,14 +122,11 @@ public class SaveGoogleProfileActivity extends AppCompatActivity implements View
         cinggulan.setFirstName(firstName);
         cinggulan.setSecondName(secondName);
         cinggulan.setUsername(username);
-        cinggulan.setUid(uid);
+        cinggulan.setUserId(uid);
         cinggulan.setEmail(email);
 
-        DocumentReference pushRef = usersReference.document(uid);
-        String pushId = pushRef.getId();
-        cinggulan.setPushId(pushId);
         createProfileProgressDialog.dismiss();
-        pushRef.set(cinggulan).addOnSuccessListener(new OnSuccessListener<Void>() {
+        usersReference.document(uid).set(cinggulan).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
 

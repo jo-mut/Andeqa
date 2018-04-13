@@ -176,35 +176,6 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
 
 
     public void deleteCingle(){
-        postsCollection.document(mPostId)
-                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    postsCollection.document(mPostId).delete();
-                    collectionsPosts.document(mPostId)
-                            .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
-
-                            if (documentSnapshot.exists()){
-                                collectionsPosts.document(mPostId).delete();
-                            }
-                        }
-                    });
-                }
-            }
-        });
-
         // delete post in collection and delete post in overall document
         collectionsPosts.document(mPostId)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {

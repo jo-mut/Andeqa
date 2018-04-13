@@ -8,8 +8,8 @@ public class Post {
     long time;
     long number;
     double randomNumber;
-    String pushId;
-    String uid;
+    String postId;
+    String userId;
     String type;
     String collectionId;
 
@@ -32,12 +32,12 @@ public class Post {
         this.number = number;
     }
 
-    public String getPushId() {
-        return pushId;
+    public String getPostId() {
+        return postId;
     }
 
-    public void setPushId(String pushId) {
-        this.pushId = pushId;
+    public void setPostId(String postId) {
+        this.postId = postId;
     }
 
     public double getRandomNumber() {
@@ -64,11 +64,11 @@ public class Post {
         this.type = type;
     }
 
-    public String getUid() {
-        return uid;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

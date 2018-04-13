@@ -17,17 +17,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.home.NavigationDrawerActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.TransactionDetails;
+import com.andeqa.andeqa.profile.CollectionsPostsActivity;
 import com.andeqa.andeqa.utils.DialogProgressFragment;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -78,6 +77,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
     private static final int DEFAULT_TITLE_LENGTH_LIMIT = 100;
     private static final int IMAGE_GALLERY_REQUEST = 112;
     private static final String COLLECTION_ID = "collection id";
+    private static final String EXTRA_USER_UID = "uid";
     private String collectionId;
 
 
@@ -304,6 +304,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
     public void uploadingToFirebaseDialog(){
         progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Adding your post");
         progressDialog.setCancelable(true);
     }
 
@@ -328,68 +329,89 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     final Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
-                    postsCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    CollectionReference cl = collectionsCollection;
+                    cl.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override
                         public void onSuccess(QuerySnapshot documentSnapshots) {
+                            final int index = documentSnapshots.getDocuments().size();
+                            CollectionPost collectionPost = new CollectionPost();
                             final int size = documentSnapshots.size();
                             final int number = size + 1;
                             final double random = new Random().nextDouble();
 
-                            Post post = new Post();
-                            post.setCollectionId(collectionId);
-                            post.setType("post");
-                            post.setPushId(pushId);
-                            post.setUid(firebaseAuth.getCurrentUser().getUid());
-                            post.setRandomNumber(random);
-                            post.setNumber(number);
-                            post.setTime(timeStamp);
-                            postsCollection.document(pushId).set(post);
-
-                            CollectionReference cl = collectionsCollection;
-                            cl.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                            //record all the collectionPost data
+                            collectionPost.setNumber(number);
+                            collectionPost.setRandomNumber(random);
+                            collectionPost.setTime(timeStamp);
+                            collectionPost.setUserId(firebaseAuth.getCurrentUser().getUid());
+                            collectionPost.setPostId(pushId);
+                            collectionPost.setTitle(mCingleTitleEditText.getText().toString());
+                            collectionPost.setDescription(mCingleDescriptionEditText.getText().toString());
+                            collectionPost.setImage(downloadUrl.toString());
+                            collectionPost.setPostId(pushId);
+                            collectionPost.setUserId(firebaseAuth.getCurrentUser().getUid());
+                            collectionPost.setType("collection_post");
+                            collectionPost.setCollectionId(collectionId);
+                            collectionsCollection.document("collections").collection(collectionId)
+                                    .document(pushId).set(collectionPost).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
-                                public void onSuccess(QuerySnapshot documentSnapshots) {
-                                    final int index = documentSnapshots.getDocuments().size();
-                                    CollectionPost collectionPost = new CollectionPost();
+                                public void onSuccess(Void aVoid) {
+                                    postsCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onSuccess(QuerySnapshot snapshots) {
+                                            final int size = snapshots.size();
+                                            final int number = size + 1;
+                                            final double random = new Random().nextDouble();
 
-                                    //record all the collectionPost data
-                                    collectionPost.setNumber(index + 1);
-                                    collectionPost.setRandomNumber(random);
-                                    collectionPost.setTime(timeStamp);
-                                    collectionPost.setUid(firebaseAuth.getCurrentUser().getUid());
-                                    collectionPost.setPushId(pushId);
-                                    collectionPost.setTitle(mCingleTitleEditText.getText().toString());
-                                    collectionPost.setDescription(mCingleDescriptionEditText.getText().toString());
-                                    collectionPost.setImage(downloadUrl.toString());
-                                    collectionPost.setPushId(pushId);
-                                    collectionPost.setUid(firebaseAuth.getCurrentUser().getUid());
-                                    collectionPost.setType("collection_post");
-                                    collectionPost.setCollectionId(collectionId);
-                                    collectionsCollection.document("collections").collection(collectionId)
-                                            .document(pushId).set(collectionPost);
+                                            Post post = new Post();
+                                            post.setCollectionId(collectionId);
+                                            post.setType("post");
+                                            post.setPostId(pushId);
+                                            post.setUserId(firebaseAuth.getCurrentUser().getUid());
+                                            post.setRandomNumber(random);
+                                            post.setNumber(number);
+                                            post.setTime(timeStamp);
 
-                                    //reset input fields
-                                    mCingleTitleEditText.setText("");
-                                    mCingleDescriptionEditText.setText("");
-                                    mPostImageView.setImageBitmap(null);
+                                            postsCollection.document(pushId).set(post)
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    //set the collectionPost ownership
+                                                    TransactionDetails transactionDetails = new TransactionDetails();
+                                                    transactionDetails.setPostId(pushId);
+                                                    transactionDetails.setUserId(firebaseAuth.getCurrentUser().getUid());
+                                                    transactionDetails.setTime(timeStamp);
+                                                    transactionDetails.setType("owner");
+                                                    transactionDetails.setAmount(0.0);
+                                                    transactionDetails.setWalletBalance(0.0);
 
-                                    //set the collectionPost ownership
-                                    TransactionDetails transactionDetails = new TransactionDetails();
-                                    transactionDetails.setPushId(pushId);
-                                    transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
-                                    transactionDetails.setTime(timeStamp);
-                                    transactionDetails.setType("owner");
-                                    transactionDetails.setAmount(0.0);
-                                    transactionDetails.setWalletBalance(0.0);
-                                    postOwnersCollection.document(pushId).set(transactionDetails);
+                                                    postOwnersCollection.document(pushId).set(transactionDetails)
+                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            progressDialog.dismiss();
+                                                            //reset input fields
+                                                            mCingleTitleEditText.setText("");
+                                                            mCingleDescriptionEditText.setText("");
+                                                            mPostImageView.setImageBitmap(null);
 
-                                    Intent intent = new Intent(CreatePostActivity.this, NavigationDrawerActivity.class);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    startActivity(intent);
-                                    finish();
-
+                                                            //launch the collections activity
+                                                            Intent intent = new Intent(CreatePostActivity.this, CollectionsPostsActivity.class);
+                                                            intent.putExtra(CreatePostActivity.COLLECTION_ID, collectionId);
+                                                            intent.putExtra(CreatePostActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
+                                                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                            startActivity(intent);
+                                                            finish();
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    });
                                 }
                             });
+
+
                         }
                     });
 
@@ -407,7 +429,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                     double progress = (100.0 * taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
                     progressDialog.setMessage("Adding your post" + " " + ((int) progress) + "%...");
                     if (progress == 100.0){
-                        progressDialog.dismiss();
+
                     }
                 }
             });

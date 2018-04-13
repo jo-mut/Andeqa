@@ -60,7 +60,6 @@ public class CollectionsPostsActivity extends AppCompatActivity
     private  static final int MAX_WIDTH = 400;
     private static final int MAX_HEIGHT = 400;
     private int TOTAL_ITEMS = 10;
-    private DocumentSnapshot lastVisible;
     private LinearLayoutManager layoutManager;
     private static final String EXTRA_USER_UID = "uid";
 
@@ -110,8 +109,7 @@ public class CollectionsPostsActivity extends AppCompatActivity
             collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
                     .document("collections").collection(collectionId);
             collectionCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
-            collectionPostsQuery = collectionsPosts.orderBy("time", Query.Direction.DESCENDING)
-                    .whereEqualTo("uid", mUid);
+            collectionPostsQuery = collectionsPosts.orderBy("time", Query.Direction.DESCENDING);
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
 
             setCollectionPosts();
@@ -163,6 +161,7 @@ public class CollectionsPostsActivity extends AppCompatActivity
         mCollectionsPostsRecyclerView.setAdapter(collectionPostsAdapter);
         mCollectionsPostsRecyclerView.setHasFixedSize(false);
         layoutManager = new LinearLayoutManager(CollectionsPostsActivity.this);
+        layoutManager.setReverseLayout(true);
         mCollectionsPostsRecyclerView.setLayoutManager(layoutManager);
         mCollectionsPostsRecyclerView.setNestedScrollingEnabled(false);
     }
@@ -256,7 +255,6 @@ public class CollectionsPostsActivity extends AppCompatActivity
 
         //retrieve the first bacth of mSnapshots
         Query nextCollectionPostsQuery = collectionsPosts.orderBy("time", Query.Direction.DESCENDING)
-                .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
                 .startAfter(lastVisible)
                 .limit(TOTAL_ITEMS);
 

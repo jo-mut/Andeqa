@@ -7,7 +7,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.andeqa.andeqa.Constants;
-import com.andeqa.andeqa.models.Single;
+import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.andeqa.andeqa.R;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -111,8 +111,8 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnClick
                 }
 
                 if (documentSnapshot.exists()){
-                    final Single single = documentSnapshot.toObject(Single.class);
-                    final String image = single.getImage();
+                    final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                    final String image = collectionPost.getImage();
                     Log.d("detailed image", image);
 
                     //set the single image

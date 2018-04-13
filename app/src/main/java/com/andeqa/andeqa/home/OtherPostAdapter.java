@@ -17,9 +17,9 @@ import com.andeqa.andeqa.firestore.FirestoreAdapter;
 import com.andeqa.andeqa.likes.LikesActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Balance;
+import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Like;
-import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.models.Market;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.models.TransactionDetails;
@@ -109,7 +109,7 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
     public void onBindViewHolder(final OtherPostViewHolder holder, int position) {
         final Credit credit = getSnapshot(position).toObject(Credit.class);
         holder.bindBestCingle(getSnapshot(position));
-        final String postKey = credit.getPushId();
+        final String postKey = credit.getPostId();
         final double senseCredits = credit.getAmount();
         Log.d("best cingle postkey", postKey);
 
@@ -188,12 +188,12 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                 }
 
                 if (documentSnapshot.exists()){
-                    final Single single = documentSnapshot.toObject(Single.class);
-                    final String uid = single.getUid();
+                    final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                    final String uid = collectionPost.getUserId();
 
 
                     Picasso.with(mContext)
-                            .load(single.getImage())
+                            .load(collectionPost.getImage())
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(holder.postImageView, new Callback() {
                                 @Override
@@ -204,7 +204,7 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                                 @Override
                                 public void onError() {
                                     Picasso.with(mContext)
-                                            .load(single.getImage())
+                                            .load(collectionPost.getImage())
                                             .into(holder.postImageView, new Callback() {
                                                 @Override
                                                 public void onSuccess() {
@@ -221,16 +221,16 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                                 }
                             });
 
-                    if (single.getTitle().equals("")){
+                    if (collectionPost.getTitle().equals("")){
                         holder.titleRelativeLayout.setVisibility(View.GONE);
                     }else {
-                        holder.titleTextView.setText(single.getTitle());
+                        holder.titleTextView.setText(collectionPost.getTitle());
                     }
 
-                    if (single.getDescription().equals("")){
+                    if (collectionPost.getDescription().equals("")){
                         holder.descriptionRelativeLayout.setVisibility(View.GONE);
                     }else {
-                        holder.descriptionTextView.setText(single.getDescription());
+                        holder.descriptionTextView.setText(collectionPost.getDescription());
                     }
 
 
@@ -288,7 +288,7 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                         public void onClick(View view) {
                             processLikes = true;
                             likesReference.document(postKey).collection("likes")
-                                    .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+                                    .whereEqualTo("userId", firebaseAuth.getCurrentUser().getUid())
                                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                         @Override
                                         public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -302,8 +302,7 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                                             if (processLikes){
                                                 if (documentSnapshots.isEmpty()){
                                                     Like like = new Like();
-                                                    like.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                    like.setPushId(firebaseAuth.getCurrentUser().getUid());
+                                                    like.setUserId(firebaseAuth.getCurrentUser().getUid());
                                                     likesReference.document(postKey).collection("likes")
                                                             .document(firebaseAuth.getCurrentUser().getUid()).set(like)
                                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -327,11 +326,11 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
 
                                                                                     if (documentSnapshots.isEmpty()){
                                                                                         final String postId = databaseReference.push().getKey();
-                                                                                        timeline.setPushId(postKey);
+                                                                                        timeline.setPostId(postKey);
                                                                                         timeline.setTime(time);
-                                                                                        timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                                        timeline.setUserId(firebaseAuth.getCurrentUser().getUid());
                                                                                         timeline.setType("like");
-                                                                                        timeline.setPostId(postId);
+                                                                                        timeline.setActivityId(postId);
                                                                                         timeline.setStatus("unRead");
 
                                                                                         if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
@@ -414,9 +413,9 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                                                                                 senseCreditReference.document(postKey).update("amount", totalSenseCredits);
                                                                             }else {
                                                                                 Credit credit = new Credit();
-                                                                                credit.setPushId(postKey);
+                                                                                credit.setPostId(postKey);
                                                                                 credit.setAmount(finalPoints);
-                                                                                credit.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                                credit.setUserId(firebaseAuth.getCurrentUser().getUid());
                                                                                 senseCreditReference.document(postKey).set(credit);
                                                                                 Log.d("new sense credits", finalPoints + "");
                                                                             }
@@ -449,9 +448,9 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                                                                             senseCreditReference.document(postKey).update("amount", totalSenseCredits);
                                                                         }else {
                                                                             Credit credit = new Credit();
-                                                                            credit.setPushId(postKey);
+                                                                            credit.setPostId(postKey);
                                                                             credit.setAmount(finalPoints);
-                                                                            credit.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                            credit.setUserId(firebaseAuth.getCurrentUser().getUid());
                                                                             senseCreditReference.document(postKey).set(credit);
                                                                         }
                                                                     }
@@ -503,7 +502,7 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
 
                 if (documentSnapshot.exists()){
                     TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
-                    final String ownerUid = transactionDetails.getUid();
+                    final String ownerUid = transactionDetails.getUserId();
                     d("owner uid", ownerUid);
 
                     holder.ownerImageView.setOnClickListener(new View.OnClickListener() {
@@ -608,7 +607,7 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
 
 
         likesReference.document(postKey).collection("likes")
-                .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+                .whereEqualTo("userId", firebaseAuth.getCurrentUser().getUid())
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -652,8 +651,7 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                             protected void onBindViewHolder(final WhoLikedViewHolder holder, int position, Like model) {
                                 holder.bindWhoLiked(getSnapshots().getSnapshot(position));
                                 Like like = getSnapshots().getSnapshot(position).toObject(Like.class);
-                                final String postKey = like.getPushId();
-                                final String uid = like.getUid();
+                                final String uid = like.getUserId();
 
                                 //get the profile of the user who just liked
                                 usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {

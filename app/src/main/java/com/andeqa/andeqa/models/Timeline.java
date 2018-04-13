@@ -6,9 +6,9 @@ package com.andeqa.andeqa.models;
 
 public class Timeline {
     String type;
-    String uid;
-    String pushId;
+    String userId;
     String postId;
+    String activityId;
     long time;
     String status;
 
@@ -16,12 +16,12 @@ public class Timeline {
 
     }
 
-    public Timeline(String type, String uid, String pushId,
-                    String postId, long time, String status) {
+    public Timeline(String type, String userId, String postId,
+                    String activityId, long time, String status) {
         this.type = type;
-        this.uid = uid;
-        this.pushId = pushId;
+        this.userId = userId;
         this.postId = postId;
+        this.activityId = activityId;
         this.time = time;
         this.status = status;
     }
@@ -34,20 +34,12 @@ public class Timeline {
         this.type = type;
     }
 
-    public String getUid() {
-        return uid;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
-    public String getPushId() {
-        return pushId;
-    }
-
-    public void setPushId(String pushId) {
-        this.pushId = pushId;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getPostId() {
@@ -56,6 +48,14 @@ public class Timeline {
 
     public void setPostId(String postId) {
         this.postId = postId;
+    }
+
+    public String getActivityId() {
+        return activityId;
+    }
+
+    public void setActivityId(String activityId) {
+        this.activityId = activityId;
     }
 
     public long getTime() {

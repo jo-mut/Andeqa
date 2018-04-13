@@ -9,8 +9,7 @@ public class Andeqan {
     String profileCover;
     String bio;
     String username;
-    String pushId;
-    String uid;
+    String userId;
     String email;
     String firstName;
     String secondName;
@@ -21,13 +20,12 @@ public class Andeqan {
 
     public Andeqan(String profileImage, String bio,
                    String username, String profileCover,
-                   String pushId, String uid, String email,
+                   String userId, String email,
                    String firstName, String secondName) {
         this.profileImage = profileImage;
         this.bio = bio;
         this.username = username;
-        this.pushId = pushId;
-        this.uid = uid;
+        this.userId = userId;
         this.email = email;
         this.profileCover = profileCover;
         this.firstName = firstName;
@@ -66,20 +64,13 @@ public class Andeqan {
         this.username = username;
     }
 
-    public String getPushId() {
-        return pushId;
+
+    public String getUserId() {
+        return userId;
     }
 
-    public void setPushId(String pushId) {
-        this.pushId = pushId;
-    }
-
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getEmail() {

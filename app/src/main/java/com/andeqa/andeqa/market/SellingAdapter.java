@@ -103,8 +103,8 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
     public void onBindViewHolder(final PostSellingViewHolder holder, int position) {
         final Market market = getSnapshot(position).toObject(Market.class);
         holder.bindIfairCingle(market);
-        final String postKey = market.getPushId();
-        final String uid = market.getUid();
+        final String postKey = market.getPostId();
+        final String uid = market.getUserId();
         final double salePrice = market.getSalePrice();
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -368,7 +368,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
 
                 if (documentSnapshot.exists()){
                     TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
-                    final String ownerUid = transactionDetails.getUid();
+                    final String ownerUid = transactionDetails.getUserId();
                     Log.d("owner uid", ownerUid);
 
                     if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){

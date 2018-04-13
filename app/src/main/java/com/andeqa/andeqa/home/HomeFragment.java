@@ -16,7 +16,6 @@ import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -56,8 +55,8 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     //adapters
     private PostsAdapter postsAdapter;
     private LinearLayoutManager layoutManager;
-    private int TOTAL_ITEMS = 2;
-    private List<String> mSnapshotsIds = new ArrayList<>();
+    private int TOTAL_ITEMS = 10;
+    private List<String> postsIds = new ArrayList<>();
     private List<DocumentSnapshot> posts = new ArrayList<>();
 
     public HomeFragment() {
@@ -189,7 +188,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     protected void onDocumentAdded(DocumentChange change) {
-        mSnapshotsIds.add(change.getDocument().getId());
+        postsIds.add(change.getDocument().getId());
         posts.add(change.getDocument());
         postsAdapter.setRandomPosts(posts);
         postsAdapter.notifyItemInserted(posts.size() -1);

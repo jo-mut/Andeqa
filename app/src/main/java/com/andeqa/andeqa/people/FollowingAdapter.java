@@ -55,7 +55,6 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
     private boolean processFollow = false;
     private static final String TAG = FollowersActivity.class.getSimpleName();
     private static final String EXTRA_USER_UID = "uid";
-    private String mUid;
 
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
 
@@ -84,8 +83,8 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
     @Override
     public void onBindViewHolder(final PeopleViewHolder holder, int position) {
         Relation relation = getSnapshot(position).toObject(Relation.class);
-        final String postKey = relation.getUid();
-        Log.d("following postKey", postKey);
+        final String userId = relation.getUserId();
+        Log.d("following postKey", userId);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -93,7 +92,7 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
 
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            followingQuery = relationsReference.document("following").collection(postKey);
+            followingQuery = relationsReference.document("following").collection(userId);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             //firebase
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
@@ -102,7 +101,7 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
         }
 
         //post key and uid are same
-        usersReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        usersReference.document(userId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -116,7 +115,7 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
                     final String firstName = cinggulan.getFirstName();
                     final String secondName = cinggulan.getSecondName();
                     final String username = cinggulan.getUsername();
-                    final String uid = cinggulan.getUid();
+                    final String uid = cinggulan.getUserId();
                     Log.d("following uid fa", uid);
 
                     holder.usernameTextView.setText(username);
@@ -157,8 +156,8 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
                     });
 
                     //show if following or not
-                    relationsReference.document("following").collection(mUid)
-                            .whereEqualTo("uid", postKey)
+                    relationsReference.document("following").collection(userId)
+                            .whereEqualTo("userId", firebaseAuth.getCurrentUser().getUid())
                             .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                 @Override
                                 public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -180,8 +179,8 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
                             public void onClick(View view) {
                                 processFollow = true;
                                 relationsReference.document("followers")
-                                        .collection(postKey)
-                                        .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+                                        .collection(userId)
+                                        .whereEqualTo("userId", firebaseAuth.getCurrentUser().getUid())
                                         .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                             @Override
                                             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -196,8 +195,8 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
                                                     if (documentSnapshots.isEmpty()){
                                                         //set followers and following
                                                         Relation follower = new Relation();
-                                                        follower.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                        relationsReference.document("followers").collection(postKey)
+                                                        follower.setUserId(firebaseAuth.getCurrentUser().getUid());
+                                                        relationsReference.document("followers").collection(userId)
                                                                 .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
                                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                     @Override
@@ -205,29 +204,29 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
                                                                         Timeline timeline = new Timeline();
                                                                         final long time = new Date().getTime();
                                                                         final String postid =  databaseReference.push().getKey();
-                                                                        timeline.setPushId(uid);
+                                                                        timeline.setPostId(uid);
                                                                         timeline.setTime(time);
-                                                                        timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                        timeline.setUserId(firebaseAuth.getCurrentUser().getUid());
                                                                         timeline.setType("followers");
-                                                                        timeline.setPostId(postid);
+                                                                        timeline.setActivityId(postid);
                                                                         timeline.setStatus("unRead");
 
-                                                                        timelineCollection.document(postKey).collection("timeline")
+                                                                        timelineCollection.document(userId).collection("activities")
                                                                                 .document(firebaseAuth.getCurrentUser().getUid())
                                                                                 .set(timeline);
                                                                     }
                                                                 });
                                                         final Relation following = new Relation();
-                                                        following.setUid(postKey);
+                                                        following.setUserId(userId);
                                                         relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
-                                                                .document(postKey).set(following);
+                                                                .document(userId).set(following);
                                                         processFollow = false;
                                                         holder.followButton.setText("Following");
                                                     }else {
-                                                        relationsReference.document("followers").collection(postKey)
+                                                        relationsReference.document("followers").collection(userId)
                                                                 .document(firebaseAuth.getCurrentUser().getUid()).delete();
                                                         relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
-                                                                .document(postKey).delete();
+                                                                .document(userId).delete();
                                                         processFollow = false;
                                                         holder.followButton.setText("Unfollow");
                                                     }

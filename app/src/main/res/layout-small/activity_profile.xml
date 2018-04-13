@@ -98,6 +98,7 @@
 
 
                     <RelativeLayout
+                        android:id="@+id/postCountRelativeLayout"
                         android:layout_marginRight="30dp"
                         android:layout_marginEnd="30dp"
                         android:layout_toStartOf="@+id/followersCountRelativeLayout"
@@ -169,6 +170,7 @@
                     </RelativeLayout>
 
                     <RelativeLayout
+                        android:id="@+id/followingCountRelativeLayout"
                         android:layout_marginLeft="30dp"
                         android:layout_marginStart="30dp"
                         android:layout_toEndOf="@+id/followersCountRelativeLayout"
@@ -204,29 +206,30 @@
 
                     </RelativeLayout>
 
-                    <Button
-                        android:visibility="gone"
-                        android:text=""
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="15dp"
-                        android:id="@+id/followButton"
-                        android:layout_below="@+id/followingCountRelativeLayout"
-                        android:minHeight="22dp"
-                        android:minWidth="75dp"
-                        android:textSize="10sp"
-                        android:background="@drawable/colour_btn_background"
-                        android:layout_centerHorizontal="true" />
-
                 </RelativeLayout>
+
+                <Button
+                    android:visibility="gone"
+                    android:text=""
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:id="@+id/followButton"
+                    android:layout_below="@+id/countsLayout"
+                    android:minHeight="22dp"
+                    android:minWidth="75dp"
+                    android:textSize="12sp"
+                    android:background="@drawable/colour_btn_background"
+                    android:layout_centerHorizontal="true" />
 
                 <RelativeLayout
                     android:id="@+id/bioRelativeLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/countsLayout"
+                    android:layout_below="@+id/followButton"
                     android:elevation="4dp"
-                    android:layout_marginBottom="50dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="60dp"
                     android:padding="5dp">
 
                     <TextView

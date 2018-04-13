@@ -116,11 +116,11 @@ public class FollowingActivity extends AppCompatActivity implements SwipeRefresh
 
     @Override
     public void onRefresh() {
-        setNextCollections();
+//        setNextCollections();
     }
 
     private void setCollections(){
-        followingQuery.orderBy("uid").limit(TOTAL_ITEMS)
+        followingQuery.orderBy("userId").limit(TOTAL_ITEMS)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -163,7 +163,7 @@ public class FollowingActivity extends AppCompatActivity implements SwipeRefresh
 
             //retrieve the first bacth of documentSnapshots
             Query nextSellingQuery = relationsReference.document("followers").collection(mUid)
-                    .orderBy("uid")
+                    .orderBy("userId")
                     .startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
 

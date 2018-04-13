@@ -6,17 +6,17 @@ package com.andeqa.andeqa.models;
 
 public class Credit {
     double amount;
-    String uid;
-    String pushId;
+    String userId;
+    String postId;
 
     public Credit() {
 
     }
 
-    public Credit(double amount, String uid, String pushId) {
+    public Credit(double amount, String userId, String postId) {
         this.amount = amount;
-        this.uid = uid;
-        this.pushId = pushId;
+        this.userId = userId;
+        this.postId = postId;
     }
 
     public double getAmount() {
@@ -27,20 +27,20 @@ public class Credit {
         this.amount = amount;
     }
 
-    public String getUid() {
-        return uid;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public String getPushId() {
-        return pushId;
+    public String getPostId() {
+        return postId;
     }
 
-    public void setPushId(String pushId) {
-        this.pushId = pushId;
+    public void setPostId(String postId) {
+        this.postId = postId;
     }
 
 }

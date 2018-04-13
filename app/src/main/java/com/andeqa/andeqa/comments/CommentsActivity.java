@@ -1,6 +1,5 @@
 package com.andeqa.andeqa.comments;
 
-import android.content.Intent;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,19 +13,14 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
-import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.models.Comment;
-import com.andeqa.andeqa.profile.ProfileActivity;
-import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
-import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -37,12 +31,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -307,15 +297,15 @@ public class CommentsActivity extends AppCompatActivity implements
 
                         if (documentSnapshot.exists()){
                             final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                            final String uid = cinggulan.getUid();
+                            final String uid = cinggulan.getUserId();
 
                             final String postId = databaseReference.push().getKey();
 
                             Comment comment = new Comment();
-                            comment.setUid(uid);
+                            comment.setUserId(uid);
                             comment.setCommentText(commentText);
-                            comment.setPushId(mPostId);
-                            comment.setPostId(postId);
+                            comment.setPostId(mPostId);
+                            comment.setCommentId(postId);
                             comment.setTime(time);
                             commentsCollection.document(postId).set(comment);
 
@@ -333,14 +323,14 @@ public class CommentsActivity extends AppCompatActivity implements
                                     }
 
                                     if (documentSnapshot.exists()){
-                                        Single single = documentSnapshot.toObject(Single.class);
-                                        final String creatorUid = single.getUid();
+                                        CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                                        final String creatorUid = collectionPost.getUserId();
 
-                                        timeline.setPostId(postId);
+                                        timeline.setActivityId(postId);
                                         timeline.setTime(time);
-                                        timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                        timeline.setUserId(firebaseAuth.getCurrentUser().getUid());
                                         timeline.setType("comment");
-                                        timeline.setPushId(mPostId);
+                                        timeline.setPostId(mPostId);
                                         timeline.setStatus("unRead");
                                         if (creatorUid.equals(firebaseAuth.getCurrentUser().getUid())){
                                             //do nothing

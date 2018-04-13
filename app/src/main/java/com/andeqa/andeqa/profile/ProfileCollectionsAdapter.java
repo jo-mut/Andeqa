@@ -2,18 +2,11 @@ package com.andeqa.andeqa.profile;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.support.v7.widget.RecyclerView;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.TextPaint;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Collection;
@@ -70,7 +63,7 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
     public void onBindViewHolder(final CollectionViewHolder holder, int position) {
         final Collection collection = getSnapshot(position).toObject(Collection.class);
         final String collectionId = collection.getCollectionId();
-        final String uid = collection.getUid();
+        final String uid = collection.getUserId();
 
         Log.d("collection name", collection.getName());
 

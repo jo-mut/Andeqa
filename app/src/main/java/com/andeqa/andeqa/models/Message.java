@@ -9,7 +9,7 @@ public class Message {
     String senderUid;
     String recepientUid;
     String message;
-    String pushId;
+    String messageId;
     String type;
     String roomId;
     long time;
@@ -18,11 +18,11 @@ public class Message {
     }
 
     public Message(String senderUid, String recepientUid, String message,
-                   String pushId, String type, String roomId, long time) {
+                   String messageId, String type, String roomId, long time) {
         this.senderUid = senderUid;
         this.recepientUid = recepientUid;
         this.message = message;
-        this.pushId = pushId;
+        this.messageId = messageId;
         this.type = type;
         this.roomId = roomId;
         this.time = time;
@@ -53,12 +53,12 @@ public class Message {
         this.message = message;
     }
 
-    public String getPushId() {
-        return pushId;
+    public String getMessageId() {
+        return messageId;
     }
 
-    public void setPushId(String pushId) {
-        this.pushId = pushId;
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
     }
 
     public String getType() {

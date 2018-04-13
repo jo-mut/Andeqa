@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.firestore.FirestoreAdapter;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Comment;
 import com.andeqa.andeqa.models.Credit;
@@ -30,7 +29,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
@@ -148,10 +146,10 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private void populateTimelineLike(final TimelineLikeViewHolder holder, int position){
         Timeline timeline = getSnapshot(position).toObject(Timeline.class);
         holder.bindTimelineLike(timeline);
-        final String postId = timeline.getPostId();
-        final String uid = timeline.getUid();
+        final String postId = timeline.getActivityId();
+        final String uid = timeline.getUserId();
         final String status = timeline.getStatus();
-        final String pushId = timeline.getPushId();
+        final String pushId = timeline.getPostId();
         firebaseAuth = FirebaseAuth.getInstance();
 
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
@@ -261,10 +259,10 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private void populateTimelineComment(final TimelineCommentViewHolder holder, int position){
         Timeline timeline = getSnapshot(position).toObject(Timeline.class);
         holder.bindTimelineComment(timeline);
-        final String postId = timeline.getPostId();
-        final String uid = timeline.getUid();
+        final String postId = timeline.getActivityId();
+        final String uid = timeline.getUserId();
         final String status = timeline.getStatus();
-        final String pushId = timeline.getPushId();
+        final String pushId = timeline.getPostId();
         firebaseAuth = FirebaseAuth.getInstance();
 
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
@@ -285,7 +283,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
                     final String username = cinggulan.getUsername();
                     final String profileImage = cinggulan.getProfileImage();
-                    final String uid = cinggulan.getUid();
+                    final String uid = cinggulan.getUserId();
 
                     Picasso.with(mContext)
                             .load(profileImage)
@@ -375,8 +373,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private void populateTimelineRelation(final TimelineRelationsViewHolder holder, int position){
         Timeline timeline = getSnapshot(position).toObject(Timeline.class);
-        final String uid = timeline.getUid();
-        final String pushId = timeline.getPushId();
+        final String uid = timeline.getUserId();
+        final String pushId = timeline.getPostId();
         final String status = timeline.getStatus();
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -463,7 +461,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             public void onClick(View view) {
                 processFollow = true;
                 relationsCollection.document("followers")
-                        .collection(uid).whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+                        .collection(uid).whereEqualTo("userId", firebaseAuth.getCurrentUser().getUid())
                         .addSnapshotListener(new EventListener<QuerySnapshot>() {
                             @Override
                             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -478,7 +476,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                     if (documentSnapshots.isEmpty()){
                                         //set followers and following
                                         Relation follower = new Relation();
-                                        follower.setUid(firebaseAuth.getCurrentUser().getUid());
+                                        follower.setUserId(firebaseAuth.getCurrentUser().getUid());
                                         relationsCollection.document("followers").collection(uid)
                                                 .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -488,11 +486,11 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                                         final long time = new Date().getTime();
 
                                                         final String postid = databaseReference.push().getKey();
-                                                        timeline.setPushId(uid);
+                                                        timeline.setPostId(uid);
                                                         timeline.setTime(time);
-                                                        timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                        timeline.setUserId(firebaseAuth.getCurrentUser().getUid());
                                                         timeline.setType("followers");
-                                                        timeline.setPostId(postid);
+                                                        timeline.setActivityId(postid);
                                                         timeline.setStatus("unRead");
 
                                                         timelineCollection.document(uid).collection("timeline").document(uid)
@@ -500,7 +498,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                                     }
                                                 });
                                         final Relation following = new Relation();
-                                        following.setUid(uid);
+                                        following.setUserId(uid);
                                         relationsCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
                                                 .document(uid).set(following);
                                         processFollow = false;

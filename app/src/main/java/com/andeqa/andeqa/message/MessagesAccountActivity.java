@@ -17,7 +17,6 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Message;
 import com.andeqa.andeqa.models.Room;
-import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -233,6 +232,7 @@ public class MessagesAccountActivity extends AppCompatActivity
                                 switch (change.getType()) {
                                     case ADDED:
                                         onDocumentAdded(change);
+                                        mMessagesRecyclerView.scrollToPosition(messagingAdapter.getItemCount() - 1);
                                         break;
                                     case MODIFIED:
                                         onDocumentModified(change);
@@ -361,7 +361,7 @@ public class MessagesAccountActivity extends AppCompatActivity
                            message.setSenderUid(firebaseAuth.getCurrentUser().getUid());
                            message.setRecepientUid(mUid);
                            message.setTime(time);
-                           message.setPushId(documentId);
+                           message.setMessageId(documentId);
                            message.setType("Message");
                            message.setRoomId(roomId);
                            documentReference.set(message);
@@ -373,7 +373,7 @@ public class MessagesAccountActivity extends AppCompatActivity
                            message.setSenderUid(firebaseAuth.getCurrentUser().getUid());
                            message.setRecepientUid(mUid);
                            message.setTime(time);
-                           message.setPushId(documentId);
+                           message.setMessageId(documentId);
                            message.setType("Message");
                            message.setRoomId(roomId);
                            documentReference.set(message);
@@ -390,10 +390,9 @@ public class MessagesAccountActivity extends AppCompatActivity
                     .collection(firebaseAuth.getCurrentUser().getUid())
                     .document(mUid);
             Room room = new Room();
-            room.setUid(firebaseAuth.getCurrentUser().getUid());
+            room.setUserId(firebaseAuth.getCurrentUser().getUid());
             room.setMessage(text_message);
             room.setTime(time);
-            room.setPushId(firebaseAuth.getCurrentUser().getUid());
             room.setRoomId(roomId);
             room.setStatus("unRead");
             receipientReference.set(room);

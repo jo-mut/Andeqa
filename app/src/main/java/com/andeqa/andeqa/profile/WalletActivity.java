@@ -89,7 +89,7 @@ public class WalletActivity extends AppCompatActivity {
             collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             transactionReference = FirebaseFirestore.getInstance().collection(Constants.TRANSACTION_HISTORY);
-            transactionQuery = transactionReference.whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid());
+            transactionQuery = transactionReference.whereEqualTo("userId", firebaseAuth.getCurrentUser().getUid());
             walletReference = FirebaseFirestore.getInstance().collection(Constants.WALLET);
 
             setTransactionHistory();
@@ -129,8 +129,8 @@ public class WalletActivity extends AppCompatActivity {
                 final long time = transactionDetails.getTime();
                 final double balance = transactionDetails.getWalletBalance();
                 final double amount = transactionDetails.getAmount();
-                final String postId = getSnapshots().get(position).getPostId();
-                final String pushId = getSnapshots().get(position).getPushId();
+                final String postId = getSnapshots().get(position).getTransactionId();
+                final String pushId = getSnapshots().get(position).getPostId();
 
                 //get the current date
                 DateFormat simpleDateFormat = new SimpleDateFormat("d");

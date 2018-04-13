@@ -5,10 +5,9 @@ package com.andeqa.andeqa.models;
  */
 
 public class Room {
-    String uid;
+    String userId;
     String message;
     long time;
-    String pushId;
     String roomId;
     String status;
 
@@ -17,12 +16,12 @@ public class Room {
     }
 
 
-    public String getUid() {
-        return uid;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getMessage() {
@@ -41,13 +40,6 @@ public class Room {
         this.time = time;
     }
 
-    public String getPushId() {
-        return pushId;
-    }
-
-    public void setPushId(String pushId) {
-        this.pushId = pushId;
-    }
 
     public String getRoomId() {
         return roomId;

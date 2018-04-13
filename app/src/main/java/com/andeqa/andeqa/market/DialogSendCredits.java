@@ -192,8 +192,8 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                                                                                             });
 
                                                                                     TransactionDetails transactionDetails = new TransactionDetails();
-                                                                                    transactionDetails.setPushId(mPostKey);
-                                                                                    transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                                    transactionDetails.setPostId(mPostKey);
+                                                                                    transactionDetails.setUserId(firebaseAuth.getCurrentUser().getUid());
                                                                                     transactionDetails.setAmount(amountTransferred);
                                                                                     transactionDetails.setWalletBalance(newWalletBalance);
                                                                                     transactionDetails.setTime(timeStamp);
@@ -203,7 +203,7 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                                                                                     DocumentReference ref = cingleOwnersReference.document();
                                                                                     String pushId = ref.getId();
                                                                                     //set the push id
-                                                                                    transactionDetails.setPostId(pushId);
+                                                                                    transactionDetails.setTransactionId(pushId);
                                                                                     ref.set(transactionDetails);
 
                                                                                     //once cingle has been bought remove it from cingle selling
@@ -222,8 +222,8 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                                                                                             });
 
                                                                                     TransactionDetails transactionDetails = new TransactionDetails();
-                                                                                    transactionDetails.setPushId(mPostKey);
-                                                                                    transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                                    transactionDetails.setPostId(mPostKey);
+                                                                                    transactionDetails.setUserId(firebaseAuth.getCurrentUser().getUid());
                                                                                     transactionDetails.setAmount(amountTransferred);
                                                                                     transactionDetails.setWalletBalance(newWalletBalance);
                                                                                     transactionDetails.setTime(timeStamp);
@@ -233,7 +233,7 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                                                                                     DocumentReference ref = cingleOwnersReference.document();
                                                                                     String pushId = ref.getId();
                                                                                     //set the push id
-                                                                                    transactionDetails.setPostId(pushId);
+                                                                                    transactionDetails.setTransactionId(pushId);
                                                                                     ref.set(transactionDetails);
                                                                                     //once cingle has been bought remove it from cingle selling
                                                                                     ifairReference.document(mPostKey).delete();

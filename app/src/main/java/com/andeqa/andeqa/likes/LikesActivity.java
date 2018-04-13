@@ -82,7 +82,7 @@ public class LikesActivity extends AppCompatActivity implements
             }
             //firestore
             likesCollection = FirebaseFirestore.getInstance().collection(Constants.LIKES);
-            likesQuery = likesCollection.document(mPostKey).collection("likes").orderBy("uid");
+            likesQuery = likesCollection.document(mPostKey).collection("likes").orderBy("userId");
 
             setRecyclerView();
             setCollections();

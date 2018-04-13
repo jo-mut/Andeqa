@@ -5,9 +5,9 @@ package com.andeqa.andeqa.models;
  */
 
 public class TransactionDetails {
-    String uid;
-    String pushId;
+    String userId;
     String postId;
+    String transactionId;
     String type;
     long time;
     double amount;
@@ -19,20 +19,20 @@ public class TransactionDetails {
 
 
 
-    public String getUid() {
-        return uid;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public String getPushId() {
-        return pushId;
+    public String getPostId() {
+        return postId;
     }
 
-    public void setPushId(String pushId) {
-        this.pushId = pushId;
+    public void setPostId(String postId) {
+        this.postId = postId;
     }
 
     public long getTime() {
@@ -67,11 +67,11 @@ public class TransactionDetails {
         this.walletBalance = walletBalance;
     }
 
-    public String getPostId() {
-        return postId;
+    public String getTransactionId() {
+        return transactionId;
     }
 
-    public void setPostId(String postId) {
-        this.postId = postId;
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
     }
 }

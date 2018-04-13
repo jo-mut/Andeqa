@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -199,7 +198,7 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
 
                 if (documentSnapshot.exists()){
                     final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
-                    final String uid = collectionPost.getUid();
+                    final String uid = collectionPost.getUserId();
                     final String title = collectionPost.getTitle();
                     final String image = collectionPost.getImage();
 
@@ -362,8 +361,8 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
                                                                                                                 //set transaction details
                                                                                                                 final TransactionDetails transactionDetails = new TransactionDetails();
                                                                                                                 transactionDetails.setAmount(amountTransferred);
-                                                                                                                transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                                                                transactionDetails.setPushId(mPostKey);
+                                                                                                                transactionDetails.setUserId(firebaseAuth.getCurrentUser().getUid());
+                                                                                                                transactionDetails.setPostId(mPostKey);
                                                                                                                 transactionDetails.setTime(timeStamp);
                                                                                                                 transactionDetails.setWalletBalance(newBalance);
                                                                                                                 transactionDetails.setType("redeem");
@@ -371,7 +370,7 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
                                                                                                                 DocumentReference ref = transactionReference.document();
                                                                                                                 String postId = ref.getId();
                                                                                                                 //set the push id
-                                                                                                                transactionDetails.setPostId(postId);
+                                                                                                                transactionDetails.setTransactionId(postId);
                                                                                                                 ref.set(transactionDetails);
 
                                                                                                                 Balance newWalletBalance = new Balance();
@@ -390,8 +389,8 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
                                                                                                                 //set transaction details
                                                                                                                 final TransactionDetails transactionDetails = new TransactionDetails();
                                                                                                                 transactionDetails.setAmount(amountTransferred);
-                                                                                                                transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                                                                transactionDetails.setPushId(mPostKey);
+                                                                                                                transactionDetails.setUserId(firebaseAuth.getCurrentUser().getUid());
+                                                                                                                transactionDetails.setPostId(mPostKey);
                                                                                                                 transactionDetails.setTime(timeStamp);
                                                                                                                 transactionDetails.setWalletBalance(amountTransferred);
                                                                                                                 transactionDetails.setType("redeem");
@@ -400,7 +399,7 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
                                                                                                                 DocumentReference ref = transactionReference.document();
                                                                                                                 String postId = ref.getId();
                                                                                                                 //set the push id
-                                                                                                                transactionDetails.setPostId(postId);
+                                                                                                                transactionDetails.setTransactionId(postId);
                                                                                                                 ref.set(transactionDetails);
 
                                                                                                                 Balance newWalletBalance = new Balance();
@@ -445,8 +444,8 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
                                                                                                                 //set transaction details
                                                                                                                 final TransactionDetails transactionDetails = new TransactionDetails();
                                                                                                                 transactionDetails.setAmount(amountTransferred);
-                                                                                                                transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                                                                transactionDetails.setPushId(mPostKey);
+                                                                                                                transactionDetails.setUserId(firebaseAuth.getCurrentUser().getUid());
+                                                                                                                transactionDetails.setPostId(mPostKey);
                                                                                                                 transactionDetails.setTime(timeStamp);
                                                                                                                 transactionDetails.setWalletBalance(newBalance);
                                                                                                                 transactionDetails.setType("redeem");
@@ -455,7 +454,7 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
                                                                                                                 DocumentReference ref = transactionReference.document();
                                                                                                                 String postId = ref.getId();
                                                                                                                 //set the push id
-                                                                                                                transactionDetails.setPostId(postId);
+                                                                                                                transactionDetails.setTransactionId(postId);
                                                                                                                 ref.set(transactionDetails);
 
                                                                                                                 walletReference.document(firebaseAuth.getCurrentUser().getUid())
@@ -472,8 +471,8 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
                                                                                                                 //set transaction details
                                                                                                                 final TransactionDetails transactionDetails = new TransactionDetails();
                                                                                                                 transactionDetails.setAmount(amountTransferred);
-                                                                                                                transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                                                                transactionDetails.setPushId(mPostKey);
+                                                                                                                transactionDetails.setUserId(firebaseAuth.getCurrentUser().getUid());
+                                                                                                                transactionDetails.setPostId(mPostKey);
                                                                                                                 transactionDetails.setTime(timeStamp);
                                                                                                                 transactionDetails.setWalletBalance(amountTransferred);
                                                                                                                 transactionDetails.setType("redeem");
@@ -482,7 +481,7 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
                                                                                                                 DocumentReference ref = transactionReference.document();
                                                                                                                 String postId = ref.getId();
                                                                                                                 //set the push id
-                                                                                                                transactionDetails.setPostId(postId);
+                                                                                                                transactionDetails.setTransactionId(postId);
                                                                                                                 ref.set(transactionDetails);
 
                                                                                                                 final Balance newWalletBalance = new Balance();

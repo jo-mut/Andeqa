@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
@@ -16,8 +15,6 @@ import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.profile.ProfileActivity;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -27,7 +24,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
@@ -89,8 +85,7 @@ public class LikesAdapter extends RecyclerView.Adapter<LikesViewHolder> {
     @Override
     public void onBindViewHolder(final LikesViewHolder holder, int position) {
         Like like = getSnapshot(position).toObject(Like.class);
-        final String postKey = like.getPushId();
-        final String uid = like.getUid();
+        final String uid = like.getUserId();
 
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
@@ -163,7 +158,7 @@ public class LikesAdapter extends RecyclerView.Adapter<LikesViewHolder> {
         });
 
         relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
-                .whereEqualTo("uid", uid).addSnapshotListener(new EventListener<QuerySnapshot>() {
+                .whereEqualTo("userId", uid).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -188,7 +183,7 @@ public class LikesAdapter extends RecyclerView.Adapter<LikesViewHolder> {
                 public void onClick(View view) {
                     processFollow = true;
                     relationsReference.document("followers")
-                            .collection(uid).whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+                            .collection(uid).whereEqualTo("userId", firebaseAuth.getCurrentUser().getUid())
                             .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                 @Override
                                 public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -203,7 +198,7 @@ public class LikesAdapter extends RecyclerView.Adapter<LikesViewHolder> {
                                         if (documentSnapshots.isEmpty()){
                                             //set followers and following
                                             Relation follower = new Relation();
-                                            follower.setUid(firebaseAuth.getCurrentUser().getUid());
+                                            follower.setUserId(firebaseAuth.getCurrentUser().getUid());
                                             relationsReference.document("followers").collection(uid)
                                                     .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -214,19 +209,19 @@ public class LikesAdapter extends RecyclerView.Adapter<LikesViewHolder> {
 
                                                             final String postId = databaseReference.push().getKey();
 
-                                                            timeline.setPostId(postId);
+                                                            timeline.setActivityId(postId);
                                                             timeline.setTime(time);
-                                                            timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                            timeline.setUserId(firebaseAuth.getCurrentUser().getUid());
                                                             timeline.setType("followers");
-                                                            timeline.setPushId(uid);
+                                                            timeline.setPostId(uid);
                                                             timeline.setStatus("unRead");
-                                                            timelineCollection.document(uid).collection("timeline")
+                                                            timelineCollection.document(uid).collection("activities")
                                                                     .document(firebaseAuth.getCurrentUser().getUid())
                                                                     .set(timeline);
                                                         }
                                                     });
                                             final Relation following = new Relation();
-                                            following.setUid(uid);
+                                            following.setUserId(uid);
                                             relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
                                                     .document(uid).set(following);
                                             processFollow = false;

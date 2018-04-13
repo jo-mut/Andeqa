@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -145,7 +144,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
 
                 if (documentSnapshot.exists()){
                     final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
-                    final String uid = collectionPost.getUid();
+                    final String uid = collectionPost.getUserId();
                     final String title = collectionPost.getTitle();
                     final String image = collectionPost.getImage();
 
@@ -287,12 +286,11 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                                     }else {
                                         //SET CINGLE ON SALE IN SELLING
                                         final Market market =  new Market();
-                                        market.setUid(firebaseAuth.getCurrentUser().getUid());
-                                        market.setPushId(mPostKey);
+                                        market.setUserId(firebaseAuth.getCurrentUser().getUid());
+                                        market.setPostId(mPostKey);
                                         market.setSalePrice(intSalePrice);
                                         market.setRandomNumber((double) new Random().nextDouble());
                                         market.setTime(timeStamp);
-
 
                                         selllingCollection.document(mPostKey).set(market).addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override

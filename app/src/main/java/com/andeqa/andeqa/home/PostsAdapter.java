@@ -85,7 +85,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
     private static final int LIMIT = 10;
     //firestore reference
     private FirebaseFirestore firebaseFirestore;
-    private CollectionReference postsCollection;
+    private CollectionReference collectionsPosts;
     private CollectionReference ifairReference;
     private com.google.firebase.firestore.Query commentsCountQuery;
     private CollectionReference postOwnersCollection;
@@ -122,11 +122,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
         return super.getItemId(position);
     }
 
-    protected void clearSnapshots(){
-        documentSnapshots.clear();
-        notifyDataSetChanged();
-    }
-
 
     protected DocumentSnapshot getSnapshot(int index) {
         return documentSnapshots.get(index);
@@ -147,20 +142,20 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
     @Override
     public void onBindViewHolder(final PostViewHolder holder, int position) {
         final Post post = getSnapshot(position).toObject(Post.class);
-        final String postKey = post.getPushId();
-        final String uid = post.getUid();
+        final String postId = post.getPostId();
+        final String uid = post.getUserId();
         final String collectionId = post.getCollectionId();
 
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser()!= null){
             //firestore
-            postsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
                     .document("collections").collection(collectionId);
             postOwnersCollection = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             ifairReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS)
-                    .document("post_ids").collection(postKey);
+                    .document("post_ids").collection(postId);
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
@@ -173,7 +168,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
 
         }
 
-        postsCollection.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        collectionsPosts.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -233,7 +228,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, LikesActivity.class);
-                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postKey);
+                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postId);
                 mContext.startActivity(intent);
             }
         });
@@ -242,7 +237,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
             @Override
             public void onClick(View view) {
                 Intent intent =  new Intent(mContext, CommentsActivity.class);
-                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postKey);
+                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postId);
                 intent.putExtra(PostsAdapter.COLLECTION_ID, collectionId);
                 mContext.startActivity(intent);
             }
@@ -252,7 +247,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, ImageViewActivity.class);
-                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postKey);
+                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postId);
                 intent.putExtra(PostsAdapter.COLLECTION_ID, collectionId);
                 mContext.startActivity(intent);
             }
@@ -262,7 +257,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
             @Override
             public void onClick(View view) {
                 Intent intent =  new Intent(mContext, PostDetailActivity.class);
-                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postKey);
+                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postId);
                 intent.putExtra(PostsAdapter.COLLECTION_ID, collectionId);
                 mContext.startActivity(intent);
             }
@@ -272,7 +267,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
-                bundle.putString(PostsAdapter.EXTRA_POST_ID, postKey);
+                bundle.putString(PostsAdapter.EXTRA_POST_ID, postId);
                 bundle.putString(PostsAdapter.COLLECTION_ID, collectionId);
                 FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
                 DialogFragmentPostSettings dialogFragmentPostSettings = DialogFragmentPostSettings.newInstance("single settngs");
@@ -291,7 +286,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
         });
 
 
-        senseCreditReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        senseCreditReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -352,7 +347,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
             }
         });
 
-        postOwnersCollection.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        postOwnersCollection.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -362,7 +357,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
 
                 if (documentSnapshot.exists()){
                     TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
-                    final String ownerUid = transactionDetails.getUid();
+                    final String ownerUid = transactionDetails.getUserId();
                     Log.d("owner uid", ownerUid);
 
                     if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
@@ -375,7 +370,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
         });
 
         //get the number of commments in a single
-        commentsCountQuery.orderBy("postId").whereEqualTo("pushId", postKey)
+        commentsCountQuery.orderBy("commentId").whereEqualTo("postId", postId)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -396,7 +391,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
 
 
         //check if single is listed on the marketplace
-        ifairReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        ifairReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -416,8 +411,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
         });
 
         //color the like image view if the user has liked
-        likesReference.document(postKey).collection("likes")
-                .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+        likesReference.document(postId).collection("likes")
+                .whereEqualTo("userId", firebaseAuth.getCurrentUser().getUid())
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -439,7 +434,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                 });
 
         //get the count of likes after the top 5
-        likesReference.document(postKey).collection("likes").orderBy("uid").startAt(6)
+        likesReference.document(postId).collection("likes").orderBy("userId").startAt(6)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -462,8 +457,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                 });
 
 //        color the like image view if the user has dislikes
-        likesReference.document(postKey).collection("dislikes")
-                .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+        likesReference.document(postId).collection("dislikes")
+                .whereEqualTo("userId", firebaseAuth.getCurrentUser().getUid())
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -484,7 +479,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
 
 
         //calculate the percentage of likes to dislikes
-        likesReference.document(postKey).collection("dislikes")
+        likesReference.document(postId).collection("dislikes")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot dislikesSnapshots, FirebaseFirestoreException e) {
@@ -496,7 +491,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                         if (!dislikesSnapshots.isEmpty()){
                             final int dislikes = dislikesSnapshots.size();
                             Log.d("dislikes count", dislikes + "");
-                            likesReference.document(postKey).collection("likes")
+                            likesReference.document(postId).collection("likes")
                                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                         @Override
                                         public void onEvent(QuerySnapshot likesSnapshots, FirebaseFirestoreException e) {
@@ -524,7 +519,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                         }else {
                             final int dislikes = dislikesSnapshots.size();
                             Log.d("dislikes count", dislikes + "");
-                            likesReference.document(postKey).collection("likes")
+                            likesReference.document(postId).collection("likes")
                                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                         @Override
                                         public void onEvent(QuerySnapshot likesSnapshots, FirebaseFirestoreException e) {
@@ -555,7 +550,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                 });
 
         //calculate the percentage of likes to dislikes
-        likesReference.document(postKey).collection("likes")
+        likesReference.document(postId).collection("likes")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot likesSnapshots, FirebaseFirestoreException e) {
@@ -567,7 +562,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                         if (!likesSnapshots.isEmpty()){
                             final int likes = likesSnapshots.size();
                             Log.d("likes count size", likes + "");
-                            likesReference.document(postKey).collection("dislikes")
+                            likesReference.document(postId).collection("dislikes")
                                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                         @Override
                                         public void onEvent(QuerySnapshot dislikesSnapshots, FirebaseFirestoreException e) {
@@ -602,7 +597,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                         }else {
                             final int likes = likesSnapshots.size();
                             Log.d("likes count size", likes + "");
-                            likesReference.document(postKey).collection("dislikes")
+                            likesReference.document(postId).collection("dislikes")
                                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                         @Override
                                         public void onEvent(QuerySnapshot dislikesSnapshots, FirebaseFirestoreException e) {
@@ -633,7 +628,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                 });
 
 
-        likesReference.document(postKey).collection("likes")
+        likesReference.document(postId).collection("likes")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(final QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -645,7 +640,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
 
                         if (!documentSnapshots.isEmpty()){
                             if (documentSnapshots.size() > 0){
-                                likesQuery = likesReference.document(postKey).collection("likes").orderBy("uid").limit(5);
+                                likesQuery = likesReference.document(postId).collection("likes").orderBy("userId").limit(5);
                                 FirestoreRecyclerOptions<Like> options = new FirestoreRecyclerOptions.Builder<Like>()
                                         .setQuery(likesQuery, Like.class)
                                         .build();
@@ -655,13 +650,13 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                                     @Override
                                     protected void onBindViewHolder(final WhoLikedViewHolder viewHolder, int position, Like model) {
                                         Like like = getSnapshots().getSnapshot(viewHolder.getAdapterPosition()).toObject(Like.class);
-                                        final String uid = like.getUid();
+                                        final String uid = like.getUserId();
 
                                         viewHolder.whoLikedImageView.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View view) {
                                                 Intent intent = new Intent(mContext, LikesActivity.class);
-                                                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postKey);
+                                                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postId);
                                                 mContext.startActivity(intent);
                                             }
                                         });
@@ -749,8 +744,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
             @Override
             public void onClick(View view) {
                 processDislikes = true;
-                likesReference.document(postKey).collection("dislikes")
-                        .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+                likesReference.document(postId).collection("dislikes")
+                        .whereEqualTo("userId", firebaseAuth.getCurrentUser().getUid())
                         .addSnapshotListener(new EventListener<QuerySnapshot>() {
                             @Override
                             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -764,15 +759,14 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                                 if (processDislikes){
                                     if (documentSnapshots.isEmpty()){
                                         Like like = new Like();
-                                        like.setUid(firebaseAuth.getCurrentUser().getUid());
-                                        like.setPushId(firebaseAuth.getCurrentUser().getUid());
-                                        likesReference.document(postKey).collection("dislikes")
+                                        like.setUserId(firebaseAuth.getCurrentUser().getUid());
+                                        likesReference.document(postId).collection("dislikes")
                                                 .document(firebaseAuth.getCurrentUser().getUid()).set(like);
                                         processDislikes = false;
                                         holder.dislikeImageView.setColorFilter(Color.RED);
 
                                     }else {
-                                        likesReference.document(postKey).collection("dislikes")
+                                        likesReference.document(postId).collection("dislikes")
                                                 .document(firebaseAuth.getCurrentUser().getUid()).delete();
                                         processDislikes = false;
                                         holder.dislikeImageView.setColorFilter(Color.BLACK);
@@ -790,8 +784,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
             @Override
             public void onClick(View view) {
                 processLikes = true;
-                likesReference.document(postKey).collection("likes")
-                        .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+
+                likesReference.document(postId).collection("likes")
+                        .whereEqualTo("userId", firebaseAuth.getCurrentUser().getUid())
                         .addSnapshotListener(new EventListener<QuerySnapshot>() {
                             @Override
                             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -805,9 +800,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                                 if (processLikes){
                                     if (documentSnapshots.isEmpty()){
                                         final Like like = new Like();
-                                        like.setUid(firebaseAuth.getCurrentUser().getUid());
-                                        like.setPushId(firebaseAuth.getCurrentUser().getUid());
-                                        likesReference.document(postKey).collection("likes")
+                                        like.setUserId(firebaseAuth.getCurrentUser().getUid());
+                                        likesReference.document(postId).collection("likes")
                                                 .document(firebaseAuth.getCurrentUser().getUid()).set(like)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
@@ -816,7 +810,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                                                         final long time = new Date().getTime();
 
                                                         timelineCollection.document(uid).collection("timeline")
-                                                                .whereEqualTo("postKey", postKey)
+                                                                .whereEqualTo("postId", postId)
                                                                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                                                     @Override
                                                                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -828,21 +822,20 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
 
 
                                                                         if (documentSnapshots.isEmpty()){
-                                                                            Log.d("timeline is empty", postKey);
-                                                                            final String postId = databaseReference.push().getKey();
-                                                                            timeline.setPushId(postKey);
-                                                                            timeline.setTime(time);
-                                                                            timeline.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                            timeline.setType("like");
+                                                                            Log.d("timeline is empty", postId);
+                                                                            final String activityId = databaseReference.push().getKey();
                                                                             timeline.setPostId(postId);
+                                                                            timeline.setTime(time);
+                                                                            timeline.setUserId(firebaseAuth.getCurrentUser().getUid());
+                                                                            timeline.setType("like");
+                                                                            timeline.setActivityId(activityId);
                                                                             timeline.setStatus("unRead");
 
                                                                             if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
                                                                                 //do nothing
                                                                             }else {
-                                                                                timelineCollection.document(uid).collection("timeline")
-                                                                                        .document(postId)
-                                                                                        .set(timeline);
+                                                                                timelineCollection.document(uid).collection("activities")
+                                                                                        .document(postId).set(timeline);
                                                                             }
                                                                         }
                                                                     }
@@ -855,7 +848,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                                         holder.likesImageView.setColorFilter(Color.RED);
 
                                     }else {
-                                        likesReference.document(postKey).collection("likes")
+                                        likesReference.document(postId).collection("likes")
                                                 .document(firebaseAuth.getCurrentUser().getUid()).delete();
                                         processLikes = false;
                                         holder.likesImageView.setColorFilter(Color.BLACK);
@@ -863,7 +856,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                                     }
                                 }
 
-                                likesReference.document(postKey).collection("likes")
+                                likesReference.document(postId).collection("likes")
                                         .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                             @Override
                                             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -895,7 +888,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
 
                                                         Log.d("finalpoints > 0", finalPoints + "");
 
-                                                        postWalletReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                                        postWalletReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                                             @Override
                                                             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                                                                 if (e != null) {
@@ -915,13 +908,13 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                                                                     final double totalSenseCredits = senseCredits - amountRedeemed;
                                                                     Log.d("total sense credit", totalSenseCredits + "");
 
-                                                                    senseCreditReference.document(postKey).update("amount", totalSenseCredits);
+                                                                    senseCreditReference.document(postId).update("amount", totalSenseCredits);
                                                                 }else {
                                                                     Credit credit = new Credit();
-                                                                    credit.setPushId(postKey);
+                                                                    credit.setPostId(postId);
                                                                     credit.setAmount(finalPoints);
-                                                                    credit.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                    senseCreditReference.document(postKey).set(credit);
+                                                                    credit.setUserId(firebaseAuth.getCurrentUser().getUid());
+                                                                    senseCreditReference.document(postId).set(credit);
                                                                     Log.d("new sense credits", finalPoints + "");
                                                                 }
                                                             }
@@ -931,7 +924,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                                                 }else {
                                                     final double finalPoints = 0.00;
                                                     Log.d("finalpoints <= 0", finalPoints + "");
-                                                    postWalletReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                                    postWalletReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                                         @Override
                                                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                                                             if (e != null) {
@@ -950,13 +943,13 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                                                                 final double totalSenseCredits = senseCredits - amountRedeemed;
                                                                 Log.d("total sense credit", totalSenseCredits + "");
 
-                                                                senseCreditReference.document(postKey).update("amount", totalSenseCredits);
+                                                                senseCreditReference.document(postId).update("amount", totalSenseCredits);
                                                             }else {
                                                                 Credit credit = new Credit();
-                                                                credit.setPushId(postKey);
+                                                                credit.setPostId(postId);
                                                                 credit.setAmount(finalPoints);
-                                                                credit.setUid(firebaseAuth.getCurrentUser().getUid());
-                                                                senseCreditReference.document(postKey).set(credit);
+                                                                credit.setUserId(firebaseAuth.getCurrentUser().getUid());
+                                                                senseCreditReference.document(postId).set(credit);
                                                             }
                                                         }
                                                     });

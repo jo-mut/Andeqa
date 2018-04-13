@@ -5,9 +5,8 @@ package com.andeqa.andeqa.models;
  */
 
 public class Market {
-    String pushId;
-    String uid;
-    String datePosted;
+    String postId;
+    String userId;
     long time;
     double randomNumber;
     double salePrice;
@@ -17,40 +16,21 @@ public class Market {
 
     }
 
-    public Market(String pushId, String uid, String datePosted,
-                  long time, double randomNumber, double
-                              salePrice, long number) {
-        this.pushId = pushId;
-        this.uid = uid;
-        this.datePosted = datePosted;
-        this.time = time;
-        this.randomNumber = randomNumber;
-        this.salePrice = salePrice;
-        this.number = number;
+
+    public String getPostId() {
+        return postId;
     }
 
-    public String getPushId() {
-        return pushId;
+    public void setPostId(String postId) {
+        this.postId = postId;
     }
 
-    public void setPushId(String pushId) {
-        this.pushId = pushId;
+    public String getUserId() {
+        return userId;
     }
 
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
-    public String getDatePosted() {
-        return datePosted;
-    }
-
-    public void setDatePosted(String datePosted) {
-        this.datePosted = datePosted;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public long getTime() {

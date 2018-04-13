@@ -15,7 +15,6 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -203,8 +202,8 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                     final long timeStamp = new Date().getTime();
                     //set the single ownership
                     TransactionDetails transactionDetails = new TransactionDetails();
-                    transactionDetails.setPushId(collectionId);
-                    transactionDetails.setUid(firebaseAuth.getCurrentUser().getUid());
+                    transactionDetails.setPostId(collectionId);
+                    transactionDetails.setUserId(firebaseAuth.getCurrentUser().getUid());
                     transactionDetails.setTime(timeStamp);
                     transactionDetails.setType("owner");
                     transactionDetails.setAmount(0.0);
@@ -234,7 +233,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                                         collection.setName(mCollectionNameEditText.getText().toString().trim());
                                         collection.setNote(mCollectionNoteEditText.getText().toString().trim());
                                         collection.setNumber(count + 1);
-                                        collection.setUid(firebaseAuth.getCurrentUser().getUid());
+                                        collection.setUserId(firebaseAuth.getCurrentUser().getUid());
                                         collection.setCollectionId(collectionId);
                                         collection.setTime(timeStamp);
                                         collection.setImage(downloadUrl.toString());
@@ -243,12 +242,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                                         mCollectionNameEditText.setText("");
                                         mCollectionNoteEditText.setText("");
 
-                                        Intent intent = new Intent(CreateCollectionActivity.this, CollectionsPostsActivity.class);
-                                        intent.putExtra(CreateCollectionActivity.COLLECTION_ID, collectionId);
-                                        intent.putExtra(CreateCollectionActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
-                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                        startActivity(intent);
-                                        finish();
+
                                     }
                                 });
                             }
@@ -266,6 +260,13 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                                 if (progress == 100.0){
                                     progressDialog.dismiss();
                                     //reset input fields
+
+                                    Intent intent = new Intent(CreateCollectionActivity.this, CollectionsPostsActivity.class);
+                                    intent.putExtra(CreateCollectionActivity.COLLECTION_ID, collectionId);
+                                    intent.putExtra(CreateCollectionActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+                                    finish();
                                 }
                             }
                         });
@@ -277,7 +278,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                         collection.setName(mCollectionNameEditText.getText().toString().trim());
                         collection.setNote(mCollectionNoteEditText.getText().toString().trim());
                         collection.setNumber(count + 1);
-                        collection.setUid(firebaseAuth.getCurrentUser().getUid());
+                        collection.setUserId(firebaseAuth.getCurrentUser().getUid());
                         collection.setCollectionId(collectionId);
                         collection.setTime(timeStamp);
                         collectionCollection.document(collectionId).set(collection);

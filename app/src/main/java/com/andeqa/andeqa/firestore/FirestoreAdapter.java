@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
-import com.andeqa.andeqa.models.Single;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -25,7 +24,6 @@ public abstract class FirestoreAdapter <VH extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<VH>
         implements EventListener<QuerySnapshot> {
     private static final String TAG = "FirestoreAdapter";
-    private List<Single> singles = new ArrayList<>();
 
     private Query mQuery;
     private Context mContext;

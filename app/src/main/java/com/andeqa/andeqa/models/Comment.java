@@ -5,22 +5,22 @@ package com.andeqa.andeqa.models;
  */
 
 public class Comment {
-    String uid;
+    String userId;
     String commentText;
-    String pushId;
     String postId;
+    String commentId;
     long time;
 
     public Comment() {
     }
 
 
-    public String getUid() {
-        return uid;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getCommentText() {
@@ -31,20 +31,20 @@ public class Comment {
         this.commentText = commentText;
     }
 
-    public String getPushId() {
-        return pushId;
-    }
-
-    public void setPushId(String pushId) {
-        this.pushId = pushId;
-    }
-
     public String getPostId() {
         return postId;
     }
 
     public void setPostId(String postId) {
         this.postId = postId;
+    }
+
+    public String getCommentId() {
+        return commentId;
+    }
+
+    public void setCommentId(String commentId) {
+        this.commentId = commentId;
     }
 
     public long getTime() {

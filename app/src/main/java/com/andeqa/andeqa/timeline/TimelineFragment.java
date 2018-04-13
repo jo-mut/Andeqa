@@ -55,8 +55,6 @@ public class TimelineFragment extends Fragment implements SwipeRefreshLayout.OnR
     private List<String> activitiesIds = new ArrayList<>();
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
 
-
-
     public TimelineFragment() {
         // Required empty public constructor
     }

@@ -2,7 +2,6 @@ package com.andeqa.andeqa.home;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -22,11 +21,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -39,7 +36,6 @@ import com.andeqa.andeqa.likes.LikesActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Balance;
 import com.andeqa.andeqa.models.CollectionPost;
-import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.models.Market;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Like;
@@ -107,7 +103,6 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     @Bind(R.id.salePriceProgressbar)ProgressBar mSalePriceProgressBar;
     @Bind(R.id.postSenseCreditsTextView)TextView mPoseSenseCreditsTextView;
     @Bind(R.id.postSalePriceRelativeLayout)RelativeLayout mPostSalePriceRelativeLayout;
-
 
     //firestore reference
     private FirebaseFirestore firebaseFirestore;
@@ -238,7 +233,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         });
 
         //get the number of commments in a cingle
-        commentsCountQuery.orderBy("postId").whereEqualTo("pushId", mPostId)
+        commentsCountQuery.orderBy("commentId").whereEqualTo("pushId", mPostId)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -269,7 +264,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                 if (documentSnapshot.exists()){
                     final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
                     final String image = collectionPost.getImage();
-                    final String uid = collectionPost.getUid();
+                    final String uid = collectionPost.getUserId();
                     final String title = collectionPost.getTitle();
 
                     //LAUCNH PROFILE IF ITS NOT DELETED ELSE CATCH THE EXCEPTION
@@ -405,7 +400,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
                             if (documentSnapshot.exists()){
                                 TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
-                                final String ownerUid = transactionDetails.getUid();
+                                final String ownerUid = transactionDetails.getUserId();
                                 Log.d("owner uid", ownerUid);
 
                                 if (documentSnapshot.exists()){
@@ -426,7 +421,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
 
         likesReference.document(mPostId).collection("likes")
-                .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+                .whereEqualTo("userId", firebaseAuth.getCurrentUser().getUid())
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -635,8 +630,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                 if (processDislikes){
                                     if (documentSnapshots.isEmpty()){
                                         Like like = new Like();
-                                        like.setUid(firebaseAuth.getCurrentUser().getUid());
-                                        like.setPushId(firebaseAuth.getCurrentUser().getUid());
+                                        like.setUserId(firebaseAuth.getCurrentUser().getUid());
                                         likesReference.document(mPostId).collection("dislikes")
                                                 .document(firebaseAuth.getCurrentUser().getUid()).set(like);
                                         processDislikes = false;
@@ -680,7 +674,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                             protected void onBindViewHolder(final WhoLikedViewHolder holder, int position, Like model) {
                                 holder.bindWhoLiked(getSnapshots().getSnapshot(position));
                                 Like like = getSnapshots().getSnapshot(position).toObject(Like.class);
-                                final String uid = like.getUid();
+                                final String uid = like.getUserId();
 
                                 holder.whoLikedImageView.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -802,7 +796,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
                 if (documentSnapshot.exists()) {
                     TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
-                    final String ownerUid = transactionDetails.getUid();
+                    final String ownerUid = transactionDetails.getUserId();
 
                     usersReference.document(ownerUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
@@ -898,7 +892,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         }
 
         if (v == mLikesImageView){
-            displayPopupWindow(v);
+//            displayPopupWindow(v);
             mLikesImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -918,8 +912,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                     if (processLikes){
                                         if (documentSnapshots.isEmpty()){
                                             Like like = new Like();
-                                            like.setUid(firebaseAuth.getCurrentUser().getUid());
-                                            like.setPushId(firebaseAuth.getCurrentUser().getUid());
+                                            like.setUserId(firebaseAuth.getCurrentUser().getUid());
                                             likesReference.document(mPostId).collection("likes")
                                                     .document(firebaseAuth.getCurrentUser().getUid()).set(like)
                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -936,8 +929,8 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
 
                                                             if (documentSnapshot.exists()){
-                                                                Single single = documentSnapshot.toObject(Single.class);
-                                                                final String uid = single.getUid();
+                                                                CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                                                                final String uid = collectionPost.getUserId();
 
                                                                 final Timeline timeline = new Timeline();
                                                                 final long time = new Date().getTime();
@@ -957,17 +950,17 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
                                                                                 if (documentSnapshots.isEmpty()){
                                                                                     final String postId = databaseReference.push().getKey();
-                                                                                    timeline.setPushId(mPostId);
+                                                                                    timeline.setPostId(mPostId);
                                                                                     timeline.setTime(time);
-                                                                                    timeline.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                                    timeline.setUserId(firebaseAuth.getCurrentUser().getUid());
                                                                                     timeline.setType("like");
-                                                                                    timeline.setPostId(postId);
+                                                                                    timeline.setActivityId(postId);
                                                                                     timeline.setStatus("unRead");
 
                                                                                     if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
                                                                                         //do nothing
                                                                                     }else {
-                                                                                        timelineCollection.document(uid).collection("timeline")
+                                                                                        timelineCollection.document(uid).collection("activities")
                                                                                                 .document(postId)
                                                                                                 .set(timeline);
                                                                                     }
@@ -1048,9 +1041,9 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                                                         senseCreditReference.document(mPostId).update("amount", totalSenseCredits);
                                                                     }else {
                                                                         Credit credit = new Credit();
-                                                                        credit.setPushId(mPostId);
+                                                                        credit.setPostId(mPostId);
                                                                         credit.setAmount(finalPoints);
-                                                                        credit.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                        credit.setUserId(firebaseAuth.getCurrentUser().getUid());
                                                                         senseCreditReference.document(mPostId).set(credit);
                                                                         Log.d("new sense credits", finalPoints + "");
                                                                     }
@@ -1084,9 +1077,9 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                                                     senseCreditReference.document(mPostId).update("amount", totalSenseCredits);
                                                                 }else {
                                                                     Credit credit = new Credit();
-                                                                    credit.setPushId(mPostId);
+                                                                    credit.setPostId(mPostId);
                                                                     credit.setAmount(finalPoints);
-                                                                    credit.setUid(firebaseAuth.getCurrentUser().getUid());
+                                                                    credit.setUserId(firebaseAuth.getCurrentUser().getUid());
                                                                     senseCreditReference.document(mPostId).set(credit);
                                                                 }
                                                             }
@@ -1116,7 +1109,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                 if (documentSnapshot.exists()){
 
                     TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
-                    final String ownerUid = transactionDetails.getUid();
+                    final String ownerUid = transactionDetails.getUserId();
 
                     if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
                         mEditSalePriceImageView.setVisibility(View.VISIBLE);
@@ -1221,24 +1214,24 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         return bd.intValue();
     }
 
-    private void displayPopupWindow(View anchorView) {
-        PopupWindow popup = new PopupWindow(PostDetailActivity.this);
-        View layout = getLayoutInflater().inflate(R.layout.popup_layout, null);
-
-        TextView textView = (TextView) layout.findViewById(R.id.popupTextView);
-        textView.setText("Like this post");
-
-        popup.setContentView(layout);
-        // Set content width and height
-        popup.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-        popup.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
-        // Closes the popup window when touch outside of it - when looses focus
-        popup.setOutsideTouchable(true);
-        popup.setFocusable(true);
-        // Show anchored to button
-        popup.setBackgroundDrawable(new BitmapDrawable());
-        popup.showAsDropDown(anchorView);
-    }
+//    private void displayPopupWindow(View anchorView) {
+//        PopupWindow popup = new PopupWindow(PostDetailActivity.this);
+//        View layout = getLayoutInflater().inflate(R.layout.popup_layout, null);
+//
+//        TextView textView = (TextView) layout.findViewById(R.id.popupTextView);
+//        textView.setText("Like this post");
+//
+//        popup.setContentView(layout);
+//        // Set content width and height
+//        popup.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+//        popup.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+//        // Closes the popup window when touch outside of it - when looses focus
+//        popup.setOutsideTouchable(true);
+//        popup.setFocusable(true);
+//        // Show anchored to button
+//        popup.setBackgroundDrawable(new BitmapDrawable());
+//        popup.showAsDropDown(anchorView);
+//    }
 
     private void addReadMore(final String text, final TextView textView) {
 

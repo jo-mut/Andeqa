@@ -30,7 +30,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -236,14 +235,11 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
         cinggulan.setFirstName(firstName);
         cinggulan.setSecondName(secondName);
         cinggulan.setUsername(username);
-        cinggulan.setUid(uid);
+        cinggulan.setUserId(uid);
         cinggulan.setEmail(email);
-
-        DocumentReference pushRef = usersReference.document(uid);
-        String pushId = pushRef.getId();
-        cinggulan.setPushId(pushId);
         createProfileProgressDialog.dismiss();
-        pushRef.set(cinggulan).addOnSuccessListener(new OnSuccessListener<Void>() {
+        usersReference.document(uid).set(cinggulan)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
 

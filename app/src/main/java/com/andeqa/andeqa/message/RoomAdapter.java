@@ -69,8 +69,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
     @Override
     public void onBindViewHolder(final RoomViewHolder holder, int position) {
         Room room = getSnapshot(position).toObject(Room.class);
-        final String uid = room.getUid();
-        final String postKey = room.getPushId();
+        final String uid = room.getUserId();
         final String lastMessage = room.getMessage();
         final String roomId = room.getRoomId();
         final String status = room.getStatus();
@@ -94,7 +93,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
                 public void onClick(View view) {
                     roomCollection.document("rooms")
                             .collection(firebaseAuth.getCurrentUser().getUid())
-                            .document(postKey).update("status", "read");
+                            .document(uid).update("status", "read");
                     Intent intent = new Intent(mContext, MessagesAccountActivity.class);
                     intent.putExtra(RoomAdapter.EXTRA_ROOM_ID, roomId);
                     intent.putExtra(RoomAdapter.EXTRA_USER_UID, uid);
@@ -118,7 +117,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
         holder.lastMessageTextView.setText(lastMessage);
 
         //postkey is same as uid
-        usersCollection.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        usersCollection.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {

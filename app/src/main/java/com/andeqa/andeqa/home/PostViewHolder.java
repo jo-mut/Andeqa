@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.CollectionPost;
-import com.andeqa.andeqa.models.Single;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.google.firebase.database.DatabaseReference;
 import com.squareup.picasso.Callback;

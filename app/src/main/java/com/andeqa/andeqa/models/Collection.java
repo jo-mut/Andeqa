@@ -10,7 +10,7 @@ public class Collection {
     String name;
     String note;
     String collectionId;
-    String uid;
+    String userId;
     String type;
     String image;
 
@@ -66,12 +66,12 @@ public class Collection {
         this.type = type;
     }
 
-    public String getUid() {
-        return uid;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getImage() {
