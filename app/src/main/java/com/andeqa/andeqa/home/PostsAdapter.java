@@ -809,7 +809,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                                                         final Timeline timeline = new Timeline();
                                                         final long time = new Date().getTime();
 
-                                                        timelineCollection.document(uid).collection("timeline")
+                                                        timelineCollection.document(uid).collection("activities")
                                                                 .whereEqualTo("postId", postId)
                                                                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                                                     @Override

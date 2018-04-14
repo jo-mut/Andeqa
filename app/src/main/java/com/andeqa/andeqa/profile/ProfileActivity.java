@@ -643,7 +643,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                                     timeline.setPostId(mUid);
                                                     timeline.setTime(time);
                                                     timeline.setUserId(firebaseAuth.getCurrentUser().getUid());
-                                                    timeline.setType("followers");
+                                                    timeline.setType("relations");
                                                     timeline.setActivityId(activityId);
                                                     timeline.setStatus("unRead");
 

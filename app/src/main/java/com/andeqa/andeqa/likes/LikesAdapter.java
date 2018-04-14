@@ -212,7 +212,7 @@ public class LikesAdapter extends RecyclerView.Adapter<LikesViewHolder> {
                                                             timeline.setActivityId(postId);
                                                             timeline.setTime(time);
                                                             timeline.setUserId(firebaseAuth.getCurrentUser().getUid());
-                                                            timeline.setType("followers");
+                                                            timeline.setType("relations");
                                                             timeline.setPostId(uid);
                                                             timeline.setStatus("unRead");
                                                             timelineCollection.document(uid).collection("activities")

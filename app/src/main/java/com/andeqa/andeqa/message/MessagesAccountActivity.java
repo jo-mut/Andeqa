@@ -390,7 +390,7 @@ public class MessagesAccountActivity extends AppCompatActivity
                     .collection(firebaseAuth.getCurrentUser().getUid())
                     .document(mUid);
             Room room = new Room();
-            room.setUserId(firebaseAuth.getCurrentUser().getUid());
+            room.setUserId(mUid);
             room.setMessage(text_message);
             room.setTime(time);
             room.setRoomId(roomId);

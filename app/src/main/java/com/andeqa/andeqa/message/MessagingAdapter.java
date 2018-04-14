@@ -35,7 +35,7 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private static final int SEND_TYPE=0;
     private static final int RECEIVE_TYPE=1;
     private FirebaseAuth firebaseAuth;
-    private CollectionReference messagingUsersCollection;
+    private CollectionReference messagesCollection;
     private Query messagingUsersQuery;
     private boolean showOnClick = true;
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
@@ -110,9 +110,8 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     private void populateSend(final MessageSendViewHolder holder, int position){
-        messagingUsersCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
-        messagingUsersCollection.document("room")
-                .collection(firebaseAuth.getCurrentUser().getUid());
+        messagesCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
+        messagesCollection.document("room").collection(firebaseAuth.getCurrentUser().getUid());
         Message message = getSnapshot(position).toObject(Message.class);
         final String pushId = message.getMessageId();
 

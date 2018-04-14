@@ -207,7 +207,7 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
                                                                         timeline.setPostId(uid);
                                                                         timeline.setTime(time);
                                                                         timeline.setUserId(firebaseAuth.getCurrentUser().getUid());
-                                                                        timeline.setType("followers");
+                                                                        timeline.setType("relations");
                                                                         timeline.setActivityId(postid);
                                                                         timeline.setStatus("unRead");
 

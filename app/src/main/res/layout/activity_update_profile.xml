@@ -219,6 +219,8 @@
                             android:paddingBottom="15dp"
                             android:inputType="textMultiLine"
                             android:id="@+id/bioEditText"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
                             android:hint="Bio line"
                             android:freezesText="true"
                             android:textSize="14sp"

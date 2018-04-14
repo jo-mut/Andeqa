@@ -303,7 +303,7 @@
     <color name="blue_grey_500">#607d8b</color>
     <color name="blue_grey_600">#546e7a</color>
     <color name="blue_grey_700">#455a64</color>
-    <color name="blue_grey_800">#37474f</color>
+    <color name="blue_grey_800"> </color>
     <color name="blue_grey_900">#263238</color>
 </resources>
 

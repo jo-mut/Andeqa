@@ -616,7 +616,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             public void onClick(View view) {
                 processDislikes = true;
                 likesReference.document(mPostId).collection("dislikes")
-                        .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+                        .whereEqualTo("userId", firebaseAuth.getCurrentUser().getUid())
                         .addSnapshotListener(new EventListener<QuerySnapshot>() {
                             @Override
                             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -651,7 +651,6 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         });
 
 
-
         likesReference.document(mPostId).collection("likes").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -663,7 +662,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
                 if (!documentSnapshots.isEmpty()){
                     if (documentSnapshots.size() > 0){
-                        likesQuery = likesReference.document(mPostId).collection("likes").orderBy("uid");
+                        likesQuery = likesReference.document(mPostId).collection("likes").orderBy("userId");
                         FirestoreRecyclerOptions<Like> options = new FirestoreRecyclerOptions.Builder<Like>()
                                 .setQuery(likesQuery, Like.class)
                                 .build();
@@ -898,7 +897,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                 public void onClick(View view) {
                     processLikes = true;
                     likesReference.document(mPostId).collection("likes")
-                            .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
+                            .whereEqualTo("userId", firebaseAuth.getCurrentUser().getUid())
                             .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                 @Override
                                 public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -935,9 +934,9 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                                                 final Timeline timeline = new Timeline();
                                                                 final long time = new Date().getTime();
 
-                                                                timelineCollection.document(uid).collection("timeline")
+                                                                timelineCollection.document(uid).collection("activities")
                                                                         .orderBy(firebaseAuth.getCurrentUser().getUid())
-                                                                        .whereEqualTo("postKey", mPostId)
+                                                                        .whereEqualTo("postId", mPostId)
                                                                         .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                                                             @Override
                                                                             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -949,19 +948,19 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
 
                                                                                 if (documentSnapshots.isEmpty()){
-                                                                                    final String postId = databaseReference.push().getKey();
+                                                                                    final String activityId = databaseReference.push().getKey();
                                                                                     timeline.setPostId(mPostId);
                                                                                     timeline.setTime(time);
                                                                                     timeline.setUserId(firebaseAuth.getCurrentUser().getUid());
                                                                                     timeline.setType("like");
-                                                                                    timeline.setActivityId(postId);
+                                                                                    timeline.setActivityId(activityId);
                                                                                     timeline.setStatus("unRead");
 
                                                                                     if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
                                                                                         //do nothing
                                                                                     }else {
                                                                                         timelineCollection.document(uid).collection("activities")
-                                                                                                .document(postId)
+                                                                                                .document(activityId)
                                                                                                 .set(timeline);
                                                                                     }
                                                                                 }

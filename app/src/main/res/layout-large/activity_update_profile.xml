@@ -233,6 +233,8 @@
                             android:textSize="21sp"
                             android:layout_alignParentTop="false"
                             android:layout_width="400dp"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
                             android:layout_toStartOf="@+id/statusCountTextView"
                             android:layout_toLeftOf="@+id/statusCountTextView"
                             android:layout_centerVertical="true" />

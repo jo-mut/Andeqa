@@ -227,7 +227,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
                                                             timeline.setPostId(postId);
                                                             timeline.setTime(time);
                                                             timeline.setUserId(firebaseAuth.getCurrentUser().getUid());
-                                                            timeline.setType("followers");
+                                                            timeline.setType("relations");
                                                             timeline.setActivityId(postId);
                                                             timelineCollection.document(uid).collection("activities")
                                                                     .document(firebaseAuth.getCurrentUser().getUid())

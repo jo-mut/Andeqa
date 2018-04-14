@@ -311,9 +311,9 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                                                                     final Timeline timeline = new Timeline();
                                                                     final long time = new Date().getTime();
 
-                                                                    timelineCollection.document(uid).collection("timeline")
+                                                                    timelineCollection.document(uid).collection("activities")
                                                                             .orderBy(firebaseAuth.getCurrentUser().getUid())
-                                                                            .whereEqualTo("postKey", postKey)
+                                                                            .whereEqualTo("postId", postKey)
                                                                             .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                                                                 @Override
                                                                                 public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -336,7 +336,7 @@ public class OtherPostAdapter extends FirestoreAdapter<OtherPostViewHolder> {
                                                                                         if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
                                                                                             //do nothing
                                                                                         }else {
-                                                                                            timelineCollection.document(uid).collection("timeline")
+                                                                                            timelineCollection.document(uid).collection("activities")
                                                                                                     .document(postId)
                                                                                                     .set(timeline);
                                                                                         }
