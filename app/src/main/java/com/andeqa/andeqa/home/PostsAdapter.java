@@ -59,7 +59,9 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static android.media.CamcorderProfile.get;
 
@@ -103,6 +105,10 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
     private FirebaseAuth firebaseAuth;
     //adapters
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
+
+    //impression tracking
+    private long startTime;
+    private long endTime;
 
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
 
@@ -967,6 +973,37 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
 
 
     }
+
+
+//    @Override
+//    public void onViewAttachedToWindow(PostViewHolder holder) {
+//        super.onViewAttachedToWindow(holder);
+//        startTime = new Date().getTime();
+//    }
+//
+//    @Override
+//    public void onViewDetachedFromWindow(PostViewHolder holder) {
+//        super.onViewDetachedFromWindow(holder);
+//        final int position = holder.getAdapterPosition();
+//        endTime = new Date().getTime();
+//        final long duration = endTime - startTime;
+//
+//        Post post = getSnapshot(position).toObject(Post.class);
+//        final String postId = post.getPostId();
+//
+//
+//        if (duration > 250){
+//            Map<String, Long> trail = new HashMap<>();
+//            trail.put("duration", duration);
+//
+//            CollectionReference reference = FirebaseFirestore.getInstance().collection("Trace");
+//            reference.document(postId).collection("post_traces").add(trail);
+//        }else {
+//            Log.d( postId,"Minimum threshold outstanding");
+//        }
+//
+//    }
+
 
     //region listeners
     private static double roundCredits(double value, int places) {

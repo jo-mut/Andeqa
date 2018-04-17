@@ -66,6 +66,8 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
     }
 
 
+
+
     @Override
     public void onBindViewHolder(final RoomViewHolder holder, int position) {
         Room room = getSnapshot(position).toObject(Room.class);
