@@ -55,7 +55,6 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     @Bind(R.id.bioEditText)EditText mBioEditText;
     @Bind(R.id.fisrtNameEditText)EditText mFirstNameEditText;
     @Bind(R.id.secondNameEditText)EditText mSecondNameEditText;
-//    @Bind(R.id.deleteAccountRelativeLayout)RelativeLayout mDeleteAccountRelativeLayout;
     @Bind(R.id.animator)ViewAnimator viewAnimator;
     @Bind(R.id.profileCoverImageView)ImageView mProfileCoverImageView;
     @Bind(R.id.updateProfilePictureImageButton)ImageButton mUpdateProfilePictureImageButton;
@@ -90,6 +89,14 @@ public class UpdateProfileActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 
@@ -101,20 +108,10 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                     .LengthFilter(DEFAULT_TITLE_LENGTH_LIMIT)});
             textWatchers();
 
-//            mDeleteAccountRelativeLayout.setOnClickListener(this);
             mUpdateProfilePictureImageButton.setOnClickListener(this);
             mUpdateCoverTextView.setOnClickListener(this);
             mDoneEditingImageView.setOnClickListener(this);
         }
-
-
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
 
     }
 
@@ -183,23 +180,6 @@ public class UpdateProfileActivity extends AppCompatActivity implements
             Toast.makeText(UpdateProfileActivity.this, "Successfully updated", Toast.LENGTH_SHORT).show();
         }
 
-//        if (v == mDeleteAccountRelativeLayout){
-//            //delete your account permanently
-//            FragmentManager fragmenManager = getSupportFragmentManager();
-//            DeleteAccountDialog deleteAccountDialog = DeleteAccountDialog.newInstance("create your cingle");
-//            deleteAccountDialog.show(fragmenManager, "new post fragment");
-//
-//
-//            new AlertDialog.Builder(UpdateProfileActivity.this)
-//                    .setTitle("Confirm account deletion")
-//                    .setMessage("You will not be able to sign in once you confirm your account deletion")
-//                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            deleteAccount();
-//                        }
-//                    });
-
-//        }
 
         if (v == mUpdateCoverTextView){
             Intent intent = new Intent();
@@ -339,11 +319,6 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                                             }
                                         });
                                 progressDialog.dismiss();
-                                //restart this activity
-                                overridePendingTransition(0,0);
-                                finish();
-                                overridePendingTransition(0,0);
-                                startActivity(getIntent());
 
                             }
 
@@ -410,11 +385,6 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                                             }
                                         });
                                 progressDialog.dismiss();
-                                //restart this activity
-                                overridePendingTransition(0,0);
-                                finish();
-                                overridePendingTransition(0,0);
-                                startActivity(getIntent());
                             }
 
                         }

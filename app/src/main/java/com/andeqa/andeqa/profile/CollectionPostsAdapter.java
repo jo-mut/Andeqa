@@ -566,8 +566,10 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
 
                         if (!documentSnapshots.isEmpty()){
                             holder.likesImageView.setColorFilter(Color.RED);
+                            holder.likesRelativeLayout.setVisibility(View.VISIBLE);
                         }else {
                             holder.likesImageView.setColorFilter(Color.BLACK);
+                            holder.likesRelativeLayout.setVisibility(View.GONE);
                         }
 
                     }

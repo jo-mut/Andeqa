@@ -435,6 +435,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                             mLikesImageView.setColorFilter(Color.RED);
                         }else {
                             mLikesImageView.setColorFilter(Color.BLACK);
+
                         }
 
                     }

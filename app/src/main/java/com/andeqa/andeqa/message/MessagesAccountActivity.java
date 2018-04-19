@@ -362,7 +362,7 @@ public class MessagesAccountActivity extends AppCompatActivity
                            message.setRecepientUid(mUid);
                            message.setTime(time);
                            message.setMessageId(documentId);
-                           message.setType("Message");
+                           message.setType("Text");
                            message.setRoomId(roomId);
                            documentReference.set(message);
                            processMessage = false;
@@ -374,7 +374,7 @@ public class MessagesAccountActivity extends AppCompatActivity
                            message.setRecepientUid(mUid);
                            message.setTime(time);
                            message.setMessageId(documentId);
-                           message.setType("Message");
+                           message.setType("Text");
                            message.setRoomId(roomId);
                            documentReference.set(message);
                            processMessage = false;
