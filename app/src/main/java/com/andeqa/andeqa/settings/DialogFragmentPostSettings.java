@@ -110,7 +110,7 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
                     .document("collections").collection(mCollectionId);
-            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
+            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.U_CREDITS);
             marketCollections = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             postOnwersCollection = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
 

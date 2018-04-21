@@ -59,9 +59,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static android.media.CamcorderProfile.get;
 
@@ -162,7 +160,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
             ifairReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS)
                     .document("post_ids").collection(postId);
-            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
+            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.U_CREDITS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             //firebase
@@ -304,10 +302,10 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                     Credit credit = documentSnapshot.toObject(Credit.class);
                     final double senseCredits = credit.getAmount();
                     DecimalFormat formatter = new DecimalFormat("0.00000000");
-                    holder.senseCreditsTextView.setText("SC" + " " + formatter.format(senseCredits));
+                    holder.senseCreditsTextView.setText("uC" + " " + formatter.format(senseCredits));
 
                 }else {
-                    holder.senseCreditsTextView.setText("SC 0.00000000");
+                    holder.senseCreditsTextView.setText("uC 0.00000000");
                 }
 
             }
@@ -409,7 +407,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                 if (documentSnapshot.exists()){
                     holder.tradeMethodTextView.setText("@Selling");
                 }else {
-                    holder.tradeMethodTextView.setText("@NotListed");
+                    holder.tradeMethodTextView.setText("Info");
 
                 }
 

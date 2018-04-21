@@ -155,7 +155,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
         postCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
-        senseCreditCollection = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
+        senseCreditCollection = FirebaseFirestore.getInstance().collection(Constants.U_CREDITS);
 
         usersCollection.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -213,7 +213,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                 String boldText = username;
                                 String normalText = " liked your post. Your new Sense Credit balance is now ";
                                 DecimalFormat formatter = new DecimalFormat("0.00000000");
-                                String creditText = "SC" + " " + formatter.format(senseCredit);
+                                String creditText = "uC" + " " + formatter.format(senseCredit);
                                 SpannableString likeText = new SpannableString(boldText + normalText + creditText);
                                 likeText.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(),  Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                                 holder.usernameTextView.setText(likeText);
@@ -268,7 +268,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
         postCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-        senseCreditCollection = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
+        senseCreditCollection = FirebaseFirestore.getInstance().collection(Constants.U_CREDITS);
         commentCollection = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
 
         usersCollection.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -382,7 +382,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         relationsCollection = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-        senseCreditCollection = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
+        senseCreditCollection = FirebaseFirestore.getInstance().collection(Constants.U_CREDITS);
         //firebase
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
 

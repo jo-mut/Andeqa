@@ -69,6 +69,11 @@
     <string name="key_vibrate">key_vibrate</string>
     <string name="key_send_feedback">key_send_feedback</string>
 
+    <!--u credits-->
+    <string name="u_credit_initials">uC</string>
+    <string name="u_credit">uCredit</string>
+
+
     <!--ifair related strings-->
     <string name="cingle_backing_method">Cingle Backing</string>
     <string name="cingle_lacing_method">Cingle Lacing</string>

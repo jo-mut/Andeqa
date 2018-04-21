@@ -19,7 +19,7 @@
         <TextView
             android:padding="10dp"
             android:id="@+id/enterAmountDescription"
-            android:text="Enter the exact amount of the sale price"
+            android:text="Enter the exact amount of you want to transfer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="32sp" />

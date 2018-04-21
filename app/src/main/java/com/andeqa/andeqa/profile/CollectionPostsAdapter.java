@@ -148,7 +148,7 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
             likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             commentsCountQuery = commentsReference;
-            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
+            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.U_CREDITS);
             sellingReference = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             postWalletReference = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
@@ -267,10 +267,10 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
                     Credit credit = documentSnapshot.toObject(Credit.class);
                     final double senseCredits = credit.getAmount();
                     DecimalFormat formatter = new DecimalFormat("0.00000000");
-                    holder.cingleSenseCreditsTextView.setText("SC" + " " + formatter.format(senseCredits));
+                    holder.cingleSenseCreditsTextView.setText("uC" + " " + formatter.format(senseCredits));
 
                 }else {
-                    holder.cingleSenseCreditsTextView.setText("SC 0.00000000");
+                    holder.cingleSenseCreditsTextView.setText("uC 0.00000000");
                 }
             }
         });
@@ -375,7 +375,7 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
                 if (documentSnapshot.exists()){
                     holder.tradeMethodTextView.setText("@Selling");
                 }else {
-                    holder.tradeMethodTextView.setText("@NotOnSale");
+                    holder.tradeMethodTextView.setText("Info");
 
                 }
 

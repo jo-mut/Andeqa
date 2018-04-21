@@ -2,11 +2,19 @@ package com.andeqa.andeqa.message;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.format.DateFormat;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
@@ -116,7 +124,19 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
             });
         }
 
-        holder.lastMessageTextView.setText(lastMessage);
+        final String [] strings = lastMessage.split("");
+
+        final int size = strings.length;
+
+        if (size <= 75){
+            //setence will not have read more
+            holder.lastMessageTextView.setText(lastMessage);
+        }else {
+            holder.lastMessageTextView.setText(lastMessage.substring(0, 74) + "..." );
+        }
+
+        holder.timeTextView.setText(DateFormat.format("HH:mm", room.getTime()));
+
 
         //postkey is same as uid
         usersCollection.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -172,4 +192,6 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
     public int getItemCount() {
         return documentSnapshots.size();
     }
+
+
 }

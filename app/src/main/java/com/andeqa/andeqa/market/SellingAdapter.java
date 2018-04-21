@@ -109,7 +109,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
 
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
-            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
+            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.U_CREDITS);
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
             sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
@@ -120,7 +120,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
 
         }
         DecimalFormat formatter =  new DecimalFormat("0.00000000");
-        holder.cingleSalePriceTextView.setText("SC" + " " + formatter.format(salePrice));
+        holder.cingleSalePriceTextView.setText("uC" + " " + formatter.format(salePrice));
 
         //get the current date
         DateFormat simpleDateFormat = new SimpleDateFormat("d");
@@ -289,7 +289,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
                 if (documentSnapshot.exists()){
                     holder.cingleTradeMethodTextView.setText("@Selling");
                 }else {
-                    holder.cingleTradeMethodTextView.setText("@NotOnSale");
+                    holder.cingleTradeMethodTextView.setText("Info");
 
                 }
 
@@ -308,10 +308,10 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
                 if (documentSnapshot.exists()){
                     final Credit credit = documentSnapshot.toObject(Credit.class);
                     DecimalFormat formatter = new DecimalFormat("0.00000000");
-                    holder.cingleSenseCreditsTextView.setText("SC" + " " + formatter
+                    holder.cingleSenseCreditsTextView.setText("uC" + " " + formatter
                             .format(credit.getAmount()));
                 }else {
-                    holder.cingleSenseCreditsTextView.setText("SC 0.00000000");
+                    holder.cingleSenseCreditsTextView.setText("uC 0.00000000");
                 }
             }
         });

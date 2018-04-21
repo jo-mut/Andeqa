@@ -146,7 +146,7 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                             final double salePrice = market.getSalePrice();
 
                             if (amountTransferred < salePrice){
-                                mAmountEnteredEditText.setError("Your credits are insufficient");
+                                mAmountEnteredEditText.setError("Your uCredit is insufficient");
                             }else if (mAmountEnteredEditText.equals("")){
                                 mAmountEnteredEditText.setError("Enter the sale price");
                             }else  if (amountTransferred > salePrice){
@@ -246,7 +246,7 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                                                             });
 
                                                 }else {
-                                                    mAmountEnteredEditText.setText("Your wallet has insufficient credits");
+                                                    mAmountEnteredEditText.setText("Your wallet has insufficient uCredit");
                                                 }
                                             }
                                         });

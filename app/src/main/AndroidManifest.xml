@@ -130,11 +130,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".home.BestPostsActivity"
-            android:label="Popular"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
             android:name=".home.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">

@@ -148,7 +148,7 @@ public class WalletActivity extends AppCompatActivity {
                 DecimalFormat formatter =  new DecimalFormat("0.00000000");
 
                 holder.amountTransferredTextView.setText("Your have redeemed " + formatter.format(amount)
-                        + " Sense Credit from this post at " + android.text.format.DateFormat.format("HH:mm",
+                        + " uCredit from this post at " + android.text.format.DateFormat.format("HH:mm",
                         transactionDetails.getTime()) + " on " + simpleDateFormat.format(time) + "." + " Your new wallet balance is "
                         + formatter.format(balance) );
 
@@ -269,9 +269,9 @@ public class WalletActivity extends AppCompatActivity {
                     Balance balance = documentSnapshot.toObject(Balance.class);
                     final double walletBalance = balance.getTotalBalance();
 
-                    mCurrentWalletBalanceTextView.setText("SC" + " " + formatter.format(walletBalance));
+                    mCurrentWalletBalanceTextView.setText("uC" + " " + formatter.format(walletBalance));
                 }else {
-                    mCurrentWalletBalanceTextView.setText("SC 0.00000000");
+                    mCurrentWalletBalanceTextView.setText("uC 0.00000000");
                 }
 
             }

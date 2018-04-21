@@ -119,7 +119,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             commentReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
-            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
+            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.U_CREDITS);
             selllingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
 
             //initialize input filter
@@ -258,7 +258,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                                         final double senseCredits = credit.getAmount();
 
                                         if (intSalePrice < senseCredits){
-                                            mSetCingleSalePriceEditText.setError("Sale price is less than CollectionPost Sense Credit!");
+                                            mSetCingleSalePriceEditText.setError("Sale price is less than CollectionPost uCredit!");
                                         }else if (intSalePrice >= senseCredits){
                                             //SET CINGLE ON SALE IN SELLING
 
@@ -267,7 +267,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                                                         @Override
                                                         public void onComplete(@NonNull Task<Void> task) {
                                                             if (task.isSuccessful()){
-                                                                Toast.makeText(ListOnMarketActivity.this, "Your post has been listed on Ifair",
+                                                                Toast.makeText(ListOnMarketActivity.this, "Your post has been listed for sale",
                                                                         Toast.LENGTH_SHORT).show();
                                                             }
                                                         }
@@ -277,7 +277,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
 
                                             new AlertDialog.Builder(ListOnMarketActivity.this)
                                                     .setTitle("Sorry !")
-                                                    .setMessage("The sale price cannot be less than the CollectionPost's Sense Credit")
+                                                    .setMessage("The sale price cannot be less than the CollectionPost's uCredit")
                                                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                                         public void onClick(DialogInterface dialog, int which) {
                                                         }

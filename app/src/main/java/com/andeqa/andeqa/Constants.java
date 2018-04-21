@@ -17,7 +17,7 @@ public final class Constants {
     public static final String TRANSACTION_HISTORY = "transaction_histories";
     public static final String POST_OWNERS = "post_owners";
     public static final String COLLECTION_OWNERS = "collection_owners";
-    public static final String SENSECREDITS = "sense_credits";
+    public static final String U_CREDITS = "u_credits";
     public static final String SELLING = "sells";
     public static final String TIMELINE = "timelines";
     public static final String MESSAGES = "messages";

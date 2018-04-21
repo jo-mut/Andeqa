@@ -86,7 +86,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:id="@+id/enterAmountDescriptionTextView"
-                    android:text="Enter the amount of Sense Credits you want to redeem"
+                    android:text="Enter the amount of uCredits you want to redeem"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 

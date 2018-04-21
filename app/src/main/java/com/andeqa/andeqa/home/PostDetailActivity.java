@@ -192,7 +192,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             randomQuery = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS)
                     .orderBy("randomNumber");
-            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.SENSECREDITS);
+            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.U_CREDITS);
             //firebase
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
             commentsCountQuery = commentsReference;
@@ -387,7 +387,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                 if (documentSnapshot.exists()){
                     final Market market = documentSnapshot.toObject(Market.class);
                     DecimalFormat formatter = new DecimalFormat("0.00000000");
-                    mSalePriceTextView.setText("SC" + " " +
+                    mSalePriceTextView.setText("uC" + " " +
                             formatter.format(market.getSalePrice()));
                     mPostSalePriceRelativeLayout.setVisibility(View.VISIBLE);
                     postOwnersCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -775,7 +775,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                 if (documentSnapshot.exists()){
                     mTradeMethodTextView.setText("@Selling");
                 }else {
-                    mTradeMethodTextView.setText("@NotListed");
+                    mTradeMethodTextView.setText("Info");
                     mBuyPostButton.setVisibility(View.GONE);
                 }
             }
@@ -1142,10 +1142,10 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                         final Credit credit = documentSnapshot.toObject(Credit.class);
                         final double senseCredits = credit.getAmount();
                         final DecimalFormat formatter = new DecimalFormat("0.00000000");
-                        mPoseSenseCreditsTextView.setText("SC" + " " + formatter.format(senseCredits));
+                        mPoseSenseCreditsTextView.setText("uC" + " " + formatter.format(senseCredits));
 
                         if (intSalePrice < senseCredits){
-                            mEditSalePriceEditText.setError("Sale price is less than Single Sense Crdits!");
+                            mEditSalePriceEditText.setError("Sale price is less than post's uCrdits!");
                         }else {
                             sellingCollection.document(mPostId).update("salePrice", intSalePrice);
 

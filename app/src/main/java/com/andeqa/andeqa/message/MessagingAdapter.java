@@ -1,22 +1,30 @@
 package com.andeqa.andeqa.message;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.Message;
+import com.andeqa.andeqa.models.Room;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
 import static android.media.CamcorderProfile.get;
@@ -36,6 +44,8 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private static final int RECEIVE_TYPE=1;
     private FirebaseAuth firebaseAuth;
     private CollectionReference messagesCollection;
+    private CollectionReference roomCollection;
+    private Query roomQuery;
     private Query messagingUsersQuery;
     private boolean showOnClick = true;
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
@@ -98,27 +108,34 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         firebaseAuth = FirebaseAuth.getInstance();
-        Message message = getSnapshot(position).toObject(Message.class);
-        final String uid = message.getSenderUid();
 
-        if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-            populateSend((MessageSendViewHolder)holder,position);
-        }else {
-            populateReceive((MessageReceiveViewHolder)holder, position);
+        if (firebaseAuth.getCurrentUser() != null){
+
+            Message message = getSnapshot(position).toObject(Message.class);
+            final String uid = message.getSenderUid();
+
+            if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                populateSend((MessageSendViewHolder)holder,position);
+            }else {
+                populateReceive((MessageReceiveViewHolder)holder, position);
+
+            }
 
         }
+
     }
 
     private void populateSend(final MessageSendViewHolder holder, int position){
         messagesCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
         messagesCollection.document("room").collection(firebaseAuth.getCurrentUser().getUid());
-        Message message = getSnapshot(position).toObject(Message.class);
-        final String pushId = message.getMessageId();
+        roomCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
+
+
+        final Message message = getSnapshot(position).toObject(Message.class);
+        final String messageId = message.getMessageId();
+
 
         holder.messageTextView.setText(message.getMessage());
-        holder.timeTextView.setText(DateFormat.format("HH:mm", message.getTime()));
-        holder.dateTextView.setText(DateFormat.format("dd-MMM-yy", message.getTime()));
-
 
 
         holder.sendRelativeLayout.setOnClickListener(new View.OnClickListener() {
@@ -136,14 +153,37 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
         });
 
+        roomCollection.document("rooms").collection(messageId).document(messageId)
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
 
+                if (documentSnapshot.exists()){
+                    Room room = documentSnapshot.toObject(Room.class);
+                    final String status = room.getStatus();
+                    if (status.equals("read")){
+                        holder.dateTextView.setText("seen " + DateFormat.format("dd-MMM-yy", message.getTime()));
+                    }else {
+                        holder.dateTextView.setText("unseen " + DateFormat.format("dd-MMM-yy", message.getTime()));
+                    }
+                }else
+                    holder.dateTextView.setText("unseen " + DateFormat.format("dd-MMM-yy", message.getTime()));
+            }
+        });
     }
 
     private void populateReceive(final MessageReceiveViewHolder holder, int position){
+        roomCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
 
-        Message message = getSnapshot(position).toObject(Message.class);
+        final Message message = getSnapshot(position).toObject(Message.class);
+        final String messageId = message.getMessageId();
+
         holder.messageTextView.setText(message.getMessage());
-        holder.timeTextView.setText(DateFormat.format("HH:mm", message.getTime()));
+        holder.timeTextView.setText("seen " + DateFormat.format("HH:mm", message.getTime()));
         holder.dateTextView.setText(DateFormat.format("dd-MMM-yy", message.getTime()));
 
         holder.receiveRelativeLayout.setOnClickListener(new View.OnClickListener() {
@@ -161,6 +201,27 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
         });
 
+        roomCollection.document("rooms").collection(messageId).document(messageId)
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (documentSnapshot.exists()){
+                            Room room = documentSnapshot.toObject(Room.class);
+                            final String status = room.getStatus();
+                            if (status.equals("read")){
+                                holder.dateTextView.setText("seen " + DateFormat.format("dd-MMM-yy", message.getTime()));
+                            }else {
+                                holder.dateTextView.setText("unseen " + DateFormat.format("dd-MMM-yy", message.getTime()));
+                            }
+                        }else
+                            holder.dateTextView.setText("unseen " + DateFormat.format("dd-MMM-yy", message.getTime()));
+                    }
+                });
     }
 
 
