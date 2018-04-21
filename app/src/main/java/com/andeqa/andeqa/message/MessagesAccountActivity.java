@@ -131,7 +131,6 @@ public class MessagesAccountActivity extends AppCompatActivity
             getProfile();
             getSenderProfile();
             setMessages();
-            setStatus();
 
         }
 
@@ -214,47 +213,6 @@ public class MessagesAccountActivity extends AppCompatActivity
         mMessagesRecyclerView.setLayoutManager(layoutManager);
     }
 
-
-    private void setStatus(){
-        final int snapshotSize = messagingAdapter.getItemCount();
-
-        if (snapshotSize > 0){
-            DocumentSnapshot lastVisible = messagingAdapter.getSnapshot(snapshotSize - 1);
-
-            int lastVisibleItem = layoutManager.findFirstCompletelyVisibleItemPosition();
-            if (snapshotSize - 1 == lastVisibleItem){
-                final Message lastMessage = lastVisible.toObject(Message.class);
-                final String messageId = lastMessage.getMessageId();
-
-                roomCollection.document("rooms").collection(messageId).document(messageId)
-                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                            @Override
-                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                                if (e != null) {
-                                    Log.w(TAG, "Listen error", e);
-                                    return;
-                                }
-
-                                if (documentSnapshot.exists()){
-                                    Room room = documentSnapshot.toObject(Room.class);
-                                    final String status = room.getStatus();
-
-                                    if (status.equals("read")){
-                                        //this message has already been seen
-                                    }else {
-                                        roomCollection.document("rooms")
-                                                .collection(messageId)
-                                                .document(messageId).update("status", "read");
-                                    }
-
-                                }
-                            }
-                        });
-            }
-        }
-
-    }
 
     private void setMessages(){
         messagesQuery.orderBy("time").limit(TOTAL_ITEMS)
@@ -430,8 +388,7 @@ public class MessagesAccountActivity extends AppCompatActivity
             DocumentReference senderReference = roomCollection.document("rooms")
                     .collection(firebaseAuth.getCurrentUser().getUid())
                     .document(mUid);
-            DocumentReference statusReference = roomCollection.document("rooms")
-                    .collection(documentId).document(documentId);
+
             Room room = new Room();
             room.setUserId(mUid);
             room.setMessage(text_message);
@@ -440,7 +397,6 @@ public class MessagesAccountActivity extends AppCompatActivity
             room.setStatus("unRead");
             receipientReference.set(room);
             senderReference.set(room);
-            statusReference.set(room);
             mSendMessageEditText.setText("");
 
         }else {

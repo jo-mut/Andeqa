@@ -136,6 +136,8 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
 
         holder.messageTextView.setText(message.getMessage());
+        holder.timeTextView.setText(DateFormat.format("HH:mm", message.getTime()));
+        holder.dateTextView.setText(DateFormat.format("dd-MMM-yy", message.getTime()));
 
 
         holder.sendRelativeLayout.setOnClickListener(new View.OnClickListener() {
@@ -153,27 +155,6 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
         });
 
-        roomCollection.document("rooms").collection(messageId).document(messageId)
-                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    Room room = documentSnapshot.toObject(Room.class);
-                    final String status = room.getStatus();
-                    if (status.equals("read")){
-                        holder.dateTextView.setText("seen " + DateFormat.format("dd-MMM-yy", message.getTime()));
-                    }else {
-                        holder.dateTextView.setText("unseen " + DateFormat.format("dd-MMM-yy", message.getTime()));
-                    }
-                }else
-                    holder.dateTextView.setText("unseen " + DateFormat.format("dd-MMM-yy", message.getTime()));
-            }
-        });
     }
 
     private void populateReceive(final MessageReceiveViewHolder holder, int position){
@@ -183,7 +164,7 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         final String messageId = message.getMessageId();
 
         holder.messageTextView.setText(message.getMessage());
-        holder.timeTextView.setText("seen " + DateFormat.format("HH:mm", message.getTime()));
+        holder.timeTextView.setText(DateFormat.format("HH:mm", message.getTime()));
         holder.dateTextView.setText(DateFormat.format("dd-MMM-yy", message.getTime()));
 
         holder.receiveRelativeLayout.setOnClickListener(new View.OnClickListener() {
@@ -201,27 +182,6 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
         });
 
-        roomCollection.document("rooms").collection(messageId).document(messageId)
-                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (documentSnapshot.exists()){
-                            Room room = documentSnapshot.toObject(Room.class);
-                            final String status = room.getStatus();
-                            if (status.equals("read")){
-                                holder.dateTextView.setText("seen " + DateFormat.format("dd-MMM-yy", message.getTime()));
-                            }else {
-                                holder.dateTextView.setText("unseen " + DateFormat.format("dd-MMM-yy", message.getTime()));
-                            }
-                        }else
-                            holder.dateTextView.setText("unseen " + DateFormat.format("dd-MMM-yy", message.getTime()));
-                    }
-                });
     }
 
 
