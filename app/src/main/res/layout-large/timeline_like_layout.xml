@@ -22,17 +22,6 @@
             android:layout_height="80dp"
             android:background="@drawable/profle_image_background"/>
 
-        <View
-            android:id="@+id/statusView"
-            android:visibility="gone"
-            android:background="@drawable/status_background"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="2dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_width="15dp"
-            android:layout_height="15dp" />
 
         <RelativeLayout
             android:layout_margin="10dp"
@@ -40,7 +29,6 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/profileImageView"
             android:layout_toEndOf="@+id/profileImageView"
-            android:layout_alignBottom="@+id/profileImageView"
             android:layout_centerVertical="true">
 
             <TextView

@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.models.Comment;
@@ -286,69 +285,50 @@ public class CommentsActivity extends AppCompatActivity implements
         final String commentText = mCommentEditText.getText().toString().trim();
         if(!TextUtils.isEmpty(commentText)){
             if(v == mSendCommentImageView){
-                usersCollection.document(firebaseAuth.getCurrentUser().getUid())
-                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                final String commentId = databaseReference.push().getKey();
+
+                Comment comment = new Comment();
+                comment.setUser_id(uid);
+                comment.setComment_text(commentText);
+                comment.setPost_id(mPostId);
+                comment.setComment_id(commentId);
+                comment.setTime(time);
+                commentsCollection.document(commentId).set(comment);
+
+
+                //record the comment on the timeline
+                collectionsPostsCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
                         if (e != null) {
                             Log.w(TAG, "Listen error", e);
                             return;
                         }
 
                         if (documentSnapshot.exists()){
-                            final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                            final String uid = cinggulan.getUserId();
-
-                            final String postId = databaseReference.push().getKey();
-
-                            Comment comment = new Comment();
-                            comment.setUserId(uid);
-                            comment.setCommentText(commentText);
-                            comment.setPostId(mPostId);
-                            comment.setCommentId(postId);
-                            comment.setTime(time);
-                            commentsCollection.document(postId).set(comment);
+                            CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                            final String creatorUid = collectionPost.getUser_id();
 
                             final Timeline timeline = new Timeline();
-                            final long time = new Date().getTime();
-
-                            //record the comment on the timeline
-                            collectionsPostsCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                @Override
-                                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                                    if (e != null) {
-                                        Log.w(TAG, "Listen error", e);
-                                        return;
-                                    }
-
-                                    if (documentSnapshot.exists()){
-                                        CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
-                                        final String creatorUid = collectionPost.getUserId();
-
-                                        timeline.setActivityId(postId);
-                                        timeline.setTime(time);
-                                        timeline.setUserId(firebaseAuth.getCurrentUser().getUid());
-                                        timeline.setType("comment");
-                                        timeline.setPostId(mPostId);
-                                        timeline.setStatus("unRead");
-                                        if (creatorUid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                            //do nothing
-                                        }else {
-                                            timelineCollection.document(creatorUid)
-                                                    .collection("timeline").document(postId).set(timeline);
-                                        }
-
-                                    }
-                                }
-                            });
-
-                            mCommentEditText.setText("");
+                            timeline.setActivity_id(commentId);
+                            timeline.setTime(time);
+                            timeline.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                            timeline.setType("comment");
+                            timeline.setPost_id(mPostId);
+                            timeline.setStatus("un_read");
+                            if (creatorUid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                //do nothing
+                            }else {
+                                timelineCollection.document(creatorUid)
+                                        .collection("activities").document(commentId).set(timeline);
+                            }
 
                         }
-
                     }
                 });
+
+                mCommentEditText.setText("");
 
             }
         }

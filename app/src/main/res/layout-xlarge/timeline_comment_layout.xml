@@ -21,25 +21,12 @@
             android:layout_height="110dp"
             android:background="@drawable/profle_image_background"/>
 
-        <View
-            android:id="@+id/statusView"
-            android:visibility="gone"
-            android:background="@drawable/status_background"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="2dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_width="20dp"
-            android:layout_height="20dp" />
-
         <RelativeLayout
             android:layout_margin="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/profileImageView"
             android:layout_toEndOf="@+id/profileImageView"
-            android:layout_alignBottom="@+id/profileImageView"
             android:layout_centerVertical="true">
 
             <TextView
@@ -49,15 +36,6 @@
                 android:id="@+id/usernameTextView"
                 android:textColor="@android:color/black"
                 android:textSize="32sp"
-                android:layout_alignParentTop="false" />
-
-            <TextView
-                android:text=""
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/timelineTextView"
-                android:textSize="28sp"
-                android:layout_below="@+id/usernameTextView"
                 android:layout_centerVertical="true" />
 
 

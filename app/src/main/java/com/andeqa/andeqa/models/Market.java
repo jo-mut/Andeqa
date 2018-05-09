@@ -5,11 +5,11 @@ package com.andeqa.andeqa.models;
  */
 
 public class Market {
-    String postId;
-    String userId;
+    String post_id;
+    String user_id;
     long time;
-    double randomNumber;
-    double salePrice;
+    double random_number;
+    double sale_price;
     long number;
 
     public Market() {
@@ -17,20 +17,20 @@ public class Market {
     }
 
 
-    public String getPostId() {
-        return postId;
+    public String getPost_id() {
+        return post_id;
     }
 
-    public void setPostId(String postId) {
-        this.postId = postId;
+    public void setPost_id(String post_id) {
+        this.post_id = post_id;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUser_id() {
+        return user_id;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
     }
 
     public long getTime() {
@@ -41,20 +41,20 @@ public class Market {
         this.time = time;
     }
 
-    public double getRandomNumber() {
-        return randomNumber;
+    public double getRandom_number() {
+        return random_number;
     }
 
-    public void setRandomNumber(double randomNumber) {
-        this.randomNumber = randomNumber;
+    public void setRandom_number(double random_number) {
+        this.random_number = random_number;
     }
 
-    public double getSalePrice() {
-        return salePrice;
+    public double getSale_price() {
+        return sale_price;
     }
 
-    public void setSalePrice(double salePrice) {
-        this.salePrice = salePrice;
+    public void setSale_price(double sale_price) {
+        this.sale_price = sale_price;
     }
 
     public long getNumber() {

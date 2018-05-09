@@ -5,46 +5,46 @@ package com.andeqa.andeqa.models;
  */
 
 public class Comment {
-    String userId;
-    String commentText;
-    String postId;
-    String commentId;
+    String user_id;
+    String comment_text;
+    String post_id;
+    String comment_id;
     long time;
 
     public Comment() {
     }
 
 
-    public String getUserId() {
-        return userId;
+    public String getUser_id() {
+        return user_id;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
     }
 
-    public String getCommentText() {
-        return commentText;
+    public String getComment_text() {
+        return comment_text;
     }
 
-    public void setCommentText(String commentText) {
-        this.commentText = commentText;
+    public void setComment_text(String comment_text) {
+        this.comment_text = comment_text;
     }
 
-    public String getPostId() {
-        return postId;
+    public String getPost_id() {
+        return post_id;
     }
 
-    public void setPostId(String postId) {
-        this.postId = postId;
+    public void setPost_id(String post_id) {
+        this.post_id = post_id;
     }
 
-    public String getCommentId() {
-        return commentId;
+    public String getComment_id() {
+        return comment_id;
     }
 
-    public void setCommentId(String commentId) {
-        this.commentId = commentId;
+    public void setComment_id(String comment_id) {
+        this.comment_id = comment_id;
     }
 
     public long getTime() {

@@ -5,23 +5,23 @@ package com.andeqa.andeqa.models;
  */
 
 public class Like {
-    String userId;
+    String user_id;
 
 
-    public Like(String userId) {
-        this.userId = userId;
+    public Like(String user_id) {
+        this.user_id = user_id;
 
     }
 
     public Like() {
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUser_id() {
+        return user_id;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
     }
 
 }

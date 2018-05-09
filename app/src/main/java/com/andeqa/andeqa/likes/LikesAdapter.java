@@ -85,7 +85,7 @@ public class LikesAdapter extends RecyclerView.Adapter<LikesViewHolder> {
     @Override
     public void onBindViewHolder(final LikesViewHolder holder, int position) {
         Like like = getSnapshot(position).toObject(Like.class);
-        final String uid = like.getUserId();
+        final String uid = like.getUser_id();
 
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
@@ -110,10 +110,10 @@ public class LikesAdapter extends RecyclerView.Adapter<LikesViewHolder> {
 
                 if (documentSnapshot.exists()){
                     final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                    final String profileImage = cinggulan.getProfileImage();
+                    final String profileImage = cinggulan.getProfile_image();
                     final String username = cinggulan.getUsername();
-                    final String firstName = cinggulan.getFirstName();
-                    final String secondName = cinggulan.getSecondName();
+                    final String firstName = cinggulan.getFirst_name();
+                    final String secondName = cinggulan.getSecond_name();
 
 
                     holder.usernameTextView.setText(username);
@@ -157,90 +157,6 @@ public class LikesAdapter extends RecyclerView.Adapter<LikesViewHolder> {
             }
         });
 
-        relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
-                .whereEqualTo("userId", uid).addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshots.isEmpty()){
-                    holder.followButton.setText("Follow");
-                }else {
-                    holder.followButton.setText("Following");
-                }
-            }
-        });
-
-        if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-            holder.followButton.setVisibility(View.GONE);
-        }else {
-            holder.followButton.setVisibility(View.VISIBLE);
-            holder.followButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    processFollow = true;
-                    relationsReference.document("followers")
-                            .collection(uid).whereEqualTo("userId", firebaseAuth.getCurrentUser().getUid())
-                            .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                @Override
-                                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-
-                                    if (e != null) {
-                                        Log.w(TAG, "Listen error", e);
-                                        return;
-                                    }
-
-                                    if (processFollow){
-                                        if (documentSnapshots.isEmpty()){
-                                            //set followers and following
-                                            Relation follower = new Relation();
-                                            follower.setUserId(firebaseAuth.getCurrentUser().getUid());
-                                            relationsReference.document("followers").collection(uid)
-                                                    .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
-                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                        @Override
-                                                        public void onSuccess(Void aVoid) {
-                                                            Timeline timeline = new Timeline();
-                                                            final long time = new Date().getTime();
-
-                                                            final String postId = databaseReference.push().getKey();
-
-                                                            timeline.setActivityId(postId);
-                                                            timeline.setTime(time);
-                                                            timeline.setUserId(firebaseAuth.getCurrentUser().getUid());
-                                                            timeline.setType("relations");
-                                                            timeline.setPostId(uid);
-                                                            timeline.setStatus("unRead");
-                                                            timelineCollection.document(uid).collection("activities")
-                                                                    .document(firebaseAuth.getCurrentUser().getUid())
-                                                                    .set(timeline);
-                                                        }
-                                                    });
-                                            final Relation following = new Relation();
-                                            following.setUserId(uid);
-                                            relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
-                                                    .document(uid).set(following);
-                                            processFollow = false;
-                                            holder.followButton.setText("Following");
-                                        }else {
-                                            relationsReference.document("followers").collection(uid)
-                                                    .document(firebaseAuth.getCurrentUser().getUid()).delete();
-                                            relationsReference.document("following").collection(firebaseAuth.getCurrentUser().getUid())
-                                                    .document(uid).delete();
-                                            processFollow = false;
-                                            holder.followButton.setText("Follow");
-                                        }
-                                    }
-                                }
-                            });
-
-                }
-            });
-        }
     }
 
 

@@ -7,21 +7,21 @@ package com.andeqa.andeqa.models;
 public class Post {
     long time;
     long number;
-    double randomNumber;
-    String postId;
-    String userId;
+    double random_number;
+    String post_id;
+    String user_id;
     String type;
-    String collectionId;
+    String collection_id;
 
     public Post() {
     }
 
-    public String getCollectionId() {
-        return collectionId;
+    public String getCollection_id() {
+        return collection_id;
     }
 
-    public void setCollectionId(String collectionId) {
-        this.collectionId = collectionId;
+    public void setCollection_id(String collection_id) {
+        this.collection_id = collection_id;
     }
 
     public long getNumber() {
@@ -32,20 +32,20 @@ public class Post {
         this.number = number;
     }
 
-    public String getPostId() {
-        return postId;
+    public String getPost_id() {
+        return post_id;
     }
 
-    public void setPostId(String postId) {
-        this.postId = postId;
+    public void setPost_id(String post_id) {
+        this.post_id = post_id;
     }
 
-    public double getRandomNumber() {
-        return randomNumber;
+    public double getRandom_number() {
+        return random_number;
     }
 
-    public void setRandomNumber(double randomNumber) {
-        this.randomNumber = randomNumber;
+    public void setRandom_number(double random_number) {
+        this.random_number = random_number;
     }
 
     public long getTime() {
@@ -64,11 +64,11 @@ public class Post {
         this.type = type;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUser_id() {
+        return user_id;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
     }
 }

@@ -26,7 +26,6 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
     private TextView commentCountTextView;
     public TextView usernameTextView;
     public CircleImageView profileImageView;
-    public Button followButton;
     public TextView fullNameTextView;
     @Bind(R.id.commentTextView)TextView mCommentTextView;
 
@@ -39,7 +38,6 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
         usernameTextView = (TextView)itemView.findViewById(R.id.usernameTextView);
         commentCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
-        followButton = (Button) itemView.findViewById(R.id.followTextView);
         fullNameTextView = (TextView) itemView.findViewById(R.id.fullNameTextView);
     }
 

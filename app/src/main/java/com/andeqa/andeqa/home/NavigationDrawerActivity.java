@@ -2,7 +2,6 @@ package com.andeqa.andeqa.home;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -190,10 +189,10 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
                 if (documentSnapshot.exists()){
                     final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                    String firstName = cinggulan.getFirstName();
-                    String secondName = cinggulan.getSecondName();
-                    final String profileImage = cinggulan.getProfileImage();
-                    final String profileCover = cinggulan.getProfileCover();
+                    String firstName = cinggulan.getFirst_name();
+                    String secondName = cinggulan.getSecond_name();
+                    final String profileImage = cinggulan.getProfile_image();
+                    final String profileCover = cinggulan.getProfile_cover();
 
                     mFullNameTextView.setText(firstName + " " + secondName);
 
@@ -271,7 +270,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
         if (id == R.id.action_about){
             Intent intent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://andeqa@andeqa.com"));
+                    Uri.parse("https://andeqa.firebaseapp.com"));
             startActivity(intent);
         }
 
@@ -280,7 +279,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
             sendIntent.setAction(Intent.ACTION_SEND);
             sendIntent.putExtra(Intent.EXTRA_TEXT,
                     "Hey! Check out Cinggl and share your best moments, beautiful ideas and discover even more than you know" +
-                            " at: https://play.google.com/store/apps/details?id=");
+                            " at: https://play.google.com/store/apps/details?id=com.andeqa.andeqa");
             sendIntent.setType("text/plain");
             startActivity(sendIntent);
         }
@@ -297,7 +296,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
             }
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("message/rfc822");
-            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"andeqa@andeqa.com"});
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"andeqa.support@gmail.com"});
             intent.putExtra(Intent.EXTRA_SUBJECT, "Query from android app");
             intent.putExtra(Intent.EXTRA_TEXT, body);
             this.startActivity(Intent.createChooser(intent, this.getString(R.string.choose_email_client)));

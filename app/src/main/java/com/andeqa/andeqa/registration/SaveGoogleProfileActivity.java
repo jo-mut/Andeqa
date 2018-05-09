@@ -1,9 +1,14 @@
 package com.andeqa.andeqa.registration;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,8 +27,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -77,8 +82,48 @@ public class SaveGoogleProfileActivity extends AppCompatActivity implements View
             verifyingYourEmailDialog();
             createProfileDialog();
 
+            //permission
+            int version = Build.VERSION.SDK_INT;
+            if (version > Build.VERSION_CODES.LOLLIPOP_MR1){
+                if (!checkIfAlreadyHavePermission()){
+                    requestForSpecificPermission();
+                }
+            }
+
             mUpdateProfilePictureImageButton.setOnClickListener(this);
             mSubmitUserInfoButton.setOnClickListener(this);
+        }
+    }
+
+    private boolean checkIfAlreadyHavePermission(){
+        int result = ContextCompat.checkSelfPermission(this,  Manifest.permission.GET_ACCOUNTS);
+        if (result == PackageManager.PERMISSION_GRANTED){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    private void requestForSpecificPermission(){
+        ActivityCompat.requestPermissions(this, new String[]{
+                Manifest.permission.GET_ACCOUNTS, Manifest.permission.RECEIVE_SMS,
+                Manifest.permission.READ_SMS, Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        }, 101);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case 101:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    //granted
+                }else {
+                    // not granted
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
@@ -108,6 +153,9 @@ public class SaveGoogleProfileActivity extends AppCompatActivity implements View
         final String uid = user.getUid();
         final String email = user.getEmail();
 
+        final String deviceId = FirebaseInstanceId.getInstance().getToken();
+
+
         final String username = mUsernameEditText.getText().toString().toLowerCase().trim();
         final String firstName = mFirstNameEditText.getText().toString().trim();
         final String secondName = mSecondNameEditText.getText().toString().trim();
@@ -118,15 +166,16 @@ public class SaveGoogleProfileActivity extends AppCompatActivity implements View
 
         if (!validName|| !validFirstName || !validSecondName) return;
 
-        Andeqan cinggulan = new Andeqan();
-        cinggulan.setFirstName(firstName);
-        cinggulan.setSecondName(secondName);
-        cinggulan.setUsername(username);
-        cinggulan.setUserId(uid);
-        cinggulan.setEmail(email);
+        Andeqan andeqan = new Andeqan();
+        andeqan.setFirst_name(firstName);
+        andeqan.setSecond_name(secondName);
+        andeqan.setUsername(username);
+        andeqan.setUser_id(uid);
+        andeqan.setEmail(email);
+        andeqan.setDevice_id(deviceId);
 
         createProfileProgressDialog.dismiss();
-        usersReference.document(uid).set(cinggulan).addOnSuccessListener(new OnSuccessListener<Void>() {
+        usersReference.document(uid).set(andeqan).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
 
@@ -145,7 +194,7 @@ public class SaveGoogleProfileActivity extends AppCompatActivity implements View
 
                             final String profileImage = (downloadUrl.toString());
                             Log.d("profile image", profileImage);
-                            usersReference.document(uid).update("profileImage", profileImage);
+                            usersReference.document(uid).update("profile_images", profileImage);
 
                         }
                     });

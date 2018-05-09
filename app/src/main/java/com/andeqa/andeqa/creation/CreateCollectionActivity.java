@@ -1,10 +1,15 @@
 package com.andeqa.andeqa.creation;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -52,7 +57,6 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
     @Bind(R.id.collectionCoverImageView)ImageView mCollectionCoverImageView;
 
 
-    private String image;
     private Uri photoUri;
     private static final String KEY_IMAGE = "IMAGE FROM GALLERY";
     private static final String TAG = "CreatePostActivity";
@@ -120,6 +124,14 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
             textWatchers();
             uploadingToFirebaseDialog();
 
+            //permission
+           int version = Build.VERSION.SDK_INT;
+           if (version > Build.VERSION_CODES.LOLLIPOP_MR1){
+               if (!checkIfAlreadyHavePermission()){
+                   requestForSpecificPermission();
+               }
+           }
+
         }
     }
 
@@ -182,9 +194,41 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
 
     }
 
+    private boolean checkIfAlreadyHavePermission(){
+        int result = ContextCompat.checkSelfPermission(this,  Manifest.permission.GET_ACCOUNTS);
+        if (result == PackageManager.PERMISSION_GRANTED){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    private void requestForSpecificPermission(){
+        ActivityCompat.requestPermissions(this, new String[]{
+                Manifest.permission.GET_ACCOUNTS, Manifest.permission.RECEIVE_SMS,
+                Manifest.permission.READ_SMS, Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        }, 101);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case 101:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    //granted
+                }else {
+                    // not granted
+                }
+                break;
+                default:
+                    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
 
     public void uploadingToFirebaseDialog(){
         progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Creating your collection");
         progressDialog.setCancelable(true);
     }
 
@@ -202,12 +246,12 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                     final long timeStamp = new Date().getTime();
                     //set the single ownership
                     TransactionDetails transactionDetails = new TransactionDetails();
-                    transactionDetails.setPostId(collectionId);
-                    transactionDetails.setUserId(firebaseAuth.getCurrentUser().getUid());
+                    transactionDetails.setPost_id(collectionId);
+                    transactionDetails.setUser_id(firebaseAuth.getCurrentUser().getUid());
                     transactionDetails.setTime(timeStamp);
                     transactionDetails.setType("owner");
                     transactionDetails.setAmount(0.0);
-                    transactionDetails.setWalletBalance(0.0);
+                    transactionDetails.setWallet_balance(0.0);
                     collectionOwnersCollection.document(collectionId).set(transactionDetails);
 
                     if (photoUri != null){
@@ -233,8 +277,8 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                                         collection.setName(mCollectionNameEditText.getText().toString().trim());
                                         collection.setNote(mCollectionNoteEditText.getText().toString().trim());
                                         collection.setNumber(count + 1);
-                                        collection.setUserId(firebaseAuth.getCurrentUser().getUid());
-                                        collection.setCollectionId(collectionId);
+                                        collection.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                        collection.setCollection_id(collectionId);
                                         collection.setTime(timeStamp);
                                         collection.setImage(downloadUrl.toString());
                                         collectionCollection.document(collectionId).set(collection);
@@ -278,8 +322,8 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                         collection.setName(mCollectionNameEditText.getText().toString().trim());
                         collection.setNote(mCollectionNoteEditText.getText().toString().trim());
                         collection.setNumber(count + 1);
-                        collection.setUserId(firebaseAuth.getCurrentUser().getUid());
-                        collection.setCollectionId(collectionId);
+                        collection.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                        collection.setCollection_id(collectionId);
                         collection.setTime(timeStamp);
                         collectionCollection.document(collectionId).set(collection);
 

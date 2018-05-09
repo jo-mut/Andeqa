@@ -23,7 +23,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
-            app:contentScrim="?attr/colorPrimary"
+            app:contentScrim="@color/colorPrimary"
+            android:paddingBottom="60dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <RelativeLayout
@@ -71,6 +72,7 @@
                         android:layout_alignParentStart="false"
                         android:layout_centerVertical="true"
                         android:layout_marginRight="1dp"
+                        android:layout_marginEnd="1dp"
                         android:layout_centerInParent="true" />
 
 
@@ -80,52 +82,12 @@
                     android:id="@+id/countsLayout"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
-                    android:layout_marginBottom="10dp"
                     android:layout_marginTop="300dp">
 
-
                     <RelativeLayout
-                        android:id="@+id/postCountRelativeLayout"
-                        android:layout_marginRight="40dp"
-                        android:layout_marginEnd="40dp"
-                        android:layout_toStartOf="@+id/followersCountRelativeLayout"
-                        android:layout_toLeftOf="@+id/followersCountRelativeLayout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/postsCountTextView"
-                            android:textSize="10sp"
-                            android:background="@drawable/border_white"
-                            android:paddingTop="3dp"
-                            android:paddingBottom="3dp"
-                            android:paddingLeft="10dp"
-                            android:paddingRight="10dp"
-                            android:textAlignment="center"
-                            android:layout_centerHorizontal="true"
-                            android:layout_alignParentTop="true"
-                            android:textColor="@android:color/white" />
-
-                        <TextView
-                            android:text="Posts"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/postsTextView"
-                            android:layout_alignParentBottom="false"
-                            android:layout_alignParentRight="false"
-                            android:layout_alignParentEnd="false"
-                            android:layout_below="@+id/postsCountTextView"
-                            android:layout_centerHorizontal="true"
-                            android:layout_marginTop="10dp"
-                            android:textColor="@android:color/white" />
-
-                    </RelativeLayout>
-
-
-                    <RelativeLayout
-                        android:id="@+id/followersCountRelativeLayout"
+                        android:id="@+id/collectionsCountRelativeLayout"
+                        android:layout_marginLeft="40dp"
+                        android:layout_marginStart="40dp"
                         android:layout_centerInParent="true"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent">
@@ -133,7 +95,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:id="@+id/followersCountTextView"
+                            android:id="@+id/collectionsCountTextView"
                             android:textSize="10sp"
                             android:background="@drawable/border_white"
                             android:paddingTop="3dp"
@@ -146,49 +108,11 @@
                             android:textColor="@android:color/white" />
 
                         <TextView
-                            android:text="Followers"
+                            android:text="Collections"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:id="@+id/followersTextView"
-                            android:layout_below="@+id/followersCountTextView"
-                            android:layout_alignParentBottom="false"
-                            android:layout_centerHorizontal="true"
-                            android:layout_marginTop="10dp"
-                            android:textColor="@android:color/white"
-                            tools:ignore="HardcodedText" />
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:id="@+id/followingCountRelativeLayout"
-                        android:layout_marginLeft="40dp"
-                        android:layout_marginStart="40dp"
-                        android:layout_toEndOf="@+id/followersCountRelativeLayout"
-                        android:layout_toRightOf="@+id/followersCountRelativeLayout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/followingCountTextView"
-                            android:textSize="10sp"
-                            android:background="@drawable/border_white"
-                            android:paddingTop="3dp"
-                            android:paddingBottom="3dp"
-                            android:paddingLeft="10dp"
-                            android:paddingRight="10dp"
-                            android:textAlignment="center"
-                            android:layout_alignParentTop="true"
-                            android:layout_centerHorizontal="true"
-                            android:textColor="@android:color/white" />
-
-                        <TextView
-                            android:text="Following"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/followingTextView"
-                            android:layout_below="@+id/followingCountTextView"
+                            android:id="@+id/collectionsTextView"
+                            android:layout_below="@+id/collectionsCountTextView"
                             android:layout_centerHorizontal="true"
                             android:layout_marginTop="10dp"
                             android:textColor="@android:color/white"
@@ -198,28 +122,13 @@
 
                 </RelativeLayout>
 
-                <Button
-                    android:visibility="gone"
-                    android:text=""
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:id="@+id/followButton"
-                    android:layout_below="@+id/countsLayout"
-                    android:minHeight="30dp"
-                    android:minWidth="120dp"
-                    android:textSize="14sp"
-                    android:background="@drawable/colour_btn_background"
-                    android:layout_centerHorizontal="true" />
-
 
                 <RelativeLayout
-                    android:layout_below="@+id/followButton"
+                    android:layout_below="@+id/countsLayout"
                     android:id="@+id/bioRelativeLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
-                    android:layout_marginBottom="60dp"
                     tools:ignore="UnusedAttribute">
 
                     <TextView
@@ -252,7 +161,7 @@
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_height="56dp"
                 android:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
                 android:title="Collapsing Toolbar"
                 app:layout_collapseMode="pin"
@@ -273,5 +182,6 @@
             android:layout_height="wrap_content"/>
 
     </android.support.v4.widget.NestedScrollView>
+
 </android.support.design.widget.CoordinatorLayout>
 

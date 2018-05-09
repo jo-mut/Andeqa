@@ -144,7 +144,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
 
                 if (documentSnapshot.exists()){
                     final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
-                    final String uid = collectionPost.getUserId();
+                    final String uid = collectionPost.getUser_id();
                     final String title = collectionPost.getTitle();
                     final String image = collectionPost.getImage();
 
@@ -152,6 +152,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                     Picasso.with(ListOnMarketActivity.this)
                             .load(image)
                             .networkPolicy(NetworkPolicy.OFFLINE)
+                            .placeholder(R.drawable.profle_image_background)
                             .into(mCingleImageView, new Callback() {
                                 @Override
                                 public void onSuccess() {
@@ -162,6 +163,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                                 public void onError() {
                                     Picasso.with(ListOnMarketActivity.this)
                                             .load(image)
+                                            .placeholder(R.drawable.profle_image_background)
                                             .into(mCingleImageView);
                                 }
                             });
@@ -182,7 +184,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                             if (documentSnapshot.exists()){
                                 final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
                                 final String username = cinggulan.getUsername();
-                                final String profileImage = cinggulan.getProfileImage();
+                                final String profileImage = cinggulan.getProfile_image();
 
                                 mAccountUsernameTextView.setText(username);
                                 Picasso.with(ListOnMarketActivity.this)
@@ -231,7 +233,6 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                 mSetCingleSalePriceEditText.setError("Sale price is empty!");
             }else {
                 final double intSalePrice = Double.parseDouble(stringSalePrice);
-                final String formattedString = formatter.format(intSalePrice);
 
                 postsCollection.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
@@ -243,7 +244,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
 
                         if (documentSnapshot.exists()){
                             final Post post = documentSnapshot.toObject(Post.class);
-                            final String collectionId = post.getCollectionId();
+                            final String collectionId = post.getCollection_id();
                             senseCreditReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                 @Override
                                 public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -262,16 +263,22 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                                         }else if (intSalePrice >= senseCredits){
                                             //SET CINGLE ON SALE IN SELLING
 
-                                            selllingCollection.document(mPostKey).update("salePrice", intSalePrice)
-                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                        @Override
-                                                        public void onComplete(@NonNull Task<Void> task) {
-                                                            if (task.isSuccessful()){
-                                                                Toast.makeText(ListOnMarketActivity.this, "Your post has been listed for sale",
-                                                                        Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        }
-                                                    });
+                                            final Market market =  new Market();
+                                            market.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                            market.setPost_id(mPostKey);
+                                            market.setSale_price(intSalePrice);
+                                            market.setRandom_number((double) new Random().nextDouble());
+                                            market.setTime(timeStamp);
+
+                                            selllingCollection.document(mPostKey).set(market).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()){
+                                                        Toast.makeText(ListOnMarketActivity.this, "Your post has been listed for sale",
+                                                                Toast.LENGTH_SHORT).show();
+                                                    }
+                                                }
+                                            });
 
                                         }else {
 
@@ -286,10 +293,10 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                                     }else {
                                         //SET CINGLE ON SALE IN SELLING
                                         final Market market =  new Market();
-                                        market.setUserId(firebaseAuth.getCurrentUser().getUid());
-                                        market.setPostId(mPostKey);
-                                        market.setSalePrice(intSalePrice);
-                                        market.setRandomNumber((double) new Random().nextDouble());
+                                        market.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                        market.setPost_id(mPostKey);
+                                        market.setSale_price(intSalePrice);
+                                        market.setRandom_number((double) new Random().nextDouble());
                                         market.setTime(timeStamp);
 
                                         selllingCollection.document(mPostKey).set(market).addOnCompleteListener(new OnCompleteListener<Void>() {

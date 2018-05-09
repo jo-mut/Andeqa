@@ -9,13 +9,21 @@
     android:background="@drawable/default_gradient_color"
     tools:context="com.andeqa.andeqa.registration.SignInWithGoogle">
 
-    <ImageView
-        android:layout_height="100sp"
-        app:srcCompat="@mipmap/ic_launcher"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/appLogoImageView"
-        android:layout_width="100sp" />
+    <TextView
+        android:background="@drawable/logo_background"
+        android:layout_centerInParent="true"
+        android:textSize="40sp"
+        android:paddingTop="60dp"
+        android:paddingBottom="60dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:textColor="@android:color/white"
+        android:id="@+id/appLogoTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Andeqa"/>
 
     <TextView
         android:padding="5dp"
@@ -23,7 +31,7 @@
         android:text="Signing in..."
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/appLogoImageView"
+        android:layout_below="@+id/appLogoTextView"
         android:layout_centerHorizontal="true"
         android:id="@+id/signingInTextView"
         android:textColor="@color/greyColor" />
@@ -36,19 +44,6 @@
         android:id="@+id/progressBar"
         android:layout_centerInParent="true"
         android:layout_width="100dp" />
-
-    <TextView
-        android:text="Andeqa"
-        android:textSize="40sp"
-        android:textStyle="normal|bold"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/appNameTextView"
-        android:textColor="@android:color/white"
-        android:layout_marginBottom="20dp"
-        android:layout_centerVertical="false"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>
 

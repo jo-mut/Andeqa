@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
     private CollectionReference usersReference;
     private FirebaseAuth firebaseAuth;
     @Bind(R.id.progressBar)ProgressBar mProgressBar;
-    @Bind(R.id.appNameTextView)TextView mAppNameTextView;
 
 
     @Override
@@ -47,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
                 authenticationListener();
             }
         }, 2000);
-        setFonts();
     }
 
 
@@ -94,9 +92,5 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setFonts(){
-        Typeface appNameFont = Typeface.createFromAsset(getAssets(),
-                "fonts/Kurale-Regular.ttf");
-        mAppNameTextView.setTypeface(appNameFont);
-    }
+
 }

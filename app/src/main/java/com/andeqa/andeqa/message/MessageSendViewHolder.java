@@ -10,7 +10,6 @@ import android.widget.TextView;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Message;
 
-import static com.andeqa.andeqa.R.id.statusView;
 
 /**
  * Created by J.EL on 1/4/2018.

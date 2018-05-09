@@ -40,7 +40,6 @@ import butterknife.ButterKnife;
 public class SignInWithGoogle extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener{
     @Bind(R.id.progressBar)ProgressBar progressBar;
-    @Bind(R.id.appNameTextView)TextView mAppNameTextView;
 
     private static final String TAG = SignInWithGoogle.class.getSimpleName();
     private static final int RC_SIGN_IN = 9001;
@@ -64,17 +63,10 @@ public class SignInWithGoogle extends AppCompatActivity implements
 
         init();
         signIn();
-        setFonts();
 
     }
 
-    private void setFonts(){
-        Typeface appNameFont = Typeface.createFromAsset(getAssets(),
-                "fonts/Kurale-Regular.ttf");
-        mAppNameTextView.setTypeface(appNameFont);
-    }
-
-    private void init() {
+     private void init() {
         dialog = new ProgressDialog(SignInWithGoogle.this);
         dialog.setMessage("Loading..");
         dialog.setTitle("Please Wait");
@@ -134,6 +126,9 @@ public class SignInWithGoogle extends AppCompatActivity implements
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
+                Log.d("success results", result.getStatus().getStatusMessage());
+            }else {
+//                Log.d("not successful results", result.getSender_status().getStatusMessage());
             }
         }
 
@@ -154,16 +149,18 @@ public class SignInWithGoogle extends AppCompatActivity implements
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d("LoginActivity", "signInWithCredential:onComplete:" + task.isSuccessful());
 
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
+                            Log.e(TAG, "sign in f " + task.getException().getMessage());
                             Log.w("LoginActivity", "signInWithCredential", task.getException());
                             Toast.makeText(SignInWithGoogle.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }else {
+                            Log.d("sign in successful", "signInWithCredential:onComplete:" + task.isSuccessful());
+
                             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
                             usersCollection.document(firebaseAuth.getCurrentUser().getUid())
                                     .addSnapshotListener(new EventListener<DocumentSnapshot>() {

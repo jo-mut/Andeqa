@@ -82,7 +82,7 @@ public class MarketFragment extends Fragment implements SwipeRefreshLayout.OnRef
         if (firebaseAuth.getCurrentUser()!= null){
             //firestore
             sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
-            sellingQuery = sellingCollection.orderBy("randomNumber").limit(TOTAL_ITEMS);
+            sellingQuery = sellingCollection.orderBy("random_number").limit(TOTAL_ITEMS);
 
             setRecyclerView();
             setCollections();
@@ -130,6 +130,7 @@ public class MarketFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 }
 
                 if (!documentSnapshots.isEmpty()){
+                    Log.d("snapshot is empty", documentSnapshots.size() + "");
                     //retrieve the first bacth of documentSnapshots
                     for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
                         switch (change.getType()) {
@@ -145,6 +146,8 @@ public class MarketFragment extends Fragment implements SwipeRefreshLayout.OnRef
                         }
                     }
                 }else {
+                    Log.d("snapshot  empty", documentSnapshots.size() + "");
+
                     mPlaceHolderRelativeLayout.setVisibility(View.VISIBLE);
                 }
 
@@ -163,7 +166,7 @@ public class MarketFragment extends Fragment implements SwipeRefreshLayout.OnRef
             DocumentSnapshot lastVisible = sellingAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of documentSnapshots
-            Query nextSellingQuery = sellingCollection.orderBy("randomNumber", Query.Direction.DESCENDING)
+            Query nextSellingQuery = sellingCollection.orderBy("random_number", Query.Direction.DESCENDING)
                     .startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
 

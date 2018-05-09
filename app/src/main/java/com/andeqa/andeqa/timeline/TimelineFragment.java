@@ -73,7 +73,7 @@ public class TimelineFragment extends Fragment implements SwipeRefreshLayout.OnR
 
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
         timelineQuery = timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
-                .collection("timeline").orderBy("time", Query.Direction.DESCENDING)
+                .collection("activities").orderBy("time", Query.Direction.DESCENDING)
                 .limit(TOTAL_ITEMS);
 
         setRecyclerView();

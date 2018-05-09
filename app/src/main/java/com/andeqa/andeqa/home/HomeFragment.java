@@ -222,4 +222,9 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         posts.clear();
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+
+    }
 }

@@ -82,7 +82,7 @@ public class LikesActivity extends AppCompatActivity implements
             }
             //firestore
             likesCollection = FirebaseFirestore.getInstance().collection(Constants.LIKES);
-            likesQuery = likesCollection.document(mPostKey).collection("likes").orderBy("userId");
+            likesQuery = likesCollection.document(mPostKey).collection("likes").orderBy("user_id");
 
             setRecyclerView();
             setCollections();
@@ -162,7 +162,7 @@ public class LikesActivity extends AppCompatActivity implements
 
             //retrieve the first bacth of documentSnapshots
             Query nextSellingQuery = likesCollection.document(mPostKey)
-                    .collection("likes").orderBy("uid")
+                    .collection("likes").orderBy("user_id")
                     .startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
 

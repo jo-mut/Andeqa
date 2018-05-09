@@ -62,8 +62,8 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
     @Override
     public void onBindViewHolder(final CollectionViewHolder holder, int position) {
         final Collection collection = getSnapshot(position).toObject(Collection.class);
-        final String collectionId = collection.getCollectionId();
-        final String uid = collection.getUserId();
+        final String collectionId = collection.getCollection_id();
+        final String uid = collection.getUser_id();
 
         Log.d("collection name", collection.getName());
 

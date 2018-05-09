@@ -5,13 +5,13 @@ package com.andeqa.andeqa.models;
  */
 
 public class TransactionDetails {
-    String userId;
-    String postId;
-    String transactionId;
+    String user_id;
+    String post_id;
+    String transaction_id;
     String type;
     long time;
     double amount;
-    double walletBalance;
+    double wallet_balance;
 
 
     public TransactionDetails() {
@@ -19,20 +19,20 @@ public class TransactionDetails {
 
 
 
-    public String getUserId() {
-        return userId;
+    public String getUser_id() {
+        return user_id;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
     }
 
-    public String getPostId() {
-        return postId;
+    public String getPost_id() {
+        return post_id;
     }
 
-    public void setPostId(String postId) {
-        this.postId = postId;
+    public void setPost_id(String post_id) {
+        this.post_id = post_id;
     }
 
     public long getTime() {
@@ -59,19 +59,19 @@ public class TransactionDetails {
         this.amount = amount;
     }
 
-    public double getWalletBalance() {
-        return walletBalance;
+    public double getWallet_balance() {
+        return wallet_balance;
     }
 
-    public void setWalletBalance(double walletBalance) {
-        this.walletBalance = walletBalance;
+    public void setWallet_balance(double wallet_balance) {
+        this.wallet_balance = wallet_balance;
     }
 
-    public String getTransactionId() {
-        return transactionId;
+    public String getTransaction_id() {
+        return transaction_id;
     }
 
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
+    public void setTransaction_id(String transaction_id) {
+        this.transaction_id = transaction_id;
     }
 }

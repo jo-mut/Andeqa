@@ -97,10 +97,10 @@
     <string name="listed_on_ifair">Listed on Ifair:</string>
     <string name="owner">Owner:</string>
     <string name="sense_credits">Sense Credits:</string>
-    <string name="place_holder_text">Share your ideas, inspiration beautiful photos and see what other think as your earn in Sense Credits</string>
-    <string name="selling_holder_text">Currently there are no single on sale. Check again later</string>
+    <string name="place_holder_text">Share your beautiful photos and see what other think as your earn in Sense Credits</string>
+    <string name="selling_holder_text">Currently there are no posts on sale. Check again later</string>
     <string name="timeline_holder_text">You have no recent activities on your timeline.</string>
-    <string name="messages_holder_text">You have not received any new messages. Start a chat with your friends</string>
+    <string name="messages_holder_text">You have not received any new messages.</string>
     <string name="title_activity_creation">CreationActivity</string>
     <string name="title_activity_create">CreateActivity</string>
 

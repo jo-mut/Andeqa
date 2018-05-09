@@ -17,7 +17,6 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Message;
 import com.andeqa.andeqa.models.Room;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -30,9 +29,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,7 +36,6 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MessagesAccountActivity extends AppCompatActivity
         implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
@@ -50,7 +45,6 @@ public class MessagesAccountActivity extends AppCompatActivity
     @Bind(R.id.sendMessageEditText)EditText mSendMessageEditText;
     @Bind(R.id.toolbar)Toolbar mToolBar;
     @Bind(R.id.sendMessageImageView)ImageView mSendMessageImageView;
-    @Bind(R.id.senderImageView)CircleImageView mSenderImageView;
     @Bind(R.id.swipeRefreshLayout)SwipeRefreshLayout mSwipeRefreshLayout;
 
     //firestore references
@@ -62,7 +56,6 @@ public class MessagesAccountActivity extends AppCompatActivity
     private DatabaseReference databaseReference;
 
     private Query messagesQuery;
-    private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     //firebase auth
     private FirebaseAuth firebaseAuth;
     private String mUid;
@@ -129,7 +122,6 @@ public class MessagesAccountActivity extends AppCompatActivity
 
             setRecyclerView();
             getProfile();
-            getSenderProfile();
             setMessages();
 
         }
@@ -156,53 +148,6 @@ public class MessagesAccountActivity extends AppCompatActivity
         });
     }
 
-
-    /**get current user profile*/
-    private void getSenderProfile(){
-        usersCollection.document(firebaseAuth.getCurrentUser().getUid())
-                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (documentSnapshot.exists()){
-                            Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                            final String profileImage = cinggulan.getProfileImage();
-
-                            Picasso.with(MessagesAccountActivity.this)
-                                    .load(profileImage)
-                                    .resize(MAX_WIDTH, MAX_HEIGHT)
-                                    .onlyScaleDown()
-                                    .centerCrop()
-                                    .placeholder(R.drawable.profle_image_background)
-                                    .networkPolicy(NetworkPolicy.OFFLINE)
-                                    .into(mSenderImageView, new Callback() {
-                                        @Override
-                                        public void onSuccess() {
-
-                                        }
-
-                                        @Override
-                                        public void onError() {
-                                            Picasso.with(MessagesAccountActivity.this)
-                                                    .load(profileImage)
-                                                    .resize(MAX_WIDTH, MAX_HEIGHT)
-                                                    .onlyScaleDown()
-                                                    .centerCrop()
-                                                    .placeholder(R.drawable.profle_image_background)
-                                                    .into(mSenderImageView);
-
-                                        }
-                                    });
-
-                        }
-                    }
-                });
-    }
 
     private void setRecyclerView(){
         messagingAdapter = new MessagingAdapter(this);
@@ -357,24 +302,24 @@ public class MessagesAccountActivity extends AppCompatActivity
 
                            final Message message = new Message();
                            message.setMessage(text_message);
-                           message.setSenderUid(firebaseAuth.getCurrentUser().getUid());
-                           message.setRecepientUid(mUid);
+                           message.setSender_id(firebaseAuth.getCurrentUser().getUid());
+                           message.setRecepient_id(mUid);
                            message.setTime(time);
-                           message.setMessageId(documentId);
+                           message.setMessage_id(documentId);
                            message.setType("Text");
-                           message.setRoomId(roomId);
+                           message.setRoom_id(roomId);
                            documentReference.set(message);
                            processMessage = false;
 
                        }else {
                            final Message message = new Message();
                            message.setMessage(text_message);
-                           message.setSenderUid(firebaseAuth.getCurrentUser().getUid());
-                           message.setRecepientUid(mUid);
+                           message.setSender_id(firebaseAuth.getCurrentUser().getUid());
+                           message.setRecepient_id(mUid);
                            message.setTime(time);
-                           message.setMessageId(documentId);
+                           message.setMessage_id(documentId);
                            message.setType("Text");
-                           message.setRoomId(roomId);
+                           message.setRoom_id(roomId);
                            documentReference.set(message);
                            processMessage = false;
 
@@ -390,11 +335,12 @@ public class MessagesAccountActivity extends AppCompatActivity
                     .document(mUid);
 
             Room room = new Room();
-            room.setUserId(mUid);
+            room.setReceiver_id(mUid);
+            room.setSender_id(firebaseAuth.getCurrentUser().getUid());
             room.setMessage(text_message);
             room.setTime(time);
-            room.setRoomId(roomId);
-            room.setStatus("unRead");
+            room.setRoom_id(roomId);
+            room.setReceiver_status("un_read");
             receipientReference.set(room);
             senderReference.set(room);
             mSendMessageEditText.setText("");

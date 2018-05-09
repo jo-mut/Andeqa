@@ -6,43 +6,43 @@ package com.andeqa.andeqa.models;
 
 public class Message {
 
-    String senderUid;
-    String recepientUid;
+    String sender_id;
+    String recepient_id;
     String message;
-    String messageId;
+    String message_id;
     String type;
-    String roomId;
+    String room_id;
     long time;
 
     public Message() {
     }
 
-    public Message(String senderUid, String recepientUid, String message,
-                   String messageId, String type, String roomId, long time) {
-        this.senderUid = senderUid;
-        this.recepientUid = recepientUid;
+    public Message(String sender_id, String recepient_id, String message,
+                   String message_id, String type, String room_id, long time) {
+        this.sender_id = sender_id;
+        this.recepient_id = recepient_id;
         this.message = message;
-        this.messageId = messageId;
+        this.message_id = message_id;
         this.type = type;
-        this.roomId = roomId;
+        this.room_id = room_id;
         this.time = time;
 
     }
 
-    public String getSenderUid() {
-        return senderUid;
+    public String getSender_id() {
+        return sender_id;
     }
 
-    public void setSenderUid(String senderUid) {
-        this.senderUid = senderUid;
+    public void setSender_id(String sender_id) {
+        this.sender_id = sender_id;
     }
 
-    public String getRecepientUid() {
-        return recepientUid;
+    public String getRecepient_id() {
+        return recepient_id;
     }
 
-    public void setRecepientUid(String recepientUid) {
-        this.recepientUid = recepientUid;
+    public void setRecepient_id(String recepient_id) {
+        this.recepient_id = recepient_id;
     }
 
     public String getMessage() {
@@ -53,12 +53,12 @@ public class Message {
         this.message = message;
     }
 
-    public String getMessageId() {
-        return messageId;
+    public String getMessage_id() {
+        return message_id;
     }
 
-    public void setMessageId(String messageId) {
-        this.messageId = messageId;
+    public void setMessage_id(String message_id) {
+        this.message_id = message_id;
     }
 
     public String getType() {
@@ -70,12 +70,12 @@ public class Message {
     }
 
 
-    public String getRoomId() {
-        return roomId;
+    public String getRoom_id() {
+        return room_id;
     }
 
-    public void setRoomId(String roomId) {
-        this.roomId = roomId;
+    public void setRoom_id(String room_id) {
+        this.room_id = room_id;
     }
 
     public long getTime() {

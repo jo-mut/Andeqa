@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -23,13 +22,10 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.message.MessagesAccountActivity;
 import com.andeqa.andeqa.models.Andeqan;
-import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Room;
-import com.andeqa.andeqa.models.Timeline;
-import com.andeqa.andeqa.people.FollowersActivity;
-import com.andeqa.andeqa.people.FollowingActivity;
+
 import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.andeqa.andeqa.wallet.WalletActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -46,8 +42,9 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -59,15 +56,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Bind(R.id.profileImageView)CircleImageView mProifleImageView;
     @Bind(R.id.fullNameTextView)TextView mFullNameTextView;
     @Bind(R.id.bioTextView)TextView mBioTextView;
-    @Bind(R.id.followersCountTextView) TextView mFollowersCountTextView;
-    @Bind(R.id.followingCountTextView)TextView mFollowingCountTextView;
-    @Bind(R.id.postsCountTextView)TextView mPostsCountTextView;
+    @Bind(R.id.collectionsCountTextView)TextView mCollectionsCountTextView;
     @Bind(R.id.profileCoverImageView)ImageView mProfileCover;
     @Bind(R.id.collapsing_toolbar)CollapsingToolbarLayout collapsingToolbarLayout;
     @Bind(R.id.sendMessageImageView)ImageView mSendMessageImageView;
-    @Bind(R.id.followButton)Button mFollowButton;
-    @Bind(R.id.followingCountRelativeLayout)RelativeLayout mFollowingCountRelativeLayout;
-    @Bind(R.id.followersCountRelativeLayout)RelativeLayout mFollowersCountRelativeLayout;
     @Bind(R.id.bioRelativeLayout)RelativeLayout mBioRelativeLayout;
 
     private static final String TAG = ProfileActivity.class.getSimpleName();
@@ -142,12 +134,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             relationsCollections = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             collectionCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
             profileCollectionsQuery = collectionCollection.orderBy("time", Query.Direction.DESCENDING)
-                    .whereEqualTo("userId", mUid)
+                    .whereEqualTo("user_id", mUid)
                     .limit(TOTAL_ITEMS);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             roomsCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            postCountQuery = postsCollection.orderBy("time").whereEqualTo("userId", mUid);
+            postCountQuery = postsCollection.orderBy("time").whereEqualTo("user_id", mUid);
 
             //firebase
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
@@ -166,7 +158,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             //show hidden views
             if (!firebaseAuth.getCurrentUser().getUid().equals(mUid)){
                 mSendMessageImageView.setVisibility(View.VISIBLE);
-                mFollowButton.setVisibility(View.VISIBLE);
             }
 
             usersCollections.document(mUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -199,10 +190,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             });
 
             //INITIALIZE CLICK LISTENERS
-            mFollowingCountRelativeLayout.setOnClickListener(this);
-            mFollowersCountRelativeLayout.setOnClickListener(this);
             mSendMessageImageView.setOnClickListener(this);
-            mFollowButton.setOnClickListener(this);
 
         }
 
@@ -250,87 +238,24 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     private void fetchData(){
 
-        postCountQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        collectionCollection.orderBy("time", Query.Direction.DESCENDING)
+                .whereEqualTo("user_id", mUid).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
                     Log.w(TAG, "Listen error", e);
                     return;
                 }
 
-                if (!documentSnapshots.isEmpty()){
-                    final int postsCount = documentSnapshots.size();
-                    mPostsCountTextView.setText(postsCount + "");
+                final int collectionCount = queryDocumentSnapshots.size();
+
+                if (!queryDocumentSnapshots.isEmpty()){
+                    mCollectionsCountTextView.setText(collectionCount + "");
                 }else {
-                    mPostsCountTextView.setText("0");
+                    mCollectionsCountTextView.setText("0");
                 }
             }
         });
-
-        //get followers count
-        relationsCollections.document("followers")
-                .collection(mUid)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-
-                        if (documentSnapshots.isEmpty()){
-                            mFollowersCountTextView.setText("0");
-                        }else {
-                            mFollowersCountTextView.setText(documentSnapshots.size() + "");
-                        }
-                    }
-                });
-
-
-        relationsCollections.document("followers").collection(mUid)
-                .whereEqualTo("userId", firebaseAuth.getCurrentUser().getUid())
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (documentSnapshots.isEmpty()){
-                            mFollowButton.setText("FOLLOW");
-                        }else {
-                            mFollowButton.setText("FOLLOWING");
-                        }
-                    }
-                });
-
-
-
-        //get following count
-        relationsCollections.document("following")
-                .collection(mUid)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-
-                        if (documentSnapshots.isEmpty()){
-                            mFollowingCountTextView.setText("0");
-                        }else {
-                            mFollowingCountTextView.setText(documentSnapshots.size() + "");
-                        }
-                    }
-                });
-
 
         usersCollections.document(mUid)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -344,11 +269,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
                         if (documentSnapshot.exists()){
                             final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                            String firstName = andeqan.getFirstName();
-                            String secondName = andeqan.getSecondName();
-                            final String profileImage = andeqan.getProfileImage();
+                            String firstName = andeqan.getFirst_name();
+                            String secondName = andeqan.getSecond_name();
+                            final String profileImage = andeqan.getProfile_image();
                             String bio = andeqan.getBio();
-                            final String profileCover = andeqan.getProfileCover();
+                            final String profileCover = andeqan.getProfile_cover();
 
                             mFullNameTextView.setText(firstName + " " + secondName);
                             mBioTextView.setText(bio);
@@ -562,18 +487,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onClick(View v){
-        if (v == mFollowingCountRelativeLayout) {
-            Intent intent = new Intent(ProfileActivity.this, FollowingActivity.class);
-            intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
-            startActivity(intent);
-        }
-
-        if (v == mFollowersCountRelativeLayout){
-            Intent intent = new Intent(ProfileActivity.this, FollowersActivity.class);
-            intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
-            startActivity(intent);
-        }
-
         if (v == mSendMessageImageView){
             processRoom = true;
             roomsCollection.document("rooms")
@@ -589,7 +502,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                             if (processRoom){
                                 if (documentSnapshot.exists()){
                                     Room room = documentSnapshot.toObject(Room.class);
-                                    roomId = room.getRoomId();
+                                    roomId = room.getRoom_id();
                                     Intent intent = new Intent(ProfileActivity.this, MessagesAccountActivity.class);
                                     intent.putExtra(ProfileActivity.EXTRA_ROOM_UID, roomId);
                                     intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
@@ -605,66 +518,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                     startActivity(intent);
 
                                     processRoom = false;
-                                }
-                            }
-                        }
-                    });
-        }
-
-        if (v == mFollowButton){
-            processFollow = true;
-            relationsCollections.document("followers")
-                    .collection(mUid)
-                    .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid())
-                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                        @Override
-                        public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
-
-                            if (processFollow){
-                                if (documentSnapshots.isEmpty()){
-                                    //set followers and following
-                                    Relation follower = new Relation();
-                                    follower.setUserId(firebaseAuth.getCurrentUser().getUid());
-                                    relationsCollections.document("followers").collection(mUid)
-                                            .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    Timeline timeline = new Timeline();
-                                                    final long time = new Date().getTime();
-
-                                                    final String activityId = databaseReference.push().getKey();
-                                                    timeline.setPostId(mUid);
-                                                    timeline.setTime(time);
-                                                    timeline.setUserId(firebaseAuth.getCurrentUser().getUid());
-                                                    timeline.setType("relations");
-                                                    timeline.setActivityId(activityId);
-                                                    timeline.setStatus("unRead");
-
-                                                    timelineCollection.document(mUid).collection("activities")
-                                                            .document(firebaseAuth.getCurrentUser().getUid())
-                                                            .set(timeline);
-                                                }
-                                            });
-                                    final Relation following = new Relation();
-                                    following.setUserId(mUid);
-                                    relationsCollections.document("following").collection(firebaseAuth.getCurrentUser().getUid())
-                                            .document(mUid).set(following);
-                                    processFollow = false;
-                                    mFollowButton.setText("Following");
-                                }else {
-                                    relationsCollections.document("followers").collection(mUid)
-                                            .document(firebaseAuth.getCurrentUser().getUid()).delete();
-                                    relationsCollections.document("following").collection(firebaseAuth.getCurrentUser().getUid())
-                                            .document(mUid).delete();
-                                    processFollow = false;
-                                    mFollowButton.setText("Follow");
                                 }
                             }
                         }

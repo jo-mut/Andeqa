@@ -112,7 +112,7 @@
             android:name=".home.ImageViewActivity"
             android:label="Post" />
         <activity
-            android:name=".profile.WalletActivity"
+            android:name=".wallet.WalletActivity"
             android:label="Wallet"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
@@ -153,23 +153,21 @@
             android:name=".registration.SignInWithGoogle"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".creation.CameraActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".registration.SaveGoogleProfileActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".creation.CreationActivity"
-            android:label="@string/title_activity_create"
-            android:theme="@style/AppTheme" />
-        <activity
+            android:screenOrientation="portrait"
             android:name=".creation.CreateCollectionActivity"
             android:label="Create collection" />
         <activity android:name=".profile.CollectionsPostsActivity" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".settings.CollectionSettingsActivity"
             android:label="Collection settings" />
-        <activity android:name=".market.RedeemCreditsActivity"></activity>
+        <activity
+            android:label="Redeem"
+            android:screenOrientation="portrait"
+            android:name=".market.RedeemCreditsActivity"/>
     </application>
 
 </manifest>

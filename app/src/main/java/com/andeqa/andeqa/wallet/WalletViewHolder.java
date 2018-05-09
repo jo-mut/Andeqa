@@ -1,0 +1,33 @@
+package com.andeqa.andeqa.wallet;
+
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.utils.ProportionalImageView;
+
+import butterknife.ButterKnife;
+
+public class WalletViewHolder extends RecyclerView.ViewHolder {
+
+    View mView;
+    Context mContext;
+    public ProportionalImageView postImageView;
+    public TextView amountTransferredTextView;
+    public ImageView deleteHistoryImageView;
+
+    public WalletViewHolder(View itemView) {
+        super(itemView);
+        mView = itemView;
+        mContext = itemView.getContext();
+        ButterKnife.bind(this, mView);
+        postImageView = (ProportionalImageView) mView.findViewById(R.id.postImageView);
+        deleteHistoryImageView = (ImageView) mView.findViewById(R.id.deleteHistoryImageView);
+        amountTransferredTextView = (TextView) mView.findViewById(R.id.amountTransferredTextView);
+
+
+    }
+}

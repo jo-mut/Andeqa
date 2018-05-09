@@ -21,9 +21,7 @@ public class TimelineCommentViewHolder extends RecyclerView.ViewHolder {
     Context mContext;
     public TextView usernameTextView;
     public CircleImageView profileImageView;
-    public TextView timelineTextView;
     public LinearLayout timelineCommentLinearLayout;
-    public View statusView;
 
     public TimelineCommentViewHolder(View itemView) {
         super(itemView);
@@ -31,9 +29,7 @@ public class TimelineCommentViewHolder extends RecyclerView.ViewHolder {
         mContext = itemView.getContext();
         usernameTextView = (TextView)itemView.findViewById(R.id.usernameTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
-        timelineTextView = (TextView) itemView.findViewById(R.id.timelineTextView);
         timelineCommentLinearLayout = (LinearLayout) itemView.findViewById(R.id.timelineCommentLinearLayout);
-        statusView = (View) mView.findViewById(R.id.statusView);
 
     }
 

@@ -20,11 +20,9 @@ public class TimelineLikeViewHolder extends RecyclerView.ViewHolder {
 
     View mView;
     Context mContext;
-    public TextView usernameTextView;
     public CircleImageView profileImageView;
-    public TextView timelineTextView;
+    public TextView usernameTextView;
     public LinearLayout timelineLikeLinearLayout;
-    public View statusView;
 
     public TimelineLikeViewHolder(View itemView) {
         super(itemView);
@@ -32,8 +30,6 @@ public class TimelineLikeViewHolder extends RecyclerView.ViewHolder {
         mContext = itemView.getContext();
         usernameTextView = (TextView)itemView.findViewById(R.id.usernameTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
-        timelineTextView = (TextView) itemView.findViewById(R.id.timelineTextView);
-        statusView = (View) mView.findViewById(R.id.statusView);
         timelineLikeLinearLayout = (LinearLayout) itemView.findViewById(R.id.timelineLikeLinearLayout);
     }
 

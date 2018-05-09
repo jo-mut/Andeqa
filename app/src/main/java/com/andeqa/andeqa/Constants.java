@@ -6,7 +6,7 @@ package com.andeqa.andeqa;
 
 public final class Constants {
     public  static  final String COLLECTIONS = "collections";
-    public  static  final String COLLECTIONS_POSTS = "posts_collection";
+    public  static  final String COLLECTIONS_POSTS = "posts_collections";
     public  static  final String POSTS = "posts";
     public  static  final String FIREBASE_USERS = "users";
     public static final String COMMENTS = "comments";
@@ -23,5 +23,6 @@ public final class Constants {
     public static final String MESSAGES = "messages";
     public static final String VIEWS = "views";
     public static final String RANDOM_PUSH_ID = "random_ids";
+
 
 }

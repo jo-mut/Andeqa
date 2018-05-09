@@ -1,7 +1,6 @@
 package com.andeqa.andeqa.message;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -11,20 +10,14 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.Message;
-import com.andeqa.andeqa.models.Room;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
 import static android.media.CamcorderProfile.get;
@@ -78,7 +71,7 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public int getItemViewType(int position) {
         Message message = getSnapshot(position).toObject(Message.class);
-        final String senderUid = message.getSenderUid();
+        final String senderUid = message.getSender_id();
         firebaseAuth = FirebaseAuth.getInstance();
 
         if (senderUid.equals(firebaseAuth.getCurrentUser().getUid())){
@@ -112,7 +105,8 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (firebaseAuth.getCurrentUser() != null){
 
             Message message = getSnapshot(position).toObject(Message.class);
-            final String uid = message.getSenderUid();
+            final String uid = message.getSender_id();
+            Log.d("message uid", uid);
 
             if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
                 populateSend((MessageSendViewHolder)holder,position);
@@ -132,7 +126,7 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
 
         final Message message = getSnapshot(position).toObject(Message.class);
-        final String messageId = message.getMessageId();
+        final String messageId = message.getMessage_id();
 
 
         holder.messageTextView.setText(message.getMessage());
@@ -161,7 +155,7 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         roomCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
 
         final Message message = getSnapshot(position).toObject(Message.class);
-        final String messageId = message.getMessageId();
+        final String messageId = message.getMessage_id();
 
         holder.messageTextView.setText(message.getMessage());
         holder.timeTextView.setText(DateFormat.format("HH:mm", message.getTime()));
@@ -183,6 +177,5 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         });
 
     }
-
 
 }

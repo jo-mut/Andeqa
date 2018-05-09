@@ -108,10 +108,7 @@
 
             <RelativeLayout
                 android:id="@+id/changeCoverRelativeLayout"
-                android:paddingRight="10dp"
-                android:paddingEnd="10dp"
-                android:paddingLeft="10dp"
-                android:paddingStart="10dp"
+                android:padding="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="120dp">
 
@@ -181,10 +178,6 @@
 
             <RelativeLayout
                 android:id="@+id/changeNameRelativeLayout"
-                android:paddingRight="10dp"
-                android:paddingEnd="10dp"
-                android:paddingLeft="10dp"
-                android:paddingStart="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="120dp">
 
@@ -212,7 +205,6 @@
                     android:text="Rename this collection with a more suitable name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:textSize="21sp"
@@ -255,10 +247,7 @@
 
             <RelativeLayout
                 android:id="@+id/changeNoteRelativeLayout"
-                android:paddingRight="10dp"
-                android:paddingEnd="10dp"
-                android:paddingLeft="10dp"
-                android:paddingStart="10dp"
+                android:padding="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="120dp">
 
@@ -287,7 +276,6 @@
                     android:text="Describe your collection to let other know more about it"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:textSize="21sp"

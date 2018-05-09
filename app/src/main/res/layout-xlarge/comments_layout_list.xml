@@ -20,21 +20,6 @@
             android:layout_width="110dp"
             android:layout_height="110dp" />
 
-        <Button
-            android:id="@+id/followTextView"
-            android:textSize="12sp"
-            android:textColor="@android:color/white"
-            android:background="@drawable/colour_btn_background"
-            android:textAllCaps="false"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_margin="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp" />
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -43,9 +28,8 @@
             android:layout_toEndOf="@+id/profileImageView"
             android:layout_alignBottom="@+id/profileImageView"
             android:layout_marginRight="10dp"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/followTextView"
-            android:layout_toStartOf="@+id/followTextView">
+            android:layout_marginEnd="10dp"
+            android:layout_centerVertical="true">
 
             <TextView
                 android:text=""

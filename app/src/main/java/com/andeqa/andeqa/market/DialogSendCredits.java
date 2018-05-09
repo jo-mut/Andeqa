@@ -143,12 +143,12 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                         if (documentSnapshot.exists()){
                             final Market market = documentSnapshot.toObject(Market.class);
 
-                            final double salePrice = market.getSalePrice();
+                            final double salePrice = market.getSale_price();
 
                             if (amountTransferred < salePrice){
-                                mAmountEnteredEditText.setError("Your uCredit is insufficient");
+                                mAmountEnteredEditText.setError("Please enter the exact sale price");
                             }else if (mAmountEnteredEditText.equals("")){
-                                mAmountEnteredEditText.setError("Enter the sale price");
+                                mAmountEnteredEditText.setError("Please enter the exact sale price");
                             }else  if (amountTransferred > salePrice){
                                 mAmountEnteredEditText.setError("Amount is more than sale price");
                             } else{
@@ -158,13 +158,13 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                                             public void onSuccess(DocumentSnapshot documentSnapshot) {
                                                 if (documentSnapshot.exists()){
                                                     Balance walletBalance = documentSnapshot.toObject(Balance.class);
-                                                    final double currentBalance = walletBalance.getTotalBalance();
+                                                    final double currentBalance = walletBalance.getTotal_balance();
 
                                                     final double newWalletBalance = currentBalance - amountTransferred;
 
                                                     //record new wallet balance
                                                     final Balance balance = new Balance();
-                                                    balance.setTotalBalance(newWalletBalance);
+                                                    balance.setTotal_balance(newWalletBalance);
 
                                                     walletReference.document(firebaseAuth.getCurrentUser().getUid()).set(balance)
                                                             .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -177,7 +177,7 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                                                                             public void onSuccess(DocumentSnapshot documentSnapshot) {
                                                                                 if (documentSnapshot.exists()){
                                                                                     Balance cingleWalletBalance = documentSnapshot.toObject(Balance.class);
-                                                                                    final double currentBalance = cingleWalletBalance.getTotalBalance();
+                                                                                    final double currentBalance = cingleWalletBalance.getTotal_balance();
                                                                                     final double newCingleBalance = currentBalance + amountTransferred;
 
                                                                                     postWalletReference.document(mPostKey).update("amount deposited", newCingleBalance)
@@ -192,10 +192,10 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                                                                                             });
 
                                                                                     TransactionDetails transactionDetails = new TransactionDetails();
-                                                                                    transactionDetails.setPostId(mPostKey);
-                                                                                    transactionDetails.setUserId(firebaseAuth.getCurrentUser().getUid());
+                                                                                    transactionDetails.setPost_id(mPostKey);
+                                                                                    transactionDetails.setUser_id(firebaseAuth.getCurrentUser().getUid());
                                                                                     transactionDetails.setAmount(amountTransferred);
-                                                                                    transactionDetails.setWalletBalance(newWalletBalance);
+                                                                                    transactionDetails.setWallet_balance(newWalletBalance);
                                                                                     transactionDetails.setTime(timeStamp);
                                                                                     transactionDetails.setType("redeem");
 
@@ -203,7 +203,7 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                                                                                     DocumentReference ref = cingleOwnersReference.document();
                                                                                     String pushId = ref.getId();
                                                                                     //set the push id
-                                                                                    transactionDetails.setTransactionId(pushId);
+                                                                                    transactionDetails.setTransaction_id(pushId);
                                                                                     ref.set(transactionDetails);
 
                                                                                     //once cingle has been bought remove it from cingle selling
@@ -222,10 +222,10 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                                                                                             });
 
                                                                                     TransactionDetails transactionDetails = new TransactionDetails();
-                                                                                    transactionDetails.setPostId(mPostKey);
-                                                                                    transactionDetails.setUserId(firebaseAuth.getCurrentUser().getUid());
+                                                                                    transactionDetails.setPost_id(mPostKey);
+                                                                                    transactionDetails.setUser_id(firebaseAuth.getCurrentUser().getUid());
                                                                                     transactionDetails.setAmount(amountTransferred);
-                                                                                    transactionDetails.setWalletBalance(newWalletBalance);
+                                                                                    transactionDetails.setWallet_balance(newWalletBalance);
                                                                                     transactionDetails.setTime(timeStamp);
                                                                                     transactionDetails.setType("redeem");
 
@@ -233,7 +233,7 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                                                                                     DocumentReference ref = cingleOwnersReference.document();
                                                                                     String pushId = ref.getId();
                                                                                     //set the push id
-                                                                                    transactionDetails.setTransactionId(pushId);
+                                                                                    transactionDetails.setTransaction_id(pushId);
                                                                                     ref.set(transactionDetails);
                                                                                     //once cingle has been bought remove it from cingle selling
                                                                                     ifairReference.document(mPostKey).delete();

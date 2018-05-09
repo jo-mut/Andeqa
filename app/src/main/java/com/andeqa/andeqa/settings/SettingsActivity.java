@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -40,7 +39,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 //    @Bind(R.id.faqRelativeLayout)RelativeLayout mFaqRelativeLayout;
     @Bind(R.id.privacyPolicyRelativeLayout)RelativeLayout mPrivacyPolicyRelativeLayout;
     @Bind(R.id.updateProfileRelativeLayout)RelativeLayout mUpdateProfileRelativeLayout;
-    @Bind(R.id.deleteAccountRelativeLayout)RelativeLayout mDeleteAccountRelativeLayout;
+//    @Bind(R.id.deleteAccountRelativeLayout)RelativeLayout mDeleteAccountRelativeLayout;
 
     private static final String TAG = SettingsActivity.class.getSimpleName();
     private CollectionReference usersCollection;
@@ -55,7 +54,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.activity_settings);
         ButterKnife.bind(this);
 
-        mDeleteAccountRelativeLayout.setOnClickListener(this);
+//        mDeleteAccountRelativeLayout.setOnClickListener(this);
 //        mFaqRelativeLayout.setOnClickListener(this);
         mPrivacyPolicyRelativeLayout.setOnClickListener(this);
         mSendFeedbackRelativeLayout.setOnClickListener(this);
@@ -92,7 +91,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 if (documentSnapshot.exists()){
                     final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
                     String username = cinggulan.getUsername();
-                    final String profileImage = cinggulan.getProfileImage();
+                    final String profileImage = cinggulan.getProfile_image();
                     String bio = cinggulan.getBio();
 
                     mUsernameTextView.setText(username);
@@ -132,11 +131,11 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onClick(View v){
-        if (v == mDeleteAccountRelativeLayout){
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            DialogDeleteAccountFragment dialogDeleteAccountFragment = DialogDeleteAccountFragment.newInstance("delete account");
-            dialogDeleteAccountFragment.show(fragmentManager, "delete account dialog fragment");
-        }
+//        if (v == mDeleteAccountRelativeLayout){
+//            FragmentManager fragmentManager = getSupportFragmentManager();
+//            DialogDeleteAccountFragment dialogDeleteAccountFragment = DialogDeleteAccountFragment.newInstance("delete account");
+//            dialogDeleteAccountFragment.show(fragmentManager, "delete account dialog fragment");
+//        }
 
 //        if (v == mFaqRelativeLayout){
 //            Intent intent = new Intent(Intent.ACTION_VIEW,
@@ -146,7 +145,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
         if (v == mPrivacyPolicyRelativeLayout){
             Intent intent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://andeqa@andeqa.com"));
+                    Uri.parse("https://andeqa.firebaseapp.com"));
             startActivity(intent);
         }
 
@@ -166,7 +165,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             }
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("message/rfc822");
-            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"andeqa@andeqa.com"});
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"andeqa.support@gmail.com"});
             intent.putExtra(Intent.EXTRA_SUBJECT, "Query from android app");
             intent.putExtra(Intent.EXTRA_TEXT, body);
             this.startActivity(Intent.createChooser(intent, this.getString(R.string.choose_email_client)));

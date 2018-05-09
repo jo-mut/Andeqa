@@ -103,9 +103,12 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
     public void onBindViewHolder(final PostSellingViewHolder holder, int position) {
         final Market market = getSnapshot(position).toObject(Market.class);
         holder.bindIfairCingle(market);
-        final String postKey = market.getPostId();
-        final String uid = market.getUserId();
-        final double salePrice = market.getSalePrice();
+        final String postKey = market.getPost_id();
+        final String uid = market.getUser_id();
+        final double salePrice = market.getSale_price();
+
+        Log.d("snapshot uid", uid);
+
 
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
@@ -116,7 +119,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
             cingleWalletReference = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
             ownerReference = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            sellingQuery = sellingCollection.orderBy("randomNumber").limit(10);
+            sellingQuery = sellingCollection.orderBy("random_number").limit(10);
 
         }
         DecimalFormat formatter =  new DecimalFormat("0.00000000");
@@ -148,7 +151,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
 
                 if (documentSnapshot.exists()){
                     final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
-                    final String collectionId = collectionPost.getCollectionId();
+                    final String collectionId = collectionPost.getCollection_id();
 
                     holder.cingleTradeMethodTextView.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -327,7 +330,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
 
                 if (documentSnapshot.exists()){
                     Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                    final String profileImage = cinggulan.getProfileImage();
+                    final String profileImage = cinggulan.getProfile_image();
                     final String username = cinggulan.getUsername();
                     holder.usernameTextView.setText(username);
                     Picasso.with(mContext)
@@ -368,7 +371,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
 
                 if (documentSnapshot.exists()){
                     TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
-                    final String ownerUid = transactionDetails.getUserId();
+                    final String ownerUid = transactionDetails.getUser_id();
                     Log.d("owner uid", ownerUid);
 
                     if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
@@ -388,7 +391,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
 
                             if (documentSnapshot.exists()){
                                 Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                                final String profileImage = cinggulan.getProfileImage();
+                                final String profileImage = cinggulan.getProfile_image();
                                 final String username = cinggulan.getUsername();
                                 holder.cingleOwnerTextView.setText(username);
                                 Picasso.with(mContext)

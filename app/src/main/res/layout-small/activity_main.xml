@@ -14,18 +14,26 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
-            android:src="@drawable/ic_launcher"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/cingglLogoImageView"
+        <TextView
+            android:background="@drawable/logo_background"
             android:layout_centerInParent="true"
-            android:layout_width="75sp"
-            android:layout_height="75sp"
-            android:adjustViewBounds="true" />
+            android:textSize="30sp"
+            android:paddingTop="50dp"
+            android:paddingBottom="50dp"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:textColor="@android:color/white"
+            android:id="@+id/appLogoTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Andeqa"/>
+
 
         <ProgressBar
             android:visibility="gone"
-            android:layout_below="@+id/cingglLogoImageView"
+            android:layout_below="@+id/appLogoTextView"
             android:indeterminateOnly="true"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="75dp"
@@ -33,18 +41,6 @@
             android:layout_marginTop="10dp"
             android:id="@+id/progressBar"
             android:layout_centerInParent="true" />
-
-        <TextView
-            android:text="Andeqa"
-            android:textSize="30sp"
-            android:textStyle="normal|bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/appNameTextView"
-            android:textColor="@android:color/white"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="10dp"
-            android:layout_alignParentBottom="true" />
 
     </RelativeLayout>
 

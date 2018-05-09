@@ -1,10 +1,15 @@
 package com.andeqa.andeqa.profile;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -108,6 +113,14 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                     .LengthFilter(DEFAULT_TITLE_LENGTH_LIMIT)});
             textWatchers();
 
+            //permission
+            int version = Build.VERSION.SDK_INT;
+            if (version > Build.VERSION_CODES.LOLLIPOP_MR1){
+                if (!checkIfAlreadyHavePermission()){
+                    requestForSpecificPermission();
+                }
+            }
+
             mUpdateProfilePictureImageButton.setOnClickListener(this);
             mUpdateCoverTextView.setOnClickListener(this);
             mDoneEditingImageView.setOnClickListener(this);
@@ -146,8 +159,41 @@ public class UpdateProfileActivity extends AppCompatActivity implements
         });
     }
 
+    private boolean checkIfAlreadyHavePermission(){
+        int result = ContextCompat.checkSelfPermission(this,  Manifest.permission.GET_ACCOUNTS);
+        if (result == PackageManager.PERMISSION_GRANTED){
+            return true;
+        }else {
+            return false;
+        }
+    }
 
-        @Override
+    private void requestForSpecificPermission(){
+        ActivityCompat.requestPermissions(this, new String[]{
+                Manifest.permission.GET_ACCOUNTS, Manifest.permission.RECEIVE_SMS,
+                Manifest.permission.READ_SMS, Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        }, 101);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case 101:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    //granted
+                }else {
+                    // not granted
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.update_profile_menu, menu);
@@ -290,7 +336,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                             if (documentSnapshot.exists()){
                                 final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                                final String profileImage = cinggulan.getProfileImage();
+                                final String profileImage = cinggulan.getProfile_image();
                                 Log.d("profile image", profileImage);
 
                                 Picasso.with(UpdateProfileActivity.this)
@@ -361,7 +407,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                             if (documentSnapshot.exists()){
                                 final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                                final String profileCover= cinggulan.getProfileCover();
+                                final String profileCover= cinggulan.getProfile_cover();
                                 Log.d("profile image", profileCover);
 
                                 Picasso.with(UpdateProfileActivity.this)
@@ -417,13 +463,13 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 
         if (!TextUtils.isEmpty(firstName)){
             DocumentReference firstNameRef = usersReference.document(firebaseUser.getUid());
-            firstNameRef.update("firstName", firstName);
+            firstNameRef.update("first_name", firstName);
             mFirstNameEditText.setText("");
         }
 
         if (!TextUtils.isEmpty(secondName)){
             DocumentReference secondNameRef = usersReference.document(firebaseUser.getUid());
-            secondNameRef.update("secondName", secondName);
+            secondNameRef.update("second_name", secondName);
             mSecondNameEditText.setText("");
         }
     }

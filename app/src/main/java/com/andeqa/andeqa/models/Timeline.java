@@ -6,9 +6,9 @@ package com.andeqa.andeqa.models;
 
 public class Timeline {
     String type;
-    String userId;
-    String postId;
-    String activityId;
+    String user_id;
+    String post_id;
+    String activity_id;
     long time;
     String status;
 
@@ -16,12 +16,12 @@ public class Timeline {
 
     }
 
-    public Timeline(String type, String userId, String postId,
-                    String activityId, long time, String status) {
+    public Timeline(String type, String user_id, String post_id,
+                    String activity_id, long time, String status) {
         this.type = type;
-        this.userId = userId;
-        this.postId = postId;
-        this.activityId = activityId;
+        this.user_id = user_id;
+        this.post_id = post_id;
+        this.activity_id = activity_id;
         this.time = time;
         this.status = status;
     }
@@ -34,28 +34,28 @@ public class Timeline {
         this.type = type;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUser_id() {
+        return user_id;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
     }
 
-    public String getPostId() {
-        return postId;
+    public String getPost_id() {
+        return post_id;
     }
 
-    public void setPostId(String postId) {
-        this.postId = postId;
+    public void setPost_id(String post_id) {
+        this.post_id = post_id;
     }
 
-    public String getActivityId() {
-        return activityId;
+    public String getActivity_id() {
+        return activity_id;
     }
 
-    public void setActivityId(String activityId) {
-        this.activityId = activityId;
+    public void setActivity_id(String activity_id) {
+        this.activity_id = activity_id;
     }
 
     public long getTime() {

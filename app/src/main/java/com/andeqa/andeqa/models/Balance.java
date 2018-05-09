@@ -5,34 +5,34 @@ package com.andeqa.andeqa.models;
  */
 
 public class Balance {
-    double totalBalance;
-    double amountDeposited;
-    double amountRedeemed;
+    double total_balance;
+    double amount_deposited;
+    double amount_redeemed;
 
     public Balance() {
     }
 
-    public double getTotalBalance() {
-        return totalBalance;
+    public double getTotal_balance() {
+        return total_balance;
     }
 
-    public void setTotalBalance(double totalBalance) {
-        this.totalBalance = totalBalance;
+    public void setTotal_balance(double total_balance) {
+        this.total_balance = total_balance;
     }
 
-    public double getAmountDeposited() {
-        return amountDeposited;
+    public double getAmount_deposited() {
+        return amount_deposited;
     }
 
-    public void setAmountDeposited(double amountDeposited) {
-        this.amountDeposited = amountDeposited;
+    public void setAmount_deposited(double amount_deposited) {
+        this.amount_deposited = amount_deposited;
     }
 
-    public double getAmountRedeemed() {
-        return amountRedeemed;
+    public double getAmount_redeemed() {
+        return amount_redeemed;
     }
 
-    public void setAmountRedeemed(double amountRedeemed) {
-        this.amountRedeemed = amountRedeemed;
+    public void setAmount_redeemed(double amount_redeemed) {
+        this.amount_redeemed = amount_redeemed;
     }
 }

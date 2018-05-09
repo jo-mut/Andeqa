@@ -5,47 +5,35 @@ package com.andeqa.andeqa.models;
  */
 
 public class Andeqan {
-    String profileImage;
-    String profileCover;
+    String profile_image;
+    String profile_cover;
     String bio;
     String username;
-    String userId;
+    String user_id;
     String email;
-    String firstName;
-    String secondName;
+    String first_name;
+    String second_name;
+    String device_id;
 
     public Andeqan(){
         //EMPTY CONSTRUCTOR REQUIRED
     }
 
-    public Andeqan(String profileImage, String bio,
-                   String username, String profileCover,
-                   String userId, String email,
-                   String firstName, String secondName) {
-        this.profileImage = profileImage;
-        this.bio = bio;
-        this.username = username;
-        this.userId = userId;
-        this.email = email;
-        this.profileCover = profileCover;
-        this.firstName = firstName;
-        this.secondName = secondName;
+
+    public String getProfile_image() {
+        return profile_image;
     }
 
-    public String getProfileImage() {
-        return profileImage;
+    public void setProfile_image(String profile_image) {
+        this.profile_image = profile_image;
     }
 
-    public void setProfileImage(String profileImage) {
-        this.profileImage = profileImage;
+    public String getProfile_cover() {
+        return profile_cover;
     }
 
-    public String getProfileCover() {
-        return profileCover;
-    }
-
-    public void setProfileCover(String profileCover) {
-        this.profileCover = profileCover;
+    public void setProfile_cover(String profile_cover) {
+        this.profile_cover = profile_cover;
     }
 
     public String getBio() {
@@ -65,12 +53,12 @@ public class Andeqan {
     }
 
 
-    public String getUserId() {
-        return userId;
+    public String getUser_id() {
+        return user_id;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
     }
 
     public String getEmail() {
@@ -81,19 +69,27 @@ public class Andeqan {
         this.email = email;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getFirst_name() {
+        return first_name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setFirst_name(String first_name) {
+        this.first_name = first_name;
     }
 
-    public String getSecondName() {
-        return secondName;
+    public String getSecond_name() {
+        return second_name;
     }
 
-    public void setSecondName(String secondName) {
-        this.secondName = secondName;
+    public void setSecond_name(String second_name) {
+        this.second_name = second_name;
+    }
+
+    public String getDevice_id() {
+        return device_id;
+    }
+
+    public void setDevice_id(String device_id) {
+        this.device_id = device_id;
     }
 }

@@ -9,8 +9,8 @@ public class Collection {
     long number;
     String name;
     String note;
-    String collectionId;
-    String userId;
+    String collection_id;
+    String user_id;
     String type;
     String image;
 
@@ -41,12 +41,12 @@ public class Collection {
         this.number = number;
     }
 
-    public String getCollectionId() {
-        return collectionId;
+    public String getCollection_id() {
+        return collection_id;
     }
 
-    public void setCollectionId(String collectionId) {
-        this.collectionId = collectionId;
+    public void setCollection_id(String collection_id) {
+        this.collection_id = collection_id;
     }
 
 
@@ -66,12 +66,12 @@ public class Collection {
         this.type = type;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUser_id() {
+        return user_id;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
     }
 
     public String getImage() {

@@ -46,7 +46,7 @@ public class SignInActivity extends AppCompatActivity implements
     @Bind(R.id.errorRelativeLayout)RelativeLayout mErrorRelativeLayout;
     @Bind(R.id.errorTextView)TextView mErrorTextView;
     @Bind(R.id.progressBar)ProgressBar mProgressBar;
-    @Bind(R.id.googleSignInButton)Button mGoogleSignInButton;
+//    @Bind(R.id.googleSignInButton)Button mGoogleSignInButton;
 
 
     private FirebaseAuth mAuth;
@@ -67,7 +67,7 @@ public class SignInActivity extends AppCompatActivity implements
         mRegisterTextView.setOnClickListener(this);
         mPasswordLoginButton.setOnClickListener(this);
         mForgotPasswordTextView.setOnClickListener(this);
-        mGoogleSignInButton.setOnClickListener(this);
+//        mGoogleSignInButton.setOnClickListener(this);
         mAuth = FirebaseAuth.getInstance();
         createAuthProgressDialog();
 
@@ -164,6 +164,8 @@ public class SignInActivity extends AppCompatActivity implements
                 Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
                 mAuthProgressDialog.dismiss();
                 if (!task.isSuccessful()) {
+                    Log.e(TAG, "sign in failed: " + task.getException().getMessage());
+
                     mErrorRelativeLayout.setVisibility(View.VISIBLE);
                     mErrorTextView.setText("Please confirm that your email and password match and" + " " +
                             "that you are connected to the internet");
@@ -248,12 +250,12 @@ public class SignInActivity extends AppCompatActivity implements
             finish();
         }
 
-        if (v == mGoogleSignInButton){
-            Intent intent = new Intent(SignInActivity.this, SignInWithGoogle.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
-        }
+//        if (v == mGoogleSignInButton){
+//            Intent intent = new Intent(SignInActivity.this, SignInWithGoogle.class);
+//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//            startActivity(intent);
+//            finish();
+//        }
 
     }
 

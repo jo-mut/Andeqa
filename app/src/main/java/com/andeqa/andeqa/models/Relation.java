@@ -5,22 +5,22 @@ package com.andeqa.andeqa.models;
  */
 
 public class Relation {
-    String userId;
+    String user_id;
 
 
     public Relation() {
 
     }
 
-    public Relation(String userId) {
-        this.userId = userId;
+    public Relation(String user_id) {
+        this.user_id = user_id;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUser_id() {
+        return user_id;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
     }
 }

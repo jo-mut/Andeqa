@@ -1,13 +1,18 @@
 package com.andeqa.andeqa.creation;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -126,6 +131,13 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
             textWatchers();
             fetchUserData();
             uploadingToFirebaseDialog();
+            //permission
+            int version = Build.VERSION.SDK_INT;
+            if (version > Build.VERSION_CODES.LOLLIPOP_MR1){
+                if (!checkIfAlreadyHavePermission()){
+                    requestForSpecificPermission();
+                }
+            }
 
         }
 
@@ -211,6 +223,38 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
+    private boolean checkIfAlreadyHavePermission(){
+        int result = ContextCompat.checkSelfPermission(this,  Manifest.permission.GET_ACCOUNTS);
+        if (result == PackageManager.PERMISSION_GRANTED){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    private void requestForSpecificPermission(){
+        ActivityCompat.requestPermissions(this, new String[]{
+                Manifest.permission.GET_ACCOUNTS, Manifest.permission.RECEIVE_SMS,
+                Manifest.permission.READ_SMS, Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        }, 101);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case 101:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    //granted
+                }else {
+                    // not granted
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
     public void fetchUserData(){
         usersReference.document(firebaseAuth.getCurrentUser().getUid())
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -223,7 +267,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
                 if (documentSnapshot.exists()) {
                     final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                    final String profileImage = cinggulan.getProfileImage();
+                    final String profileImage = cinggulan.getProfile_image();
 
                     Picasso.with(CreatePostActivity.this)
                             .load(profileImage)
@@ -341,17 +385,17 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
                             //record all the collectionPost data
                             collectionPost.setNumber(number);
-                            collectionPost.setRandomNumber(random);
+                            collectionPost.setRandom_number(random);
                             collectionPost.setTime(timeStamp);
-                            collectionPost.setUserId(firebaseAuth.getCurrentUser().getUid());
-                            collectionPost.setPostId(pushId);
+                            collectionPost.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                            collectionPost.setPost_id(pushId);
                             collectionPost.setTitle(mCingleTitleEditText.getText().toString());
                             collectionPost.setDescription(mCingleDescriptionEditText.getText().toString());
                             collectionPost.setImage(downloadUrl.toString());
-                            collectionPost.setPostId(pushId);
-                            collectionPost.setUserId(firebaseAuth.getCurrentUser().getUid());
+                            collectionPost.setPost_id(pushId);
+                            collectionPost.setUser_id(firebaseAuth.getCurrentUser().getUid());
                             collectionPost.setType("collection_post");
-                            collectionPost.setCollectionId(collectionId);
+                            collectionPost.setCollection_id(collectionId);
                             collectionsCollection.document("collections").collection(collectionId)
                                     .document(pushId).set(collectionPost).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
@@ -364,11 +408,11 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                                             final double random = new Random().nextDouble();
 
                                             Post post = new Post();
-                                            post.setCollectionId(collectionId);
+                                            post.setCollection_id(collectionId);
                                             post.setType("post");
-                                            post.setPostId(pushId);
-                                            post.setUserId(firebaseAuth.getCurrentUser().getUid());
-                                            post.setRandomNumber(random);
+                                            post.setPost_id(pushId);
+                                            post.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                            post.setRandom_number(random);
                                             post.setNumber(number);
                                             post.setTime(timeStamp);
 
@@ -378,12 +422,12 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                                                 public void onSuccess(Void aVoid) {
                                                     //set the collectionPost ownership
                                                     TransactionDetails transactionDetails = new TransactionDetails();
-                                                    transactionDetails.setPostId(pushId);
-                                                    transactionDetails.setUserId(firebaseAuth.getCurrentUser().getUid());
+                                                    transactionDetails.setPost_id(pushId);
+                                                    transactionDetails.setUser_id(firebaseAuth.getCurrentUser().getUid());
                                                     transactionDetails.setTime(timeStamp);
                                                     transactionDetails.setType("owner");
                                                     transactionDetails.setAmount(0.0);
-                                                    transactionDetails.setWalletBalance(0.0);
+                                                    transactionDetails.setWallet_balance(0.0);
 
                                                     postOwnersCollection.document(pushId).set(transactionDetails)
                                                             .addOnSuccessListener(new OnSuccessListener<Void>() {

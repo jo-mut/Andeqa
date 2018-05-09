@@ -2,19 +2,13 @@ package com.andeqa.andeqa.message;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.TextPaint;
 import android.text.format.DateFormat;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
@@ -79,10 +73,12 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
     @Override
     public void onBindViewHolder(final RoomViewHolder holder, int position) {
         Room room = getSnapshot(position).toObject(Room.class);
-        final String uid = room.getUserId();
+        final String receiverUid = room.getReceiver_id();
+        final String senderUid = room.getSender_id();
         final String lastMessage = room.getMessage();
-        final String roomId = room.getRoomId();
-        final String status = room.getStatus();
+        final String roomId = room.getRoom_id();
+        final String senderStatus= room.getSender_status();
+        final String receiverStatus = room.getReceiver_status();
 
         Log.d("room id", roomId);
 
@@ -96,33 +92,35 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
 
         }
 
-        if (status.equals("unRead")){
-            holder.statusView.setVisibility(View.VISIBLE);
+        if (receiverStatus.equals("un_read") && receiverUid.equals(firebaseAuth.getCurrentUser().getUid())){
+            holder.lastMessageTextView.setTypeface(holder.lastMessageTextView.getTypeface(), Typeface.BOLD);
             holder.roomRelativeLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     roomCollection.document("rooms")
-                            .collection(firebaseAuth.getCurrentUser().getUid())
-                            .document(uid).update("status", "read");
+                            .collection(receiverUid)
+                            .document(senderUid).update("receiver_status", "read");
                     Intent intent = new Intent(mContext, MessagesAccountActivity.class);
                     intent.putExtra(RoomAdapter.EXTRA_ROOM_ID, roomId);
-                    intent.putExtra(RoomAdapter.EXTRA_USER_UID, uid);
+                    intent.putExtra(RoomAdapter.EXTRA_USER_UID, receiverUid);
                     mContext.startActivity(intent);
                 }
             });
 
         }else {
-            holder.statusView.setVisibility(View.GONE);
+            holder.lastMessageTextView.setTypeface(holder.lastMessageTextView.getTypeface(), Typeface.NORMAL);
             holder.roomRelativeLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(mContext, MessagesAccountActivity.class);
                     intent.putExtra(RoomAdapter.EXTRA_ROOM_ID, roomId);
-                    intent.putExtra(RoomAdapter.EXTRA_USER_UID, uid);
+                    intent.putExtra(RoomAdapter.EXTRA_USER_UID, receiverUid);
                     mContext.startActivity(intent);
                 }
             });
         }
+
+
 
         final String [] strings = lastMessage.split("");
 
@@ -139,7 +137,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
 
 
         //postkey is same as uid
-        usersCollection.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        usersCollection.document(receiverUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -150,7 +148,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
 
                 if (documentSnapshot.exists()){
                     Andeqan cinggulan =  documentSnapshot.toObject(Andeqan.class);
-                    final String profileImage = cinggulan.getProfileImage();
+                    final String profileImage = cinggulan.getProfile_image();
                     final String username = cinggulan.getUsername();
 
                     holder.usernameTextView.setText(username);

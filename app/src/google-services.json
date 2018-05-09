@@ -15,6 +15,30 @@
       },
       "oauth_client": [
         {
+          "client_id": "596610417835-hkhiskdki7945m9n9v31r1fmhtqftcts.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.andeqa.andeqa",
+            "certificate_hash": "16a4a5349665314b098487ab3a09592e095a34bf"
+          }
+        },
+        {
+          "client_id": "596610417835-c82etapdm1k5k2559l4j2gfr8vu66dju.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.andeqa.andeqa",
+            "certificate_hash": "ad635edc871fa77be2c21707b0cffb342df8bd5a"
+          }
+        },
+        {
+          "client_id": "596610417835-fooc43nd9fvjchrjj9ukno2g3aofca68.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.andeqa.andeqa",
+            "certificate_hash": "2bcb3cbe765af2cbf06351458bab2af32eb4c743"
+          }
+        },
+        {
           "client_id": "596610417835-rakd9gkhd5tjbj0ul12k01fsiesdlen9.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +53,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "596610417835-rakd9gkhd5tjbj0ul12k01fsiesdlen9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

@@ -109,13 +109,15 @@ public class DialogDeleteAccountFragment extends DialogFragment implements View.
 
 
     private void deleteAccount(){
-        progressDialog.show();
+
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         // Get auth credentials from the user for re-authentication. The example below shows
         // email and password credentials but there are multiple possible providers,
         // such as GoogleAuthProvider or FacebookAuthProvider.
         if (!TextUtils.isEmpty(mEmailEditText.getText().toString()) &&
                 !TextUtils.isEmpty(mPasswordEditText.getText().toString())){
+            progressDialog.show();
+
             final String email = mEmailEditText.getText().toString().trim();
             final String password = mPasswordEditText.getText().toString().trim();
 
@@ -160,6 +162,8 @@ public class DialogDeleteAccountFragment extends DialogFragment implements View.
                     });
 
 
+        }else {
+            Toast.makeText(getContext(),"Email and password cannot be empty", Toast.LENGTH_SHORT).show();
         }
 
 

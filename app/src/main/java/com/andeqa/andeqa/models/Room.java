@@ -5,23 +5,33 @@ package com.andeqa.andeqa.models;
  */
 
 public class Room {
-    String userId;
+    String receiver_id;
+    String sender_id;
     String message;
     long time;
-    String roomId;
-    String status;
+    String room_id;
+    String sender_status;
+    String receiver_status;
 
     public Room() {
 
     }
 
 
-    public String getUserId() {
-        return userId;
+    public String getReceiver_id() {
+        return receiver_id;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setReceiver_id(String receiver_id) {
+        this.receiver_id = receiver_id;
+    }
+
+    public String getSender_id() {
+        return sender_id;
+    }
+
+    public void setSender_id(String sender_id) {
+        this.sender_id = sender_id;
     }
 
     public String getMessage() {
@@ -41,19 +51,27 @@ public class Room {
     }
 
 
-    public String getRoomId() {
-        return roomId;
+    public String getRoom_id() {
+        return room_id;
     }
 
-    public void setRoomId(String roomId) {
-        this.roomId = roomId;
+    public void setRoom_id(String room_id) {
+        this.room_id = room_id;
     }
 
-    public String getStatus() {
-        return status;
+    public String getSender_status() {
+        return sender_status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setSender_status(String sender_status) {
+        this.sender_status = sender_status;
+    }
+
+    public String getReceiver_status() {
+        return receiver_status;
+    }
+
+    public void setReceiver_status(String receiver_status) {
+        this.receiver_status = receiver_status;
     }
 }

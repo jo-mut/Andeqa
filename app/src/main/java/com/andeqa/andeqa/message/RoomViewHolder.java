@@ -23,7 +23,6 @@ public class RoomViewHolder extends RecyclerView.ViewHolder {
     public TextView timeTextView;
     public TextView lastMessageTextView;
     public RelativeLayout roomRelativeLayout;
-    public View statusView;
 
     public RoomViewHolder(View itemView) {
         super(itemView);
@@ -34,7 +33,6 @@ public class RoomViewHolder extends RecyclerView.ViewHolder {
         profileImageView = (CircleImageView) mView.findViewById(R.id.profileImageView);
         lastMessageTextView = (TextView) mView.findViewById(R.id.lastMessageTextView);
         roomRelativeLayout = (RelativeLayout) mView.findViewById(R.id.messagingUserRelativeLayout);
-        statusView = (View) mView.findViewById(R.id.statusView);
 
     }
 

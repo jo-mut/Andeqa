@@ -55,7 +55,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.image_view_activity);
+        setContentView(R.layout.activity_image_view);
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
 
