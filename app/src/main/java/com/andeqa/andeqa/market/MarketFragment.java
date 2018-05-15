@@ -82,7 +82,8 @@ public class MarketFragment extends Fragment implements SwipeRefreshLayout.OnRef
         if (firebaseAuth.getCurrentUser()!= null){
             //firestore
             sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
-            sellingQuery = sellingCollection.orderBy("random_number").limit(TOTAL_ITEMS);
+            sellingQuery = sellingCollection.orderBy("random_number", Query.Direction.ASCENDING)
+                    .limit(TOTAL_ITEMS);
 
             setRecyclerView();
             setCollections();
@@ -116,6 +117,8 @@ public class MarketFragment extends Fragment implements SwipeRefreshLayout.OnRef
         sellingRecyclerView.setAdapter(sellingAdapter);
         sellingRecyclerView.setHasFixedSize(false);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
         sellingRecyclerView.setLayoutManager(layoutManager);
     }
 
@@ -166,7 +169,7 @@ public class MarketFragment extends Fragment implements SwipeRefreshLayout.OnRef
             DocumentSnapshot lastVisible = sellingAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of documentSnapshots
-            Query nextSellingQuery = sellingCollection.orderBy("random_number", Query.Direction.DESCENDING)
+            Query nextSellingQuery = sellingCollection.orderBy("random_number", Query.Direction.ASCENDING)
                     .startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
 
@@ -195,9 +198,9 @@ public class MarketFragment extends Fragment implements SwipeRefreshLayout.OnRef
                             }
                         }
 
-                        mSwipeRefreshLayout.setRefreshing(true);
+                        mSwipeRefreshLayout.setRefreshing(false);
                     }else {
-                        mSwipeRefreshLayout.setRefreshing(true);
+                        mSwipeRefreshLayout.setRefreshing(false);
                     }
                 }
             });

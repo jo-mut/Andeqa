@@ -5,10 +5,11 @@ package com.andeqa.andeqa;
  */
 
 public final class Constants {
-    public  static  final String COLLECTIONS = "collections";
-    public  static  final String COLLECTIONS_POSTS = "posts_collections";
-    public  static  final String POSTS = "posts";
-    public  static  final String FIREBASE_USERS = "users";
+    public static final String USER_COLLECTIONS = "collections";
+    public static final String FEATURED_COLLECTIONS = "featured_collections";
+    public static final String COLLECTIONS_POSTS = "posts_collections";
+    public static final String POSTS = "posts";
+    public static final String FIREBASE_USERS = "users";
     public static final String COMMENTS = "comments";
     public static final String LIKES= "likes";
     public static final String RELATIONS = "relations";
@@ -17,7 +18,7 @@ public final class Constants {
     public static final String TRANSACTION_HISTORY = "transaction_histories";
     public static final String POST_OWNERS = "post_owners";
     public static final String COLLECTION_OWNERS = "collection_owners";
-    public static final String U_CREDITS = "u_credits";
+    public static final String CREDITS = "credits";
     public static final String SELLING = "sells";
     public static final String TIMELINE = "timelines";
     public static final String MESSAGES = "messages";

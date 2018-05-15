@@ -197,7 +197,7 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                                                                                     transactionDetails.setAmount(amountTransferred);
                                                                                     transactionDetails.setWallet_balance(newWalletBalance);
                                                                                     transactionDetails.setTime(timeStamp);
-                                                                                    transactionDetails.setType("redeem");
+                                                                                    transactionDetails.setType("buy");
 
                                                                                     //get the push id
                                                                                     DocumentReference ref = cingleOwnersReference.document();
@@ -227,7 +227,7 @@ public class DialogSendCredits extends DialogFragment implements View.OnClickLis
                                                                                     transactionDetails.setAmount(amountTransferred);
                                                                                     transactionDetails.setWallet_balance(newWalletBalance);
                                                                                     transactionDetails.setTime(timeStamp);
-                                                                                    transactionDetails.setType("redeem");
+                                                                                    transactionDetails.setType("buy");
 
                                                                                     //get the push id
                                                                                     DocumentReference ref = cingleOwnersReference.document();

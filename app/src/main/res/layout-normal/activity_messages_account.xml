@@ -115,7 +115,7 @@
 
                 <ImageView
                     android:layout_gravity="left"
-                    android:background="@drawable/circle_primary_color_background"
+                    android:background="@drawable/accent_color_background"
                     android:layout_width="45dp"
                     android:layout_height="45dp"
                     app:srcCompat="@drawable/ic_menu_send"

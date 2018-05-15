@@ -17,26 +17,21 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Comment;
 import com.andeqa.andeqa.models.Credit;
-import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.profile.ProfileActivity;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -151,8 +146,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-        postCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
-        senseCreditCollection = FirebaseFirestore.getInstance().collection(Constants.U_CREDITS);
+        postCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
+        senseCreditCollection = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
 
         usersCollection.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -263,9 +258,9 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         firebaseAuth = FirebaseAuth.getInstance();
 
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-        postCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
+        postCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-        senseCreditCollection = FirebaseFirestore.getInstance().collection(Constants.U_CREDITS);
+        senseCreditCollection = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
         commentCollection = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
 
         usersCollection.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {

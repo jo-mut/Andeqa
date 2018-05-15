@@ -14,6 +14,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <uses-feature
         android:name="android.hardware.camera2"
@@ -94,21 +95,12 @@
         </receiver>
 
         <activity
-            android:name=".people.FollowersActivity"
-            android:label="Followers"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".people.FollowingActivity"
-            android:label="Following"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
             android:name=".home.NavigationDrawerActivity"
             android:label="Andeqa"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".home.ImageViewActivity"
             android:label="Post" />
         <activity
@@ -156,18 +148,23 @@
             android:name=".registration.SaveGoogleProfileActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:screenOrientation="portrait"
             android:name=".creation.CreateCollectionActivity"
-            android:label="Create collection" />
-        <activity android:name=".profile.CollectionsPostsActivity" />
+            android:label="Create collection"
+            android:screenOrientation="portrait" />
+        <activity android:name=".profile.ProfieCollectionPostsActivity" />
         <activity
-            android:screenOrientation="portrait"
             android:name=".settings.CollectionSettingsActivity"
-            android:label="Collection settings" />
+            android:label="Collection settings"
+            android:screenOrientation="portrait" />
         <activity
+            android:name=".market.RedeemCreditsActivity"
             android:label="Redeem"
+            android:screenOrientation="portrait" />
+        <activity
             android:screenOrientation="portrait"
-            android:name=".market.RedeemCreditsActivity"/>
+            android:name=".message.MessagingActivity"
+            android:label="Chats"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

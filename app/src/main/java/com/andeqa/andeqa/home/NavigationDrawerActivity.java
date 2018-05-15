@@ -5,14 +5,9 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,14 +26,10 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.creation.CreateCollectionActivity;
 import com.andeqa.andeqa.creation.CreatePostActivity;
-import com.andeqa.andeqa.market.MarketFragment;
-import com.andeqa.andeqa.message.MessagesFragment;
+import com.andeqa.andeqa.message.MessagingActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.profile.ProfileActivity;
 import com.andeqa.andeqa.settings.SettingsActivity;
-import com.andeqa.andeqa.timeline.TimelineFragment;
-import com.andeqa.andeqa.utils.BottomNavigationViewBehavior;
-import com.andeqa.andeqa.utils.BottomNavigationViewHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -59,7 +50,9 @@ public class NavigationDrawerActivity extends AppCompatActivity
         View.OnClickListener{
 
     @Bind(R.id.fab)FloatingActionButton mFloatingActionButton;
-    @Bind(R.id.bottomNavigationView)BottomNavigationView mBottomNavigationView;
+    @Bind(R.id.tabs)TabLayout tabLayout;
+    @Bind(R.id.container)ViewPager viewPager;
+
     private static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
     private static final int IMAGE_GALLERY_REQUEST = 112;
@@ -77,12 +70,9 @@ public class NavigationDrawerActivity extends AppCompatActivity
     private TextView mFullNameTextView;
     private TextView mEmailTextView;
 
-    //bottom navigation fragments
-    final FragmentManager fragmentManager = getSupportFragmentManager();
-    final Fragment homeFragment = new HomeFragment();
-    final Fragment marketFragment = new MarketFragment();
-    final Fragment messagesFragment = new MessagesFragment();
-    final Fragment timelineFragment = new TimelineFragment();
+    //tablayot
+    private HomePagerAdapter homePagerAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +86,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
         firebaseAuth = FirebaseAuth.getInstance();
 
         mFloatingActionButton.setOnClickListener(this);
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -111,6 +102,17 @@ public class NavigationDrawerActivity extends AppCompatActivity
         mFullNameTextView = (TextView) header.findViewById(R.id.fullNameTextView);
         mEmailTextView = (TextView) header.findViewById(R.id.emailTextView);
 
+
+        homePagerAdapter = new HomePagerAdapter(getSupportFragmentManager());
+        // Set up the ViewPager with the sections adapter
+        viewPager.setAdapter(homePagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
+
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
+        tabLayout.setSelectedTabIndicatorHeight((int) (5 * getResources().getDisplayMetrics().density));
+
+
         if (firebaseAuth.getCurrentUser() != null){
             //firestore
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
@@ -122,50 +124,29 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
         }
 
-
-        //bottom navigation
-        BottomNavigationViewHelper.disableShiftMode(mBottomNavigationView);
-        mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView
-                .OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                selectFragment(item);
-                return true;
-            }
-        });
-
-        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams)
-                mBottomNavigationView.getLayoutParams();
-        layoutParams.setBehavior(new BottomNavigationViewBehavior());
-
-        MenuItem selectedItem;
-        selectedItem = mBottomNavigationView.getMenu().getItem(0);
-        selectFragment(selectedItem);
-
-
-
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-//        if (id == R.id.action_slide_right){
-//            Intent intent = new Intent(NavigationDrawerActivity.this, BestPostsActivity.class);
-//            startActivity(intent);
-//            overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.main_menu, menu);
+//        return super.onCreateOptionsMenu(menu);
+//    }
 //
-//        }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        int id = item.getItemId();
+//
+////        if (id == R.id.action_slide_right){
+////            Intent intent = new Intent(NavigationDrawerActivity.this, BestPostsActivity.class);
+////            startActivity(intent);
+////            overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
+////
+////        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
-        return super.onOptionsItemSelected(item);
-    }
 
     private void fetchUserEmail(){
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -268,6 +249,11 @@ public class NavigationDrawerActivity extends AppCompatActivity
             startActivity(intent);
         }
 
+        if (id == R.id.action_people){
+            Intent intent = new Intent(this, MessagingActivity.class);
+            startActivity(intent);
+        }
+
         if (id == R.id.action_about){
             Intent intent = new Intent(Intent.ACTION_VIEW,
                     Uri.parse("https://andeqa.firebaseapp.com"));
@@ -283,7 +269,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
             sendIntent.setType("text/plain");
             startActivity(sendIntent);
         }
-
 
         if (id == R.id.action_send_feedback){
             String body = null;
@@ -322,63 +307,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
 
     @Override
-    public void onBackPressed() {
-        MenuItem defaulItem = mBottomNavigationView.getMenu().getItem(0);
-        if(mSelectedItem != defaulItem.getItemId()){
-            selectFragment(defaulItem);
-        }else {
-            super.onBackPressed();
-        }
-    }
-
-
-    private void updateToolbarText(CharSequence text){
-        ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null){
-            actionBar.setTitle(text);
-        }
-    }
-
-
-
-    private void selectFragment(MenuItem item){
-        //initialize each corresponding fragment
-        switch (item.getItemId()){
-            case R.id.action_home:
-                FragmentTransaction ft = fragmentManager.beginTransaction();
-                ft.replace(R.id.home_container, homeFragment);
-                ft.commit();
-                break;
-            case R.id.action_timeline:
-                FragmentTransaction timelineTransaction = fragmentManager.beginTransaction();
-                timelineTransaction.replace(R.id.home_container, timelineFragment).commit();
-                break;
-            case R.id.action_messages:
-                FragmentTransaction messagesTransaction = fragmentManager.beginTransaction();
-                messagesTransaction.replace(R.id.home_container, messagesFragment).commit();
-                break;
-            case R.id.action_market:
-                FragmentTransaction profileTransaction = fragmentManager.beginTransaction();
-                profileTransaction.replace(R.id.home_container, marketFragment).commit();
-                break;
-
-        }
-
-        //update selected item
-        mSelectedItem = item.getItemId();
-
-        updateToolbarText(item.getTitle());
-
-        //uncheck the other items
-        for(int i = 0; i < mBottomNavigationView.getMenu().size(); i++){
-            MenuItem menuItem = mBottomNavigationView.getMenu().getItem(i);
-            menuItem.setChecked(menuItem.getItemId() ==item.getItemId());
-        }
-    }
-
-
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK){
@@ -402,8 +330,8 @@ public class NavigationDrawerActivity extends AppCompatActivity
         if (v == mFloatingActionButton){
             Intent intent = new Intent(NavigationDrawerActivity.this, CreateCollectionActivity.class);
             startActivity(intent);
-
         }
+
     }
 
 }

@@ -31,8 +31,8 @@ import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.TransactionDetails;
-import com.andeqa.andeqa.profile.CollectionsPostsActivity;
-import com.andeqa.andeqa.utils.DialogProgressFragment;
+import com.andeqa.andeqa.profile.ProfieCollectionPostsActivity;
+import com.andeqa.andeqa.settings.DialogProgressFragment;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -234,8 +234,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
     private void requestForSpecificPermission(){
         ActivityCompat.requestPermissions(this, new String[]{
-                Manifest.permission.GET_ACCOUNTS, Manifest.permission.RECEIVE_SMS,
-                Manifest.permission.READ_SMS, Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
         }, 101);
     }
@@ -364,7 +363,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
             final String pushId = reference.getKey();
             final StorageReference storageReference = FirebaseStorage
                     .getInstance().getReference()
-                    .child(Constants.COLLECTIONS)
+                    .child(Constants.USER_COLLECTIONS)
                     .child(pushId);
 
             UploadTask uploadTask = storageReference.putFile(photoUri);
@@ -440,7 +439,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                                                             mPostImageView.setImageBitmap(null);
 
                                                             //launch the collections activity
-                                                            Intent intent = new Intent(CreatePostActivity.this, CollectionsPostsActivity.class);
+                                                            Intent intent = new Intent(CreatePostActivity.this, ProfieCollectionPostsActivity.class);
                                                             intent.putExtra(CreatePostActivity.COLLECTION_ID, collectionId);
                                                             intent.putExtra(CreatePostActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
                                                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

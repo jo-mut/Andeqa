@@ -4,287 +4,112 @@
     android:orientation="vertical"
     android:id="@+id/ifair_cingles_linear_layout"
     android:background="@android:color/white"
-    android:layout_marginBottom="15dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <RelativeLayout
+
+    <LinearLayout
+        android:id="@+id/detailsLinearLayout"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp">
-
-        <TextView
-            android:text="Sale Price"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:id="@+id/cingleSalePriceTitleTextView"
-            android:textStyle="normal|bold"
-            android:textSize="14sp"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            android:text=""
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/cingleSalePriceTitleTextView"
-            android:layout_toEndOf="@+id/cingleSalePriceTitleTextView"
-            android:layout_toLeftOf="@+id/settingsImageView"
-            android:layout_toStartOf="@+id/settingsImageView"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:layout_marginStart="10dp"
-            android:id="@+id/postSalePriceTextView"
-            android:textStyle="normal|bold"
-            android:textSize="14sp"
-            android:textColor="@android:color/black" />
-
-
-
-
-        <TextView
-            android:visibility="gone"
-            android:text="Unlist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/unlistPostTextView"
-            android:textSize="14sp"
-            android:padding="5dp"
-            android:textStyle="normal|bold"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <com.andeqa.andeqa.utils.ProportionalImageView
-            android:id="@+id/postImageView"
-            android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_margin="10dp"
-            android:layout_height="70dp"
-            android:layout_width="70dp"
-            android:scaleType="centerCrop" />
-
-        <LinearLayout
-            android:layout_toRightOf="@+id/postImageView"
-            android:layout_toEndOf="@+id/postImageView"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
+        <RelativeLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
+            <ImageView
+                android:id="@+id/postImageView"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_height="100dp"
+                android:layout_width="100dp"
+                android:scaleType="centerCrop" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="3dp">
+                android:padding="5dp">
 
                 <TextView
-                    android:text="Creator:"
+                    android:text="Sale Price"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/postCreatorTextView"
-                    android:textSize="14sp"
-                    android:textStyle="normal|bold"
                     android:layout_centerVertical="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true" />
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    app:srcCompat="@drawable/profle_image_background"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginRight="5dp"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:id="@+id/profileImageView" />
-
-                <TextView
-                    android:text=""
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginStart="10dp"
-                    android:id="@+id/usernameTextView"
-                    android:layout_centerVertical="true"
-                    android:layout_toRightOf="@+id/postCreatorTextView"
-                    android:layout_toEndOf="@+id/postCreatorTextView"
-                    android:layout_toLeftOf="@+id/profileImageView"
-                    android:layout_toStartOf="@+id/profileImageView"
-                    android:textSize="14sp" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/tradingRelativeLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="3dp"
-                android:paddingRight="3dp">
-
-                <TextView
-                    android:text="Listed on Ifair:"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="normal|bold"
-                    android:textSize="14sp"
-                    android:layout_alignParentTop="false"
-                    android:id="@+id/listedOnIfairTextView"
-                    android:layout_centerVertical="true" />
-
-
-                <TextView
-                    android:text=""
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/tradeMethodTextView"
-                    android:textStyle="normal|bold"
-                    android:textSize="14sp"
-                    android:textColor="@color/colorPrimary"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_toRightOf="@+id/listedOnIfairTextView" />
-
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="3dp"
-                android:paddingRight="3dp">
-
-                <TextView
-                    android:text="Date Posted:"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/dateTextView"
-                    android:textSize="14sp"
-                    android:textStyle="normal|bold"
-                    android:layout_centerVertical="true" />
-
-                <TextView
-                    android:text=""
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginStart="10dp"
-                    android:id="@+id/datePostedTextView"
-                    android:layout_alignBaseline="@+id/dateTextView"
-                    android:layout_alignBottom="@+id/dateTextView"
-                    android:layout_toRightOf="@+id/dateTextView"
-                    android:layout_toEndOf="@+id/dateTextView"
-                    android:textSize="14sp"
-                    android:layout_centerVertical="true" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="3dp"
-                android:paddingRight="3dp">
-
-                <TextView
-                    android:text="uCredits:"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/postSenseCreditsTextView"
-                    android:textSize="14sp"
-                    android:textStyle="normal|bold"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true" />
+                    android:id="@+id/cingleSalePriceTitleTextView"
+                    android:textStyle="normal|bold"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/black" />
 
                 <TextView
                     android:text=""
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/senseCreditsCountTextView"
+                    android:layout_toRightOf="@+id/cingleSalePriceTitleTextView"
+                    android:layout_toEndOf="@+id/cingleSalePriceTitleTextView"
+                    android:layout_centerVertical="true"
                     android:layout_marginLeft="10dp"
                     android:layout_marginStart="10dp"
-                    android:layout_alignParentTop="true"
-                    android:layout_toRightOf="@+id/postSenseCreditsTextView"
-                    android:layout_toEndOf="@+id/postSenseCreditsTextView"
+                    android:id="@+id/postPriceTextView"
+                    android:textStyle="normal"
                     android:textSize="14sp"
-                    android:layout_centerVertical="true" />
+                    android:textColor="@android:color/black" />
+
 
             </RelativeLayout>
 
             <RelativeLayout
+                android:paddingLeft="5dp"
+                android:paddingStart="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+                <TextView
+                    android:text=""
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/creatorTextView"
+                    android:textSize="12sp"
+                    android:textStyle="normal"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true" />
+
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:paddingLeft="5dp"
+                android:paddingStart="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:text="Owner:"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/ownerTitleTextView"
-                    android:textStyle="normal|bold"
-                    android:textSize="14sp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginLeft="3dp"
-                    android:layout_centerVertical="true" />
-
-                <TextView
                     android:text=""
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/ownerTitleTextView"
-                    android:layout_toEndOf="@+id/ownerTitleTextView"
-                    android:layout_toLeftOf="@+id/ownerImageView"
-                    android:layout_toStartOf="@+id/ownerImageView"
-                    android:id="@+id/postOwnerTextView"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginLeft="10dp"
-                    android:textSize="14sp"
-                    android:layout_centerVertical="true" />
+                    android:id="@+id/ownerTextView"
+                    android:textSize="12sp"
+                    android:textStyle="normal"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true" />
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    app:srcCompat="@drawable/profle_image_background"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginRight="5dp"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:id="@+id/ownerImageView" />
 
             </RelativeLayout>
 
 
-
         </LinearLayout>
 
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:padding="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:text="Buy"
-            android:layout_width="wrap_content"
-            android:id="@+id/buyPostButton"
-            android:textAllCaps="false"
-            android:background="@drawable/colour_btn_background"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
-            android:minHeight="26dp"
-            android:minWidth="50dip"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
-
-    </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>

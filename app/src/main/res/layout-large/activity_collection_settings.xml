@@ -106,25 +106,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <RelativeLayout
+            <LinearLayout
+                android:paddingBottom="30dp"
+                android:paddingTop="30dp"
+                android:orientation="vertical"
                 android:id="@+id/changeCoverRelativeLayout"
-                android:padding="10dp"
                 android:layout_width="match_parent"
-                android:layout_height="120dp">
+                android:layout_height="wrap_content">
 
-                <View
-                    android:background="@android:color/darker_gray"
-                    android:layout_alignParentBottom="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="0.3dp"/>
 
                 <TextView
                     android:text="Collection cover"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
                     android:layout_marginLeft="12dp"
                     android:layout_marginStart="12dp"
                     android:id="@+id/changeCoverTextView"
@@ -132,17 +126,18 @@
                     android:textStyle="normal|bold" />
 
                 <TextView
-                    android:layout_below="@+id/changeCoverTextView"
                     android:text="Change your the cover photo of your collection"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
                     android:textSize="21sp"
                     android:layout_marginLeft="12dp"
                     android:layout_marginStart="12dp" />
-            </RelativeLayout>
+            </LinearLayout>
+
+            <View
+                android:background="@android:color/darker_gray"
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"/>
 
             <RelativeLayout
                 android:visibility="gone"
@@ -176,24 +171,18 @@
                     android:layout_centerVertical="true" />
             </RelativeLayout>
 
-            <RelativeLayout
+            <LinearLayout
+                android:orientation="vertical"
+                android:paddingBottom="30dp"
+                android:paddingTop="30dp"
                 android:id="@+id/changeNameRelativeLayout"
                 android:layout_width="match_parent"
-                android:layout_height="120dp">
-
-                <View
-                    android:background="@android:color/darker_gray"
-                    android:layout_alignParentBottom="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="0.3dp"/>
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:text="Collection name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
                     android:layout_marginLeft="12dp"
                     android:layout_marginStart="12dp"
                     android:textSize="21sp"
@@ -201,16 +190,19 @@
                     android:textStyle="normal|bold" />
 
                 <TextView
-                    android:layout_below="@+id/changeNameTextView"
                     android:text="Rename this collection with a more suitable name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
                     android:textSize="21sp"
                     android:layout_marginLeft="12dp"
                     android:layout_marginStart="12dp" />
-            </RelativeLayout>
+            </LinearLayout>
+
+            <View
+                android:background="@android:color/darker_gray"
+                android:layout_alignParentBottom="true"
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"/>
 
             <RelativeLayout
                 android:visibility="gone"
@@ -245,26 +237,18 @@
 
             </RelativeLayout>
 
-            <RelativeLayout
+            <LinearLayout
+                android:orientation="vertical"
                 android:id="@+id/changeNoteRelativeLayout"
-                android:padding="10dp"
+                android:paddingBottom="30dp"
+                android:paddingTop="30dp"
                 android:layout_width="match_parent"
-                android:layout_height="120dp">
-
-
-                <View
-                    android:background="@android:color/darker_gray"
-                    android:layout_alignParentBottom="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="0.3dp"/>
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:text="Collection note"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
                     android:layout_marginLeft="12dp"
                     android:layout_marginStart="12dp"
                     android:textSize="21sp"
@@ -272,17 +256,21 @@
                     android:textStyle="normal|bold" />
 
                 <TextView
-                    android:layout_below="@+id/changeNoteTextView"
                     android:text="Describe your collection to let other know more about it"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
                     android:textSize="21sp"
                     android:layout_marginLeft="12dp"
                     android:layout_marginStart="12dp" />
 
-            </RelativeLayout>
+            </LinearLayout>
+
+
+            <View
+                android:background="@android:color/darker_gray"
+                android:layout_alignParentBottom="true"
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"/>
 
         </LinearLayout>
 

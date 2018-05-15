@@ -70,7 +70,7 @@
                     android:layout_below="@+id/usernameTextView"
                     android:layout_alignLeft="@+id/usernameTextView"
                     android:layout_alignStart="@+id/usernameTextView"
-                    android:id="@+id/postSalePriceTextView"
+                    android:id="@+id/postPriceTextView"
                     android:textSize="15sp" />
 
             </RelativeLayout>

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Cinggl</string>
+    <string name="app_name">Andeqa</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -49,7 +49,7 @@
     <string name="pref_title_notifications">Notifications</string>
     <string name="summary_choose_ringtone">Choose notification sound</string>
     <string name="pref_header_about">Help</string>
-    <string name="summary_app_info">Cinggl</string>
+    <string name="summary_app_info">Andeqa</string>
     <string name="title_app_info">App Info</string>
     <string name="app_version">1.4.0.Z0</string>
     <string name="summary_support">Got any queries? We are happy to help!</string>
@@ -75,10 +75,10 @@
 
 
     <!--ifair related strings-->
-    <string name="cingle_backing_method">Cingle Backing</string>
-    <string name="cingle_lacing_method">Cingle Lacing</string>
-    <string name="cingle_selling_method">Cingle Selling</string>
-    <string name="cingle_leasing_method">Cingle Leasing</string>
+    <string name="invest">Invest</string>
+    <string name="merge">Merge</string>
+    <string name="buy">Buy</string>
+    <string name="lease">Lease</string>
     <!--animations-->
     <integer name="slide_animation_duration">300</integer>
 
@@ -91,7 +91,6 @@
     <string name="password">Password</string>
     <string name="confirm_delete_account">You will not be able to sign in once you confirm to delete your account</string>
     <string name="_0">0</string>
-    <string name="buy">Buy</string>
     <string name="creator">Creator:</string>
     <string name="date_posted">Date Posted:</string>
     <string name="listed_on_ifair">Listed on Ifair:</string>
@@ -103,6 +102,16 @@
     <string name="messages_holder_text">You have not received any new messages.</string>
     <string name="title_activity_creation">CreationActivity</string>
     <string name="title_activity_create">CreateActivity</string>
+
+    <!--home tabs-->
+    <string name="home_tab">Home</string>
+    <string name="market_tab">Market</string>
+    <string name="explore_tab">Explore</string>
+    <string name="collections_tab">Collections</string>
+    <string name="societies_tab">Societies</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <string name="tab_text_3">Tab 3</string>
 
 
 </resources>

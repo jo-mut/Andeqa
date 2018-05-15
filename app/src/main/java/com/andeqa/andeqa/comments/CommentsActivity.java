@@ -145,7 +145,6 @@ public class CommentsActivity extends AppCompatActivity implements
         mCommentsRecyclerView.setAdapter(commentsAdapter);
         mCommentsRecyclerView.setHasFixedSize(false);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setAutoMeasureEnabled(true);
         mCommentsRecyclerView.setLayoutManager(layoutManager);
     }
 
@@ -317,6 +316,7 @@ public class CommentsActivity extends AppCompatActivity implements
                             timeline.setType("comment");
                             timeline.setPost_id(mPostId);
                             timeline.setStatus("un_read");
+                            timeline.setReceiver_id(creatorUid);
                             if (creatorUid.equals(firebaseAuth.getCurrentUser().getUid())){
                                 //do nothing
                             }else {

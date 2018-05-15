@@ -2,8 +2,6 @@ package com.andeqa.andeqa.home;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -11,12 +9,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.utils.ProportionalImageView;
-import com.google.firebase.database.DatabaseReference;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -39,21 +32,18 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
     public TextView likesCountTextView;
     public TextView titleTextView;
     public TextView descriptionTextView;
-    public TextView accountUsernameTextView;
+    public TextView usernameTextView;
     public CircleImageView profileImageView;
     public TextView commentsCountTextView;
     public TextView senseCreditsTextView;
-    public TextView tradeMethodTextView;
-    public ImageView settingsImageView;
+    public TextView mTradeButton;
     public RelativeLayout titleRelativeLayout;
     public ProportionalImageView postImageView;
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
-    private DatabaseReference cinglesReference;
     public RelativeLayout descriptionRelativeLayout;
-    public RecyclerView likesRecyclerView;
     public RelativeLayout likesRelativeLayout;
-    public TextView totalLikesCountTextView;
+
 
 
     public PostViewHolder(View itemView) {
@@ -62,23 +52,20 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
         mContext = itemView.getContext();
         likesImageView = (ImageView) itemView.findViewById(R.id.likesImageView);
         dislikeImageView = (ImageView) itemView.findViewById(R.id.dislikesImageView);
-        dislikeCountTextView = (TextView) itemView.findViewById(R.id.dislikesPercentageTextView);
-        likesCountTextView =(TextView)itemView.findViewById(R.id.likesPercentageTextView);
+        dislikeCountTextView = (TextView) itemView.findViewById(R.id.dislikesCountTextView);
         commentsImageView = (ImageView) itemView.findViewById(R.id.commentsImageView);
         descriptionTextView = (TextView) itemView.findViewById(R.id.descriptionTextView);
         titleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
-        accountUsernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
+        usernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
-        settingsImageView = (ImageView) itemView.findViewById(R.id.settingsImageView);
-        titleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
+        titleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.titleRelativeLayout);
         descriptionRelativeLayout  = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
         postImageView = (ProportionalImageView) mView.findViewById(R.id.postImageView);
-        senseCreditsTextView = (TextView) mView.findViewById(R.id.postSenseCreditsTextView);
-        tradeMethodTextView = (TextView) mView.findViewById(R.id.tradeMethodTextView);
-        likesRecyclerView = (RecyclerView) mView.findViewById(R.id.likesRecyclerView);
+        senseCreditsTextView = (TextView) mView.findViewById(R.id.creditsTextView);
+        mTradeButton = (TextView) mView.findViewById(R.id.tradeButton);
         likesRelativeLayout = (RelativeLayout) mView.findViewById(R.id.likesRelativeLayout);
-        totalLikesCountTextView = (TextView) mView.findViewById(R.id.totalLikesCountTextView);
+        likesCountTextView = (TextView) mView.findViewById(R.id.likesCountTextView);
     }
 
 

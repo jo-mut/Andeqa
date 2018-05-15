@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.creation.CreateCollectionActivity;
 import com.andeqa.andeqa.home.NavigationDrawerActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -40,6 +42,8 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.rilixtech.Country;
+import com.rilixtech.CountryCodePicker;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -76,6 +80,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
     private Boolean flag;
     private String email;
     private String password;
+    private String code;
     private static final String PASSWORD = "password";
     private static final String EMAIL = "email";
 
@@ -106,6 +111,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
             verifyingYourEmailDialog();
             createProfileDialog();
 
+
             //permission
             int version = Build.VERSION.SDK_INT;
             if (version > Build.VERSION_CODES.LOLLIPOP_MR1){
@@ -120,6 +126,8 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
        }
     }
 
+
+
     private boolean checkIfAlreadyHavePermission(){
         int result = ContextCompat.checkSelfPermission(this,  Manifest.permission.GET_ACCOUNTS);
         if (result == PackageManager.PERMISSION_GRANTED){
@@ -131,8 +139,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
 
     private void requestForSpecificPermission(){
         ActivityCompat.requestPermissions(this, new String[]{
-                Manifest.permission.GET_ACCOUNTS, Manifest.permission.RECEIVE_SMS,
-                Manifest.permission.READ_SMS, Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
         }, 101);
     }

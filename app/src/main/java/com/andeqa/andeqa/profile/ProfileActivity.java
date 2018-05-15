@@ -132,7 +132,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
             usersCollections = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             relationsCollections = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
-            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
+            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
             profileCollectionsQuery = collectionCollection.orderBy("time", Query.Direction.DESCENDING)
                     .whereEqualTo("user_id", mUid)
                     .limit(TOTAL_ITEMS);
@@ -235,6 +235,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         return super.onOptionsItemSelected(item);
     }
+
+
 
     private void fetchData(){
 
@@ -343,7 +345,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     private void recyclerView(){
         profileCollectionsAdapter = new ProfileCollectionsAdapter(ProfileActivity.this);
-        layoutManager = new GridLayoutManager(ProfileActivity.this, 2);
+        layoutManager = new LinearLayoutManager(ProfileActivity.this);
         mCollectionsRecyclerView.setLayoutManager(layoutManager);
         mCollectionsRecyclerView.setAdapter(profileCollectionsAdapter);
         mCollectionsRecyclerView.setHasFixedSize(false);

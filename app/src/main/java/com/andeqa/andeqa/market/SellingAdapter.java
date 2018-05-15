@@ -2,9 +2,6 @@ package com.andeqa.andeqa.market;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,8 +16,6 @@ import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Market;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.TransactionDetails;
-import com.andeqa.andeqa.profile.ProfileActivity;
-import com.andeqa.andeqa.settings.DialogMarketPostSettings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.firestore.CollectionReference;
@@ -32,11 +27,8 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
-import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -112,7 +104,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
 
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
-            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.U_CREDITS);
+            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
             sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
@@ -123,23 +115,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
 
         }
         DecimalFormat formatter =  new DecimalFormat("0.00000000");
-        holder.cingleSalePriceTextView.setText("uC" + " " + formatter.format(salePrice));
-
-        //get the current date
-        DateFormat simpleDateFormat = new SimpleDateFormat("d");
-        String date = simpleDateFormat.format(new Date());
-
-        if (date.endsWith("1") && !date.endsWith("11"))
-            simpleDateFormat = new SimpleDateFormat("d'st' MMM, yyyy");
-        else if (date.endsWith("2") && !date.endsWith("12"))
-            simpleDateFormat = new SimpleDateFormat("d'nd' MMM, yyyy");
-        else if (date.endsWith("3") && !date.endsWith("13"))
-            simpleDateFormat = new SimpleDateFormat("d'rd' MMM, yyyy");
-        else
-            simpleDateFormat = new SimpleDateFormat("d'th' MMM, yyyy");
-
-        holder.datePostedTextView.setText(simpleDateFormat.format(market.getTime()));
-
+        holder.salePriceTextView.setText("uC" + " " + formatter.format(salePrice));
 
         postsCollection.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -153,16 +129,6 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
                     final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
                     final String collectionId = collectionPost.getCollection_id();
 
-                    holder.cingleTradeMethodTextView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent intent =  new Intent(mContext, PostDetailActivity.class);
-                            intent.putExtra(SellingAdapter.EXTRA_POST_ID, postKey);
-                            intent.putExtra(SellingAdapter.COLLECTION_ID, collectionId);
-                            mContext.startActivity(intent);
-                        }
-                    });
-
                     holder.postImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -170,57 +136,6 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
                             intent.putExtra(SellingAdapter.EXTRA_POST_ID, postKey);
                             intent.putExtra(SellingAdapter.COLLECTION_ID, collectionId);
                             mContext.startActivity(intent);
-                        }
-                    });
-
-
-                    holder.ownerImageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent intent = new Intent(mContext, ProfileActivity.class);
-                            intent.putExtra(SellingAdapter.EXTRA_USER_UID, uid);
-                            mContext.startActivity(intent);
-                        }
-                    });
-
-                    holder.creatorImageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent intent = new Intent(mContext, ProfileActivity.class);
-                            intent.putExtra(SellingAdapter.EXTRA_USER_UID, uid);
-                            mContext.startActivity(intent);
-                        }
-                    });
-
-                    if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                        holder.unlistPostTextView.setVisibility(View.VISIBLE);
-                        holder.unlistPostTextView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Bundle bundle = new Bundle();
-                                bundle.putString(SellingAdapter.EXTRA_POST_ID, postKey);
-                                bundle.putString(SellingAdapter.COLLECTION_ID, collectionId);
-                                FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
-                                DialogMarketPostSettings dialogMarketPostSettings = DialogMarketPostSettings.newInstance("post settings");
-                                dialogMarketPostSettings.setArguments(bundle);
-                                dialogMarketPostSettings.show(fragmenManager, "market post settings fragment");
-                            }
-                        });
-
-                    }else {
-                        holder.unlistPostTextView.setVisibility(View.GONE);
-                    }
-
-                    holder.buyPostButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Bundle bundle = new Bundle();
-                            bundle.putString(SellingAdapter.EXTRA_POST_ID, postKey);
-                            bundle.putString(SellingAdapter.COLLECTION_ID, collectionId);
-                            FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
-                            DialogSendCredits dialogSendCredits = DialogSendCredits.newInstance("sens credits");
-                            dialogSendCredits.setArguments(bundle);
-                            dialogSendCredits.show(fragmenManager, "send credits fragment");
                         }
                     });
 
@@ -279,46 +194,6 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
             }
         });
 
-
-        sellingCollection.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    holder.cingleTradeMethodTextView.setText("@Selling");
-                }else {
-                    holder.cingleTradeMethodTextView.setText("Info");
-
-                }
-
-            }
-        });
-
-        senseCreditReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    final Credit credit = documentSnapshot.toObject(Credit.class);
-                    DecimalFormat formatter = new DecimalFormat("0.00000000");
-                    holder.cingleSenseCreditsTextView.setText("uC" + " " + formatter
-                            .format(credit.getAmount()));
-                }else {
-                    holder.cingleSenseCreditsTextView.setText("uC 0.00000000");
-                }
-            }
-        });
-
         usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -332,31 +207,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
                     Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
                     final String profileImage = cinggulan.getProfile_image();
                     final String username = cinggulan.getUsername();
-                    holder.usernameTextView.setText(username);
-                    Picasso.with(mContext)
-                            .load(profileImage)
-                            .resize(MAX_WIDTH, MAX_HEIGHT)
-                            .onlyScaleDown()
-                            .centerCrop()
-                            .placeholder(R.drawable.profle_image_background)
-                            .networkPolicy(NetworkPolicy.OFFLINE)
-                            .into(holder.creatorImageView, new Callback() {
-                                @Override
-                                public void onSuccess() {
-
-                                }
-
-                                @Override
-                                public void onError() {
-                                    Picasso.with(mContext)
-                                            .load(profileImage)
-                                            .resize(MAX_WIDTH, MAX_HEIGHT)
-                                            .onlyScaleDown()
-                                            .centerCrop()
-                                            .placeholder(R.drawable.profle_image_background)
-                                            .into(holder.creatorImageView);
-                                }
-                            });
+                    holder.creatorTextView.setText(username);
                 }
             }
         });
@@ -374,12 +225,6 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
                     final String ownerUid = transactionDetails.getUser_id();
                     Log.d("owner uid", ownerUid);
 
-                    if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
-                        holder.buyPostButton.setVisibility(View.GONE);
-                    }else {
-                        holder.buyPostButton.setVisibility(View.VISIBLE);
-                    }
-
                     usersReference.document(ownerUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -393,31 +238,8 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
                                 Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
                                 final String profileImage = cinggulan.getProfile_image();
                                 final String username = cinggulan.getUsername();
-                                holder.cingleOwnerTextView.setText(username);
-                                Picasso.with(mContext)
-                                        .load(profileImage)
-                                        .resize(MAX_WIDTH, MAX_HEIGHT)
-                                        .onlyScaleDown()
-                                        .centerCrop()
-                                        .placeholder(R.drawable.profle_image_background)
-                                        .networkPolicy(NetworkPolicy.OFFLINE)
-                                        .into(holder.ownerImageView, new Callback() {
-                                            @Override
-                                            public void onSuccess() {
+                                holder.ownerTextView.setText(username);
 
-                                            }
-
-                                            @Override
-                                            public void onError() {
-                                                Picasso.with(mContext)
-                                                        .load(profileImage)
-                                                        .resize(MAX_WIDTH, MAX_HEIGHT)
-                                                        .onlyScaleDown()
-                                                        .centerCrop()
-                                                        .placeholder(R.drawable.profle_image_background)
-                                                        .into(holder.ownerImageView);
-                                            }
-                                        });
                             }
                         }
                     });

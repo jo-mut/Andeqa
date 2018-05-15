@@ -23,9 +23,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.iid.FirebaseInstanceId;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -52,7 +58,8 @@ public class SignInActivity extends AppCompatActivity implements
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private ProgressDialog mAuthProgressDialog;
-    private CollectionReference usersReferenece;
+    private CollectionReference usersCollection;
+    private DatabaseReference usersReference;
     private static final String PASSWORD = "password";
     private static final String EMAIL = "email";
 
@@ -76,8 +83,8 @@ public class SignInActivity extends AppCompatActivity implements
             public void onAuthStateChanged(@NonNull final FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    usersReferenece = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-                    usersReferenece.document(mAuth.getCurrentUser().getUid())
+                    usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+                    usersCollection.document(mAuth.getCurrentUser().getUid())
                             .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -179,12 +186,18 @@ public class SignInActivity extends AppCompatActivity implements
 
                 }else {
                     mProgressBar.setVisibility(View.VISIBLE);
-                    usersReferenece = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-                    usersReferenece.document(mAuth.getCurrentUser().getUid())
+                    usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+                    usersReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
+                    final String deviceId = FirebaseInstanceId.getInstance().getToken();
+
+                    usersCollection.document(mAuth.getCurrentUser().getUid())
                             .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             if (documentSnapshot.exists()){
+                                Map<String, String> device = new HashMap<>();
+                                device.put("device_id", deviceId);
+                                usersReference.child(mAuth.getCurrentUser().getUid()).setValue(device);
                                 //LAUCNH SETUP PROFIFLE ACTIVITY IF NO
                                 Intent intent = new Intent(SignInActivity.this, NavigationDrawerActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

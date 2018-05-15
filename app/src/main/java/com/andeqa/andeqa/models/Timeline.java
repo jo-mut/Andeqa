@@ -5,6 +5,7 @@ package com.andeqa.andeqa.models;
  */
 
 public class Timeline {
+    String receiver_id;
     String type;
     String user_id;
     String post_id;
@@ -72,5 +73,13 @@ public class Timeline {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getReceiver_id() {
+        return receiver_id;
+    }
+
+    public void setReceiver_id(String receiver_id) {
+        this.receiver_id = receiver_id;
     }
 }

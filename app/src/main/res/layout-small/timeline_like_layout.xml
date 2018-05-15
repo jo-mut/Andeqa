@@ -9,7 +9,7 @@
 
 
     <RelativeLayout
-        android:padding="10dp"
+        android:padding="2dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
@@ -18,13 +18,13 @@
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="37dp"
+            android:layout_height="37dp"
             android:background="@drawable/profle_image_background"/>
 
 
         <RelativeLayout
-            android:layout_margin="10dp"
+            android:layout_margin="2dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/profileImageView"
@@ -38,15 +38,6 @@
                 android:id="@+id/usernameTextView"
                 android:textColor="@android:color/black"
                 android:textSize="12sp"
-                android:layout_alignParentTop="false" />
-
-            <TextView
-                android:text=""
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/timelineTextView"
-                android:textSize="10sp"
-                android:layout_below="@+id/usernameTextView"
                 android:layout_centerVertical="true" />
 
 

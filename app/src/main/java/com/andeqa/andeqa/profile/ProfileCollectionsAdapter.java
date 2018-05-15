@@ -8,18 +8,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.collections.CollectionViewHolder;
 import com.andeqa.andeqa.models.Collection;
-import com.andeqa.andeqa.settings.CollectionSettingsActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import static android.media.CamcorderProfile.get;
 
@@ -32,6 +40,7 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
     private Context mContext;
     //firestore
     private CollectionReference collectionsCollection;
+    private Query postCountQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
     private static final String COLLECTION_ID = "collection id";
@@ -68,6 +77,11 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
         Log.d("collection name", collection.getName());
 
         firebaseAuth = FirebaseAuth.getInstance();
+        if (firebaseAuth.getCurrentUser() != null){
+            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
+            postCountQuery = collectionsCollection.document("collections").collection(collectionId)
+                    .orderBy("collection_id");
+        }
 
         holder.mCollectionNameTextView.setText(collection.getName());
 
@@ -76,16 +90,30 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
 
         final int size = strings.length;
 
-        if (size <= 75){
+        if (size <= 50){
             //setence will not have read more
             holder.mCollectionsNoteTextView.setText(collection.getNote());
         }else {
-            holder.mCollectionsNoteTextView.setText(collection.getNote().substring(0, 74) + "...");
+            holder.mCollectionsNoteTextView.setText(collection.getNote().substring(0, 54) + "...");
         }
 
-        if (firebaseAuth.getCurrentUser().getUid().equals(uid)){
-            holder.mCollectionsSettingsImageView.setVisibility(View.VISIBLE);
-        }
+        postCountQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots,
+                                @Nullable FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (!queryDocumentSnapshots.isEmpty()){
+                    holder.postCountTextVew.setText(queryDocumentSnapshots.size() + " posts" );
+                }else {
+                    holder.postCountTextVew.setText("0 posts");
+                }
+            }
+        });
 
         if (collection.getImage() != null){
             Picasso.with(mContext)
@@ -113,26 +141,15 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
                     });
         }
 
-        holder.collectionsLinearLayout.setOnClickListener(new View.OnClickListener() {
+        holder.mCollectionsLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, CollectionsPostsActivity.class);
+                Intent intent = new Intent(mContext, ProfieCollectionPostsActivity.class);
                 intent.putExtra(ProfileCollectionsAdapter.COLLECTION_ID, collectionId);
                 intent.putExtra(ProfileCollectionsAdapter.EXTRA_USER_UID, uid);
                 mContext.startActivity(intent);
             }
         });
-
-        holder.mCollectionsSettingsImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(mContext, CollectionSettingsActivity.class);
-                intent.putExtra(ProfileCollectionsAdapter.COLLECTION_ID, collectionId);
-                intent.putExtra(ProfileCollectionsAdapter.COLLECTION_ID, collectionId);
-                mContext.startActivity(intent);
-            }
-        });
-
 
     }
 

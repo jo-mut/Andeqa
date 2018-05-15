@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.andeqa.andeqa.Constants;
@@ -35,10 +36,10 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     @Bind(R.id.profileImageView)CircleImageView mProfileImageView;
     @Bind(R.id.usernameTextView)TextView mUsernameTextView;
     @Bind(R.id.bioTextView)TextView mBioTextView;
-    @Bind(R.id.sendFeedbackRelativeLayout)RelativeLayout mSendFeedbackRelativeLayout;
+    @Bind(R.id.sendFeedbackRelativeLayout)LinearLayout mSendFeedbackRelativeLayout;
 //    @Bind(R.id.faqRelativeLayout)RelativeLayout mFaqRelativeLayout;
-    @Bind(R.id.privacyPolicyRelativeLayout)RelativeLayout mPrivacyPolicyRelativeLayout;
-    @Bind(R.id.updateProfileRelativeLayout)RelativeLayout mUpdateProfileRelativeLayout;
+    @Bind(R.id.privacyPolicyRelativeLayout)LinearLayout mPrivacyPolicyRelativeLayout;
+    @Bind(R.id.updateProfileRelativeLayout)LinearLayout mUpdateProfileRelativeLayout;
 //    @Bind(R.id.deleteAccountRelativeLayout)RelativeLayout mDeleteAccountRelativeLayout;
 
     private static final String TAG = SettingsActivity.class.getSimpleName();

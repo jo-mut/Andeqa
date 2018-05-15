@@ -27,7 +27,7 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.TransactionDetails;
-import com.andeqa.andeqa.profile.CollectionsPostsActivity;
+import com.andeqa.andeqa.profile.ProfieCollectionPostsActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -108,13 +108,13 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
             //initialize firestore
             firebaseFirestore =  FirebaseFirestore.getInstance();
             //get the reference to posts(collection reference)
-            postsCollection = firebaseFirestore.collection(Constants.COLLECTIONS);
+            postsCollection = firebaseFirestore.collection(Constants.USER_COLLECTIONS);
             collectionOwnersCollection = firebaseFirestore.collection(Constants.COLLECTION_OWNERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
+            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
 
             //firebase
-            postReference = FirebaseDatabase.getInstance().getReference(Constants.COLLECTIONS);
+            postReference = FirebaseDatabase.getInstance().getReference(Constants.USER_COLLECTIONS);
 
             //textwatchers
             mCollectionNameEditText.setFilters(new InputFilter[]{new InputFilter
@@ -205,8 +205,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
 
     private void requestForSpecificPermission(){
         ActivityCompat.requestPermissions(this, new String[]{
-                Manifest.permission.GET_ACCOUNTS, Manifest.permission.RECEIVE_SMS,
-                Manifest.permission.READ_SMS, Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
         }, 101);
     }
@@ -257,7 +256,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                     if (photoUri != null){
                         StorageReference storageReference = FirebaseStorage
                                 .getInstance().getReference()
-                                .child(Constants.COLLECTIONS)
+                                .child(Constants.USER_COLLECTIONS)
                                 .child(collectionId);
 
                         UploadTask uploadTask = storageReference.putFile(photoUri);
@@ -305,7 +304,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                                     progressDialog.dismiss();
                                     //reset input fields
 
-                                    Intent intent = new Intent(CreateCollectionActivity.this, CollectionsPostsActivity.class);
+                                    Intent intent = new Intent(CreateCollectionActivity.this, ProfieCollectionPostsActivity.class);
                                     intent.putExtra(CreateCollectionActivity.COLLECTION_ID, collectionId);
                                     intent.putExtra(CreateCollectionActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -332,10 +331,9 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                         mCollectionNoteEditText.setText("");
 
 
-                        Intent intent = new Intent(CreateCollectionActivity.this, CollectionsPostsActivity.class);
+                        Intent intent = new Intent(CreateCollectionActivity.this, ProfieCollectionPostsActivity.class);
                         intent.putExtra(CreateCollectionActivity.COLLECTION_ID, collectionId);
                         intent.putExtra(CreateCollectionActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                         finish();
                     }

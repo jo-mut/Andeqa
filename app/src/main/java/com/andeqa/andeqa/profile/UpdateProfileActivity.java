@@ -170,8 +170,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 
     private void requestForSpecificPermission(){
         ActivityCompat.requestPermissions(this, new String[]{
-                Manifest.permission.GET_ACCOUNTS, Manifest.permission.RECEIVE_SMS,
-                Manifest.permission.READ_SMS, Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
         }, 101);
     }
@@ -300,7 +299,6 @@ public class UpdateProfileActivity extends AppCompatActivity implements
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Updating your profile...");
         progressDialog.setCancelable(true);
-        progressDialog.getWindow().setLayout(100, 150);
     }
 
 
@@ -325,51 +323,9 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                     Log.d("profile image", profileImage);
 
                     DocumentReference imageRef = usersReference.document(firebaseUser.getUid());
-                    imageRef.update("profileImage", profileImage);
+                    imageRef.update("profile_image", profileImage);
                     mProfilePictureImageView.setImageBitmap(null);
-
-                    //progress dialog to show the retrieval of the update profile picture
-//                    viewAnimator.setDisplayedChild(1);
-
-                    usersReference.document(firebaseUser.getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                            if (documentSnapshot.exists()){
-                                final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                                final String profileImage = cinggulan.getProfile_image();
-                                Log.d("profile image", profileImage);
-
-                                Picasso.with(UpdateProfileActivity.this)
-                                        .load(profileImage)
-                                        .resize(MAX_WIDTH, MAX_HEIGHT)
-                                        .onlyScaleDown()
-                                        .centerCrop()
-                                        .placeholder(R.drawable.profle_image_background)
-                                        .networkPolicy(NetworkPolicy.OFFLINE)
-                                        .into(mProfilePictureImageView, new Callback() {
-                                            @Override
-                                            public void onSuccess() {
-//                                            viewAnimator.setDisplayedChild(0);
-                                            }
-
-                                            @Override
-                                            public void onError() {
-                                                Picasso.with(UpdateProfileActivity.this)
-                                                        .load(profileImage)
-                                                        .resize(MAX_WIDTH, MAX_HEIGHT)
-                                                        .onlyScaleDown()
-                                                        .centerCrop()
-                                                        .placeholder(R.drawable.profle_image_background)
-                                                        .into(mProfilePictureImageView);
-
-                                            }
-                                        });
-                                progressDialog.dismiss();
-
-                            }
-
-                        }
-                    });
+                    progressDialog.dismiss();
 
                 }
             });
@@ -398,43 +354,9 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                     final String profileCoverPhoto = (downloadUrl.toString());
 
                     DocumentReference imageRef = usersReference.document(firebaseUser.getUid());
-                    imageRef.update("profileCover", profileCoverPhoto);
+                    imageRef.update("profile_cover", profileCoverPhoto);
                     mProfilePictureImageView.setImageBitmap(null);
-
-                    //progress dialog to show the retrieval of the update profile picture
-                    usersReference.document(firebaseUser.getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                            if (documentSnapshot.exists()){
-                                final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                                final String profileCover= cinggulan.getProfile_cover();
-                                Log.d("profile image", profileCover);
-
-                                Picasso.with(UpdateProfileActivity.this)
-                                        .load(profileCover).resize(MAX_WIDTH, MAX_HEIGHT)
-                                        .onlyScaleDown().centerCrop().placeholder(R.drawable.default_gradient_color)
-                                        .networkPolicy(NetworkPolicy.OFFLINE)
-                                        .into(mProfileCoverImageView, new Callback() {
-                                            @Override
-                                            public void onSuccess() {
-//                                            viewAnimator.setDisplayedChild(0);
-                                            }
-
-                                            @Override
-                                            public void onError() {
-                                                Picasso.with(UpdateProfileActivity.this)
-                                                        .load(profileCover).resize(MAX_WIDTH, MAX_HEIGHT)
-                                                        .onlyScaleDown().centerCrop()
-                                                        .placeholder(R.drawable.default_gradient_color)
-                                                        .into(mProfileCoverImageView);
-
-                                            }
-                                        });
-                                progressDialog.dismiss();
-                            }
-
-                        }
-                    });
+                    progressDialog.dismiss();
 
                 }
             });

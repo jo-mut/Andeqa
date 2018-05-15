@@ -73,7 +73,7 @@ public class TimelineFragment extends Fragment implements SwipeRefreshLayout.OnR
 
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
         timelineQuery = timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
-                .collection("activities").orderBy("time", Query.Direction.DESCENDING)
+                .collection("activities").orderBy("time", Query.Direction.ASCENDING)
                 .limit(TOTAL_ITEMS);
 
         setRecyclerView();
@@ -91,7 +91,8 @@ public class TimelineFragment extends Fragment implements SwipeRefreshLayout.OnR
         timelineAdapter = new TimelineAdapter(getContext());
         mTimelineRecyclerView.setAdapter(timelineAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        layoutManager.setAutoMeasureEnabled(true);
+        layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
         mTimelineRecyclerView.setHasFixedSize(false);
         mTimelineRecyclerView.setLayoutManager(layoutManager);
     }
@@ -137,45 +138,51 @@ public class TimelineFragment extends Fragment implements SwipeRefreshLayout.OnR
         mSwipeRefreshLayout.setRefreshing(true);
         // Get the last visible document
         final int snapshotSize = timelineAdapter.getItemCount();
-        DocumentSnapshot lastVisible = timelineAdapter.getSnapshot(snapshotSize - 1);
 
-        //retrieve the first bacth of documentSnapshots
-        Query nextSellingQuery = timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
-                .collection("timeline").orderBy("time", Query.Direction.DESCENDING)
-                .startAfter(lastVisible)
-                .limit(TOTAL_ITEMS);
+        if (snapshotSize == 0){
+            mSwipeRefreshLayout.setRefreshing(false);
+        }else {
+            DocumentSnapshot lastVisible = timelineAdapter.getSnapshot(snapshotSize - 1);
 
-        nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+            //retrieve the first bacth of documentSnapshots
+            Query nextSellingQuery = timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
+                    .collection("timeline").orderBy("time", Query.Direction.ASCENDING)
+                    .startAfter(lastVisible)
+                    .limit(TOTAL_ITEMS);
 
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
+            nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-                if (!documentSnapshots.isEmpty()){
-                    //retrieve the first bacth of documentSnapshots
-                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                        switch (change.getType()) {
-                            case ADDED:
-                                onDocumentAdded(change);
-                                break;
-                            case MODIFIED:
-                                onDocumentModified(change);
-                                break;
-                            case REMOVED:
-                                onDocumentRemoved(change);
-                                break;
-                        }
+                    if (e != null) {
+                        Log.w(TAG, "Listen error", e);
+                        return;
                     }
 
-                    mSwipeRefreshLayout.setRefreshing(true);
-                }else {
-                    mSwipeRefreshLayout.setRefreshing(true);
+                    if (!documentSnapshots.isEmpty()){
+                        //retrieve the first bacth of documentSnapshots
+                        for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                            switch (change.getType()) {
+                                case ADDED:
+                                    onDocumentAdded(change);
+                                    break;
+                                case MODIFIED:
+                                    onDocumentModified(change);
+                                    break;
+                                case REMOVED:
+                                    onDocumentRemoved(change);
+                                    break;
+                            }
+                        }
+
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }else {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
                 }
-            }
-        });
+            });
+        }
+
     }
 
     protected void onDocumentAdded(DocumentChange change) {

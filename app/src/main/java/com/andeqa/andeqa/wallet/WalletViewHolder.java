@@ -15,7 +15,7 @@ public class WalletViewHolder extends RecyclerView.ViewHolder {
 
     View mView;
     Context mContext;
-    public ProportionalImageView postImageView;
+    public ImageView postImageView;
     public TextView amountTransferredTextView;
     public ImageView deleteHistoryImageView;
 
@@ -24,9 +24,9 @@ public class WalletViewHolder extends RecyclerView.ViewHolder {
         mView = itemView;
         mContext = itemView.getContext();
         ButterKnife.bind(this, mView);
-        postImageView = (ProportionalImageView) mView.findViewById(R.id.postImageView);
+        postImageView = (ImageView) mView.findViewById(R.id.postImageView);
         deleteHistoryImageView = (ImageView) mView.findViewById(R.id.deleteHistoryImageView);
-        amountTransferredTextView = (TextView) mView.findViewById(R.id.amountTransferredTextView);
+        amountTransferredTextView = (TextView) mView.findViewById(R.id.transactionsHistoryTextView);
 
 
     }

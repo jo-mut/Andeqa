@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,8 +24,6 @@ import android.widget.Toast;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Collection;
-import com.andeqa.andeqa.models.CollectionPost;
-import com.andeqa.andeqa.profile.CollectionsPostsActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -47,9 +46,9 @@ import butterknife.ButterKnife;
 
 public class CollectionSettingsActivity extends AppCompatActivity implements View.OnClickListener {
     //bind views
-    @Bind(R.id.changeNoteRelativeLayout)RelativeLayout mChangeNoteRelativeLayout;
-    @Bind(R.id.changeNameRelativeLayout)RelativeLayout mChangeNameRelativeLayout;
-    @Bind(R.id.changeCoverRelativeLayout)RelativeLayout mChangeCoverRelativeLayout;
+    @Bind(R.id.changeNoteRelativeLayout)LinearLayout mChangeNoteRelativeLayout;
+    @Bind(R.id.changeNameRelativeLayout)LinearLayout  mChangeNameRelativeLayout;
+    @Bind(R.id.changeCoverRelativeLayout)LinearLayout  mChangeCoverRelativeLayout;
     @Bind(R.id.collectionCoverImageView)ImageView mCollectionCoverImageView;
     @Bind(R.id.collectionNoteTextView)TextView mCollectionNoteTextView;
     @Bind(R.id.collectionNameTextView)TextView mCollectionNameTextView;
@@ -112,7 +111,7 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
                 throw new IllegalArgumentException("pass an collection id");
             }
 
-            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
+            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
 
             //textwatchers
             mCollectionNameEditText.setFilters(new InputFilter[]{new InputFilter
@@ -243,7 +242,7 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
             progressDialog.show();
             StorageReference storageReference = FirebaseStorage
                     .getInstance().getReference()
-                    .child(Constants.COLLECTIONS)
+                    .child(Constants.USER_COLLECTIONS)
                     .child(collectionId);
 
             UploadTask uploadTask = storageReference.putFile(photoUri);

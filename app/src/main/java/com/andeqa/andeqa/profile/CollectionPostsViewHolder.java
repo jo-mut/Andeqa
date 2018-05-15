@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -19,28 +20,28 @@ import de.hdodenhof.circleimageview.CircleImageView;
  */
 
 public class CollectionPostsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
     View mView;
     Context mContext;
+    ProgressBar progressBar;
     public ImageView likesImageView;
+    public ImageView dislikeImageView;
+    public TextView dislikeCountTextView;
     public ImageView commentsImageView;
-    public TextView likesPercentageTextView;
-    public TextView dislikePercentageTextView;
-    public TextView cingleTitleTextView;
+    public TextView likesCountTextView;
+    public TextView titleTextView;
     public TextView descriptionTextView;
-    public TextView accountUsernameTextView;
+    public TextView usernameTextView;
     public CircleImageView profileImageView;
     public TextView commentsCountTextView;
-    public ImageView settingsImageView;
-    public RelativeLayout cingleTitleRelativeLayout;
-    public RelativeLayout descriptionRelativeLayout;
+    public TextView senseCreditsTextView;
+    public TextView mTradeButton;
+    public RelativeLayout titleRelativeLayout;
     public ProportionalImageView postImageView;
-    public TextView tradeMethodTextView;
-    public TextView cingleSenseCreditsTextView;
-    public RecyclerView likesRecyclerView;
-    public TextView totalLikesCountTextView;
-    public ImageView dislikeImageView;
+    public static final int MAX_WIDTH = 400;
+    public static final int MAX_HEIGHT = 400;
+    public RelativeLayout descriptionRelativeLayout;
     public RelativeLayout likesRelativeLayout;
+
 
 
     public CollectionPostsViewHolder(View itemView){
@@ -49,23 +50,20 @@ public class CollectionPostsViewHolder extends RecyclerView.ViewHolder implement
         mContext = itemView.getContext();
         likesImageView = (ImageView) itemView.findViewById(R.id.likesImageView);
         dislikeImageView = (ImageView) itemView.findViewById(R.id.dislikesImageView);
-        likesPercentageTextView =(TextView)itemView.findViewById(R.id.likesPercentageTextView);
-        dislikePercentageTextView = (TextView) itemView.findViewById(R.id.dislikesPercentageTextView);
+        dislikeCountTextView = (TextView) itemView.findViewById(R.id.dislikesCountTextView);
         commentsImageView = (ImageView) itemView.findViewById(R.id.commentsImageView);
         descriptionTextView = (TextView) itemView.findViewById(R.id.descriptionTextView);
-        cingleTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
-        accountUsernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
+        titleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
+        usernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
-        settingsImageView = (ImageView) itemView.findViewById(R.id.settingsImageView);
-        cingleTitleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.cingleTitleRelativeLayout);
+        titleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.titleRelativeLayout);
         descriptionRelativeLayout  = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
         postImageView = (ProportionalImageView) mView.findViewById(R.id.postImageView);
-        cingleSenseCreditsTextView = (TextView) mView.findViewById(R.id.postSenseCreditsTextView);
-        tradeMethodTextView = (TextView) mView.findViewById(R.id.tradeMethodTextView);
-        likesRecyclerView = (RecyclerView) mView.findViewById(R.id.likesRecyclerView);
+        senseCreditsTextView = (TextView) mView.findViewById(R.id.creditsTextView);
+        mTradeButton = (TextView) mView.findViewById(R.id.tradeButton);
         likesRelativeLayout = (RelativeLayout) mView.findViewById(R.id.likesRelativeLayout);
-        totalLikesCountTextView = (TextView) mView.findViewById(R.id.totalLikesCountTextView);
+        likesCountTextView = (TextView) mView.findViewById(R.id.likesCountTextView);
 
     }
 

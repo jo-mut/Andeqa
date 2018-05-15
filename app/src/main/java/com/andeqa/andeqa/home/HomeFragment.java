@@ -76,7 +76,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         if (firebaseAuth.getCurrentUser() != null){
             //firestore
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            randomPostsQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
+            randomPostsQuery = postsCollection.orderBy("time", Query.Direction.ASCENDING)
                     .limit(TOTAL_ITEMS);
 
             setRecyclerView();
@@ -105,6 +105,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         postsRecyclerView.setHasFixedSize(false);
         layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
         postsRecyclerView.setLayoutManager(layoutManager);
 
     }
@@ -150,7 +151,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             DocumentSnapshot lastVisible = postsAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of posts
-            nextRandomQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
+            nextRandomQuery = postsCollection.orderBy("time", Query.Direction.ASCENDING)
                     .startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
 
@@ -225,6 +226,11 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public void onStop() {
         super.onStop();
+    }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        postsAdapter.removeListener();
     }
 }

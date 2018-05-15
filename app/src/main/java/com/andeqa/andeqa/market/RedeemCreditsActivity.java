@@ -129,7 +129,7 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
             transactionReference = FirebaseFirestore.getInstance().collection(Constants.TRANSACTION_HISTORY);
             postWalletReference = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
             walletReference = FirebaseFirestore.getInstance().collection(Constants.WALLET);
-            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.U_CREDITS);
+            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
 
             collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
                     .document("collections").collection(mCollectionId);
@@ -137,7 +137,7 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             commentReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
-            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.U_CREDITS);
+            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
             selllingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
 
 
@@ -285,7 +285,6 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
     @Override
     public void onClick(View v){
         if (v == mRedeemAmountButton){
-            progressDialog.show();
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d");
             final String date = simpleDateFormat.format(new Date());
 
@@ -322,6 +321,8 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
                                     }else if (amountTransferred <= 0.00){
                                         mAmountEnteredEditText.setError("Amount cannot be zero");
                                     }else {
+                                        progressDialog.show();
+
                                         final double finalCredits = senseCredits - amountTransferred;
 
                                         senseCreditReference.document(mPostKey).update("amount", finalCredits)

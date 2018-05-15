@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    tools:context="com.andeqa.andeqa.utils.DialogProgressFragment">
+    tools:context="com.andeqa.andeqa.settings.DialogProgressFragment">
 
     <RelativeLayout
         android:id="@+id/progressRelativeLayout"

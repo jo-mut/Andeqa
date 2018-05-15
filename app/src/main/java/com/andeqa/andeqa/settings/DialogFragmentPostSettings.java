@@ -19,7 +19,6 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.market.ListOnMarketActivity;
 import com.andeqa.andeqa.market.RedeemCreditsActivity;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -113,7 +112,7 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
                     .document("collections").collection(mCollectionId);
-            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.U_CREDITS);
+            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
             marketCollections = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             postOnwersCollection = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
 

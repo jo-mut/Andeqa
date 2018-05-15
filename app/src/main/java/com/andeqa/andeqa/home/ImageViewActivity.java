@@ -90,7 +90,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnClick
                     .document("collections").collection(mCollectionId);
             commentsCountQuery = commentsReference;
             //firebase
-            cinglesRef = FirebaseDatabase.getInstance().getReference(Constants.COLLECTIONS);
+            cinglesRef = FirebaseDatabase.getInstance().getReference(Constants.USER_COLLECTIONS);
             likesRef = FirebaseDatabase.getInstance().getReference(Constants.LIKES);
 
             cinglesRef.keepSynced(true);

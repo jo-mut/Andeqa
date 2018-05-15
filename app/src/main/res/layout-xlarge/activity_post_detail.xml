@@ -14,18 +14,25 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar"
             android:layout_width="match_parent"
-            android:layout_gravity="top"
-            app:titleTextAppearance="@style/toolbarTextAppearance"
-            android:layout_height="112dp"
-            android:background="@color/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:titleTextColor="@android:color/white">
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay">
 
-        </android.support.v7.widget.Toolbar>
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:background="@color/colorPrimary"
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:popupTheme="@style/AppTheme.PopupOverlay"
+                app:title="@string/app_name">
+
+            </android.support.v7.widget.Toolbar>
+
+        </android.support.design.widget.AppBarLayout>
 
         <ScrollView
             android:fillViewport="true"
@@ -60,29 +67,175 @@
                 </RelativeLayout>
 
                 <RelativeLayout
-                    android:padding="0.3dp"
-                    android:id="@+id/postSalePriceRelativeLayout"
+                    android:padding="2dp"
+                    android:layout_marginBottom="10dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp">
+                    android:layout_height="wrap_content">
 
-                    <Button
-                        android:text="@string/buy"
-                        android:layout_width="wrap_content"
-                        android:id="@+id/buyPostButton"
-                        android:textAllCaps="false"
-                        android:background="@drawable/colour_btn_background"
+                    <android.support.v7.widget.CardView
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
-                        android:layout_marginLeft="10dp"
-                        android:minHeight="50dp"
-                        android:minWidth="100dip"
-                        android:textSize="28dp"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_marginStart="10dp" />
+                        app:cardPreventCornerOverlap="false"
+                        app:cardCornerRadius="0dp">
+
+                        <LinearLayout
+                            android:background="@drawable/border_rectangle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="1dp"
+                            android:orientation="vertical">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <LinearLayout
+                                    android:orientation="horizontal"
+                                    android:id="@+id/toolsRelativeLayout"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content">
+
+                                    <RelativeLayout
+                                        android:layout_alignParentLeft="true"
+                                        android:layout_alignParentStart="true"
+                                        android:id="@id/likesRelativeLayout"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content">
+
+                                        <ImageView
+                                            android:id="@+id/likesImageView"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginLeft="5dp"
+                                            android:layout_marginStart="5dp"
+                                            android:padding="5dp"
+                                            app:srcCompat="@drawable/ic_thumb_up_black_24dp" />
+
+
+                                        <TextView
+                                            android:id="@+id/likesCountTextView"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/likesImageView"
+                                            android:layout_centerHorizontal="true"
+                                            android:paddingBottom="2dp"
+                                            android:paddingTop="2dp"
+                                            android:text="0"
+                                            android:textSize="24sp"
+                                            android:textStyle="normal|bold" />
+
+
+                                    </RelativeLayout>
+
+                                    <RelativeLayout
+                                        android:id="@+id/dislikeRelativeLayout"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_toEndOf="@+id/likesRelativeLayout"
+                                        android:layout_toRightOf="@+id/likesRelativeLayout">
+
+
+                                        <ImageView
+                                            android:id="@+id/dislikesImageView"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:padding="5dp"
+                                            app:srcCompat="@drawable/ic_thumb_down_black_24dp" />
+
+
+                                        <TextView
+                                            android:id="@+id/dislikesCountTextView"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/dislikesImageView"
+                                            android:layout_centerHorizontal="true"
+                                            android:paddingBottom="2dp"
+                                            android:paddingTop="2dp"
+                                            android:text="0"
+                                            android:textSize="24sp"
+                                            android:textStyle="normal|bold" />
+
+
+                                    </RelativeLayout>
+
+                                    <RelativeLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_toEndOf="@+id/dislikeRelativeLayout"
+                                        android:layout_toRightOf="@+id/dislikeRelativeLayout">
+
+                                        <ImageView
+                                            android:id="@+id/commentsImageView"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginLeft="5dp"
+                                            android:layout_marginStart="5dp"
+                                            android:padding="5dp"
+                                            android:tint="@android:color/black"
+                                            app:srcCompat="@drawable/ic_chat_bubble_black_24dp" />
+
+                                        <TextView
+                                            android:id="@+id/commentsCountTextView"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/commentsImageView"
+                                            android:layout_centerHorizontal="true"
+                                            android:paddingBottom="2dp"
+                                            android:paddingTop="2dp"
+                                            android:text="0"
+                                            android:textSize="24sp"
+                                            android:textStyle="normal|bold" />
+
+
+                                    </RelativeLayout>
+
+                                </LinearLayout>
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:visibility="gone"
+                                android:id="@+id/titleRelativeLayout"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:id="@+id/titleTextView"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text=""
+                                    android:textColor="@android:color/black"
+                                    android:textSize="32sp"
+                                    android:textStyle="normal" />
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:visibility="gone"
+                                android:id="@+id/descriptionRelativeLayout"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:id="@+id/descriptionTextView"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text=""
+                                    android:textColor="@android:color/black"
+                                    android:textSize="28sp" />
+
+                            </RelativeLayout>
+
+                        </LinearLayout>
+
+                    </android.support.v7.widget.CardView>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/salePriceRelativeLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
 
                     <TextView
@@ -92,14 +245,14 @@
                         android:layout_alignParentBottom="false"
                         android:layout_alignParentRight="false"
                         android:layout_alignParentEnd="false"
-                        android:id="@+id/postSalePriceTextView"
+                        android:id="@+id/postPriceTextView"
                         android:layout_centerInParent="true"
                         android:textSize="32sp"
                         android:textColor="@android:color/black"
                         android:textStyle="normal|bold" />
 
-
                     <ImageView
+                        android:visibility="gone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:srcCompat="@drawable/ic_create_white_24dp"
@@ -107,6 +260,7 @@
                         android:layout_alignParentRight="true"
                         android:id="@+id/editSalePriceImageView"
                         android:tint="@color/colorPrimary"
+                        android:padding="10dp"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
 
@@ -119,8 +273,7 @@
                         android:id="@+id/doneEditingImageView"
                         android:tint="@color/colorPrimary"
                         android:visibility="gone"
-                        android:paddingLeft="5dp"
-                        android:paddingRight="5dp"
+                        android:padding="10dp"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true" />
 
@@ -151,6 +304,29 @@
 
                 </RelativeLayout>
 
+                <RelativeLayout
+                    android:padding="10dp"
+                    android:id="@+id/priceRelativeLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:text="Buy"
+                        android:layout_width="match_parent"
+                        android:id="@+id/tradeButton"
+                        android:textAllCaps="true"
+                        android:textSize="32sp"
+                        android:background="@drawable/colour_btn_background"
+                        android:layout_height="match_parent"
+                        android:textColor="@android:color/white"
+                        android:layout_marginLeft="10dp"
+                        android:layout_centerInParent="true"
+                        android:layout_marginStart="10dp" />
+
+
+                </RelativeLayout>
+
+
                 <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -158,236 +334,9 @@
                     app:cardCornerRadius="0dp">
 
                     <LinearLayout
-                        android:layout_marginBottom="20dp"
                         android:orientation="vertical"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:paddingTop="5dp"
-                            android:id="@+id/toolsRelativeLayout"
-                            android:layout_height="50dp">
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                app:srcCompat="@drawable/ic_chat_bubble_black_24dp"
-                                android:id="@+id/commentsImageView"
-                                android:tint="@android:color/black"
-                                android:padding="5dp"
-                                android:layout_marginLeft="5dp"
-                                android:layout_marginStart="5dp"
-                                android:layout_toRightOf="@+id/dislikesImageView"
-                                android:layout_toEndOf="@+id/dislikesImageView"
-                                android:layout_centerVertical="true" />
-
-                            <RelativeLayout
-                                android:layout_marginLeft="5dp"
-                                android:layout_marginStart="5dp"
-                                android:layout_marginRight="5dp"
-                                android:layout_marginEnd="5dp"
-                                android:id="@+id/likeAndDislikeCardView"
-                                android:layout_toRightOf="@+id/likesImageView"
-                                android:layout_toEndOf="@+id/likesImageView"
-                                android:layout_height="match_parent"
-                                android:layout_width="240dp">
-
-                                <RelativeLayout
-                                    android:layout_toStartOf="@+id/likeAndDislikesDividerView"
-                                    android:layout_toLeftOf="@+id/likeAndDislikesDividerView"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent">
-
-                                    <android.support.v7.widget.CardView
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        app:cardCornerRadius="10dp">
-
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:id="@+id/likesPercentageTextView"
-                                            android:textColor="@android:color/black"
-                                            android:textSize="24sp"
-                                            android:layout_centerInParent="false"
-                                            android:layout_centerVertical="false"
-                                            android:layout_centerHorizontal="false"
-                                            android:layout_gravity="center"
-                                            android:layout_marginLeft="5dp"
-                                            android:layout_marginEnd="5dp"
-                                            android:layout_marginRight="5dp"
-                                            android:layout_marginStart="5dp"
-                                            android:textAlignment="center" />
-
-                                    </android.support.v7.widget.CardView>
-
-
-                                </RelativeLayout>
-
-                                <View
-                                    android:id="@+id/likeAndDislikesDividerView"
-                                    android:layout_width="0.3dp"
-                                    android:layout_height="match_parent"
-                                    android:layout_gravity="center"
-                                    android:layout_centerInParent="true" />
-
-
-                                <RelativeLayout
-                                    android:layout_toEndOf="@+id/likeAndDislikesDividerView"
-                                    android:layout_toRightOf="@+id/likeAndDislikesDividerView"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent">
-
-
-                                    <android.support.v7.widget.CardView
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        app:cardCornerRadius="10dp">
-
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:id="@+id/dislikesPercentageTextView"
-                                            android:textColor="@android:color/black"
-                                            android:textSize="24sp"
-                                            android:layout_centerInParent="false"
-                                            android:layout_centerVertical="false"
-                                            android:layout_centerHorizontal="false"
-                                            android:layout_gravity="center"
-                                            android:layout_marginEnd="5dp"
-                                            android:layout_marginLeft="5dp"
-                                            android:layout_marginRight="5dp"
-                                            android:layout_marginStart="5dp"
-                                            android:textAlignment="center" />
-
-                                    </android.support.v7.widget.CardView>
-
-
-                                </RelativeLayout>
-
-                            </RelativeLayout>
-
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                app:srcCompat="@drawable/ic_thumb_up_black_24dp"
-                                android:id="@+id/likesImageView"
-                                android:padding="5dp"
-                                android:layout_alignParentTop="false"
-                                android:layout_alignParentLeft="true"
-                                android:layout_alignParentStart="true"
-                                android:layout_marginLeft="5dp"
-                                android:layout_marginStart="5dp"
-                                android:layout_centerVertical="true" />
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                app:srcCompat="@drawable/ic_thumb_down_black_24dp"
-                                android:id="@+id/dislikesImageView"
-                                android:layout_toRightOf="@+id/likeAndDislikeCardView"
-                                android:layout_toEndOf="@+id/likeAndDislikeCardView"
-                                android:padding="5dp"
-                                android:layout_alignParentTop="false"
-                                android:layout_centerInParent="false"
-                                android:layout_centerVertical="true" />
-
-                            <TextView
-                                android:text="@string/_0"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:id="@+id/commentsCountTextView"
-                                android:textSize="24sp"
-                                android:paddingTop="2dp"
-                                android:paddingBottom="2dp"
-                                android:layout_toRightOf="@+id/commentsImageView"
-                                android:layout_toEndOf="@+id/commentsImageView"
-                                android:textStyle="normal|bold"
-                                android:layout_centerInParent="false"
-                                android:layout_centerVertical="true" />
-
-
-                        </RelativeLayout>
-
-                        <RelativeLayout
-                            android:layout_marginTop="5dp"
-                            android:layout_marginBottom="5dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="30dp">
-
-                            <android.support.v7.widget.RecyclerView
-                                android:id="@+id/likesRecyclerView"
-                                android:overScrollMode="never"
-                                android:nestedScrollingEnabled="true"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
-                                tools:targetApi="lollipop">
-
-                            </android.support.v7.widget.RecyclerView>
-
-
-                            <TextView
-                                android:text=""
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/border_color_primary"
-                                android:id="@+id/totalLikesCountTextView"
-                                android:textColor="@android:color/black"
-                                android:textSize="24sp"
-                                android:padding="5dp"
-                                android:textStyle="normal|bold"
-                                android:layout_toRightOf="@+id/likesRecyclerView"
-                                android:layout_toEndOf="@+id/likesRecyclerView"
-                                android:layout_centerInParent="false"
-                                android:layout_centerVertical="false"
-                                android:layout_centerHorizontal="false"
-                                android:layout_marginEnd="5dp"
-                                android:layout_marginLeft="5dp"
-                                android:layout_marginRight="5dp"
-                                android:layout_marginStart="5dp"
-                                android:textAlignment="center" />
-
-                        </RelativeLayout>
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/cingleTitleRelativeLayout">
-
-                            <TextView
-                                android:text=""
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
-                                android:layout_alignParentLeft="true"
-                                android:layout_alignParentStart="true"
-                                android:id="@+id/titleTextView"
-                                android:textStyle="normal|bold"
-                                android:textColor="@android:color/black"
-                                android:textSize="32sp" />
-
-                        </RelativeLayout>
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:id="@+id/descriptionRelativeLayout">
-
-                            <TextView
-                                android:text=""
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:id="@+id/descriptionTextView"
-                                android:textColor="@android:color/black"
-                                android:textSize="28sp"
-                                android:layout_alignParentTop="true"
-                                android:layout_alignParentLeft="true"
-                                android:layout_alignParentStart="true"/>
-
-                        </RelativeLayout>
 
                         <RelativeLayout
                             android:paddingTop="5dp"
@@ -399,7 +348,7 @@
                             tools:ignore="RtlSymmetry">
 
                             <TextView
-                                android:text="@string/creator"
+                                android:text="Creator:"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:id="@+id/postCreatorTextView"
@@ -414,7 +363,6 @@
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
                                 android:layout_marginRight="5dp"
-                                android:layout_marginEnd="5dp"
                                 android:layout_centerVertical="true"
                                 android:layout_alignParentRight="true"
                                 android:layout_alignParentEnd="true"
@@ -445,7 +393,7 @@
                             android:paddingRight="3dp">
 
                             <TextView
-                                android:text="@string/date_posted"
+                                android:text="Date Posted:"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:id="@+id/dateTextView"
@@ -466,45 +414,6 @@
                                 android:layout_toEndOf="@+id/dateTextView"
                                 android:textSize="28sp"
                                 android:layout_centerVertical="true" />
-
-                        </RelativeLayout>
-
-                        <RelativeLayout
-                            android:paddingTop="5dp"
-                            android:paddingBottom="5dp"
-                            android:id="@+id/tradingRelativeLayout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingLeft="3dp"
-                            android:paddingRight="3dp">
-
-                            <TextView
-                                android:text="@string/listed_on_ifair"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textStyle="normal|bold"
-                                android:textSize="28sp"
-                                android:paddingTop="3dp"
-                                android:paddingBottom="3dp"
-                                android:layout_alignParentTop="false"
-                                android:id="@+id/listedOnIfairTextView"
-                                android:layout_centerVertical="true" />
-
-
-                            <TextView
-                                android:text=""
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:id="@+id/tradeMethodTextView"
-                                android:textStyle="normal|bold"
-                                android:textSize="28sp"
-                                android:textColor="@color/colorPrimary"
-                                android:layout_marginLeft="10dp"
-                                android:layout_marginStart="10dp"
-                                android:layout_toEndOf="@+id/listedOnIfairTextView"
-                                android:layout_toRightOf="@+id/listedOnIfairTextView"
-                                android:padding="5dp" />
-
 
                         </RelativeLayout>
 
@@ -534,14 +443,13 @@
                                 android:layout_height="wrap_content"
                                 android:layout_toEndOf="@+id/senseCreditsTitleTextView"
                                 android:layout_toRightOf="@+id/senseCreditsTitleTextView"
-                                android:id="@+id/postSenseCreditsTextView"
+                                android:id="@+id/creditsTextView"
                                 android:textSize="28sp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginStart="10dp"
                                 android:layout_centerVertical="true" />
 
                         </RelativeLayout>
-
 
                         <RelativeLayout
                             android:paddingTop="5dp"
@@ -550,7 +458,7 @@
                             android:layout_height="wrap_content">
 
                             <TextView
-                                android:text="@string/owner"
+                                android:text="Owner:"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:id="@+id/ownerTitleTextView"
@@ -572,6 +480,7 @@
                                 android:id="@+id/postOwnerTextView"
                                 android:layout_marginTop="5dp"
                                 android:layout_marginLeft="10dp"
+                                android:layout_marginStart="10dp"
                                 android:textSize="28sp"
                                 android:layout_centerVertical="true" />
 

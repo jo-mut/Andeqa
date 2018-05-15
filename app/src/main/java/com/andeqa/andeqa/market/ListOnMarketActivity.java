@@ -51,7 +51,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
     @Bind(R.id.postImageView)ProportionalImageView mCingleImageView;
     @Bind(R.id.usernameTextView)TextView mAccountUsernameTextView;
     @Bind(R.id.profileImageView)CircleImageView mUserProfileImageView;
-    @Bind(R.id.postSalePriceTextView)TextView mCingleSalePriceTextView;
+    @Bind(R.id.postPriceTextView)TextView mCingleSalePriceTextView;
     @Bind(R.id.setCinglePriceButton)Button mSetCinglePriceButton;
     @Bind(R.id.setCingleSalePriceEditText)EditText mSetCingleSalePriceEditText;
 
@@ -119,7 +119,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             commentReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
-            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.U_CREDITS);
+            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
             selllingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
 
             //initialize input filter

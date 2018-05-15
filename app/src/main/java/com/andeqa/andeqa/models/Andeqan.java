@@ -14,6 +14,7 @@ public class Andeqan {
     String first_name;
     String second_name;
     String device_id;
+    String phone_number;
 
     public Andeqan(){
         //EMPTY CONSTRUCTOR REQUIRED
@@ -91,5 +92,13 @@ public class Andeqan {
 
     public void setDevice_id(String device_id) {
         this.device_id = device_id;
+    }
+
+    public String getPhone_number() {
+        return phone_number;
+    }
+
+    public void setPhone_number(String phone_number) {
+        this.phone_number = phone_number;
     }
 }
