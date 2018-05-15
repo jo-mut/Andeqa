@@ -23,8 +23,8 @@
                 android:layout_centerVertical="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:layout_height="100dp"
-                android:layout_width="100dp"
+                android:layout_height="120dp"
+                android:layout_width="120dp"
                 android:scaleType="centerCrop" />
 
         </RelativeLayout>
