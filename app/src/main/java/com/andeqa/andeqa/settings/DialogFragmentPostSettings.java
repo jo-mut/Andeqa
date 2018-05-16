@@ -17,8 +17,11 @@ import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.collections.CollectionsAdapter;
 import com.andeqa.andeqa.market.ListOnMarketActivity;
 import com.andeqa.andeqa.market.RedeemCreditsActivity;
+import com.andeqa.andeqa.profile.ProfieCollectionPostsActivity;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -54,6 +57,8 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
     private static final String COLLECTION_ID = "collection id";
     private static final String EXTRA_POST_ID = "post id";
     private String mCollectionId;
+    private String mUid;
+    private static final String EXTRA_USER_UID = "uid";
     private ProgressDialog progressDialog;
 
 
@@ -223,6 +228,7 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
                                                 return;
                                             }
 
+
                                             if (documentSnapshot.exists()) {
                                                 marketCollections.document(mPostId).delete();
 
@@ -262,15 +268,25 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
                                 }
                             });
 
-                            collectionsPosts.document(mPostId).delete();
-                            progressDialog.dismiss();
+                            collectionsPosts.document(mPostId).delete()
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    try {
+                                        progressDialog.dismiss();
+                                    }catch (Exception e){
+                                        e.printStackTrace();
+                                    }
+
+
+                                }
+                            });
 
                         }
                     }
                 });
 
 
-        dismiss();
     }
 
     @Override
@@ -281,7 +297,6 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
     @Override
     public void onPause() {
         super.onPause();
-        dismiss();
     }
 
     @Override

@@ -217,6 +217,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             showBuyButton();
             showEditImageView();
             deletePostDialog();
+            deleteFinish();
 
         }
     }
@@ -232,22 +233,14 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_redeem){
-            Intent intent = new Intent(this, RedeemCreditsActivity.class);
-            intent.putExtra(PostDetailActivity.EXTRA_POST_ID, mPostId);
-            intent.putExtra(PostDetailActivity.COLLECTION_ID, mCollectionId);
-            startActivity(intent);
-        }
-
-        if (id == R.id.action_sell){
-            Intent intent = new Intent(this, ListOnMarketActivity.class);
-            intent.putExtra(PostDetailActivity.EXTRA_POST_ID, mPostId);
-            intent.putExtra(PostDetailActivity.COLLECTION_ID, mCollectionId);
-            startActivity(intent);
-        }
-
-        if (id == R.id.action_delete){
-            deletePost();
+        if (id == R.id.action_settings){
+            Bundle bundle = new Bundle();
+            bundle.putString(PostDetailActivity.EXTRA_POST_ID, mPostId);
+            bundle.putString(PostDetailActivity.COLLECTION_ID, mCollectionId);
+            FragmentManager fragmenManager = getSupportFragmentManager();
+            DialogFragmentPostSettings dialogFragmentPostSettings =  DialogFragmentPostSettings.newInstance("post settings");
+            dialogFragmentPostSettings.setArguments(bundle);
+            dialogFragmentPostSettings.show(fragmenManager, "market post settings fragment");
         }
 
         return super.onOptionsItemSelected(item);
@@ -528,9 +521,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     }
 
     /**delete post method*/
-    public void deletePost(){
-        // delete post in collection and delete post in overall document
-        progressDialog.show();
+    public void deleteFinish(){
         collectionsPosts.document(mPostId)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
@@ -540,75 +531,8 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                             return;
                         }
 
-                        if (documentSnapshot.exists()){
-                            postsCollection.document(mPostId)
-                                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onEvent(DocumentSnapshot documentSnapshot,
-                                                            FirebaseFirestoreException e) {
-                                            if (e != null) {
-                                                Log.w(TAG, "Listen error", e);
-                                                return;
-                                            }
-
-                                            if (documentSnapshot.exists()){
-                                                postsCollection.document(mPostId).delete();
-                                            }
-                                        }
-                                    });
-
-                            marketCollections.document(mPostId)
-                                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                                            if (e != null) {
-                                                Log.w(TAG, "Listen error", e);
-                                                return;
-                                            }
-
-                                            if (documentSnapshot.exists()) {
-                                                marketCollections.document(mPostId).delete();
-
-                                            }
-                                        }
-                                    });
-
-                            senseCreditReference.document(mPostId)
-                                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                            if (e != null) {
-                                                Log.w(TAG, "Listen error", e);
-                                                return;
-                                            }
-
-                                            if (documentSnapshot.exists()){
-                                                senseCreditReference.document(mPostId).delete();
-
-
-                                            }
-                                        }
-                                    });
-
-                            postOnwersCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                @Override
-                                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                    if (e != null) {
-                                        Log.w(TAG, "Listen error", e);
-                                        return;
-                                    }
-
-                                    if (documentSnapshot.exists()){
-                                        postOnwersCollection.document(mPostId).delete();
-
-                                    }
-                                }
-                            });
-
-                            collectionsPosts.document(mPostId).delete();
-                            progressDialog.dismiss();
-
+                        if (!documentSnapshot.exists()){
+                            finish();
                         }
                     }
                 });
@@ -736,6 +660,13 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                     usersReference.document(ownerUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                            if (e != null) {
+                                Log.w(TAG, "Listen error", e);
+                                return;
+                            }
+
+
                             if (documentSnapshot.exists()) {
                                 Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
                                 final String username = cinggulan.getUsername();

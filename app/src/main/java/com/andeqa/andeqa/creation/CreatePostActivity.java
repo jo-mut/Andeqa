@@ -348,7 +348,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
     public void uploadingToFirebaseDialog(){
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Adding your post");
-        progressDialog.setCancelable(true);
+        progressDialog.setCancelable(false);
     }
 
 

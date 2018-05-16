@@ -151,7 +151,10 @@
             android:name=".creation.CreateCollectionActivity"
             android:label="Create collection"
             android:screenOrientation="portrait" />
-        <activity android:name=".profile.ProfieCollectionPostsActivity" />
+        <activity
+            android:label="Collection"
+            android:screenOrientation="portrait"
+            android:name=".profile.ProfieCollectionPostsActivity" />
         <activity
             android:name=".settings.CollectionSettingsActivity"
             android:label="Collection settings"

@@ -2,6 +2,8 @@ package com.andeqa.andeqa.profile;
 
 import android.content.Intent;
 import android.os.Parcelable;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -45,9 +47,10 @@ import butterknife.ButterKnife;
 public class ProfieCollectionPostsActivity extends AppCompatActivity
         implements View.OnClickListener{
     @Bind(R.id.collectionsPostsRecyclerView)RecyclerView mCollectionsPostsRecyclerView;
-    @Bind(R.id.createPostButton)ImageView mCreatePostButton;
+    @Bind(R.id.createPostButton)FloatingActionButton mCreatePostButton;
     @Bind(R.id.collectionCoverImageView)ImageView mCollectionCoverImageView;
     @Bind(R.id.collectionNoteTextView)TextView mCollectionNoteTextView;
+    @Bind(R.id.collapsing_toolbar)CollapsingToolbarLayout collapsingToolbarLayout;
     @Bind(R.id.collectionNameTextView)TextView mCollectionNameTextView;
     private static final String TAG = ProfieCollectionPostsActivity.class.getSimpleName();
     //firestore reference
@@ -134,7 +137,7 @@ public class ProfieCollectionPostsActivity extends AppCompatActivity
             //add appropriate title to the action bar
             if (mUid.equals(firebaseAuth.getCurrentUser().getUid())){
                 mCreatePostButton.setVisibility(View.VISIBLE);
-                getSupportActionBar().setTitle("Add to collection");
+                collapsingToolbarLayout.setTitle("Add to collection");
             }else {
                 usersCollection.document(mUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
@@ -148,7 +151,7 @@ public class ProfieCollectionPostsActivity extends AppCompatActivity
                         if (documentSnapshot.exists()){
                             final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
                             final String username = cinggulan.getUsername();
-                            getSupportActionBar().setTitle(username + "'s" + " collection");
+                            collapsingToolbarLayout.setTitle(username + "'s" + " collection");
                         }
                     }
                 });
@@ -225,6 +228,27 @@ public class ProfieCollectionPostsActivity extends AppCompatActivity
     }
 
     private void setCollectionsInfo(){
+
+        collectionOwnersCollection.document(collectionId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (documentSnapshot.exists()){
+                    TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
+                    final String ownerUid = transactionDetails.getUser_id();
+                    Log.d("owner uid", ownerUid);
+
+                    if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
+                        mCreatePostButton.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        });
+
         collectionCollection.document(collectionId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {

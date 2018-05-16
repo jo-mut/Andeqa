@@ -211,9 +211,13 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
-        posts.remove(change.getOldIndex());
-        postsAdapter.notifyItemRemoved(change.getOldIndex());
-        postsAdapter.notifyItemRangeChanged(0, posts.size());
+       try {
+           posts.remove(change.getOldIndex());
+           postsAdapter.notifyItemRemoved(change.getOldIndex());
+           postsAdapter.notifyItemRangeChanged(0, posts.size());
+       }catch (Exception e) {
+           e.printStackTrace();
+       }
     }
 
 

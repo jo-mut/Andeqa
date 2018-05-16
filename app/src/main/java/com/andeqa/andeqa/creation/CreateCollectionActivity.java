@@ -228,7 +228,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
     public void uploadingToFirebaseDialog(){
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Creating your collection");
-        progressDialog.setCancelable(true);
+        progressDialog.setCancelable(false);
     }
 
     private void  createCollection(){
