@@ -23,12 +23,11 @@
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="42dp"
                 android:layout_weight="1"
                 android:background="@color/colorPrimary"
                 app:layout_scrollFlags="scroll|enterAlways"
-                app:popupTheme="@style/AppTheme.PopupOverlay"
-                app:title="@string/app_name">
+                app:popupTheme="@style/AppTheme.PopupOverlay">
 
             </android.support.v7.widget.Toolbar>
 
@@ -96,8 +95,6 @@
                                     android:layout_height="wrap_content">
 
                                     <RelativeLayout
-                                        android:layout_alignParentLeft="true"
-                                        android:layout_alignParentStart="true"
                                         android:id="@id/likesRelativeLayout"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content">
@@ -298,7 +295,7 @@
                         android:layout_marginStart="10dp"
                         android:layout_marginRight="10dp"
                         android:layout_marginEnd="10dp"
-                        android:textSize="14sp"
+                        android:textSize="12sp"
                         android:visibility="invisible"
                         android:id="@+id/editSalePriceEditText" />
 
@@ -381,7 +378,7 @@
                                 android:layout_toEndOf="@+id/postCreatorTextView"
                                 android:layout_toLeftOf="@+id/profileImageView"
                                 android:layout_toStartOf="@+id/profileImageView"
-                                android:textSize="14sp" />
+                                android:textSize="12sp" />
 
                         </RelativeLayout>
 
@@ -398,7 +395,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:id="@+id/dateTextView"
-                                android:textSize="14sp"
+                                android:textSize="12sp"
                                 android:textStyle="normal|bold"
                                 android:layout_centerVertical="true" />
 

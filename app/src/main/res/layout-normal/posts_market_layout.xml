@@ -9,6 +9,7 @@
 
 
     <LinearLayout
+        android:layout_margin="0.1dp"
         android:id="@+id/detailsLinearLayout"
         android:orientation="horizontal"
         android:layout_width="match_parent"

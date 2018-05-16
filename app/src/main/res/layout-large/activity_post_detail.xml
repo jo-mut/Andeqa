@@ -23,12 +23,11 @@
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="84dp"
                 android:layout_weight="1"
                 android:background="@color/colorPrimary"
                 app:layout_scrollFlags="scroll|enterAlways"
-                app:popupTheme="@style/AppTheme.PopupOverlay"
-                app:title="@string/app_name">
+                app:popupTheme="@style/AppTheme.PopupOverlay">
 
             </android.support.v7.widget.Toolbar>
 
@@ -96,8 +95,6 @@
                                     android:layout_height="wrap_content">
 
                                     <RelativeLayout
-                                        android:layout_alignParentLeft="true"
-                                        android:layout_alignParentStart="true"
                                         android:id="@id/likesRelativeLayout"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content">
@@ -121,7 +118,7 @@
                                             android:paddingBottom="2dp"
                                             android:paddingTop="2dp"
                                             android:text="0"
-                                            android:textSize="12sp"
+                                            android:textSize="18sp"
                                             android:textStyle="normal|bold" />
 
 
@@ -152,7 +149,7 @@
                                             android:paddingBottom="2dp"
                                             android:paddingTop="2dp"
                                             android:text="0"
-                                            android:textSize="12sp"
+                                            android:textSize="18sp"
                                             android:textStyle="normal|bold" />
 
 
@@ -183,7 +180,7 @@
                                             android:paddingBottom="2dp"
                                             android:paddingTop="2dp"
                                             android:text="0"
-                                            android:textSize="12sp"
+                                            android:textSize="18sp"
                                             android:textStyle="normal|bold" />
 
 
@@ -205,7 +202,7 @@
                                     android:layout_height="wrap_content"
                                     android:text=""
                                     android:textColor="@android:color/black"
-                                    android:textSize="16sp"
+                                    android:textSize="24sp"
                                     android:textStyle="normal" />
 
                             </RelativeLayout>
@@ -222,7 +219,7 @@
                                     android:layout_height="wrap_content"
                                     android:text=""
                                     android:textColor="@android:color/black"
-                                    android:textSize="14sp" />
+                                    android:textSize="21sp" />
 
                             </RelativeLayout>
 
@@ -247,7 +244,7 @@
                         android:layout_alignParentEnd="false"
                         android:id="@+id/postPriceTextView"
                         android:layout_centerInParent="true"
-                        android:textSize="16sp"
+                        android:textSize="24sp"
                         android:textColor="@android:color/black"
                         android:textStyle="normal|bold" />
 
@@ -297,7 +294,7 @@
                         android:layout_marginStart="10dp"
                         android:layout_marginRight="10dp"
                         android:layout_marginEnd="10dp"
-                        android:textSize="14sp"
+                        android:textSize="21sp"
                         android:visibility="invisible"
                         android:id="@+id/editSalePriceEditText" />
 
@@ -315,9 +312,9 @@
                         android:layout_width="match_parent"
                         android:id="@+id/tradeButton"
                         android:textAllCaps="true"
-                        android:textSize="16sp"
+                        android:textSize="24sp"
                         android:background="@drawable/colour_btn_background"
-                        android:layout_height="match_parent"
+                        android:layout_height="84dp"
                         android:textColor="@android:color/white"
                         android:layout_marginLeft="10dp"
                         android:layout_centerInParent="true"
@@ -352,7 +349,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:id="@+id/postCreatorTextView"
-                                android:textSize="14sp"
+                                android:textSize="21sp"
                                 android:textStyle="normal|bold"
                                 android:layout_centerVertical="true"
                                 android:layout_alignParentLeft="true"
@@ -360,9 +357,10 @@
 
                             <de.hdodenhof.circleimageview.CircleImageView
                                 app:srcCompat="@drawable/profle_image_background"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
+                                android:layout_width="45dp"
+                                android:layout_height="45dp"
                                 android:layout_marginRight="5dp"
+                                android:layout_marginEnd="5dp"
                                 android:layout_centerVertical="true"
                                 android:layout_alignParentRight="true"
                                 android:layout_alignParentEnd="true"
@@ -380,7 +378,7 @@
                                 android:layout_toEndOf="@+id/postCreatorTextView"
                                 android:layout_toLeftOf="@+id/profileImageView"
                                 android:layout_toStartOf="@+id/profileImageView"
-                                android:textSize="14sp" />
+                                android:textSize="21sp" />
 
                         </RelativeLayout>
 
@@ -397,7 +395,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:id="@+id/dateTextView"
-                                android:textSize="14sp"
+                                android:textSize="21sp"
                                 android:textStyle="normal|bold"
                                 android:layout_centerVertical="true" />
 
@@ -412,7 +410,7 @@
                                 android:layout_alignBottom="@+id/dateTextView"
                                 android:layout_toRightOf="@+id/dateTextView"
                                 android:layout_toEndOf="@+id/dateTextView"
-                                android:textSize="14sp"
+                                android:textSize="21sp"
                                 android:layout_centerVertical="true" />
 
                         </RelativeLayout>
@@ -431,7 +429,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:id="@+id/senseCreditsTitleTextView"
-                                android:textSize="14sp"
+                                android:textSize="21sp"
                                 android:textStyle="normal|bold"
                                 android:layout_alignParentLeft="true"
                                 android:layout_alignParentStart="true"
@@ -444,7 +442,7 @@
                                 android:layout_toEndOf="@+id/senseCreditsTitleTextView"
                                 android:layout_toRightOf="@+id/senseCreditsTitleTextView"
                                 android:id="@+id/creditsTextView"
-                                android:textSize="14sp"
+                                android:textSize="21sp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginStart="10dp"
                                 android:layout_centerVertical="true" />
@@ -463,7 +461,7 @@
                                 android:layout_height="wrap_content"
                                 android:id="@+id/ownerTitleTextView"
                                 android:textStyle="normal|bold"
-                                android:textSize="14sp"
+                                android:textSize="21sp"
                                 android:layout_marginTop="5dp"
                                 android:layout_marginRight="3dp"
                                 android:layout_marginLeft="3dp"
@@ -480,14 +478,15 @@
                                 android:id="@+id/postOwnerTextView"
                                 android:layout_marginTop="5dp"
                                 android:layout_marginLeft="10dp"
-                                android:textSize="14sp"
+                                android:textSize="21sp"
                                 android:layout_centerVertical="true" />
 
                             <de.hdodenhof.circleimageview.CircleImageView
                                 app:srcCompat="@drawable/profle_image_background"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
+                                android:layout_width="45dp"
+                                android:layout_height="45dp"
                                 android:layout_marginRight="5dp"
+                                android:layout_marginEnd="5dp"
                                 android:layout_centerVertical="true"
                                 android:layout_alignParentRight="true"
                                 android:layout_alignParentEnd="true"

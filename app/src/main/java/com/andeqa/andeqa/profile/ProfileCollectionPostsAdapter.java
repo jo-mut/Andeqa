@@ -201,6 +201,16 @@ public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<Collecti
             }
         });
 
+        holder.mTradeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent =  new Intent(mContext, PostDetailActivity.class);
+                intent.putExtra(ProfileCollectionPostsAdapter.EXTRA_POST_ID, postId);
+                intent.putExtra(ProfileCollectionPostsAdapter.COLLECTION_ID, collectionId);
+                mContext.startActivity(intent);
+            }
+        });
+
         holder.commentsImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -279,29 +289,8 @@ public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<Collecti
 
                                 if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
                                     holder.mTradeButton.setText("Unlist");
-                                   holder.mTradeButton.setOnClickListener(new View.OnClickListener() {
-                                       @Override
-                                       public void onClick(View v) {
-                                           Bundle bundle = new Bundle();
-                                           bundle.putString(ProfileCollectionPostsAdapter.EXTRA_POST_ID, postId);
-                                           bundle.putString(ProfileCollectionPostsAdapter.COLLECTION_ID, collectionId);
-                                           FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
-                                           DialogMarketPostSettings dialogMarketPostSettings = DialogMarketPostSettings.newInstance("post settings");
-                                           dialogMarketPostSettings.setArguments(bundle);
-                                           dialogMarketPostSettings.show(fragmenManager, "market post settings fragment");
-                                       }
-                                   });
                                 }else {
                                     holder.mTradeButton.setText("Buy");
-                                   holder.mTradeButton.setOnClickListener(new View.OnClickListener() {
-                                       @Override
-                                       public void onClick(View v) {
-                                           Intent intent =  new Intent(mContext, PostDetailActivity.class);
-                                           intent.putExtra(ProfileCollectionPostsAdapter.EXTRA_POST_ID, postId);
-                                           intent.putExtra(ProfileCollectionPostsAdapter.COLLECTION_ID, collectionId);
-                                           mContext.startActivity(intent);
-                                       }
-                                   });
                                 }
 
                             }
@@ -309,26 +298,8 @@ public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<Collecti
                     });
                 }else if (firebaseAuth.getCurrentUser().getUid().equals(uid)){
                     holder.mTradeButton.setText("Sell");
-                    holder.mTradeButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(mContext, ListOnMarketActivity.class);
-                            intent.putExtra(ProfileCollectionPostsAdapter.EXTRA_POST_ID, postId);
-                            intent.putExtra(ProfileCollectionPostsAdapter.COLLECTION_ID, collectionId);
-                            mContext.startActivity(intent);
-                        }
-                    });
                 }else{
                     holder.mTradeButton.setText("Info");
-                    holder.mTradeButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent =  new Intent(mContext, PostDetailActivity.class);
-                            intent.putExtra(ProfileCollectionPostsAdapter.EXTRA_POST_ID, postId);
-                            intent.putExtra(ProfileCollectionPostsAdapter.COLLECTION_ID, collectionId);
-                            mContext.startActivity(intent);
-                        }
-                    });
                 }
 
             }

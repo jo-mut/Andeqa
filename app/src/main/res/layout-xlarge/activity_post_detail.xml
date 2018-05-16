@@ -23,12 +23,11 @@
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="112dp"
                 android:layout_weight="1"
                 android:background="@color/colorPrimary"
                 app:layout_scrollFlags="scroll|enterAlways"
-                app:popupTheme="@style/AppTheme.PopupOverlay"
-                app:title="@string/app_name">
+                app:popupTheme="@style/AppTheme.PopupOverlay">
 
             </android.support.v7.widget.Toolbar>
 
@@ -317,7 +316,7 @@
                         android:textAllCaps="true"
                         android:textSize="32sp"
                         android:background="@drawable/colour_btn_background"
-                        android:layout_height="match_parent"
+                        android:layout_height="112dp"
                         android:textColor="@android:color/white"
                         android:layout_marginLeft="10dp"
                         android:layout_centerInParent="true"

@@ -254,6 +254,15 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
             }
         });
 
+        holder.mTradeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent =  new Intent(mContext, PostDetailActivity.class);
+                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postId);
+                intent.putExtra(PostsAdapter.COLLECTION_ID, collectionId);
+                mContext.startActivity(intent);
+            }
+        });
 
         holder.profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -374,29 +383,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
 
                                 if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
                                     holder.mTradeButton.setText("Unlist");
-                                    holder.mTradeButton.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            Bundle bundle = new Bundle();
-                                            bundle.putString(PostsAdapter.EXTRA_POST_ID, postId);
-                                            bundle.putString(PostsAdapter.COLLECTION_ID, collectionId);
-                                            FragmentManager fragmenManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
-                                            DialogMarketPostSettings dialogMarketPostSettings = DialogMarketPostSettings.newInstance("post settings");
-                                            dialogMarketPostSettings.setArguments(bundle);
-                                            dialogMarketPostSettings.show(fragmenManager, "market post settings fragment");
-                                        }
-                                    });
+
                                 }else {
                                     holder.mTradeButton.setText("Buy");
-                                   holder.mTradeButton.setOnClickListener(new View.OnClickListener() {
-                                       @Override
-                                       public void onClick(View v) {
-                                           Intent intent =  new Intent(mContext, PostDetailActivity.class);
-                                           intent.putExtra(PostsAdapter.EXTRA_POST_ID, postId);
-                                           intent.putExtra(PostsAdapter.COLLECTION_ID, collectionId);
-                                           mContext.startActivity(intent);
-                                       }
-                                   });
                                 }
 
                             }
@@ -404,26 +393,10 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                     });
                 }else if (firebaseAuth.getCurrentUser().getUid().equals(uid)){
                     holder.mTradeButton.setText("Sell");
-                    holder.mTradeButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(mContext, ListOnMarketActivity.class);
-                            intent.putExtra(PostsAdapter.EXTRA_POST_ID, postId);
-                            intent.putExtra(PostsAdapter.COLLECTION_ID, collectionId);
-                            mContext.startActivity(intent);
-                        }
-                    });
+
                 }else{
                     holder.mTradeButton.setText("Info");
-                    holder.mTradeButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent =  new Intent(mContext, PostDetailActivity.class);
-                            intent.putExtra(PostsAdapter.EXTRA_POST_ID, postId);
-                            intent.putExtra(PostsAdapter.COLLECTION_ID, collectionId);
-                            mContext.startActivity(intent);
-                        }
-                    });
+
                 }
 
             }
