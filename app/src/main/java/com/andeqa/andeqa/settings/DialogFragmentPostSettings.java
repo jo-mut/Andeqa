@@ -184,7 +184,7 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
 
     public void deletePostDialog(){
         progressDialog = new ProgressDialog(getContext());
-        progressDialog.setMessage("Deleting ...");
+        progressDialog.setMessage("Deleting your post...");
         progressDialog.setCancelable(false);
     }
 
@@ -277,7 +277,6 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
                                     }catch (Exception e){
                                         e.printStackTrace();
                                     }
-
 
                                 }
                             });

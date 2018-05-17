@@ -92,6 +92,7 @@ public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<Collecti
     private FirebaseAuth firebaseAuth;
     private boolean processLikes = false;
     private boolean processDislikes = false;
+    private boolean showOnClick = false;
 
     private static final double GOLDEN_RATIO = 1.618;
     private static final double DEFAULT_PRICE = 1.5;
@@ -180,16 +181,46 @@ public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<Collecti
                 });
 
 
-        if (collectionPost.getTitle().equals("")){
+        if (!TextUtils.isEmpty(collectionPost.getTitle())){
+            holder.titleTextView.setText(collectionPost.getTitle());
             holder.titleRelativeLayout.setVisibility(View.GONE);
         }else {
-            holder.titleTextView.setText(collectionPost.getTitle());
+            holder.titleTextView.setText("");
+            holder.titleRelativeLayout.setVisibility(View.GONE);
         }
 
         if (!TextUtils.isEmpty(collectionPost.getDescription())){
-            addReadLess(collectionPost.getDescription(), holder.descriptionTextView);
-            addReadMore(collectionPost.getDescription(), holder.descriptionTextView);
-            holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+            final String [] strings = collectionPost.getDescription().split("");
+
+            final int size = strings.length;
+
+            if (size <= 120){
+                holder.descriptionTextView.setText(collectionPost.getDescription());
+            }else{
+
+                holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                final String boldMore = "...read more";
+                final String boldLess = "...read less";
+                String normalText = collectionPost.getDescription().substring(0, 119);
+                holder.descriptionTextView.setText(normalText + boldMore);
+                holder.descriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (showOnClick){
+                            String normalText = collectionPost.getDescription();
+                            holder.descriptionTextView.setText(normalText + boldLess);
+                            showOnClick = false;
+                        }else {
+                            String normalText = collectionPost.getDescription().substring(0, 119);
+                            holder.descriptionTextView.setText(normalText + boldMore);
+                            showOnClick = true;
+                        }
+                    }
+                });
+            }
+
+        }else {
+            holder.descriptionRelativeLayout.setVisibility(View.GONE);
         }
 
         holder.likesRelativeLayout.setOnClickListener(new View.OnClickListener() {
@@ -666,69 +697,6 @@ public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<Collecti
         return bd.doubleValue();
     }
 
-    private void addReadMore(final String text, final TextView textView) {
-
-        final String [] strings = text.split("");
-
-        final int size = strings.length;
-
-        if (size <= 120){
-            //setence will not have read more
-        }else {
-            SpannableString ss = new SpannableString(text.substring(0, 119) + "...read more");
-            ClickableSpan clickableSpan = new ClickableSpan() {
-                @Override
-                public void onClick(View view) {
-                    addReadLess(text, textView);
-                }
-                @Override
-                public void updateDrawState(TextPaint ds) {
-                    super.updateDrawState(ds);
-                    ds.setUnderlineText(false);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        ds.setColor(mContext.getResources().getColor(R.color.colorPrimary, mContext.getTheme()));
-                    } else {
-                        ds.setColor(mContext.getResources().getColor(R.color.colorPrimary));
-                    }
-                }
-            };
-            ss.setSpan(clickableSpan, ss.length() - 10, ss.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            textView.setText(ss);
-            textView.setMovementMethod(LinkMovementMethod.getInstance());
-        }
-    }
-
-    private void addReadLess(final String text, final TextView textView) {
-        final String [] strings = text.split("");
-
-        final int size = strings.length;
-
-        if (size > 120){
-            SpannableString ss = new SpannableString(text + " read less");
-            addReadMore(text, textView);
-
-            ClickableSpan clickableSpan = new ClickableSpan() {
-                @Override
-                public void onClick(View view) {
-                    addReadMore(text, textView);
-                }
-                @Override
-                public void updateDrawState(TextPaint ds) {
-                    super.updateDrawState(ds);
-                    ds.setUnderlineText(false);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        ds.setColor(mContext.getResources().getColor(R.color.colorPrimary, mContext.getTheme()));
-                    } else {
-                        ds.setColor(mContext.getResources().getColor(R.color.colorPrimary));
-                    }
-                }
-            };
-            ss.setSpan(clickableSpan, ss.length() - 10, ss.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            textView.setText(ss);
-            textView.setMovementMethod(LinkMovementMethod.getInstance());
-        }
-
-    }
 
 }
 

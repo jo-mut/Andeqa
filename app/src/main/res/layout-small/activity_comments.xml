@@ -9,99 +9,94 @@
     android:fitsSystemWindows="true"
     tools:context="com.andeqa.andeqa.comments.CommentsActivity">
 
-    <RelativeLayout
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_gravity="top"
+        app:titleTextAppearance="@style/toolbarTextAppearance"
+        android:layout_height="42dp"
+        android:background="@color/colorPrimary"
+        app:layout_scrollFlags="scroll|enterAlways"
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+        app:titleTextColor="@android:color/white">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_gravity="top"
-            app:titleTextAppearance="@style/toolbarTextAppearance"
-            android:layout_height="42dp"
-            android:background="@color/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:titleTextColor="@android:color/white">
+    </android.support.v7.widget.Toolbar>
 
-        </android.support.v7.widget.Toolbar>
+   <RelativeLayout
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
 
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:layout_below="@+id/toolbar"
-            android:id="@+id/swipeRefreshLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+       <android.support.v4.widget.SwipeRefreshLayout
+           android:id="@+id/swipeRefreshLayout"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/commentsRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:overScrollMode="never" />
+           <android.support.v7.widget.RecyclerView
+               android:id="@+id/commentsRecyclerView"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:overScrollMode="never" />
 
-        </android.support.v4.widget.SwipeRefreshLayout>
+       </android.support.v4.widget.SwipeRefreshLayout>
 
-        <android.support.v7.widget.CardView
-            android:layout_alignParentBottom="true"
-            android:id="@+id/commentCardView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardElevation="0dp"
-            app:cardMaxElevation="1dp"
-            app:cardCornerRadius="0dp"
-            android:layout_gravity="bottom"
-            android:layout_margin="1dp"
-            app:cardPreventCornerOverlap="false">
+       <RelativeLayout
+           android:background="@android:color/white"
+           android:layout_alignParentBottom="true"
+           android:orientation="horizontal"
+           android:id="@+id/edit_container"
+           android:layout_width="match_parent"
+           android:layout_height="100dp">
 
-            <RelativeLayout
-                android:padding="3dp"
-                android:id="@+id/edit_container"
-                android:background="@drawable/white_rounded_background"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true">
+           <LinearLayout
+               android:orientation="vertical"
+               android:layout_alignParentBottom="true"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
 
-                <EditText
-                    android:background="@drawable/transparent_background"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textMultiLine"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="15dp"
-                    android:paddingLeft="5dp"
-                    android:paddingEnd="5dp"
-                    android:paddingRight="5dp"
-                    android:paddingStart="5dp"
-                    android:layout_marginRight="5dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginStart="5dp"
-                    android:textSize="12sp"
-                    android:id="@+id/commentEditText"
-                    android:hint="Comment on this post"
-                    android:layout_toLeftOf="@+id/sendMessageImageView"
-                    android:layout_toStartOf="@+id/sendMessageImageView"
-                    android:layout_centerVertical="true" />
+               <View
+                   android:background="@android:color/black"
+                   android:layout_width="match_parent"
+                   android:layout_height="0.3dp"/>
 
-                <ImageView
-                    android:layout_gravity="left"
-                    android:background="@drawable/accent_color_background"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    app:srcCompat="@drawable/ic_menu_send"
-                    android:id="@+id/sendCommentImageView"
-                    android:tint="@android:color/white"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentRight="true"
-                    android:padding="10dp"
-                    android:layout_alignParentEnd="true"/>
+               <RelativeLayout
+                   android:padding="5dp"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content">
 
-            </RelativeLayout>
+                   <EditText
+                       android:layout_toLeftOf="@+id/sendCommentImageView"
+                       android:layout_toStartOf="@+id/sendCommentImageView"
+                       android:background="@drawable/edit_text_background"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:inputType="textMultiLine"
+                       android:padding="12dp"
+                       android:layout_marginRight="5dp"
+                       android:layout_marginEnd="5dp"
+                       android:id="@+id/commentEditText"
+                       android:textSize="12sp"
+                       android:hint="Comment on this post" />
+
+                   <ImageView
+                       android:background="@drawable/accent_color_background"
+                       android:layout_width="30dp"
+                       android:layout_height="30dp"
+                       app:srcCompat="@drawable/ic_menu_send"
+                       android:id="@+id/sendCommentImageView"
+                       android:tint="@android:color/white"
+                       android:layout_centerVertical="true"
+                       android:layout_alignParentRight="true"
+                       android:padding="10dp"
+                       android:layout_alignParentEnd="true" />
+
+               </RelativeLayout>
 
 
-        </android.support.v7.widget.CardView>
+           </LinearLayout>
 
-    </RelativeLayout>
+       </RelativeLayout>
+
+
+   </RelativeLayout>
 
 </LinearLayout>

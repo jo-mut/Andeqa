@@ -2,7 +2,9 @@ package com.andeqa.andeqa.settings;
 
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -13,15 +15,23 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.market.ListOnMarketActivity;
+import com.andeqa.andeqa.models.Market;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+
+import java.util.Random;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -33,7 +43,7 @@ public class DialogMarketPostSettings extends DialogFragment implements View.OnC
     @Bind(R.id.noRelativeLayout)RelativeLayout mNoRelativeLayout;
     @Bind(R.id.YesRelativeLayout)RelativeLayout mYesRelativeLayout;
 
-    private CollectionReference marketCollection;
+    private CollectionReference sellingCollection;
     private FirebaseAuth firebaseAuth;
 
     private String mPostId;
@@ -41,6 +51,7 @@ public class DialogMarketPostSettings extends DialogFragment implements View.OnC
     private static final String COLLECTION_ID = "collection id";
     private static final String EXTRA_POST_ID = "post id";
     private static final String TAG = DialogMarketPostSettings.class.getSimpleName();
+    private ProgressDialog progressDialog;
 
     public static DialogMarketPostSettings newInstance(String title){
         DialogMarketPostSettings dialogMarketPostSettings = new DialogMarketPostSettings();
@@ -69,7 +80,9 @@ public class DialogMarketPostSettings extends DialogFragment implements View.OnC
 
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
-            marketCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
+            sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
+
+            updatingSalePrice();
         }
 
         Bundle bundle = getArguments();
@@ -87,6 +100,14 @@ public class DialogMarketPostSettings extends DialogFragment implements View.OnC
         return view;
     }
 
+
+    public void updatingSalePrice(){
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage("Deleting from the market...");
+        progressDialog.setCancelable(true);
+    }
+
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -101,10 +122,12 @@ public class DialogMarketPostSettings extends DialogFragment implements View.OnC
         }
     }
 
+
     @Override
     public void onClick(View v){
         if (v == mYesRelativeLayout){
-            marketCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            progressDialog.show();
+            sellingCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
                 public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -114,12 +137,24 @@ public class DialogMarketPostSettings extends DialogFragment implements View.OnC
                     }
 
                     if (documentSnapshot.exists()){
-                        marketCollection.document(mPostId).delete();
+                        sellingCollection.document(mPostId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                try {
+                                    Toast.makeText(getContext(), "Your post has been deleted from the market",
+                                            Toast.LENGTH_SHORT).show();
+                                    progressDialog.dismiss();
+                                    dismiss();
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+
                     }
                 }
             });
 
-            dismiss();
         }
 
         if (v == mNoRelativeLayout){

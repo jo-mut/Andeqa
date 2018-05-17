@@ -139,6 +139,8 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
 
                         }
                     });
+        }else {
+            holder.mCollectionCoverImageView.setImageBitmap(null);
         }
 
         holder.mCollectionsLinearLayout.setOnClickListener(new View.OnClickListener() {

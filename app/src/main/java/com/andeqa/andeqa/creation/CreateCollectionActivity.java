@@ -307,7 +307,6 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                                     Intent intent = new Intent(CreateCollectionActivity.this, ProfieCollectionPostsActivity.class);
                                     intent.putExtra(CreateCollectionActivity.COLLECTION_ID, collectionId);
                                     intent.putExtra(CreateCollectionActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     startActivity(intent);
                                     finish();
                                 }

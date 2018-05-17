@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
@@ -63,6 +64,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     private static final String EXTRA_USER_UID = "uid";
     private static final String TAG = CommentsAdapter.class.getSimpleName();
     private boolean processFollow = false;
+    private boolean showOnClick = false;
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
 
 
@@ -99,7 +101,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
     @Override
     public void onBindViewHolder(final CommentViewHolder holder, int position) {
-        Comment comment = getSnapshot(holder.getAdapterPosition()).toObject(Comment.class);
+        final Comment comment = getSnapshot(holder.getAdapterPosition()).toObject(Comment.class);
         final String uid = comment.getUser_id();
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -114,9 +116,36 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
         }
 
-//        addReadLess(comment.getComment_text(), holder.mCommentTextView);
-//        addReadMore(comment.getComment_text(), holder.mCommentTextView);
-        holder.mCommentTextView.setText(comment.getComment_text());
+        if (!TextUtils.isEmpty(comment.getComment_text())){
+            final String [] strings = comment.getComment_text().split("");
+
+            final int size = strings.length;
+
+            if (size <= 120){
+                holder.mCommentTextView.setText(comment.getComment_text());
+            }else{
+
+                holder.mCommentTextView.setVisibility(View.VISIBLE);
+                final String boldMore = "...read more";
+                final String boldLess = "...read less";
+                String normalText = comment.getComment_text().substring(0, 119);
+                holder.mCommentTextView.setText(normalText + boldMore);
+                holder.mCommentTextView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (showOnClick){
+                            String normalText = comment.getComment_text();
+                            holder.mCommentTextView.setText(normalText + boldLess);
+                            showOnClick = false;
+                        }else {
+                            String normalText = comment.getComment_text().substring(0, 119);
+                            holder.mCommentTextView.setText(normalText + boldMore);
+                            showOnClick = true;
+                        }
+                    }
+                });
+            }
+        }
 
         holder.profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -176,67 +205,5 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     @Override
     public void onViewRecycled(CommentViewHolder holder) {
         super.onViewRecycled(holder);
-    }
-
-    private void addReadMore(final String text, final TextView textView) {
-
-        final String [] strings = text.split("");
-
-        final int size = strings.length;
-
-        if (size <= 120){
-            //setence will not have read more
-        }else {
-            SpannableString ss = new SpannableString(text.substring(0, 119) + "...read more");
-            ClickableSpan clickableSpan = new ClickableSpan() {
-                @Override
-                public void onClick(View view) {
-                    addReadLess(text, textView);
-                }
-                @Override
-                public void updateDrawState(TextPaint ds) {
-                    super.updateDrawState(ds);
-                    ds.setUnderlineText(false);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        ds.setColor(mContext.getResources().getColor(R.color.colorPrimary, mContext.getTheme()));
-                    } else {
-                        ds.setColor(mContext.getResources().getColor(R.color.colorPrimary));
-                    }
-                }
-            };
-            ss.setSpan(clickableSpan, ss.length() - 10, ss.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            textView.setText(ss);
-            textView.setMovementMethod(LinkMovementMethod.getInstance());
-        }
-    }
-
-    private void addReadLess(final String text, final TextView textView) {
-        final String [] strings = text.split("");
-
-        final int size = strings.length;
-
-        if (size > 120){
-            SpannableString ss = new SpannableString(text + " read less");
-            ClickableSpan clickableSpan = new ClickableSpan() {
-                @Override
-                public void onClick(View view) {
-                    addReadMore(text, textView);
-                }
-                @Override
-                public void updateDrawState(TextPaint ds) {
-                    super.updateDrawState(ds);
-                    ds.setUnderlineText(false);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        ds.setColor(mContext.getResources().getColor(R.color.colorPrimary, mContext.getTheme()));
-                    } else {
-                        ds.setColor(mContext.getResources().getColor(R.color.colorPrimary));
-                    }
-                }
-            };
-            ss.setSpan(clickableSpan, ss.length() - 10, ss.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            textView.setText(ss);
-            textView.setMovementMethod(LinkMovementMethod.getInstance());
-        }
-
     }
 }

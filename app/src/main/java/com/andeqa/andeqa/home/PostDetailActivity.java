@@ -34,8 +34,6 @@ import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.market.DialogSendCredits;
 import com.andeqa.andeqa.likes.LikesActivity;
 import com.andeqa.andeqa.market.ListOnMarketActivity;
-import com.andeqa.andeqa.market.RedeemCreditsActivity;
-import com.andeqa.andeqa.market.SellingAdapter;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Balance;
 import com.andeqa.andeqa.models.CollectionPost;
@@ -64,14 +62,11 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
-import java.lang.ref.Reference;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import javax.annotation.Nullable;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -84,8 +79,8 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     @Bind(R.id.usernameTextView)TextView mUsernameTextView;
     @Bind(R.id.postImageView)ProportionalImageView mPostImageView;
     @Bind(R.id.profileImageView)ImageView mProfileImageView;
-    @Bind(R.id.titleTextView)TextView mCingleTitleTextView;
-    @Bind(R.id.titleRelativeLayout)RelativeLayout mCingleTitleRelativeLayout;
+    @Bind(R.id.titleTextView)TextView titleTextView;
+    @Bind(R.id.titleRelativeLayout)RelativeLayout mTitleRelativeLayout;
     @Bind(R.id.descriptionRelativeLayout)RelativeLayout mDescriptionRelativeLayout;
     @Bind(R.id.descriptionTextView)TextView mDescriptionTextView;
     @Bind(R.id.postOwnerTextView)TextView mPostOwnerTextView;
@@ -144,6 +139,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     private static final int MAX_HEIGHT = 200;
     private static final String TAG = PostDetailActivity.class.getSimpleName();
     private ProgressDialog progressDialog;
+    private boolean showOnClick = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,7 +208,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
             //RETRIEVE DATA FROM FIREBASE
             setCingleData();
-            setCingleInfo();
+            setPostInfo();
             setEditTextFilter();
             showBuyButton();
             showEditImageView();
@@ -342,15 +338,43 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
                     //set the title of the single
                     if (title.equals("")){
-                        mCingleTitleRelativeLayout.setVisibility(View.GONE);
+                        mTitleRelativeLayout.setVisibility(View.GONE);
                     }else {
-                        mCingleTitleTextView.setText(title);
+                        mTitleRelativeLayout.setVisibility(View.VISIBLE);
+                        titleTextView.setText(title);
                     }
 
                     if (!TextUtils.isEmpty(collectionPost.getDescription())){
-                        mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
-                        addReadLess(collectionPost.getDescription(),mDescriptionTextView);
-                        addReadMore(collectionPost.getDescription(), mDescriptionTextView);
+                        final String [] strings = collectionPost.getDescription().split("");
+
+                        final int size = strings.length;
+
+                        if (size <= 120){
+                            mDescriptionTextView.setText(collectionPost.getDescription());
+                        }else{
+
+                            mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
+                            final String boldMore = "...read more";
+                            final String boldLess = "...read less";
+                            String normalText = collectionPost.getDescription().substring(0, 119);
+                            mDescriptionTextView.setText(normalText + boldMore);
+                            mDescriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (showOnClick){
+                                        String normalText = collectionPost.getDescription();
+                                        mDescriptionTextView.setText(normalText + boldLess);
+                                        showOnClick = false;
+                                    }else {
+                                        String normalText = collectionPost.getDescription().substring(0, 119);
+                                        mDescriptionTextView.setText(normalText + boldMore);
+                                        showOnClick = true;
+                                    }
+                                }
+                            });
+                        }
+                    }else {
+                        mDescriptionRelativeLayout.setVisibility(View.GONE);
                     }
 
 
@@ -643,7 +667,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     }
 
     /**display the price of the cingle*/
-    private void setCingleInfo() {
+    private void setPostInfo() {
         /**display the person who currently owns the cingle*/
         postOwnersCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -1062,14 +1086,6 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
     }
 
-    private static int roundPercentage(int value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
-
-        BigDecimal bd = new BigDecimal(value);
-        bd = bd.setScale(places, RoundingMode.HALF_UP);
-        return bd.intValue();
-    }
-
 //    private void displayPopupWindow(View anchorView) {
 //        PopupWindow popup = new PopupWindow(PostDetailActivity.this);
 //        View layout = getLayoutInflater().inflate(R.layout.popup_layout, null);
@@ -1089,69 +1105,6 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 //        popup.showAsDropDown(anchorView);
 //    }
 
-    private void addReadMore(final String text, final TextView textView) {
-
-        final String [] strings = text.split("");
-
-        final int size = strings.length;
-
-        if (size <= 120){
-            //setence will not have read more
-        }else {
-            SpannableString ss = new SpannableString(text.substring(0, 119) + "...read more");
-            ClickableSpan clickableSpan = new ClickableSpan() {
-                @Override
-                public void onClick(View view) {
-                    addReadLess(text, textView);
-                }
-                @Override
-                public void updateDrawState(TextPaint ds) {
-                    super.updateDrawState(ds);
-                    ds.setUnderlineText(false);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        ds.setColor(getResources().getColor(R.color.colorPrimary, getTheme()));
-                    } else {
-                        ds.setColor(getResources().getColor(R.color.colorPrimary));
-                    }
-                }
-            };
-            ss.setSpan(clickableSpan, ss.length() - 10, ss.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            textView.setText(ss);
-            textView.setMovementMethod(LinkMovementMethod.getInstance());
-        }
-    }
-
-    private void addReadLess(final String text, final TextView textView) {
-        final String [] strings = text.split("");
-
-        final int size = strings.length;
-
-        if (size > 120){
-            SpannableString ss = new SpannableString(text + " read less");
-            addReadMore(text, textView);
-
-            ClickableSpan clickableSpan = new ClickableSpan() {
-                @Override
-                public void onClick(View view) {
-                    addReadMore(text, textView);
-                }
-                @Override
-                public void updateDrawState(TextPaint ds) {
-                    super.updateDrawState(ds);
-                    ds.setUnderlineText(false);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        ds.setColor(getResources().getColor(R.color.colorPrimary, getTheme()));
-                    } else {
-                        ds.setColor(getResources().getColor(R.color.colorPrimary));
-                    }
-                }
-            };
-            ss.setSpan(clickableSpan, ss.length() - 10, ss.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            textView.setText(ss);
-            textView.setMovementMethod(LinkMovementMethod.getInstance());
-        }
-
-    }
 
 
 }

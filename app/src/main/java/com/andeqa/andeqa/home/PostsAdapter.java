@@ -3,17 +3,20 @@ package com.andeqa.andeqa.home;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -105,6 +108,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
     //impression tracking
     private long startTime;
     private long endTime;
+    public boolean showOnClick = true;
 
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
 
@@ -210,13 +214,42 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                     if (!TextUtils.isEmpty(collectionPost.getTitle())){
                         holder.titleTextView.setText(collectionPost.getTitle());
                         holder.titleRelativeLayout.setVisibility(View.VISIBLE);
-
+                    }else {
+                        holder.titleRelativeLayout.setVisibility(View.GONE);
                     }
 
                     if (!TextUtils.isEmpty(collectionPost.getDescription())){
-                        addReadLess(collectionPost.getDescription(), holder.descriptionTextView);
-                        addReadMore(collectionPost.getDescription(), holder.descriptionTextView);
-                        holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                        //prevent collection note from overlapping other layouts
+                        final String [] strings = collectionPost.getDescription().split("");
+
+                        final int size = strings.length;
+
+                        if (size <= 120){
+                            holder.descriptionTextView.setText(collectionPost.getDescription());
+                        }else{
+                            holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                            final String boldMore = "...read more";
+                            final String boldLess = "...read less";
+                            String normalText = collectionPost.getDescription().substring(0, 119);
+                            holder.descriptionTextView.setText(normalText + boldMore);
+                            holder.descriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (showOnClick){
+                                        String normalText = collectionPost.getDescription();
+                                        holder.descriptionTextView.setText(normalText + boldLess);
+                                        showOnClick = false;
+                                    }else {
+                                        String normalText = collectionPost.getDescription().substring(0, 119);
+                                        holder.descriptionTextView.setText(normalText + boldMore);
+                                        showOnClick = true;
+                                    }
+                                }
+                            });
+                        }
+
+                    }else {
+                        holder.descriptionRelativeLayout.setVisibility(View.GONE);
                     }
 
 
@@ -760,70 +793,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.intValue();
-    }
-
-    private void addReadMore(final String text, final TextView textView) {
-
-       final String [] strings = text.split("");
-
-       final int size = strings.length;
-
-       if (size <= 120){
-           //setence will not have read more
-       }else {
-           SpannableString ss = new SpannableString(text.substring(0, 119) + "...read more");
-           ClickableSpan clickableSpan = new ClickableSpan() {
-               @Override
-               public void onClick(View view) {
-                   addReadLess(text, textView);
-               }
-               @Override
-               public void updateDrawState(TextPaint ds) {
-                   super.updateDrawState(ds);
-                   ds.setUnderlineText(false);
-                   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                       ds.setColor(mContext.getResources().getColor(R.color.colorPrimary, mContext.getTheme()));
-                   } else {
-                       ds.setColor(mContext.getResources().getColor(R.color.colorPrimary));
-                   }
-               }
-           };
-           ss.setSpan(clickableSpan, ss.length() - 10, ss.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-           textView.setText(ss);
-           textView.setMovementMethod(LinkMovementMethod.getInstance());
-       }
-    }
-
-    private void addReadLess(final String text, final TextView textView) {
-        final String [] strings = text.split("");
-
-        final int size = strings.length;
-
-        if (size > 120){
-            SpannableString ss = new SpannableString(text + " read less");
-            addReadMore(text, textView);
-
-            ClickableSpan clickableSpan = new ClickableSpan() {
-                @Override
-                public void onClick(View view) {
-                    addReadMore(text, textView);
-                }
-                @Override
-                public void updateDrawState(TextPaint ds) {
-                    super.updateDrawState(ds);
-                    ds.setUnderlineText(false);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        ds.setColor(mContext.getResources().getColor(R.color.colorPrimary, mContext.getTheme()));
-                    } else {
-                        ds.setColor(mContext.getResources().getColor(R.color.colorPrimary));
-                    }
-                }
-            };
-            ss.setSpan(clickableSpan, ss.length() - 10, ss.length() , Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            textView.setText(ss);
-            textView.setMovementMethod(LinkMovementMethod.getInstance());
-        }
-
     }
 
     public void removeListener(){

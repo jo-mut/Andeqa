@@ -123,6 +123,8 @@ public class CollectionsAdapter extends RecyclerView.Adapter<CollectionViewHolde
                         }
                     });
 
+        }else {
+            holder.mCollectionCoverImageView.setImageBitmap(null);
         }
 
         postCountQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -142,81 +144,6 @@ public class CollectionsAdapter extends RecyclerView.Adapter<CollectionViewHolde
                 }
             }
         });
-
-//        if (collection.getImage() != null){
-//            Picasso.with(mContext)
-//                    .load(collection.getImage())
-//                    .resize(MAX_WIDTH, MAX_HEIGHT)
-//                    .onlyScaleDown()
-//                    .centerCrop()
-//                    .networkPolicy(NetworkPolicy.OFFLINE)
-//                    .into(new Target() {
-//                        @Override
-//                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-//                            assert holder.mCollectionCoverImageView != null;
-//                            Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-//                                @Override
-//                                public void onGenerated(@NonNull Palette palette) {
-//                                    Palette.Swatch swatch = palette.getVibrantSwatch();
-//
-//                                    if (swatch == null){
-//
-//                                    }else if (swatch != null){
-//                                        holder.mCollectionsLinearLayout.setBackgroundColor(swatch.getRgb());
-//                                    }else {
-//                                        holder.mCollectionsLinearLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorPrimary));
-//                                    }
-//                                }
-//                            });
-//                        }
-//
-//                        @Override
-//                        public void onBitmapFailed(Drawable errorDrawable) {
-//                            Picasso.with(mContext)
-//                                    .load(collection.getImage())
-//                                    .resize(MAX_WIDTH, MAX_HEIGHT)
-//                                    .onlyScaleDown()
-//                                    .centerCrop()
-//                                    .into(new Target() {
-//                                        @Override
-//                                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-//                                            assert holder.mCollectionCoverImageView != null;
-//                                            Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-//                                                @Override
-//                                                public void onGenerated(@NonNull Palette palette) {
-//                                                    Palette.Swatch swatch = palette.getVibrantSwatch();
-//
-//                                                    if (swatch == null){
-//
-//                                                    }else if (swatch != null){
-//                                                        holder.mCollectionsLinearLayout.setBackgroundColor(swatch.getRgb());
-//                                                    }else {
-//                                                        holder.mCollectionsLinearLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorPrimary));
-//                                                    }
-//                                                }
-//                                            });
-//                                        }
-//
-//                                        @Override
-//                                        public void onBitmapFailed(Drawable errorDrawable) {
-//
-//                                        }
-//
-//                                        @Override
-//                                        public void onPrepareLoad(Drawable placeHolderDrawable) {
-//
-//                                        }
-//                                    });
-//
-//                        }
-//
-//                        @Override
-//                        public void onPrepareLoad(Drawable placeHolderDrawable) {
-//
-//                        }
-//                    });
-//
-//        }
 
         holder.mCollectionsLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override

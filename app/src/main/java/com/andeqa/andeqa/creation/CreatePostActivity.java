@@ -442,7 +442,6 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                                                             Intent intent = new Intent(CreatePostActivity.this, ProfieCollectionPostsActivity.class);
                                                             intent.putExtra(CreatePostActivity.COLLECTION_ID, collectionId);
                                                             intent.putExtra(CreatePostActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
-                                                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                                             startActivity(intent);
                                                             finish();
                                                         }
