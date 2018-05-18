@@ -10,8 +10,7 @@ public class Room {
     String message;
     long time;
     String room_id;
-    String sender_status;
-    String receiver_status;
+    String status;
 
     public Room() {
 
@@ -59,19 +58,12 @@ public class Room {
         this.room_id = room_id;
     }
 
-    public String getSender_status() {
-        return sender_status;
+
+    public String getStatus() {
+        return status;
     }
 
-    public void setSender_status(String sender_status) {
-        this.sender_status = sender_status;
-    }
-
-    public String getReceiver_status() {
-        return receiver_status;
-    }
-
-    public void setReceiver_status(String receiver_status) {
-        this.receiver_status = receiver_status;
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

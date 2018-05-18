@@ -47,7 +47,7 @@
                     android:textStyle="normal|bold"
                     android:textColor="@android:color/white"
                     android:textSize="25sp"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="10dp"
                     android:layout_below="@+id/profileImageView"
                     android:layout_centerHorizontal="true" />
 
@@ -56,9 +56,9 @@
                     android:layout_below="@+id/fullNameTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:layout_centerHorizontal="true"
                     android:textSize="14sp"
+                    android:padding="10dp"
                     android:id="@+id/usernameTextView"
                     android:textStyle="normal|bold"
                     android:textColor="@android:color/white" />
@@ -68,10 +68,10 @@
                     android:text=""
                     android:textSize="12sp"
                     android:layout_below="@+id/usernameTextView"
-                    android:layout_marginTop="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="70dp"
+                    android:layout_marginBottom="60dp"
+                    android:padding="10dp"
                     android:id="@+id/bioTextView"
                     android:textColor="@android:color/white" />
 

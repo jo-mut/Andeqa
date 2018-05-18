@@ -87,6 +87,7 @@ public class MarketFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
             setRecyclerView();
             setCollections();
+
         }
 
         return  view;
@@ -150,7 +151,6 @@ public class MarketFragment extends Fragment implements SwipeRefreshLayout.OnRef
                     }
                 }else {
                     Log.d("snapshot  empty", documentSnapshots.size() + "");
-
                     mPlaceHolderRelativeLayout.setVisibility(View.VISIBLE);
                 }
 
@@ -250,6 +250,24 @@ public class MarketFragment extends Fragment implements SwipeRefreshLayout.OnRef
     @Override
     public void onResume() {
         super.onResume();
+        sellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (!documentSnapshots.isEmpty()){
+                    Log.d("snapshot not empty", documentSnapshots.size() + "");
+                }else {
+                    Log.d("snapshot  empty", documentSnapshots.size() + "");
+                    marketSnapshot.clear();
+                }
+
+            }
+        });
 
     }
 

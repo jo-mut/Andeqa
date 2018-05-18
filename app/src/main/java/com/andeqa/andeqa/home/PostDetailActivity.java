@@ -350,6 +350,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                         final int size = strings.length;
 
                         if (size <= 120){
+                            mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
                             mDescriptionTextView.setText(collectionPost.getDescription());
                         }else{
 

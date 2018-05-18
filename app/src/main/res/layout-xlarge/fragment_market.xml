@@ -28,11 +28,11 @@
         android:id="@+id/placeHolderRelativeLayout">
 
         <ImageView
-            app:srcCompat="@drawable/ic_photo_black_24dp"
+            app:srcCompat="@drawable/ic_buy"
             android:id="@+id/imagePlaceHolder"
             android:layout_centerInParent="true"
-            android:layout_width="160sp"
-            android:layout_height="160sp"
+            android:layout_width="400sp"
+            android:layout_height="400sp"
             android:tint="@android:color/darker_gray" />
 
         <TextView
@@ -44,7 +44,7 @@
             android:layout_centerHorizontal="true"
             android:id="@+id/placeHolderTextView"
             android:textAlignment="center"
-            android:padding="20dp" />
+            android:padding="50dp" />
 
     </RelativeLayout>
 

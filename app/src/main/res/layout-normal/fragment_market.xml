@@ -28,11 +28,11 @@
         android:id="@+id/placeHolderRelativeLayout">
 
         <ImageView
-            app:srcCompat="@drawable/ic_photo_black_24dp"
+            app:srcCompat="@drawable/ic_buy"
             android:id="@+id/imagePlaceHolder"
             android:layout_centerInParent="true"
-            android:layout_width="80sp"
-            android:layout_height="80sp"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
             android:tint="@android:color/darker_gray" />
 
         <TextView

@@ -22,7 +22,6 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="@color/colorPrimary"
-            android:paddingBottom="40dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <RelativeLayout
@@ -138,6 +137,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/countsLayout"
                     android:layout_marginTop="10dp"
+                    android:layout_marginBottom="40dp"
                     android:padding="5dp">
 
                     <TextView

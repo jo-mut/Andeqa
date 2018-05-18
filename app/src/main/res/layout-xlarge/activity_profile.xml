@@ -134,6 +134,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="30dp"
+                    android:layout_marginBottom="120dp"
                     android:layout_marginTop="20dp">
 
                     <TextView
@@ -157,7 +158,8 @@
                 android:layout_height="112dp"
                 app:popupTheme="@style/AppTheme.PopupOverlay"
                 android:title="Collapsing Toolbar"
-                app:layout_collapseMode="pin" />
+                app:layout_collapseMode="pin"
+                tools:ignore="HardcodedText,UnusedAttribute" />
 
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>

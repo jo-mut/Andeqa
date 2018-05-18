@@ -104,8 +104,7 @@
                     android:background="@drawable/colour_btn_background"
                     android:minHeight="35dp"
                     android:minWidth="50dip"
-                    android:layout_below="@+id/setSalePriceTextView"
-                    android:layout_alignParentBottom="true" />
+                    android:layout_below="@+id/setSalePriceTextView" />
 
                 <EditText
                     android:layout_width="match_parent"

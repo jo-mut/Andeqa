@@ -195,6 +195,7 @@ public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<Collecti
             final int size = strings.length;
 
             if (size <= 120){
+                holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
                 holder.descriptionTextView.setText(collectionPost.getDescription());
             }else{
 

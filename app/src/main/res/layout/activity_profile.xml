@@ -9,7 +9,6 @@
     android:orientation="vertical"
     tools:context="com.andeqa.andeqa.profile.ProfileActivity">
 
-
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
@@ -24,7 +23,6 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="@color/colorPrimary"
-            android:paddingBottom="60dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <RelativeLayout
@@ -128,6 +126,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
+                    android:layout_marginBottom="60dp"
                     tools:ignore="UnusedAttribute">
 
                     <TextView
@@ -138,6 +137,7 @@
                         android:layout_centerHorizontal="true"
                         android:textSize="14sp"
                         android:padding="10dp"
+                        android:text=""
                         android:textAlignment="center" />
 
                 </RelativeLayout>

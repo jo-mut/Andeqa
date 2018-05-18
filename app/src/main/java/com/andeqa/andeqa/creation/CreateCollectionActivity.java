@@ -20,6 +20,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,6 +56,9 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
     @Bind(R.id.noteCountTextView)TextView mNoteCountTextView;
     @Bind(R.id.nameCountTextView)TextView mNameCountTextView;
     @Bind(R.id.collectionCoverImageView)ImageView mCollectionCoverImageView;
+    @Bind(R.id.collectionRelativeLayout)RelativeLayout mCollectionRelativeLayout;
+    @Bind(R.id.addCollectionTextView)TextView mAddCollectionTextView;
+    @Bind(R.id.addRelativeLayout)RelativeLayout mAddRelativeLayout;
 
 
     private Uri photoUri;
@@ -87,7 +91,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
         ButterKnife.bind(this);
 
         mDoneTextView.setOnClickListener(this);
-        mCollectionCoverImageView.setOnClickListener(this);
+        mAddRelativeLayout.setOnClickListener(this);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -355,9 +359,10 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
             if(requestCode == IMAGE_GALLERY_REQUEST && data != null){
                 photoUri = data.getData();
                 if (photoUri != null){
+                    mAddRelativeLayout.setVisibility(View.GONE);
+                    mCollectionRelativeLayout.setVisibility(View.VISIBLE);
                     Picasso.with(this)
                             .load(photoUri)
-                            .placeholder(R.drawable.add_cover_placeholder)
                             .into(mCollectionCoverImageView,
                                     new Callback.EmptyCallback(){
                                 @Override
@@ -382,7 +387,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
             createCollection();
         }
 
-        if (v == mCollectionCoverImageView){
+        if (v == mAddRelativeLayout){
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");

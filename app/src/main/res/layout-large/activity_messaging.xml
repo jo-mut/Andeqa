@@ -43,11 +43,11 @@
         android:id="@+id/placeHolderRelativeLayout">
 
         <ImageView
-            app:srcCompat="@drawable/ic_chat_bubble_black_24dp"
+            app:srcCompat="@drawable/ic_chat_bubble"
             android:id="@+id/imagePlaceHolder"
             android:layout_centerInParent="true"
-            android:layout_width="80sp"
-            android:layout_height="80sp"
+            android:layout_width="300sp"
+            android:layout_height="300sp"
             android:tint="@android:color/darker_gray" />
 
         <TextView
@@ -59,6 +59,7 @@
             android:id="@+id/placeHolderTextView"
             android:textAlignment="center"
             android:padding="20dp"
+            android:textSize="21sp"
             android:layout_centerInParent="true" />
 
     </RelativeLayout>

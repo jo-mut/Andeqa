@@ -107,8 +107,10 @@ public class MessagesAccountActivity extends AppCompatActivity
             }
 
             mUid = getIntent().getStringExtra(EXTRA_USER_UID);
+            Log.d("passed uid", mUid);
             if(mUid == null){
                 throw new IllegalArgumentException("pass an EXTRA_UID");
+
             }
 
             //firebase
@@ -330,9 +332,7 @@ public class MessagesAccountActivity extends AppCompatActivity
 
             DocumentReference receipientReference = roomCollection.document("rooms")
                     .collection(mUid).document(firebaseAuth.getCurrentUser().getUid());
-            DocumentReference senderReference = roomCollection.document("rooms")
-                    .collection(firebaseAuth.getCurrentUser().getUid())
-                    .document(mUid);
+
 
             Room room = new Room();
             room.setReceiver_id(mUid);
@@ -340,9 +340,8 @@ public class MessagesAccountActivity extends AppCompatActivity
             room.setMessage(text_message);
             room.setTime(time);
             room.setRoom_id(roomId);
-            room.setReceiver_status("un_read");
+            room.setStatus("un_read");
             receipientReference.set(room);
-            senderReference.set(room);
             mSendMessageEditText.setText("");
 
         }else {

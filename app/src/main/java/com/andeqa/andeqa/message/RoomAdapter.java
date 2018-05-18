@@ -77,10 +77,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
         final String senderUid = room.getSender_id();
         final String lastMessage = room.getMessage();
         final String roomId = room.getRoom_id();
-        final String senderStatus= room.getSender_status();
-        final String receiverStatus = room.getReceiver_status();
-
-        Log.d("room id", roomId);
+        final String receiverStatus = room.getStatus();
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -99,7 +96,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
                 public void onClick(View view) {
                     roomCollection.document("rooms")
                             .collection(receiverUid)
-                            .document(senderUid).update("receiver_status", "read");
+                            .document(senderUid).update("status", "read");
                     Intent intent = new Intent(mContext, MessagesAccountActivity.class);
                     intent.putExtra(RoomAdapter.EXTRA_ROOM_ID, roomId);
                     intent.putExtra(RoomAdapter.EXTRA_USER_UID, receiverUid);

@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,6 +71,8 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
     @Bind(R.id.postTextView)TextView mPostTextView;
     @Bind(R.id.descriptionCountTextView)TextView mDescriptionCountTextView;
     @Bind(R.id.titleCountTextView)TextView mTitleCountTextView;
+    @Bind(R.id.postImageRelativeLayout)RelativeLayout mPostImageRelativeLayout;
+    @Bind(R.id.addRelativeLayout)RelativeLayout mAddRelativeLayout;
 
 
     private String image;
@@ -105,7 +108,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
         mPostTextView.setOnClickListener(this);
         mBackImageView.setOnClickListener(this);
-        mPostImageView.setOnClickListener(this);
+        mAddRelativeLayout.setOnClickListener(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -302,6 +305,8 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
             if(requestCode == IMAGE_GALLERY_REQUEST && data != null){
                 photoUri = data.getData();
                 if (photoUri != null){
+                    mAddRelativeLayout.setVisibility(View.GONE);
+                    mPostImageRelativeLayout.setVisibility(View.VISIBLE);
                     Picasso.with(this)
                             .load(photoUri)
                             .into(mPostImageView,
@@ -335,7 +340,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
             finish();
         }
 
-        if (v == mPostImageView){
+        if (v == mAddRelativeLayout){
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");

@@ -218,4 +218,8 @@ public class MessagingActivity extends AppCompatActivity implements SwipeRefresh
         roomAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 }

@@ -225,6 +225,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                         final int size = strings.length;
 
                         if (size <= 120){
+                            holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
                             holder.descriptionTextView.setText(collectionPost.getDescription());
                         }else{
                             holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);

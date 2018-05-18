@@ -6,6 +6,7 @@
     tools:context="com.andeqa.andeqa.timeline.TimelineFragment">
 
     <!-- TODO: Update blank fragment layout -->
+
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
@@ -28,11 +29,11 @@
 
 
         <ImageView
-            app:srcCompat="@drawable/ic_access_time_black_24dp"
+            app:srcCompat="@drawable/ic_stopwatch"
             android:id="@+id/imagePlaceHolder"
             android:layout_centerInParent="true"
-            android:layout_width="80sp"
-            android:layout_height="80sp"
+            android:layout_width="200sp"
+            android:layout_height="200sp"
             android:tint="@android:color/darker_gray" />
 
         <TextView
@@ -44,6 +45,7 @@
             android:id="@+id/placeHolderTextView"
             android:textAlignment="center"
             android:padding="20dp"
+            android:textSize="14sp"
             android:layout_centerInParent="true" />
 
 

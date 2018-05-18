@@ -29,11 +29,11 @@
 
 
         <ImageView
-            app:srcCompat="@drawable/ic_access_time_black_24dp"
+            app:srcCompat="@drawable/ic_stopwatch"
             android:id="@+id/imagePlaceHolder"
             android:layout_centerInParent="true"
-            android:layout_width="120sp"
-            android:layout_height="120sp"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
             android:tint="@android:color/darker_gray" />
 
         <TextView

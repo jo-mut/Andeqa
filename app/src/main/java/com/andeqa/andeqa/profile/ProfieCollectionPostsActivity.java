@@ -401,9 +401,25 @@ public class ProfieCollectionPostsActivity extends AppCompatActivity
     @Override
     public void onResume() {
         super.onResume();
-        if (recyclerViewState != null){
-            layoutManager.onRestoreInstanceState(recyclerViewState);
-        }
+        collectionPostsQuery.limit(TOTAL_ITEMS)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+
+                        if (!documentSnapshots.isEmpty()){
+                            //document snapshot is not empty
+                        }else {
+                            mSnapshots.clear();
+                        }
+
+                    }
+                });
     }
 
     @Override

@@ -137,19 +137,15 @@ public class DialogMarketPostSettings extends DialogFragment implements View.OnC
                     }
 
                     if (documentSnapshot.exists()){
-                        sellingCollection.document(mPostId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                try {
-                                    Toast.makeText(getContext(), "Your post has been deleted from the market",
-                                            Toast.LENGTH_SHORT).show();
-                                    progressDialog.dismiss();
-                                    dismiss();
-                                }catch (Exception e){
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
+                        sellingCollection.document(mPostId).delete();
+                        try {
+                            Toast.makeText(getContext(), "Your post has been deleted from the market",
+                                    Toast.LENGTH_SHORT).show();
+                            progressDialog.dismiss();
+                            dismiss();
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
 
                     }
                 }

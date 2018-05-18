@@ -15,8 +15,6 @@ import android.widget.RelativeLayout;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.message.MessagesFragment;
-import com.andeqa.andeqa.message.RoomAdapter;
-import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -53,7 +51,7 @@ public class TimelineFragment extends Fragment implements SwipeRefreshLayout.OnR
 
 
     private List<String> activitiesIds = new ArrayList<>();
-    private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
+    private List<DocumentSnapshot> timelineSnapshots = new ArrayList<>();
 
     public TimelineFragment() {
         // Required empty public constructor
@@ -112,7 +110,7 @@ public class TimelineFragment extends Fragment implements SwipeRefreshLayout.OnR
                         }
 
                         if (!documentSnapshots.isEmpty()){
-                            //retrieve the first bacth of documentSnapshots
+                            //retrieve the first bacth of timelineSnapshots
                             for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
                                 switch (change.getType()) {
                                     case ADDED:
@@ -144,7 +142,7 @@ public class TimelineFragment extends Fragment implements SwipeRefreshLayout.OnR
         }else {
             DocumentSnapshot lastVisible = timelineAdapter.getSnapshot(snapshotSize - 1);
 
-            //retrieve the first bacth of documentSnapshots
+            //retrieve the first bacth of timelineSnapshots
             Query nextSellingQuery = timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
                     .collection("timeline").orderBy("time", Query.Direction.ASCENDING)
                     .startAfter(lastVisible)
@@ -160,7 +158,7 @@ public class TimelineFragment extends Fragment implements SwipeRefreshLayout.OnR
                     }
 
                     if (!documentSnapshots.isEmpty()){
-                        //retrieve the first bacth of documentSnapshots
+                        //retrieve the first bacth of timelineSnapshots
                         for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
                             switch (change.getType()) {
                                 case ADDED:
@@ -187,9 +185,9 @@ public class TimelineFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     protected void onDocumentAdded(DocumentChange change) {
         activitiesIds.add(change.getDocument().getId());
-        documentSnapshots.add(change.getDocument());
-        timelineAdapter.setTimelineActivities(documentSnapshots);
-        timelineAdapter.notifyItemInserted(documentSnapshots.size() -1);
+        timelineSnapshots.add(change.getDocument());
+        timelineAdapter.setTimelineActivities(timelineSnapshots);
+        timelineAdapter.notifyItemInserted(timelineSnapshots.size() -1);
         timelineAdapter.getItemCount();
 
     }
@@ -197,26 +195,48 @@ public class TimelineFragment extends Fragment implements SwipeRefreshLayout.OnR
     protected void onDocumentModified(DocumentChange change) {
         if (change.getOldIndex() == change.getNewIndex()) {
             // Item changed but remained in same position
-            documentSnapshots.set(change.getOldIndex(), change.getDocument());
+            timelineSnapshots.set(change.getOldIndex(), change.getDocument());
             timelineAdapter.notifyItemChanged(change.getOldIndex());
         } else {
             // Item changed and changed position
-            documentSnapshots.remove(change.getOldIndex());
-            documentSnapshots.add(change.getNewIndex(), change.getDocument());
-            timelineAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+            timelineSnapshots.remove(change.getOldIndex());
+            timelineSnapshots.add(change.getNewIndex(), change.getDocument());
+            timelineAdapter.notifyItemRangeChanged(0, timelineSnapshots.size());
         }
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
-        documentSnapshots.remove(change.getOldIndex());
+        timelineSnapshots.remove(change.getOldIndex());
         timelineAdapter.notifyItemRemoved(change.getOldIndex());
-        timelineAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+        timelineAdapter.notifyItemRangeChanged(0, timelineSnapshots.size());
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        documentSnapshots.clear();
+        timelineSnapshots.clear();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        timelineQuery.limit(TOTAL_ITEMS)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!documentSnapshots.isEmpty()){
+                          //document snapshot is not empty
+                        }else {
+                            timelineSnapshots.clear();
+                        }
+
+                    }
+                });
+    }
 }

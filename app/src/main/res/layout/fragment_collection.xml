@@ -8,20 +8,17 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-
     <android.support.v4.widget.SwipeRefreshLayout
-        android:layout_below="@+id/toolbar"
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <android.support.v7.widget.RecyclerView
-            android:numColumns="auto_fit"
+            android:layout_marginBottom="20dp"
             android:id="@+id/collectionsRecyclerView"
             android:overScrollMode="never"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
-
 
     </android.support.v4.widget.SwipeRefreshLayout>
 

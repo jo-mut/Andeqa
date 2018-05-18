@@ -29,6 +29,7 @@
         android:layout_height="wrap_content">
 
         <android.support.v4.widget.SwipeRefreshLayout
+            android:layout_marginBottom="70dp"
             android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -44,7 +45,6 @@
         </android.support.v4.widget.SwipeRefreshLayout>
 
         <RelativeLayout
-            android:background="@android:color/white"
             android:layout_alignParentBottom="true"
             android:orientation="horizontal"
             android:id="@+id/edit_container"
@@ -52,6 +52,7 @@
             android:layout_height="100dp">
 
             <LinearLayout
+                android:background="@android:color/white"
                 android:orientation="vertical"
                 android:layout_alignParentBottom="true"
                 android:layout_width="match_parent"
