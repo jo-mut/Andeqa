@@ -79,8 +79,8 @@ public class CollectionFragment extends Fragment implements SwipeRefreshLayout.O
 
         if (firebaseAuth.getCurrentUser()!= null){
 
-            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
-            collectionsQuery = collectionCollection.orderBy("collection_id", Query.Direction.DESCENDING)
+            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.FEATURED_COLLECTIONS);
+            collectionsQuery = collectionCollection.orderBy("time", Query.Direction.DESCENDING)
                     .limit(TOTAL_ITEMS);
 
 
@@ -156,8 +156,7 @@ public class CollectionFragment extends Fragment implements SwipeRefreshLayout.O
 
             //retrieve the first bacth of documentSnapshots
             Query  nextCollectionsQuery = collectionCollection.orderBy("time", Query.Direction.DESCENDING)
-                    .whereEqualTo("uid", mUid).startAfter(lastVisible)
-                    .limit(TOTAL_ITEMS);
+                    .startAfter(lastVisible).limit(TOTAL_ITEMS);
 
             nextCollectionsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override

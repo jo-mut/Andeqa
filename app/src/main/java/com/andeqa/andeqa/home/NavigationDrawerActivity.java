@@ -5,9 +5,16 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,17 +26,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.collections.CollectionFragment;
 import com.andeqa.andeqa.creation.CreateCollectionActivity;
 import com.andeqa.andeqa.creation.CreatePostActivity;
+import com.andeqa.andeqa.market.MarketFragment;
+import com.andeqa.andeqa.message.MessagesFragment;
 import com.andeqa.andeqa.message.MessagingActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.profile.ProfileActivity;
 import com.andeqa.andeqa.settings.SettingsActivity;
+import com.andeqa.andeqa.timeline.TimelineFragment;
+import com.andeqa.andeqa.utils.BottomNavigationViewBehavior;
+import com.andeqa.andeqa.utils.BottomNavigationViewHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -48,10 +62,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class NavigationDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         View.OnClickListener{
-
+    @Bind(R.id.bottomNavigationView)BottomNavigationView mBottomNavigationView;
     @Bind(R.id.fab)FloatingActionButton mFloatingActionButton;
-    @Bind(R.id.tabs)TabLayout tabLayout;
-    @Bind(R.id.container)ViewPager viewPager;
+    @Bind(R.id.container)FrameLayout fragmentContainer;
 
     private static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
@@ -69,6 +82,11 @@ public class NavigationDrawerActivity extends AppCompatActivity
     private CircleImageView mProfileImageView;
     private TextView mFullNameTextView;
     private TextView mEmailTextView;
+    final FragmentManager fragmentManager = getSupportFragmentManager();
+    final Fragment homeFragment = new HomeFragment();
+    final Fragment marketFragment = new MarketFragment();
+    final Fragment collectionFragment = new CollectionFragment();
+    final Fragment timelineFragment = new TimelineFragment();
 
     //tablayot
     private HomePagerAdapter homePagerAdapter;
@@ -103,16 +121,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
         mEmailTextView = (TextView) header.findViewById(R.id.emailTextView);
 
 
-        homePagerAdapter = new HomePagerAdapter(getSupportFragmentManager());
-        // Set up the ViewPager with the sections adapter
-        viewPager.setAdapter(homePagerAdapter);
-        tabLayout.setupWithViewPager(viewPager);
-
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
-        tabLayout.setSelectedTabIndicatorHeight((int) (5 * getResources().getDisplayMetrics().density));
-
-
         if (firebaseAuth.getCurrentUser() != null){
             //firestore
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
@@ -123,6 +131,28 @@ public class NavigationDrawerActivity extends AppCompatActivity
             fetchUserEmail();
 
         }
+        //bottom navigation
+        BottomNavigationViewHelper.disableShiftMode(mBottomNavigationView);
+        mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView
+                .OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                selectFragment(item);
+                return true;
+            }
+        });
+
+        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams)
+                mBottomNavigationView.getLayoutParams();
+        layoutParams.setBehavior(new BottomNavigationViewBehavior());
+
+        MenuItem selectedItem;
+        selectedItem = mBottomNavigationView.getMenu().getItem(0);
+        selectFragment(selectedItem);
+
+
+
+
 
     }
 
@@ -304,6 +334,51 @@ public class NavigationDrawerActivity extends AppCompatActivity
     public void onStop() {
         super.onStop();
     }
+
+    private void updateToolbarText(CharSequence text){
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null){
+            actionBar.setTitle(text);
+        }
+    }
+
+
+
+    private void selectFragment(MenuItem item){
+        //initialize each corresponding fragment
+        switch (item.getItemId()){
+            case R.id.action_home:
+                FragmentTransaction ft = fragmentManager.beginTransaction();
+                ft.replace(R.id.container, homeFragment);
+                ft.commit();
+                break;
+            case R.id.action_collection:
+                FragmentTransaction collectionTransaction = fragmentManager.beginTransaction();
+                 collectionTransaction.replace(R.id.container, collectionFragment).commit();
+                break;
+            case R.id.action_market:
+                FragmentTransaction profileTransaction = fragmentManager.beginTransaction();
+                profileTransaction.replace(R.id.container, marketFragment).commit();
+                break;
+            case R.id.action_timeline:
+                FragmentTransaction timelineTransaction = fragmentManager.beginTransaction();
+                timelineTransaction.replace(R.id.container, timelineFragment).commit();
+                break;
+
+        }
+
+        //update selected item
+        mSelectedItem = item.getItemId();
+
+        updateToolbarText(item.getTitle());
+
+        //uncheck the other items
+        for(int i = 0; i < mBottomNavigationView.getMenu().size(); i++){
+            MenuItem menuItem = mBottomNavigationView.getMenu().getItem(i);
+            menuItem.setChecked(menuItem.getItemId() ==item.getItemId());
+        }
+    }
+
 
 
     @Override

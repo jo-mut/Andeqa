@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_home"
+        android:icon="@drawable/ic_home"
+        app:showAsAction="ifRoom"
+        android:enabled="true"
+        android:title="Home">
+    </item>
+
+    <item
+        android:id="@+id/action_collection"
+        android:icon="@drawable/ic_collection"
+        app:showAsAction="ifRoom"
+        android:enabled="true"
+        android:title="Collections">
+    </item>
+
+    <item
+        android:id="@+id/action_market"
+        android:icon="@drawable/ic_market"
+        app:showAsAction="ifRoom"
+        android:enabled="true"
+        android:title="Market">
+    </item>
+
+    <item
+        android:id="@+id/action_timeline"
+        android:icon="@drawable/ic_time"
+        app:showAsAction="ifRoom"
+        android:enabled="true"
+        android:title="Timeline">
+    </item>
+
+
+</menu>

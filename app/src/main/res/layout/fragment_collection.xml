@@ -14,7 +14,6 @@
         android:layout_height="wrap_content">
 
         <android.support.v7.widget.RecyclerView
-            android:layout_marginBottom="20dp"
             android:id="@+id/collectionsRecyclerView"
             android:overScrollMode="never"
             android:layout_width="match_parent"

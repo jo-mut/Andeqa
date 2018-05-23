@@ -135,6 +135,7 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
                             Intent intent = new Intent(mContext, PostDetailActivity.class);
                             intent.putExtra(SellingAdapter.EXTRA_POST_ID, postKey);
                             intent.putExtra(SellingAdapter.COLLECTION_ID, collectionId);
+                            intent.putExtra(SellingAdapter.EXTRA_USER_UID, uid);
                             mContext.startActivity(intent);
                         }
                     });
@@ -193,60 +194,6 @@ public class SellingAdapter extends RecyclerView.Adapter<PostSellingViewHolder> 
                 }
             }
         });
-
-        usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-//                    Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-//                    final String profileImage = cinggulan.getProfile_image();
-//                    final String username = cinggulan.getUsername();
-//                    holder.creatorTextView.setText(username);
-                }
-            }
-        });
-
-        ownerReference.document(postKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
-                    final String ownerUid = transactionDetails.getUser_id();
-                    Log.d("owner uid", ownerUid);
-
-//                    usersReference.document(ownerUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//                        @Override
-//                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-//
-//                            if (e != null) {
-//                                Log.w(TAG, "Listen error", e);
-//                                return;
-//                            }
-//
-//                            if (documentSnapshot.exists()){
-//                                Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-//                                final String profileImage = cinggulan.getProfile_image();
-//                                final String username = cinggulan.getUsername();
-//                                holder.ownerTextView.setText(username);
-//
-//                            }
-//                        }
-//                    });
-                }
-            }
-        });
-
 
     }
 

@@ -1,5 +1,6 @@
 package com.andeqa.andeqa.profile;
 
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,8 +29,10 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class ProfileCollectionsActivity extends AppCompatActivity {
+public class ProfileCollectionsActivity extends AppCompatActivity implements
+        SwipeRefreshLayout.OnRefreshListener{
     @Bind(R.id.collectionsRecyclerView)RecyclerView mCollectionsRecyclerView;
+    @Bind(R.id.swipeRefreshLayout)SwipeRefreshLayout mSwipeRefreshLayout;
     private static final String TAG = ProfileCollectionsActivity.class.getSimpleName();
     //firestore reference
     private CollectionReference collectionCollection;
@@ -77,6 +80,7 @@ public class ProfileCollectionsActivity extends AppCompatActivity {
             }
         });
 
+        mSwipeRefreshLayout.setOnRefreshListener(this);
 
         if (firebaseAuth.getCurrentUser() != null){
 
@@ -118,14 +122,6 @@ public class ProfileCollectionsActivity extends AppCompatActivity {
             }
         });
 
-
-        mCollectionsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
-            @Override
-            public void onLoadMore() {
-                setNextCollections();
-            }
-        });
-
     }
 
 
@@ -138,6 +134,10 @@ public class ProfileCollectionsActivity extends AppCompatActivity {
         mCollectionsRecyclerView.setNestedScrollingEnabled(false);
     }
 
+    @Override
+    public void onRefresh() {
+        setNextCollections();
+    }
 
     private void setCollections(){
         profileCollectionsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -177,44 +177,56 @@ public class ProfileCollectionsActivity extends AppCompatActivity {
     }
 
     private void setNextCollections(){
+        mSwipeRefreshLayout.setRefreshing(true);
+
         // Get the last visible document
         final int snapshotSize = profileCollectionsAdapter.getItemCount();
-        DocumentSnapshot lastVisible = profileCollectionsAdapter.getSnapshot(snapshotSize - 1);
+        if (snapshotSize == 0){
 
-        //retrieve the first bacth of documentSnapshots
-        Query nextCollectionsQuery = collectionCollection.orderBy("time", Query.Direction.DESCENDING)
-                .whereEqualTo("uid", mUid)
-                .startAfter(lastVisible)
-                .limit(TOTAL_ITEMS);
+        }else {
+            DocumentSnapshot lastVisible = profileCollectionsAdapter.getSnapshot(snapshotSize - 1);
 
-        nextCollectionsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+            //retrieve the first bacth of documentSnapshots
+            Query  nextCollectionsQuery = collectionCollection.orderBy("time", Query.Direction.DESCENDING)
+                    .whereEqualTo("user_id", mUid).startAfter(lastVisible)
+                    .limit(TOTAL_ITEMS);
 
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
 
-                if (!documentSnapshots.isEmpty()){
-                    //retrieve the first bacth of documentSnapshots
-                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                        switch (change.getType()) {
-                            case ADDED:
-                                onDocumentAdded(change);
-                                break;
-                            case MODIFIED:
-                                onDocumentModified(change);
-                                break;
-                            case REMOVED:
-                                onDocumentRemoved(change);
-                                break;
+            nextCollectionsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                    if (e != null) {
+                        Log.w(TAG, "Listen error", e);
+                        return;
+                    }
+
+                    if (!documentSnapshots.isEmpty()){
+                        //retrieve the first bacth of documentSnapshots
+                        for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                            switch (change.getType()) {
+                                case ADDED:
+                                    onDocumentAdded(change);
+                                    break;
+                                case MODIFIED:
+                                    onDocumentModified(change);
+                                    break;
+                                case REMOVED:
+                                    onDocumentRemoved(change);
+                                    break;
+                            }
                         }
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }else {
+                        mSwipeRefreshLayout.setRefreshing(false);
+
                     }
                 }
-            }
-        });
+            });
+        }
+
     }
+
 
     protected void onDocumentAdded(DocumentChange change) {
         collectionsIds.add(change.getDocument().getId());
