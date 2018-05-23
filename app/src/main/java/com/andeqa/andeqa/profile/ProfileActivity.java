@@ -6,14 +6,14 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -24,13 +24,11 @@ import com.andeqa.andeqa.message.MessagesAccountActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Room;
 
-import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.andeqa.andeqa.wallet.WalletActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -52,26 +50,21 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener{
     //BIND VIEWS
-    @Bind(R.id.collectionsRecyclerView)RecyclerView mCollectionsRecyclerView;
     @Bind(R.id.profileImageView)CircleImageView mProifleImageView;
     @Bind(R.id.fullNameTextView)TextView mFullNameTextView;
     @Bind(R.id.bioTextView)TextView mBioTextView;
     @Bind(R.id.collectionsCountTextView)TextView mCollectionsCountTextView;
+    @Bind(R.id.collectionsCountRelativeLayout)RelativeLayout mCollectionCountRelativeLayout;
     @Bind(R.id.profileCoverImageView)ImageView mProfileCover;
     @Bind(R.id.collapsing_toolbar)CollapsingToolbarLayout collapsingToolbarLayout;
-    @Bind(R.id.sendMessageImageView)ImageView mSendMessageImageView;
-    @Bind(R.id.bioRelativeLayout)RelativeLayout mBioRelativeLayout;
+    @Bind(R.id.sendMessageButton)Button mSendMessageButton;
+    @Bind(R.id.sendMessageRelativeLayout)RelativeLayout mSendMessageRelativeLayout;
+    @Bind(R.id.bioRelativeLayout)FrameLayout mBioRelativeLayout;
 
     private static final String TAG = ProfileActivity.class.getSimpleName();
     //firestore reference
     private CollectionReference collectionCollection;
-    private CollectionReference relationsCollections;
     private CollectionReference usersCollections;
-    private CollectionReference postsCollection;
-    private CollectionReference timelineCollection;
-
-    private Query postCountQuery;
-    private Query profileCollectionsQuery;
     private CollectionReference roomsCollection;
     //firebase
     private DatabaseReference databaseReference;
@@ -131,33 +124,17 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             }
 
             usersCollections = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            relationsCollections = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             collectionCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
-            profileCollectionsQuery = collectionCollection.orderBy("time", Query.Direction.DESCENDING)
-                    .whereEqualTo("user_id", mUid)
-                    .limit(TOTAL_ITEMS);
-            timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             roomsCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
-            postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            postCountQuery = postsCollection.orderBy("time").whereEqualTo("user_id", mUid);
 
             //firebase
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
 
             fetchData();
-            recyclerView();
-            setCollections();
-
-            if (savedInstanceState != null){
-                recyclerViewState = savedInstanceState.getParcelable(KEY_LAYOUT_POSITION);
-                Log.d("Profile saved Instance", "Instance is not null");
-            }else {
-                Log.d("Saved Instance", "Instance is completely null");
-            }
 
             //show hidden views
             if (!firebaseAuth.getCurrentUser().getUid().equals(mUid)){
-                mSendMessageImageView.setVisibility(View.VISIBLE);
+                mSendMessageRelativeLayout.setVisibility(View.VISIBLE);
             }
 
             usersCollections.document(mUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -182,15 +159,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 }
             });
 
-            mCollectionsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
-                @Override
-                public void onLoadMore() {
-                    setNextCollections();
-                }
-            });
 
-            //INITIALIZE CLICK LISTENERS
-            mSendMessageImageView.setOnClickListener(this);
+            /**initialize click listners*/
+            mSendMessageButton.setOnClickListener(this);
+            mCollectionCountRelativeLayout.setOnClickListener(this);
+
 
         }
 
@@ -285,7 +258,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                     .resize(MAX_WIDTH, MAX_HEIGHT)
                                     .onlyScaleDown()
                                     .centerCrop()
-                                    .placeholder(R.drawable.profle_image_background)
+                                    .placeholder(R.drawable.ic_user)
                                     .networkPolicy(NetworkPolicy.OFFLINE)
                                     .into(mProifleImageView, new Callback() {
                                         @Override
@@ -300,7 +273,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                                     .resize(MAX_WIDTH, MAX_HEIGHT)
                                                     .onlyScaleDown()
                                                     .centerCrop()
-                                                    .placeholder(R.drawable.profle_image_background)
+                                                    .placeholder(R.drawable.ic_user)
                                                     .into(mProifleImageView);
 
                                         }
@@ -343,120 +316,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 });
     }
 
-    private void recyclerView(){
-        profileCollectionsAdapter = new ProfileCollectionsAdapter(ProfileActivity.this);
-        layoutManager = new LinearLayoutManager(ProfileActivity.this);
-        mCollectionsRecyclerView.setLayoutManager(layoutManager);
-        mCollectionsRecyclerView.setAdapter(profileCollectionsAdapter);
-        mCollectionsRecyclerView.setHasFixedSize(false);
-        mCollectionsRecyclerView.setNestedScrollingEnabled(false);
-    }
-
-    private void setCollections(){
-        profileCollectionsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (!documentSnapshots.isEmpty()){
-                    //retrieve the first bacth of documentSnapshots
-                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                        switch (change.getType()) {
-                            case ADDED:
-                                onDocumentAdded(change);
-                                break;
-                            case MODIFIED:
-                                onDocumentModified(change);
-                                break;
-                            case REMOVED:
-                                onDocumentRemoved(change);
-                                break;
-                        }
-                    }
-
-                    Log.d("name of collection", "data is present");
-
-                }else {
-                    Log.d("name of collection", "data is absent");
-
-                }
-
-            }
-        });
-    }
-
-    private void setNextCollections(){
-        // Get the last visible document
-        final int snapshotSize = profileCollectionsAdapter.getItemCount();
-        DocumentSnapshot lastVisible = profileCollectionsAdapter.getSnapshot(snapshotSize - 1);
-
-        //retrieve the first bacth of documentSnapshots
-        Query  nextCollectionsQuery = collectionCollection.orderBy("time", Query.Direction.DESCENDING)
-                .whereEqualTo("uid", mUid)
-                .startAfter(lastVisible)
-                .limit(TOTAL_ITEMS);
-
-        nextCollectionsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (!documentSnapshots.isEmpty()){
-                    //retrieve the first bacth of documentSnapshots
-                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                        switch (change.getType()) {
-                            case ADDED:
-                                onDocumentAdded(change);
-                                break;
-                            case MODIFIED:
-                                onDocumentModified(change);
-                                break;
-                            case REMOVED:
-                                onDocumentRemoved(change);
-                                break;
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    protected void onDocumentAdded(DocumentChange change) {
-        collectionsIds.add(change.getDocument().getId());
-        documentSnapshots.add(change.getDocument());
-        profileCollectionsAdapter.setProfileCollections(documentSnapshots);
-        profileCollectionsAdapter.notifyItemInserted(documentSnapshots.size() -1);
-        profileCollectionsAdapter.getItemCount();
-
-    }
-
-    protected void onDocumentModified(DocumentChange change) {
-        if (change.getOldIndex() == change.getNewIndex()) {
-            // Item changed but remained in same position
-            documentSnapshots.set(change.getOldIndex(), change.getDocument());
-            profileCollectionsAdapter.notifyItemChanged(change.getOldIndex());
-        } else {
-            // Item changed and changed position
-            documentSnapshots.remove(change.getOldIndex());
-            documentSnapshots.add(change.getNewIndex(), change.getDocument());
-            profileCollectionsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
-        }
-    }
-
-    protected void onDocumentRemoved(DocumentChange change) {
-        documentSnapshots.remove(change.getOldIndex());
-        profileCollectionsAdapter.notifyItemRemoved(change.getOldIndex());
-        profileCollectionsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
-    }
-
 
     @Override
     public void onDestroy() {
@@ -466,9 +325,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onResume() {
         super.onResume();
-        if (recyclerViewState != null){
-            layoutManager.onRestoreInstanceState(recyclerViewState);
-        }
+
     }
 
     @Override
@@ -489,7 +346,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onClick(View v){
-        if (v == mSendMessageImageView){
+        if (v == mSendMessageButton){
             processRoom = true;
             roomsCollection.document("rooms")
                     .collection(mUid).document(firebaseAuth.getCurrentUser().getUid())
@@ -524,6 +381,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                             }
                         }
                     });
+        }
+
+        if (v == mCollectionCountRelativeLayout){
+            Intent intent = new Intent(ProfileActivity.this, ProfileCollectionsActivity.class);
+            intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
+            startActivity(intent);
         }
 
     }

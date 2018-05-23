@@ -1,5 +1,6 @@
 package com.andeqa.andeqa.profile;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.collections.CollectionPostsActivity;
 import com.andeqa.andeqa.collections.CollectionViewHolder;
 import com.andeqa.andeqa.models.Collection;
 import com.google.firebase.auth.FirebaseAuth;
@@ -146,10 +148,11 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
         holder.mCollectionsLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, ProfieCollectionPostsActivity.class);
+                Intent intent = new Intent(mContext, ProfileCollectionPostsActivity.class);
                 intent.putExtra(ProfileCollectionsAdapter.COLLECTION_ID, collectionId);
                 intent.putExtra(ProfileCollectionsAdapter.EXTRA_USER_UID, uid);
                 mContext.startActivity(intent);
+                ((Activity)mContext).finish();
             }
         });
 

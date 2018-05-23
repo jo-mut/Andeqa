@@ -1,4 +1,4 @@
-package com.andeqa.andeqa.profile;
+package com.andeqa.andeqa.collections;
 
 import android.content.Intent;
 import android.os.Parcelable;
@@ -44,7 +44,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class ProfieCollectionPostsActivity extends AppCompatActivity
+public class CollectionPostsActivity extends AppCompatActivity
         implements View.OnClickListener{
     @Bind(R.id.collectionsPostsRecyclerView)RecyclerView mCollectionsPostsRecyclerView;
     @Bind(R.id.createPostButton)FloatingActionButton mCreatePostButton;
@@ -52,7 +52,9 @@ public class ProfieCollectionPostsActivity extends AppCompatActivity
     @Bind(R.id.collectionNoteTextView)TextView mCollectionNoteTextView;
     @Bind(R.id.collapsing_toolbar)CollapsingToolbarLayout collapsingToolbarLayout;
     @Bind(R.id.collectionNameTextView)TextView mCollectionNameTextView;
-    private static final String TAG = ProfieCollectionPostsActivity.class.getSimpleName();
+    private static final String TAG = CollectionPostsActivity.class.getSimpleName();
+
+
     //firestore reference
     private CollectionReference collectionsPosts;
     private CollectionReference collectionCollection;
@@ -63,7 +65,7 @@ public class ProfieCollectionPostsActivity extends AppCompatActivity
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore adapters
-    private ProfileCollectionPostsAdapter profileCollectionPostsAdapter;
+    private CollectionPostsAdapter collectionPostsAdapter;
     private static final String KEY_LAYOUT_POSITION = "layout pooition";
     private Parcelable recyclerViewState;
     private  static final int MAX_WIDTH = 400;
@@ -74,6 +76,7 @@ public class ProfieCollectionPostsActivity extends AppCompatActivity
 
     private String collectionId;
     private String mUid;
+    private String mSource;
     private static final String COLLECTION_ID = "collection id";
     private List<String> mSnapshotsIds = new ArrayList<>();
     private List<DocumentSnapshot> mSnapshots = new ArrayList<>();
@@ -83,7 +86,7 @@ public class ProfieCollectionPostsActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_collection_posts_profile);
+        setContentView(R.layout.activity_collection_posts);
         ButterKnife.bind(this);
         //initialize click listener
         mCreatePostButton.setOnClickListener(this);
@@ -181,7 +184,7 @@ public class ProfieCollectionPostsActivity extends AppCompatActivity
 
         if (id == R.id.action_collections_settings){
             Intent intent = new Intent(this,    CollectionSettingsActivity.class);
-            intent.putExtra(ProfieCollectionPostsActivity.COLLECTION_ID, collectionId);
+            intent.putExtra(CollectionPostsActivity.COLLECTION_ID, collectionId);
             startActivity(intent);
         }
 
@@ -218,10 +221,10 @@ public class ProfieCollectionPostsActivity extends AppCompatActivity
 
     private void setRecyclerView(){
         // RecyclerView
-        profileCollectionPostsAdapter = new ProfileCollectionPostsAdapter(ProfieCollectionPostsActivity.this);
-        mCollectionsPostsRecyclerView.setAdapter(profileCollectionPostsAdapter);
+        collectionPostsAdapter = new CollectionPostsAdapter(CollectionPostsActivity.this);
+        mCollectionsPostsRecyclerView.setAdapter(collectionPostsAdapter);
         mCollectionsPostsRecyclerView.setHasFixedSize(false);
-        layoutManager = new LinearLayoutManager(ProfieCollectionPostsActivity.this);
+        layoutManager = new LinearLayoutManager(CollectionPostsActivity.this);
         layoutManager.setReverseLayout(true);
         mCollectionsPostsRecyclerView.setLayoutManager(layoutManager);
         mCollectionsPostsRecyclerView.setNestedScrollingEnabled(false);
@@ -266,7 +269,7 @@ public class ProfieCollectionPostsActivity extends AppCompatActivity
 
                     mCollectionNameTextView.setText(name);
                     mCollectionNoteTextView.setText(note);
-                    Picasso.with(ProfieCollectionPostsActivity.this)
+                    Picasso.with(CollectionPostsActivity.this)
                             .load(cover)
                             .resize(MAX_WIDTH, MAX_HEIGHT)
                             .onlyScaleDown()
@@ -280,7 +283,7 @@ public class ProfieCollectionPostsActivity extends AppCompatActivity
 
                                 @Override
                                 public void onError() {
-                                    Picasso.with(ProfieCollectionPostsActivity.this)
+                                    Picasso.with(CollectionPostsActivity.this)
                                             .load(cover)
                                             .resize(MAX_WIDTH, MAX_HEIGHT)
                                             .onlyScaleDown()
@@ -331,9 +334,9 @@ public class ProfieCollectionPostsActivity extends AppCompatActivity
 
     private void setNextCollectionPosts(){
         // Get the last visible document
-        final int snapshotSize = profileCollectionPostsAdapter.getItemCount();
+        final int snapshotSize = collectionPostsAdapter.getItemCount();
 
-        DocumentSnapshot lastVisible = profileCollectionPostsAdapter.getSnapshot(snapshotSize - 1);
+        DocumentSnapshot lastVisible = collectionPostsAdapter.getSnapshot(snapshotSize - 1);
 
         //retrieve the first bacth of mSnapshots
         Query nextCollectionPostsQuery = collectionsPosts.orderBy("time", Query.Direction.DESCENDING)
@@ -372,9 +375,9 @@ public class ProfieCollectionPostsActivity extends AppCompatActivity
     protected void onDocumentAdded(DocumentChange change) {
         mSnapshotsIds.add(change.getDocument().getId());
         mSnapshots.add(change.getDocument());
-        profileCollectionPostsAdapter.setCollectionPosts(mSnapshots);
-        profileCollectionPostsAdapter.notifyItemInserted(mSnapshots.size() -1);
-        profileCollectionPostsAdapter.getItemCount();
+        collectionPostsAdapter.setCollectionPosts(mSnapshots);
+        collectionPostsAdapter.notifyItemInserted(mSnapshots.size() -1);
+        collectionPostsAdapter.getItemCount();
 
     }
 
@@ -382,51 +385,33 @@ public class ProfieCollectionPostsActivity extends AppCompatActivity
         if (change.getOldIndex() == change.getNewIndex()) {
             // Item changed but remained in same position
             mSnapshots.set(change.getOldIndex(), change.getDocument());
-            profileCollectionPostsAdapter.notifyItemChanged(change.getOldIndex());
+            collectionPostsAdapter.notifyItemChanged(change.getOldIndex());
         } else {
             // Item changed and changed position
             mSnapshots.remove(change.getOldIndex());
             mSnapshots.add(change.getNewIndex(), change.getDocument());
-            profileCollectionPostsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+            collectionPostsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
         }
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
         mSnapshots.remove(change.getOldIndex());
-        profileCollectionPostsAdapter.notifyItemRemoved(change.getOldIndex());
-        profileCollectionPostsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+        collectionPostsAdapter.notifyItemRemoved(change.getOldIndex());
+        collectionPostsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
     }
 
 
     @Override
     public void onResume() {
         super.onResume();
-        collectionPostsQuery.limit(TOTAL_ITEMS)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-
-                        if (!documentSnapshots.isEmpty()){
-                            //document snapshot is not empty
-                        }else {
-                            mSnapshots.clear();
-                        }
-
-                    }
-                });
     }
 
     @Override
     public void onClick(View v){
         if (v == mCreatePostButton){
-            Intent intent = new Intent(ProfieCollectionPostsActivity.this, CreatePostActivity.class);
-            intent.putExtra(ProfieCollectionPostsActivity.COLLECTION_ID, collectionId);
+            Intent intent = new Intent(CollectionPostsActivity.this, CreatePostActivity.class);
+            intent.putExtra(CollectionPostsActivity.COLLECTION_ID, collectionId);
             startActivity(intent);
         }
 

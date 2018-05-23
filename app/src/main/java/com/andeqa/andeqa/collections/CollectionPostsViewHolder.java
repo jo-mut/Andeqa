@@ -1,4 +1,4 @@
-package com.andeqa.andeqa.profile;
+package com.andeqa.andeqa.collections;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

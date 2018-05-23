@@ -176,7 +176,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
                             .load(profileImage)
                             .fit()
                             .centerCrop()
-                            .placeholder(R.drawable.profle_image_background)
+                            .placeholder(R.drawable.ic_user)
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(holder.profileImageView, new Callback() {
                                 @Override
@@ -190,7 +190,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
                                             .load(profileImage)
                                             .fit()
                                             .centerCrop()
-                                            .placeholder(R.drawable.profle_image_background)
+                                            .placeholder(R.drawable.ic_user)
                                             .into(holder.profileImageView);
                                 }
                             });

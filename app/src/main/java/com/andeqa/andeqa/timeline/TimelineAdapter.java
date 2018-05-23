@@ -167,7 +167,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             .resize(MAX_WIDTH, MAX_HEIGHT)
                             .onlyScaleDown()
                             .centerCrop()
-                            .placeholder(R.drawable.profle_image_background)
+                            .placeholder(R.drawable.ic_user)
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(holder.profileImageView, new Callback() {
                                 @Override
@@ -182,7 +182,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                             .resize(MAX_WIDTH, MAX_HEIGHT)
                                             .onlyScaleDown()
                                             .centerCrop()
-                                            .placeholder(R.drawable.profle_image_background)
+                                            .placeholder(R.drawable.ic_user)
                                             .into(holder.profileImageView);
 
                                 }
@@ -282,7 +282,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             .resize(MAX_WIDTH, MAX_HEIGHT)
                             .onlyScaleDown()
                             .centerCrop()
-                            .placeholder(R.drawable.profle_image_background)
+                            .placeholder(R.drawable.ic_user)
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(holder.profileImageView, new Callback() {
                                 @Override
@@ -297,7 +297,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                             .resize(MAX_WIDTH, MAX_HEIGHT)
                                             .onlyScaleDown()
                                             .centerCrop()
-                                            .placeholder(R.drawable.profle_image_background)
+                                            .placeholder(R.drawable.ic_user)
                                             .into(holder.profileImageView);
 
                                 }

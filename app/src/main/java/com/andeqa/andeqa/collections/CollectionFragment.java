@@ -2,13 +2,10 @@ package com.andeqa.andeqa.collections;
 
 
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,13 +13,8 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.profile.ProfileActivity;
-import com.andeqa.andeqa.profile.ProfileCollectionsAdapter;
-import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -48,17 +40,7 @@ public class CollectionFragment extends Fragment implements SwipeRefreshLayout.O
     private static final String TAG = ProfileActivity.class.getSimpleName();
     //firestore reference
     private CollectionReference collectionCollection;
-    private CollectionReference relationsCollections;
-    private CollectionReference usersCollections;
-    private CollectionReference postsCollection;
-    private CollectionReference timelineCollection;
     private Query collectionsQuery;
-
-    private Query postCountQuery;
-
-    //firebase
-    private DatabaseReference databaseReference;
-
 
     //firebase auth
     private FirebaseAuth firebaseAuth;
@@ -97,18 +79,10 @@ public class CollectionFragment extends Fragment implements SwipeRefreshLayout.O
 
         if (firebaseAuth.getCurrentUser()!= null){
 
-
-            usersCollections = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            relationsCollections = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             collectionCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
-            collectionsQuery = collectionCollection.orderBy("collection_id", Query.Direction.ASCENDING)
+            collectionsQuery = collectionCollection.orderBy("collection_id", Query.Direction.DESCENDING)
                     .limit(TOTAL_ITEMS);
 
-            timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-            postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-
-            //firebase
-            databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
 
             setCollections();
             recyclerView();
@@ -181,7 +155,7 @@ public class CollectionFragment extends Fragment implements SwipeRefreshLayout.O
             DocumentSnapshot lastVisible = collectionsAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of documentSnapshots
-            Query  nextCollectionsQuery = collectionCollection.orderBy("time", Query.Direction.ASCENDING)
+            Query  nextCollectionsQuery = collectionCollection.orderBy("time", Query.Direction.DESCENDING)
                     .whereEqualTo("uid", mUid).startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
 

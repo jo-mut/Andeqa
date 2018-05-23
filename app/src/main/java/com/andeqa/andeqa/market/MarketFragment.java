@@ -82,7 +82,7 @@ public class MarketFragment extends Fragment implements SwipeRefreshLayout.OnRef
         if (firebaseAuth.getCurrentUser()!= null){
             //firestore
             sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
-            sellingQuery = sellingCollection.orderBy("random_number", Query.Direction.ASCENDING)
+            sellingQuery = sellingCollection.orderBy("random_number", Query.Direction.DESCENDING)
                     .limit(TOTAL_ITEMS);
 
             setRecyclerView();
@@ -169,7 +169,7 @@ public class MarketFragment extends Fragment implements SwipeRefreshLayout.OnRef
             DocumentSnapshot lastVisible = sellingAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of documentSnapshots
-            Query nextSellingQuery = sellingCollection.orderBy("random_number", Query.Direction.ASCENDING)
+            Query nextSellingQuery = sellingCollection.orderBy("random_number", Query.Direction.DESCENDING)
                     .startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
 

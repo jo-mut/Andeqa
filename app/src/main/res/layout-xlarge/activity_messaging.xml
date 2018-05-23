@@ -47,8 +47,7 @@
             android:id="@+id/imagePlaceHolder"
             android:layout_centerInParent="true"
             android:layout_width="400dp"
-            android:layout_height="400dp"
-            android:tint="@android:color/darker_gray" />
+            android:layout_height="400dp" />
 
         <TextView
             android:layout_below="@+id/imagePlaceHolder"

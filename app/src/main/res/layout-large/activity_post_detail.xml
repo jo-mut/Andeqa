@@ -356,7 +356,6 @@
                                 android:layout_alignParentStart="true" />
 
                             <de.hdodenhof.circleimageview.CircleImageView
-                                app:srcCompat="@drawable/profle_image_background"
                                 android:layout_width="45dp"
                                 android:layout_height="45dp"
                                 android:layout_marginRight="5dp"
@@ -482,7 +481,6 @@
                                 android:layout_centerVertical="true" />
 
                             <de.hdodenhof.circleimageview.CircleImageView
-                                app:srcCompat="@drawable/profle_image_background"
                                 android:layout_width="45dp"
                                 android:layout_height="45dp"
                                 android:layout_marginRight="5dp"

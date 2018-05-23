@@ -26,9 +26,9 @@ import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.collections.CollectionPostsActivity;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.TransactionDetails;
-import com.andeqa.andeqa.profile.ProfieCollectionPostsActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -308,7 +308,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                                     progressDialog.dismiss();
                                     //reset input fields
 
-                                    Intent intent = new Intent(CreateCollectionActivity.this, ProfieCollectionPostsActivity.class);
+                                    Intent intent = new Intent(CreateCollectionActivity.this, CollectionPostsActivity.class);
                                     intent.putExtra(CreateCollectionActivity.COLLECTION_ID, collectionId);
                                     intent.putExtra(CreateCollectionActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
                                     startActivity(intent);
@@ -334,7 +334,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                         mCollectionNoteEditText.setText("");
 
 
-                        Intent intent = new Intent(CreateCollectionActivity.this, ProfieCollectionPostsActivity.class);
+                        Intent intent = new Intent(CreateCollectionActivity.this, CollectionPostsActivity.class);
                         intent.putExtra(CreateCollectionActivity.COLLECTION_ID, collectionId);
                         intent.putExtra(CreateCollectionActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
                         startActivity(intent);

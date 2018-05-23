@@ -254,11 +254,11 @@ public class NavigationDrawerActivity extends AppCompatActivity
             startActivity(intent);
         }
 
-        if (id == R.id.action_about){
-            Intent intent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://andeqa.firebaseapp.com"));
-            startActivity(intent);
-        }
+//        if (id == R.id.action_about){
+//            Intent intent = new Intent(Intent.ACTION_VIEW,
+//                    Uri.parse("https://andeqa.firebaseapp.com"));
+//            startActivity(intent);
+//        }
 
         if (id == R.id.action_share_andeqa){
             Intent sendIntent = new Intent();

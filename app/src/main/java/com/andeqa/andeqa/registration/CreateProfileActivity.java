@@ -382,7 +382,8 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
 
                 Picasso.with(this)
                         .load(profileUri).resize(MAX_WIDTH, MAX_HEIGHT).onlyScaleDown()
-                        .centerCrop().placeholder(R.drawable.profle_image_background)
+                        .centerCrop()
+                        .placeholder(R.drawable.ic_user)
                         .networkPolicy(NetworkPolicy.OFFLINE)
                         .into(mProfilePictureImageView, new Callback() {
                             @Override
@@ -394,7 +395,8 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
                             public void onError() {
                                 Picasso.with(CreateProfileActivity.this)
                                         .load(profileUri).resize(MAX_WIDTH, MAX_HEIGHT)
-                                        .onlyScaleDown().centerCrop().placeholder(R.drawable.profle_image_background)
+                                        .onlyScaleDown().centerCrop()
+                                        .placeholder(R.drawable.ic_user)
                                         .into(mProfilePictureImageView);
 
                             }

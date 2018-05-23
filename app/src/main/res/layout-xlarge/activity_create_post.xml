@@ -41,7 +41,6 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profileImageView"
-                android:background="@drawable/profle_image_background"
                 android:layout_toRightOf="@+id/backImageView"
                 android:layout_toEndOf="@+id/backImageView"
                 android:layout_centerVertical="true"
@@ -198,7 +197,6 @@
                     android:layout_height="match_parent">
 
                     <ImageView
-                        android:tint="@android:color/darker_gray"
                         android:layout_centerVertical="true"
                         android:id="@+id/addImageView"
                         android:layout_width="400dp"

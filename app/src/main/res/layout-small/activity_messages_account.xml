@@ -76,8 +76,8 @@
                         android:hint="Write a message"
                         android:padding="12dp"
                         android:textSize="12sp"
-                        android:layout_toLeftOf="@+id/sendMessageImageView"
-                        android:layout_toStartOf="@+id/sendMessageImageView"
+                        android:layout_toLeftOf="@+id/sendMessageButton"
+                        android:layout_toStartOf="@+id/sendMessageButton"
                         android:layout_centerVertical="true" />
 
                     <ImageView
@@ -86,7 +86,7 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         app:srcCompat="@drawable/ic_menu_send"
-                        android:id="@+id/sendMessageImageView"
+                        android:id="@+id/sendMessageButton"
                         android:tint="@android:color/white"
                         android:layout_centerVertical="true"
                         android:layout_alignParentRight="true"

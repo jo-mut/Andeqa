@@ -18,8 +18,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_width="75dp"
-            android:layout_height="75dp"
-            android:background="@drawable/profle_image_background"/>
+            android:layout_height="75dp" />
 
 
         <RelativeLayout

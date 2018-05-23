@@ -148,11 +148,12 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                     final String title = collectionPost.getTitle();
                     final String image = collectionPost.getImage();
 
+                     Log.d("image shared", image);
                     //set the single image
                     Picasso.with(ListOnMarketActivity.this)
                             .load(image)
                             .networkPolicy(NetworkPolicy.OFFLINE)
-                            .placeholder(R.drawable.profle_image_background)
+                            .placeholder(R.drawable.image_place_holder)
                             .into(mCingleImageView, new Callback() {
                                 @Override
                                 public void onSuccess() {
@@ -163,7 +164,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                                 public void onError() {
                                     Picasso.with(ListOnMarketActivity.this)
                                             .load(image)
-                                            .placeholder(R.drawable.profle_image_background)
+                                            .placeholder(R.drawable.image_place_holder)
                                             .into(mCingleImageView);
                                 }
                             });
@@ -191,7 +192,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                                         .load(profileImage)
                                         .fit()
                                         .centerCrop()
-                                        .placeholder(R.drawable.profle_image_background)
+                                        .placeholder(R.drawable.ic_user)
                                         .networkPolicy(NetworkPolicy.OFFLINE)
                                         .into(mUserProfileImageView, new Callback() {
                                             @Override
@@ -205,7 +206,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                                                         .load(profileImage)
                                                         .fit()
                                                         .centerCrop()
-                                                        .placeholder(R.drawable.profle_image_background)
+                                                        .placeholder(R.drawable.ic_user)
                                                         .into(mUserProfileImageView);
                                             }
                                         });

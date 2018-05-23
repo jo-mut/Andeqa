@@ -38,10 +38,10 @@
                 android:id="@+id/action_share_andeqa"
                 android:title="@string/share" />
 
-            <item
-                android:icon="@drawable/ic_info_black_24dp"
-                android:id="@+id/action_about"
-                android:title="@string/about" />
+            <!--<item-->
+                <!--android:icon="@drawable/ic_info_black_24dp"-->
+                <!--android:id="@+id/action_about"-->
+                <!--android:title="@string/about" />-->
 
 
         </menu>

@@ -1,43 +1,33 @@
 package com.andeqa.andeqa.profile;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
-import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.TextPaint;
 import android.text.TextUtils;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.home.PostDetailActivity;
-import com.andeqa.andeqa.home.PostsAdapter;
-import com.andeqa.andeqa.market.DialogSendCredits;
-import com.andeqa.andeqa.market.ListOnMarketActivity;
-import com.andeqa.andeqa.models.Andeqan;
-import com.andeqa.andeqa.models.CollectionPost;
+import com.andeqa.andeqa.collections.CollectionPostsAdapter;
+import com.andeqa.andeqa.collections.CollectionPostsViewHolder;
 import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.home.ImageViewActivity;
+import com.andeqa.andeqa.home.PostDetailActivity;
+import com.andeqa.andeqa.home.PostViewHolder;
 import com.andeqa.andeqa.likes.LikesActivity;
+import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Balance;
+import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Like;
-import com.andeqa.andeqa.models.Market;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.models.TransactionDetails;
-import com.andeqa.andeqa.settings.DialogMarketPostSettings;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -61,10 +51,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Nullable;
-
-/**
- * Created by J.EL on 11/14/2017.
- */
 
 public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<CollectionPostsViewHolder> {
     private static final String TAG = ProfileCollectionPostsAdapter.class.getSimpleName();
@@ -103,14 +89,8 @@ public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<Collecti
     private static final int MAX_HEIGHT = 200;
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
 
-
     public ProfileCollectionPostsAdapter(Context mContext) {
         this.mContext = mContext;
-    }
-
-    @Override
-    public int getItemCount() {
-        return documentSnapshots.size();
     }
 
     protected void setCollectionPosts(List<DocumentSnapshot> mSnapshots){
@@ -122,14 +102,16 @@ public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<Collecti
         return documentSnapshots.get(index);
     }
 
+
+    @NonNull
     @Override
-    public CollectionPostsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public CollectionPostsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.post_list_layout, parent, false);
         return new CollectionPostsViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final CollectionPostsViewHolder holder, int position) {
+    public void onBindViewHolder(final @NonNull CollectionPostsViewHolder holder, int position) {
         final CollectionPost collectionPost = getSnapshot(holder.getAdapterPosition()).toObject(CollectionPost.class);
         final String collectionId = collectionPost.getCollection_id();
         final String postId = collectionPost.getPost_id();
@@ -224,6 +206,7 @@ public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<Collecti
             holder.descriptionRelativeLayout.setVisibility(View.GONE);
         }
 
+
         holder.likesRelativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -239,7 +222,9 @@ public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<Collecti
                 Intent intent =  new Intent(mContext, PostDetailActivity.class);
                 intent.putExtra(ProfileCollectionPostsAdapter.EXTRA_POST_ID, postId);
                 intent.putExtra(ProfileCollectionPostsAdapter.COLLECTION_ID, collectionId);
+                intent.putExtra(ProfileCollectionPostsAdapter.EXTRA_USER_UID, uid);
                 mContext.startActivity(intent);
+                ((Activity)mContext).finish();
             }
         });
 
@@ -266,13 +251,9 @@ public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<Collecti
         holder.profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, ProfileActivity.class);
-                intent.putExtra(ProfileCollectionPostsAdapter.EXTRA_USER_UID, uid);
-                mContext.startActivity(intent);
+                ((Activity)mContext).finish();
             }
         });
-
-
 
         senseCreditReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -356,7 +337,7 @@ public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<Collecti
                             .resize(MAX_WIDTH, MAX_HEIGHT)
                             .onlyScaleDown()
                             .centerCrop()
-                            .placeholder(R.drawable.profle_image_background)
+                            .placeholder(R.drawable.ic_user)
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(holder.profileImageView, new Callback() {
                                 @Override
@@ -371,7 +352,7 @@ public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<Collecti
                                             .resize(MAX_WIDTH, MAX_HEIGHT)
                                             .onlyScaleDown()
                                             .centerCrop()
-                                            .placeholder(R.drawable.profle_image_background)
+                                            .placeholder(R.drawable.ic_user)
                                             .into(holder.profileImageView);
                                 }
                             });
@@ -476,7 +457,6 @@ public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<Collecti
                                     Log.w(TAG, "Listen error", e);
                                     return;
                                 }
-
 
                                 if (processDislikes){
                                     if (documentSnapshots.isEmpty()){
@@ -681,14 +661,6 @@ public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<Collecti
     }
 
 
-    private static int roundPercentage(int value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
-
-        BigDecimal bd = new BigDecimal(value);
-        bd = bd.setScale(places, RoundingMode.HALF_UP);
-        return bd.intValue();
-    }
-
     //region listeners
     private static double roundCredits(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
@@ -696,9 +668,11 @@ public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<Collecti
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
+
     }
 
-
+    @Override
+    public int getItemCount() {
+        return documentSnapshots.size();
+    }
 }
-
-

@@ -193,8 +193,8 @@ public class CommentsActivity extends AppCompatActivity implements
         }else{
             DocumentSnapshot lastVisible = commentsAdapter.getSnapshot(snapshotSize - 1);
             //retrieve the first bacth of documentSnapshots
-            Query nextSellingQuery = commentsCollection.orderBy("time").startAfter(lastVisible)
-                    .limit(TOTAL_ITEMS);
+            Query nextSellingQuery = commentsCollection.orderBy("time", Query.Direction.DESCENDING)
+                    .startAfter(lastVisible).limit(TOTAL_ITEMS);
 
             nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override

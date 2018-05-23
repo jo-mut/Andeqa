@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Collection;
-import com.andeqa.andeqa.profile.ProfieCollectionPostsActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -32,6 +31,7 @@ import javax.annotation.Nullable;
 
 public class CollectionsAdapter extends RecyclerView.Adapter<CollectionViewHolder> {
     private static final String TAG = CollectionsAdapter.class.getSimpleName();
+
     private Context mContext;
     //firestore
     private CollectionReference collectionsCollection;
@@ -148,7 +148,7 @@ public class CollectionsAdapter extends RecyclerView.Adapter<CollectionViewHolde
         holder.mCollectionsLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, ProfieCollectionPostsActivity.class);
+                Intent intent = new Intent(mContext, CollectionPostsActivity.class);
                 intent.putExtra(CollectionsAdapter.COLLECTION_ID, collectionId);
                 intent.putExtra(CollectionsAdapter.EXTRA_USER_UID, uid);
                 mContext.startActivity(intent);

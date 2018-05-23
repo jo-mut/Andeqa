@@ -21,11 +21,11 @@ public class HomePagerAdapter extends FragmentStatePagerAdapter {
                 HomeFragment homeFragment = new HomeFragment();
                 return homeFragment;
             case 1:
-                MarketFragment marketFragment = new MarketFragment();
-                return marketFragment;
-            case 2:
                 CollectionFragment collectionsFragment = new CollectionFragment();
                 return collectionsFragment;
+            case 2:
+                MarketFragment marketFragment = new MarketFragment();
+                return marketFragment;
             case 3:
                 TimelineFragment timelineFragment = new TimelineFragment();
                 return timelineFragment;
@@ -45,9 +45,9 @@ public class HomePagerAdapter extends FragmentStatePagerAdapter {
             case 0:
                 return "Home";
             case 1:
-                return "Market";
-            case 2:
                 return "Collections";
+            case 2:
+                return "Market";
             case 3:
                 return "Timeline";
 

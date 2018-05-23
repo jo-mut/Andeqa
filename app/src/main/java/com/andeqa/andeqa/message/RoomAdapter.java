@@ -153,7 +153,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
                             .load(profileImage)
                             .fit()
                             .centerCrop()
-                            .placeholder(R.drawable.profle_image_background)
+                            .placeholder(R.drawable.ic_user)
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(holder.profileImageView, new Callback() {
                                 @Override
@@ -167,7 +167,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
                                             .load(profileImage)
                                             .fit()
                                             .centerCrop()
-                                            .placeholder(R.drawable.profle_image_background)
+                                            .placeholder(R.drawable.ic_user)
                                             .into(holder.profileImageView);
 
 

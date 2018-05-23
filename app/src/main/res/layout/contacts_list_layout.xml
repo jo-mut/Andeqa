@@ -22,8 +22,7 @@
                 android:layout_marginStart="5dp"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:src="@drawable/profle_image_background" />
+                android:layout_centerVertical="true" />
 
             <LinearLayout
                 android:layout_toRightOf="@+id/profileImageView"
@@ -63,7 +62,7 @@
                 android:layout_height="match_parent">
 
                 <ImageView
-                    android:id="@+id/sendMessageImageView"
+                    android:id="@+id/sendMessageButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"

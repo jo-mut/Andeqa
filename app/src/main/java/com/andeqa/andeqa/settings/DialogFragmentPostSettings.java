@@ -17,10 +17,8 @@ import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.collections.CollectionsAdapter;
 import com.andeqa.andeqa.market.ListOnMarketActivity;
 import com.andeqa.andeqa.market.RedeemCreditsActivity;
-import com.andeqa.andeqa.profile.ProfieCollectionPostsActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;

@@ -71,7 +71,7 @@ public class TimelineFragment extends Fragment implements SwipeRefreshLayout.OnR
 
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
         timelineQuery = timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
-                .collection("activities").orderBy("time", Query.Direction.ASCENDING)
+                .collection("activities").orderBy("time", Query.Direction.DESCENDING)
                 .limit(TOTAL_ITEMS);
 
         setRecyclerView();
@@ -144,7 +144,7 @@ public class TimelineFragment extends Fragment implements SwipeRefreshLayout.OnR
 
             //retrieve the first bacth of timelineSnapshots
             Query nextSellingQuery = timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
-                    .collection("timeline").orderBy("time", Query.Direction.ASCENDING)
+                    .collection("timeline").orderBy("time", Query.Direction.DESCENDING)
                     .startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
 

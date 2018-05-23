@@ -102,7 +102,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                             .resize(MAX_WIDTH, MAX_HEIGHT)
                             .onlyScaleDown()
                             .centerCrop()
-                            .placeholder(R.drawable.profle_image_background)
+                            .placeholder(R.drawable.ic_user)
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(mProfileImageView, new Callback() {
                                 @Override
@@ -117,7 +117,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                                             .resize(MAX_WIDTH, MAX_HEIGHT)
                                             .onlyScaleDown()
                                             .centerCrop()
-                                            .placeholder(R.drawable.profle_image_background)
+                                            .placeholder(R.drawable.ic_user)
                                             .into(mProfileImageView);
 
                                 }

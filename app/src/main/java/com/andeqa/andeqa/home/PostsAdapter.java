@@ -3,31 +3,17 @@ package com.andeqa.andeqa.home;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Typeface;
-import android.os.Build;
-import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.TextPaint;
 import android.text.TextUtils;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
-import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.likes.LikesActivity;
-import com.andeqa.andeqa.market.ListOnMarketActivity;
 import com.andeqa.andeqa.models.Balance;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
@@ -37,7 +23,6 @@ import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.models.TransactionDetails;
 import com.andeqa.andeqa.profile.ProfileActivity;
-import com.andeqa.andeqa.settings.DialogMarketPostSettings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -74,6 +59,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
     private Context mContext;
     private static final String EXTRA_POST_ID = "post id";
     private static final String COLLECTION_ID = "collection id";
+    private static final String SOURCE = PostsAdapter.class.getSimpleName();
 
     private static final String EXTRA_USER_UID =  "uid";
     private boolean processLikes = false;
@@ -294,7 +280,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                 Intent intent =  new Intent(mContext, PostDetailActivity.class);
                 intent.putExtra(PostsAdapter.EXTRA_POST_ID, postId);
                 intent.putExtra(PostsAdapter.COLLECTION_ID, collectionId);
+                intent.putExtra(PostsAdapter.EXTRA_USER_UID, uid);
                 mContext.startActivity(intent);
+
             }
         });
 
@@ -306,7 +294,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                 mContext.startActivity(intent);
             }
         });
-
 
         senseCreditReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -346,7 +333,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                             .resize(MAX_WIDTH, MAX_HEIGHT)
                             .onlyScaleDown()
                             .centerCrop()
-                            .placeholder(R.drawable.profle_image_background)
+                            .placeholder(R.drawable.ic_user)
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(holder.profileImageView, new Callback() {
                                 @Override
@@ -361,7 +348,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                                             .resize(MAX_WIDTH, MAX_HEIGHT)
                                             .onlyScaleDown()
                                             .centerCrop()
-                                            .placeholder(R.drawable.profle_image_background)
+                                            .placeholder(R.drawable.ic_user)
                                             .into(holder.profileImageView);
                                 }
                             });

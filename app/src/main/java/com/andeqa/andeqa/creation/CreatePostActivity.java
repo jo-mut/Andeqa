@@ -32,7 +32,7 @@ import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.TransactionDetails;
-import com.andeqa.andeqa.profile.ProfieCollectionPostsActivity;
+import com.andeqa.andeqa.collections.CollectionPostsActivity;
 import com.andeqa.andeqa.settings.DialogProgressFragment;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -444,7 +444,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                                                             mPostImageView.setImageBitmap(null);
 
                                                             //launch the collections activity
-                                                            Intent intent = new Intent(CreatePostActivity.this, ProfieCollectionPostsActivity.class);
+                                                            Intent intent = new Intent(CreatePostActivity.this, CollectionPostsActivity.class);
                                                             intent.putExtra(CreatePostActivity.COLLECTION_ID, collectionId);
                                                             intent.putExtra(CreatePostActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
                                                             startActivity(intent);

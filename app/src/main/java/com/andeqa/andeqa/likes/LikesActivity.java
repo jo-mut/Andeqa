@@ -82,7 +82,8 @@ public class LikesActivity extends AppCompatActivity implements
             }
             //firestore
             likesCollection = FirebaseFirestore.getInstance().collection(Constants.LIKES);
-            likesQuery = likesCollection.document(mPostKey).collection("likes").orderBy("user_id");
+            likesQuery = likesCollection.document(mPostKey).collection("likes")
+                    .orderBy("user_id", Query.Direction.DESCENDING).limit(TOTAL_ITEMS);
 
             setRecyclerView();
             setCollections();
@@ -120,7 +121,7 @@ public class LikesActivity extends AppCompatActivity implements
 
 
     private void setCollections(){
-        likesQuery.limit(TOTAL_ITEMS).addSnapshotListener(new EventListener<QuerySnapshot>() {
+        likesQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
@@ -162,9 +163,8 @@ public class LikesActivity extends AppCompatActivity implements
 
             //retrieve the first bacth of documentSnapshots
             Query nextSellingQuery = likesCollection.document(mPostKey)
-                    .collection("likes").orderBy("user_id")
-                    .startAfter(lastVisible)
-                    .limit(TOTAL_ITEMS);
+                    .collection("likes").orderBy("user_id", Query.Direction.DESCENDING)
+                    .startAfter(lastVisible).limit(TOTAL_ITEMS);
 
             nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override

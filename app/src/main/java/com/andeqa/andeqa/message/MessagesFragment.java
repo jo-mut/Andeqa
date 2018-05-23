@@ -95,7 +95,7 @@ public class MessagesFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
 
     private void setCollections(){
-        roomsQuery.orderBy("time").limit(TOTAL_ITEMS)
+        roomsQuery.orderBy("time", Query.Direction.DESCENDING).limit(TOTAL_ITEMS)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -143,7 +143,7 @@ public class MessagesFragment extends Fragment implements SwipeRefreshLayout.OnR
             //retrieve the first bacth of documentSnapshots
             Query nextSellingQuery = roomsCollections.document("rooms")
                     .collection(firebaseAuth.getCurrentUser().getUid())
-                    .orderBy("time").startAfter(lastVisible)
+                    .orderBy("time", Query.Direction.DESCENDING).startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
 
             nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {

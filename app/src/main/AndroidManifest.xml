@@ -29,7 +29,7 @@
     <application
         android:name=".App"
         android:allowBackup="true"
-        android:allowClearUserData="false"
+        android:allowClearUserData="true"
         android:icon="@mipmap/ic_launcher"
         android:label="Andeqa"
         android:largeHeap="false"
@@ -44,13 +44,16 @@
         <activity
             android:name=".creation.CreatePostActivity"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
 
-                <category android:name="android.intent.category.DEFAULT" />
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.SEND" /> -->
 
-                <data android:mimeType="image/*" />
-            </intent-filter>
+
+            <!-- <category android:name="android.intent.category.DEFAULT" /> -->
+
+
+            <!-- <data android:mimeType="image/*" /> -->
+            <!-- </intent-filter> -->
         </activity>
         <activity
             android:name=".profile.UpdateProfileActivity"
@@ -82,9 +85,12 @@
         <activity
             android:name=".profile.ProfileActivity"
             android:label="Profile"
+            android:launchMode="standard"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity android:name=".registration.ResetPasswordActivity" />
+        <activity
+            android:name=".registration.ResetPasswordActivity"
+            android:screenOrientation="portrait" />
 
         <receiver
             android:name=".services.ConnectivityReceiver"
@@ -100,9 +106,9 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:screenOrientation="portrait"
             android:name=".home.ImageViewActivity"
-            android:label="Post" />
+            android:label="Post"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".wallet.WalletActivity"
             android:label="Wallet"
@@ -150,11 +156,12 @@
         <activity
             android:name=".creation.CreateCollectionActivity"
             android:label="Create collection"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
-            android:label="Collection"
-            android:screenOrientation="portrait"
-            android:name=".profile.ProfieCollectionPostsActivity" />
+            android:name=".collections.CollectionPostsActivity"
+            android:label="Posts"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".settings.CollectionSettingsActivity"
             android:label="Collection settings"
@@ -164,10 +171,18 @@
             android:label="Redeem"
             android:screenOrientation="portrait" />
         <activity
-            android:screenOrientation="portrait"
             android:name=".message.MessagingActivity"
             android:label="Chats"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
+        <activity
+            android:label="Collection"
+            android:screenOrientation="portrait"
+            android:name=".profile.ProfileCollectionsActivity" />
+        <activity
+            android:label="Posts"
+            android:screenOrientation="portrait"
+            android:name=".profile.ProfileCollectionPostsActivity"/>
     </application>
 
 </manifest>

@@ -44,7 +44,7 @@ public class MessagesAccountActivity extends AppCompatActivity
     @Bind(R.id.massagesRecyclerView)RecyclerView mMessagesRecyclerView;
     @Bind(R.id.sendMessageEditText)EditText mSendMessageEditText;
     @Bind(R.id.toolbar)Toolbar mToolBar;
-    @Bind(R.id.sendMessageImageView)ImageView mSendMessageImageView;
+    @Bind(R.id.sendMessageButton)ImageView mSendMessageImageView;
     @Bind(R.id.swipeRefreshLayout)SwipeRefreshLayout mSwipeRefreshLayout;
 
     //firestore references

@@ -36,6 +36,7 @@ import com.andeqa.andeqa.likes.LikesActivity;
 import com.andeqa.andeqa.market.ListOnMarketActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Balance;
+import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Market;
 import com.andeqa.andeqa.models.Credit;
@@ -67,6 +68,8 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import javax.annotation.Nullable;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -116,6 +119,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     private CollectionReference postsCollection;
     private CollectionReference collectionsPosts;
     private CollectionReference marketCollections;
+    private CollectionReference collectionsCollection;
     private CollectionReference postOnwersCollection;
     private com.google.firebase.firestore.Query likesQuery;
     //firebase references
@@ -131,10 +135,13 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     private static final double DEFAULT_PRICE = 1.5;
     private static final double GOLDEN_RATIO = 1.618;
     private String mPostId;
+    private String mUid;
+    private String mSource;
     private String mCollectionId;
     private static final String COLLECTION_ID = "collection id";
     private static final String EXTRA_POST_ID = "post id";
     private static final String EXTRA_USER_UID = "uid";
+    private static final String SOURCE = PostDetailActivity.class.getSimpleName();
     private static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
     private static final String TAG = PostDetailActivity.class.getSimpleName();
@@ -172,6 +179,12 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             if (mCollectionId == null){
                 throw new IllegalArgumentException("pass a collection id");
             }
+
+            mUid = getIntent().getStringExtra(EXTRA_USER_UID);
+            if(mUid == null){
+                throw new IllegalArgumentException("pass an EXTRA_UID");
+            }
+
             //INITIALIASE CLICK LISTENER
             mLikesImageView.setOnClickListener(this);
             mCommentImageView.setOnClickListener(this);
@@ -196,6 +209,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
             marketCollections = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             postOnwersCollection = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
+            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
 
 
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
@@ -325,17 +339,6 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                     final String uid = collectionPost.getUser_id();
                     final String title = collectionPost.getTitle();
 
-                    //LAUCNH PROFILE IF ITS NOT DELETED ELSE CATCH THE EXCEPTION
-                    mProfileImageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent intent = new Intent(PostDetailActivity.this, ProfileActivity.class);
-                            intent.putExtra(PostDetailActivity.EXTRA_USER_UID, uid);
-                            startActivity(intent);
-                        }
-                    });
-
-
                     //set the title of the single
                     if (title.equals("")){
                         mTitleRelativeLayout.setVisibility(View.GONE);
@@ -414,6 +417,44 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                             .into(mPostImageView);
                                 }
                             });
+
+                    /**launch a new profile activity if the collection owner is different from the owner of the post */
+                    collectionsCollection.document(mCollectionId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+
+                            if (e != null) {
+                                Log.w(TAG, "Listen error", e);
+                                return;
+                            }
+
+                            if (documentSnapshot.exists()){
+                                final Collection collection = documentSnapshot.toObject(Collection.class);
+                                final String collectionUser_id = collection.getUser_id();
+
+                                if (collectionUser_id.equals(uid)){
+                                    mProfileImageView.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                           finish();
+                                        }
+                                    });
+                                }else {
+                                    //LAUCNH PROFILE IF ITS NOT DELETED ELSE CATCH THE EXCEPTION
+                                    mProfileImageView.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            Intent intent = new Intent(PostDetailActivity.this, ProfileActivity.class);
+                                            intent.putExtra(PostDetailActivity.EXTRA_USER_UID, uid);
+                                            startActivity(intent);
+                                        }
+                                    });
+                                }
+
+                            }
+                        }
+                    });
+
 
                     sellingCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
@@ -511,7 +552,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                         .load(profileImage)
                                         .fit()
                                         .centerCrop()
-                                        .placeholder(R.drawable.profle_image_background)
+                                        .placeholder(R.drawable.ic_user)
                                         .networkPolicy(NetworkPolicy.OFFLINE)
                                         .into(mProfileImageView, new Callback() {
                                             @Override
@@ -525,7 +566,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                                         .load(profileImage)
                                                         .fit()
                                                         .centerCrop()
-                                                        .placeholder(R.drawable.profle_image_background)
+                                                        .placeholder(R.drawable.ic_user)
                                                         .into(mProfileImageView);
                                             }
                                         });
@@ -682,6 +723,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                     TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
                     final String ownerUid = transactionDetails.getUser_id();
 
+                    /**show the details of the post owner*/
                     usersReference.document(ownerUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -702,7 +744,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                         .load(profileImage)
                                         .fit()
                                         .centerCrop()
-                                        .placeholder(R.drawable.profle_image_background)
+                                        .placeholder(R.drawable.ic_user)
                                         .networkPolicy(NetworkPolicy.OFFLINE)
                                         .into(mOwnerImageView, new Callback() {
                                             @Override
@@ -716,7 +758,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                                         .load(profileImage)
                                                         .fit()
                                                         .centerCrop()
-                                                        .placeholder(R.drawable.profle_image_background)
+                                                        .placeholder(R.drawable.ic_user)
                                                         .into(mOwnerImageView);
                                             }
                                         });
@@ -724,14 +766,64 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
-                    mOwnerImageView.setOnClickListener(new View.OnClickListener() {
+                    /**launch a new profile activity if the collection owner is different from the owner of the post */
+                    collectionsCollection.document(mCollectionId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
-                        public void onClick(View view) {
-                            Intent intent = new Intent(PostDetailActivity.this, ProfileActivity.class);
-                            intent.putExtra(PostDetailActivity.EXTRA_USER_UID, ownerUid);
-                            startActivity(intent);
+                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+
+                            if (e != null) {
+                                Log.w(TAG, "Listen error", e);
+                                return;
+                            }
+
+                            if (documentSnapshot.exists()){
+                                final Collection collection = documentSnapshot.toObject(Collection.class);
+                                final String collectionUser_id = collection.getUser_id();
+
+                                if (collectionUser_id.equals(ownerUid)){
+                                    mOwnerImageView.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            finish();
+                                        }
+                                    });
+                                }else {
+                                    //LAUCNH PROFILE IF ITS NOT DELETED ELSE CATCH THE EXCEPTION
+                                    mOwnerImageView.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            Intent intent = new Intent(PostDetailActivity.this, ProfileActivity.class);
+                                            intent.putExtra(PostDetailActivity.EXTRA_USER_UID, mUid);
+                                            startActivity(intent);
+                                        }
+                                    });
+                                }
+
+                            }
                         }
                     });
+
+                    /**show the edit sale price image view if the current user is the post owner and
+                     *  if the post is already in the market*/
+                    marketCollections.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+
+                            if (e != null) {
+                                Log.w(TAG, "Listen error", e);
+                                return;
+                            }
+
+                            if (documentSnapshot.exists()){
+                                if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
+                                    mEditSalePriceImageView.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        }
+                    });
+
+
+
                 }
             }
         });
@@ -994,9 +1086,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                     TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
                     final String ownerUid = transactionDetails.getUser_id();
 
-                    if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
-                        mEditSalePriceImageView.setVisibility(View.VISIBLE);
-                    }
+
                 }
 
             }
