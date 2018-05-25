@@ -178,35 +178,34 @@
             android:layout_height="wrap_content">
 
             <android.support.v7.widget.CardView
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="15dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="120dp">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
                         <TextView
-                            android:id="@+id/AboutTitleTextView"
+                            android:id="@+id/aboutTitleTextView"
                             android:text="About"
                             android:layout_alignParentLeft="true"
                             android:layout_alignParentStart="true"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textSize="30sp"
+                            android:textSize="24sp"
                             android:textStyle="bold"
-                            android:textColor="@color/colorAccent"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
                             android:paddingStart="16dp"
                             android:paddingEnd="16dp"
                             android:paddingRight="16dp"
-                            android:paddingLeft="16dp"
-                            android:paddingBottom="10dp"
-                            android:paddingTop="10dp" />
+                            android:paddingLeft="16dp" />
 
                     </RelativeLayout>
 
@@ -219,18 +218,213 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text=""
-                            android:textSize="21sp"
+                            android:textSize="14sp"
                             android:paddingStart="16dp"
                             android:paddingEnd="16dp"
                             android:paddingRight="16dp"
                             android:paddingLeft="16dp"
-                            android:paddingBottom="10dp"
-                            android:paddingTop="10dp"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
                             android:textAlignment="center" />
 
                     </RelativeLayout>
 
                 </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/accountInfoCardView"
+                android:visibility="gone"
+                android:layout_marginBottom="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+               <LinearLayout
+                   android:orientation="vertical"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content">
+
+                   <LinearLayout
+                       android:id="@+id/walletLinearlayout"
+                       android:orientation="vertical"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content">
+
+                       <RelativeLayout
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content">
+
+                           <TextView
+                               android:id="@+id/walletTitleTextView"
+                               android:text="Wallet"
+                               android:layout_alignParentLeft="true"
+                               android:layout_alignParentStart="true"
+                               android:layout_width="match_parent"
+                               android:layout_height="wrap_content"
+                               android:textSize="24sp"
+                               android:textStyle="bold"
+                               android:paddingBottom="5dp"
+                               android:paddingTop="5dp"
+                               android:paddingStart="16dp"
+                               android:paddingEnd="16dp"
+                               android:paddingRight="16dp"
+                               android:paddingLeft="16dp" />
+
+                       </RelativeLayout>
+
+                       <LinearLayout
+                           android:orientation="vertical"
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content">
+
+                           <TextView
+                               android:id="@+id/walletTextView"
+                               android:layout_width="wrap_content"
+                               android:layout_height="wrap_content"
+                               android:text="See your wallet balance and transaction history"
+                               android:textSize="21sp"
+                               android:paddingStart="16dp"
+                               android:paddingEnd="16dp"
+                               android:paddingRight="16dp"
+                               android:paddingLeft="16dp"
+                               android:paddingBottom="5dp"
+                               android:paddingTop="5dp"
+                               android:textAlignment="center" />
+
+                       </LinearLayout>
+
+                   </LinearLayout>
+
+                   <RelativeLayout
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content">
+
+                       <View
+                           android:layout_margin="16dp"
+                           android:background="@android:color/darker_gray"
+                           android:layout_width="match_parent"
+                           android:layout_height="0.1dp"/>
+
+                   </RelativeLayout>
+
+
+                   <LinearLayout
+                       android:id="@+id/accountSettingsLinearLayout"
+                       android:orientation="vertical"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content">
+
+                       <RelativeLayout
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content">
+
+                           <TextView
+                               android:id="@+id/accountSettingsTextView"
+                               android:text="Account Settings"
+                               android:layout_alignParentLeft="true"
+                               android:layout_alignParentStart="true"
+                               android:layout_width="match_parent"
+                               android:layout_height="wrap_content"
+                               android:textSize="24sp"
+                               android:textStyle="bold"
+                               android:paddingBottom="5dp"
+                               android:paddingTop="5dp"
+                               android:paddingStart="16dp"
+                               android:paddingEnd="16dp"
+                               android:paddingRight="16dp"
+                               android:paddingLeft="16dp" />
+
+                       </RelativeLayout>
+
+                       <LinearLayout
+                           android:orientation="vertical"
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content">
+
+                           <TextView
+                               android:id="@+id/accountSettingsDescriptions"
+                               android:layout_width="wrap_content"
+                               android:layout_height="wrap_content"
+                               android:text="Personalize your account"
+                               android:textSize="21sp"
+                               android:paddingStart="16dp"
+                               android:paddingEnd="16dp"
+                               android:paddingRight="16dp"
+                               android:paddingLeft="16dp"
+                               android:paddingBottom="5dp"
+                               android:paddingTop="5dp"
+                               android:textAlignment="center" />
+
+                       </LinearLayout>
+
+                   </LinearLayout>
+
+                   <RelativeLayout
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content">
+
+                       <View
+                           android:layout_margin="16dp"
+                           android:background="@android:color/darker_gray"
+                           android:layout_width="match_parent"
+                           android:layout_height="0.1dp"/>
+
+                   </RelativeLayout>
+
+
+                   <LinearLayout
+                       android:id="@+id/signOutLinearLayout"
+                       android:orientation="vertical"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content">
+
+                       <RelativeLayout
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content">
+
+                           <TextView
+                               android:id="@+id/signOutTitleTextView"
+                               android:text="Sign Out"
+                               android:layout_alignParentLeft="true"
+                               android:layout_alignParentStart="true"
+                               android:layout_width="match_parent"
+                               android:layout_height="wrap_content"
+                               android:textSize="24sp"
+                               android:textStyle="bold"
+                               android:paddingBottom="5dp"
+                               android:paddingTop="5dp"
+                               android:paddingStart="16dp"
+                               android:paddingEnd="16dp"
+                               android:paddingRight="16dp"
+                               android:paddingLeft="16dp" />
+
+                       </RelativeLayout>
+
+                       <LinearLayout
+                           android:orientation="vertical"
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content">
+
+                           <TextView
+                               android:id="@+id/signOutTextView"
+                               android:layout_width="wrap_content"
+                               android:layout_height="wrap_content"
+                               android:text="Tap to sign out from Andeqa"
+                               android:textSize="21sp"
+                               android:paddingStart="16dp"
+                               android:paddingEnd="16dp"
+                               android:paddingRight="16dp"
+                               android:paddingLeft="16dp"
+                               android:paddingBottom="5dp"
+                               android:paddingTop="5dp"
+                               android:textAlignment="center" />
+
+                       </LinearLayout>
+
+                   </LinearLayout>
+
+               </LinearLayout>
 
             </android.support.v7.widget.CardView>
 

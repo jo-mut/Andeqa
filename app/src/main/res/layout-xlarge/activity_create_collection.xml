@@ -131,8 +131,8 @@
         android:id="@+id/addRelativeLayout">
 
         <ImageView
-            android:layout_width="400dp"
-            android:layout_height="400dp"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
             app:srcCompat="@drawable/ic_app"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"

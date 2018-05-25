@@ -66,25 +66,32 @@
                     </RelativeLayout>
 
 
+
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="5dp">
 
                         <TextView
-                            android:text="Current Balance:"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:id="@+id/balanceTitleTextview"
-                            android:textSize="28sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_toEndOf="@id/balanceTitleTextview"
-                            android:layout_toRightOf="@id/balanceTitleTextview"
+                            android:layout_toEndOf="@id/creditsImageView"
+                            android:layout_toRightOf="@id/creditsImageView"
+                            android:layout_centerVertical="true"
                             android:id="@+id/currentWalletBalanceTextview"
+                            android:textSize="28sp"
+                            android:layout_marginStart="10dp"
                             android:layout_marginLeft="10dp" />
+
+                        <ImageView
+                            android:id="@+id/creditsImageView"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentTop="true"
+                            app:srcCompat="@drawable/ic_credits" />
 
                     </RelativeLayout>
 

@@ -33,11 +33,12 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CollectionFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class CollectionFragment extends Fragment implements
+        SwipeRefreshLayout.OnRefreshListener {
     @Bind(R.id.collectionsRecyclerView)RecyclerView mCollectionsRecyclerView;
     @Bind(R.id.swipeRefreshLayout)SwipeRefreshLayout mSwipeRefreshLayout;
 
-    private static final String TAG = ProfileActivity.class.getSimpleName();
+    private static final String TAG = CollectionFragment.class.getSimpleName();
     //firestore reference
     private CollectionReference collectionCollection;
     private Query collectionsQuery;
@@ -69,6 +70,7 @@ public class CollectionFragment extends Fragment implements SwipeRefreshLayout.O
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_collection, container, false);
         ButterKnife.bind(this, view);
 
@@ -79,8 +81,9 @@ public class CollectionFragment extends Fragment implements SwipeRefreshLayout.O
 
         if (firebaseAuth.getCurrentUser()!= null){
 
-            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.FEATURED_COLLECTIONS);
+            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
             collectionsQuery = collectionCollection.orderBy("time", Query.Direction.DESCENDING)
+                    .whereEqualTo("type", "featured_collection")
                     .limit(TOTAL_ITEMS);
 
 
@@ -104,7 +107,6 @@ public class CollectionFragment extends Fragment implements SwipeRefreshLayout.O
         mCollectionsRecyclerView.setLayoutManager(layoutManager);
         mCollectionsRecyclerView.setAdapter(collectionsAdapter);
         mCollectionsRecyclerView.setHasFixedSize(false);
-        mCollectionsRecyclerView.setNestedScrollingEnabled(false);
     }
 
     private void setCollections(){
@@ -217,10 +219,19 @@ public class CollectionFragment extends Fragment implements SwipeRefreshLayout.O
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
-        documentSnapshots.remove(change.getOldIndex());
-        collectionsAdapter.notifyItemRemoved(change.getOldIndex());
-        collectionsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+        try {
+            documentSnapshots.remove(change.getOldIndex());
+            collectionsAdapter.notifyItemRemoved(change.getOldIndex());
+            collectionsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        documentSnapshots.clear();
+    }
 
 }

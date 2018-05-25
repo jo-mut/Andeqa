@@ -395,9 +395,13 @@ public class CollectionPostsActivity extends AppCompatActivity
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
-        mSnapshots.remove(change.getOldIndex());
-        collectionPostsAdapter.notifyItemRemoved(change.getOldIndex());
-        collectionPostsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+        try{
+            mSnapshots.remove(change.getOldIndex());
+            collectionPostsAdapter.notifyItemRemoved(change.getOldIndex());
+            collectionPostsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 
@@ -430,6 +434,7 @@ public class CollectionPostsActivity extends AppCompatActivity
     @Override
     public void onStop() {
         super.onStop();
+        mSnapshots.clear();
     }
 
 

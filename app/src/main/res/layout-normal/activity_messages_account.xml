@@ -84,7 +84,7 @@
                         android:background="@drawable/accent_color_background"
                         android:layout_width="45dp"
                         android:layout_height="45dp"
-                        app:srcCompat="@drawable/ic_menu_send"
+                        app:srcCompat="@drawable/ic_send"
                         android:id="@+id/sendMessageButton"
                         android:tint="@android:color/white"
                         android:layout_centerVertical="true"

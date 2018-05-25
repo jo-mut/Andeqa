@@ -303,7 +303,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                             @Override
                             public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                                 double progress = (100.0 * taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
-                                progressDialog.setMessage("Creating your collection" + " " + ((int) progress) + "%...");
+                                progressDialog.setMessage("Creating your collection" + " " + ((int) progress) + "%");
                                 if (progress == 100.0){
                                     progressDialog.dismiss();
                                     //reset input fields

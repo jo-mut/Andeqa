@@ -101,12 +101,12 @@
 
                                         <ImageView
                                             android:id="@+id/likesImageView"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
+                                            android:layout_width="45dp"
+                                            android:layout_height="45dp"
                                             android:layout_marginLeft="5dp"
                                             android:layout_marginStart="5dp"
                                             android:padding="5dp"
-                                            app:srcCompat="@drawable/ic_thumb_up_black_24dp" />
+                                            app:srcCompat="@drawable/ic_thumb_up" />
 
 
                                         <TextView
@@ -134,10 +134,10 @@
 
                                         <ImageView
                                             android:id="@+id/dislikesImageView"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
+                                            android:layout_width="45dp"
+                                            android:layout_height="45dp"
                                             android:padding="5dp"
-                                            app:srcCompat="@drawable/ic_thumb_down_black_24dp" />
+                                            app:srcCompat="@drawable/ic_thumb_down" />
 
 
                                         <TextView
@@ -163,13 +163,13 @@
 
                                         <ImageView
                                             android:id="@+id/commentsImageView"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
+                                            android:layout_width="45dp"
+                                            android:layout_height="45dp"
                                             android:layout_marginLeft="5dp"
                                             android:layout_marginStart="5dp"
                                             android:padding="5dp"
                                             android:tint="@android:color/black"
-                                            app:srcCompat="@drawable/ic_chat_bubble_black_24dp" />
+                                            app:srcCompat="@drawable/ic_chat" />
 
                                         <TextView
                                             android:id="@+id/commentsCountTextView"

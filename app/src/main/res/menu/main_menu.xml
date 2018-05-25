@@ -12,7 +12,7 @@
 
     <item
         android:id="@+id/action_search"
-        android:icon="@drawable/ic_search_white_24dp"
+        android:icon="@drawable/ic_search"
         app:showAsAction="always"
         android:title="Search">
 
@@ -20,7 +20,7 @@
 
     <item
         android:id="@+id/action_chats"
-        android:icon="@drawable/ic_chat_white_24dp"
+        android:icon="@drawable/ic_chat_white"
         app:showAsAction="always"
         android:title="Chats">
 
@@ -28,7 +28,7 @@
 
     <item
         android:id="@+id/action_notifications"
-        android:icon="@drawable/ic_notifications_white_24dp"
+        android:icon="@drawable/ic_notification"
         app:showAsAction="always"
         android:title="Notifications">
 

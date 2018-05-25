@@ -206,9 +206,13 @@ public class TimelineFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
-        timelineSnapshots.remove(change.getOldIndex());
-        timelineAdapter.notifyItemRemoved(change.getOldIndex());
-        timelineAdapter.notifyItemRangeChanged(0, timelineSnapshots.size());
+       try{
+           timelineSnapshots.remove(change.getOldIndex());
+           timelineAdapter.notifyItemRemoved(change.getOldIndex());
+           timelineAdapter.notifyItemRangeChanged(0, timelineSnapshots.size());
+       }catch (Exception e){
+           e.printStackTrace();
+       }
     }
 
     @Override

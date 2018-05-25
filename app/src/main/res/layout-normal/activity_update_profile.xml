@@ -109,7 +109,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:srcCompat="@drawable/ic_done_white_24dp"
+                        app:srcCompat="@drawable/ic_check"
                         android:id="@+id/doneEditingImageView"
                         android:padding="10dp"
                         android:layout_centerVertical="true" />
@@ -146,7 +146,7 @@
                         android:padding="20dp">
 
                         <ImageView
-                            app:srcCompat="@drawable/ic_person_black_24dp"
+                            app:srcCompat="@drawable/ic_person"
                             android:id="@+id/imageView"
                             android:layout_centerVertical="true"
                             android:layout_alignParentLeft="true"
@@ -258,7 +258,7 @@
                         android:padding="20dp">
 
                         <ImageView
-                            app:srcCompat="@drawable/ic_account_circle_black_24dp"
+                            app:srcCompat="@drawable/ic_account"
                             android:layout_centerVertical="true"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -308,7 +308,7 @@
                         android:padding="20dp">
 
                         <ImageView
-                            app:srcCompat="@drawable/ic_account_circle_black_24dp"
+                            app:srcCompat="@drawable/ic_account"
                             android:layout_centerVertical="true"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

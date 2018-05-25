@@ -272,9 +272,13 @@ public class MessagesAccountActivity extends AppCompatActivity
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
-        documentSnapshots.remove(change.getOldIndex());
-        messagingAdapter.notifyItemRemoved(change.getOldIndex());
-        messagingAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+       try {
+           documentSnapshots.remove(change.getOldIndex());
+           messagingAdapter.notifyItemRemoved(change.getOldIndex());
+           messagingAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+       }catch (Exception e){
+           e.printStackTrace();
+       }
     }
 
 

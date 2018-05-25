@@ -161,6 +161,7 @@
         <activity
             android:name=".collections.CollectionPostsActivity"
             android:label="Posts"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
             android:name=".settings.CollectionSettingsActivity"

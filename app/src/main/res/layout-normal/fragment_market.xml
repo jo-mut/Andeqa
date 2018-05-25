@@ -1,4 +1,5 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -31,8 +32,8 @@
             app:srcCompat="@drawable/ic_buy"
             android:id="@+id/imagePlaceHolder"
             android:layout_centerInParent="true"
-            android:layout_width="200dp"
-            android:layout_height="200dp" />
+            android:layout_width="150dp"
+            android:layout_height="150dp" />
 
         <TextView
             android:layout_below="@+id/imagePlaceHolder"
@@ -46,4 +47,4 @@
 
     </RelativeLayout>
 
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

@@ -230,9 +230,13 @@ public class MarketFragment extends Fragment implements SwipeRefreshLayout.OnRef
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
-        marketSnapshot.remove(change.getOldIndex());
-        sellingAdapter.notifyItemRemoved(change.getOldIndex());
-        sellingAdapter.notifyItemRangeChanged(0, marketSnapshot.size());
+       try {
+           marketSnapshot.remove(change.getOldIndex());
+           sellingAdapter.notifyItemRemoved(change.getOldIndex());
+           sellingAdapter.notifyItemRangeChanged(0, marketSnapshot.size());
+       }catch (Exception e){
+           e.printStackTrace();
+       }
     }
 
     @Override

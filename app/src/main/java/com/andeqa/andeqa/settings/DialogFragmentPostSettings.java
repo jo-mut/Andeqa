@@ -189,7 +189,13 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
 
     public void deleteCingle(){
         // delete post in collection and delete post in overall document
-        progressDialog.show();
+
+        try {
+            progressDialog.show();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
         collectionsPosts.document(mPostId)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
@@ -251,7 +257,8 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
                                         }
                                     });
 
-                            postOnwersCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                            postOnwersCollection.document(mPostId)
+                                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                 @Override
                                 public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                                     if (e != null) {

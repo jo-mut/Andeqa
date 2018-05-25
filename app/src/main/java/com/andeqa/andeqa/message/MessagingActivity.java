@@ -213,9 +213,13 @@ public class MessagingActivity extends AppCompatActivity implements SwipeRefresh
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
-        documentSnapshots.remove(change.getOldIndex());
-        roomAdapter.notifyItemRemoved(change.getOldIndex());
-        roomAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+       try{
+           documentSnapshots.remove(change.getOldIndex());
+           roomAdapter.notifyItemRemoved(change.getOldIndex());
+           roomAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+       }catch (Exception e){
+           e.printStackTrace();
+       }
     }
 
     @Override

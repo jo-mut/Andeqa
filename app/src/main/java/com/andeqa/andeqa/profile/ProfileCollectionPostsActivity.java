@@ -394,9 +394,13 @@ public class ProfileCollectionPostsActivity extends AppCompatActivity implements
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
-        mSnapshots.remove(change.getOldIndex());
-        profileCollectionPostsAdapter.notifyItemRemoved(change.getOldIndex());
-        profileCollectionPostsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+       try {
+           mSnapshots.remove(change.getOldIndex());
+           profileCollectionPostsAdapter.notifyItemRemoved(change.getOldIndex());
+           profileCollectionPostsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+       }catch (Exception e){
+           e.printStackTrace();
+       }
     }
 
 

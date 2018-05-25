@@ -33,7 +33,6 @@
 
         </android.support.design.widget.AppBarLayout>
 
-
         <ScrollView
             android:fillViewport="true"
             android:scrollbars="none"
@@ -109,7 +108,7 @@
                                             android:layout_marginLeft="5dp"
                                             android:layout_marginStart="5dp"
                                             android:padding="5dp"
-                                            app:srcCompat="@drawable/ic_thumb_up_black_24dp" />
+                                            app:srcCompat="@drawable/ic_thumb_up" />
 
 
                                         <TextView
@@ -140,7 +139,7 @@
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:padding="5dp"
-                                            app:srcCompat="@drawable/ic_thumb_down_black_24dp" />
+                                            app:srcCompat="@drawable/ic_thumb_down" />
 
 
                                         <TextView
@@ -172,7 +171,7 @@
                                             android:layout_marginStart="5dp"
                                             android:padding="5dp"
                                             android:tint="@android:color/black"
-                                            app:srcCompat="@drawable/ic_chat_bubble_black_24dp" />
+                                            app:srcCompat="@drawable/ic_chat" />
 
                                         <TextView
                                             android:id="@+id/commentsCountTextView"
@@ -416,7 +415,7 @@
 
                         </RelativeLayout>
 
-                                             <RelativeLayout
+                        <RelativeLayout
                             android:id="@+id/postSenseCreditRelativeLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"

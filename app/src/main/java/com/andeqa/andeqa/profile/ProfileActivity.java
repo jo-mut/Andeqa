@@ -6,8 +6,10 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -60,6 +63,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Bind(R.id.sendMessageButton)Button mSendMessageButton;
     @Bind(R.id.sendMessageRelativeLayout)RelativeLayout mSendMessageRelativeLayout;
     @Bind(R.id.bioRelativeLayout)FrameLayout mBioRelativeLayout;
+    @Bind(R.id.accountSettingsLinearLayout)LinearLayout mAccountSettingsLinearLayout;
+    @Bind(R.id.walletLinearlayout)LinearLayout mWalletLinearLayout;
+    @Bind(R.id.signOutLinearLayout)LinearLayout mSignOutLinearLayout;
+    @Bind(R.id.accountInfoCardView)CardView mAccountInfoCarView;
 
     private static final String TAG = ProfileActivity.class.getSimpleName();
     //firestore reference
@@ -135,6 +142,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             //show hidden views
             if (!firebaseAuth.getCurrentUser().getUid().equals(mUid)){
                 mSendMessageRelativeLayout.setVisibility(View.VISIBLE);
+            }else {
+                mAccountInfoCarView.setVisibility(View.VISIBLE);
             }
 
             usersCollections.document(mUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -163,52 +172,15 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             /**initialize click listners*/
             mSendMessageButton.setOnClickListener(this);
             mCollectionCountRelativeLayout.setOnClickListener(this);
+            mAccountSettingsLinearLayout.setOnClickListener(this);
+            mWalletLinearLayout.setOnClickListener(this);
+            mSignOutLinearLayout.setOnClickListener(this);
 
 
         }
 
 
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        if (firebaseAuth.getCurrentUser().getUid().equals(mUid)){
-            getMenuInflater().inflate(R.menu.profile_menu, menu);
-
-        }
-
-        return true;
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
-        // Handle action b item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
-        int id = item.getItemId();
-
-        if (id == R.id.action_wallet){
-            Intent intent = new Intent(ProfileActivity.this, WalletActivity.class);
-            startActivity(intent);
-        }
-
-        if (id == R.id.action_signout){
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            DialogConfirmSingOutFragment dialogConfirmSingOutFragment = DialogConfirmSingOutFragment.newInstance("sing out");
-            dialogConfirmSingOutFragment.show(fragmentManager, "delete account fragment");
-        }
-
-        if (id == R.id.action_account_settings){
-            Intent intent = new Intent(ProfileActivity.this, UpdateProfileActivity.class);
-            startActivity(intent);
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
 
 
     private void fetchData(){
@@ -246,17 +218,26 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                             final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
                             String firstName = andeqan.getFirst_name();
                             String secondName = andeqan.getSecond_name();
+                            String username = andeqan.getUsername();
                             final String profileImage = andeqan.getProfile_image();
                             String bio = andeqan.getBio();
                             final String profileCover = andeqan.getProfile_cover();
 
                             mFullNameTextView.setText(firstName + " " + secondName);
-                            mBioTextView.setText(bio);
+
+                            if (TextUtils.isEmpty(bio)){
+                                if (firebaseAuth.getCurrentUser().getUid().equals(mUid)){
+                                    mBioTextView.setText(username + " you can a bio line to your account");
+                                }else {
+                                    mBioTextView.setText("Your are looking at " + username + " account");
+                                }
+                            }else {
+                                mBioTextView.setText(bio);
+                            }
 
                             Picasso.with(ProfileActivity.this)
                                     .load(profileImage)
                                     .resize(MAX_WIDTH, MAX_HEIGHT)
-                                    .onlyScaleDown()
                                     .centerCrop()
                                     .placeholder(R.drawable.ic_user)
                                     .networkPolicy(NetworkPolicy.OFFLINE)
@@ -271,7 +252,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                             Picasso.with(ProfileActivity.this)
                                                     .load(profileImage)
                                                     .resize(MAX_WIDTH, MAX_HEIGHT)
-                                                    .onlyScaleDown()
                                                     .centerCrop()
                                                     .placeholder(R.drawable.ic_user)
                                                     .into(mProifleImageView);
@@ -389,6 +369,21 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             startActivity(intent);
         }
 
+        if (v == mAccountSettingsLinearLayout){
+            Intent intent = new Intent(ProfileActivity.this, UpdateProfileActivity.class);
+            startActivity(intent);
+        }
+
+        if (v == mWalletLinearLayout){
+            Intent intent = new Intent(ProfileActivity.this, WalletActivity.class);
+            startActivity(intent);
+        }
+
+        if (v == mSignOutLinearLayout){
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            DialogConfirmSingOutFragment dialogConfirmSingOutFragment = DialogConfirmSingOutFragment.newInstance("sing out");
+            dialogConfirmSingOutFragment.show(fragmentManager, "delete account fragment");
+        }
     }
 
 }

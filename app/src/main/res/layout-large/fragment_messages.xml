@@ -31,7 +31,7 @@
         android:id="@+id/placeHolderRelativeLayout">
 
         <ImageView
-            app:srcCompat="@drawable/ic_chat_bubble_black_24dp"
+            app:srcCompat="@drawable/ic_start_chat"
             android:id="@+id/imagePlaceHolder"
             android:layout_centerInParent="true"
             android:layout_width="120sp"

@@ -140,13 +140,13 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
 //        if (v == mFaqRelativeLayout){
 //            Intent intent = new Intent(Intent.ACTION_VIEW,
-//                    Uri.parse("https://cinggl@cinggl.com"));
+//                    Uri.parse("https://andeqa@andeqa.com"));
 //            startActivity(intent);
 //        }
 
         if (v == mPrivacyPolicyRelativeLayout){
             Intent intent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://andeqa.firebaseapp.com"));
+                    Uri.parse("https://andeqa.com"));
             startActivity(intent);
         }
 
@@ -166,7 +166,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             }
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("message/rfc822");
-            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"andeqa.support@gmail.com"});
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"andeqa@andeqa.com"});
             intent.putExtra(Intent.EXTRA_SUBJECT, "Query from android app");
             intent.putExtra(Intent.EXTRA_TEXT, body);
             this.startActivity(Intent.createChooser(intent, this.getString(R.string.choose_email_client)));

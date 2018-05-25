@@ -251,9 +251,13 @@ public class ProfileCollectionsActivity extends AppCompatActivity implements
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
-        documentSnapshots.remove(change.getOldIndex());
-        profileCollectionsAdapter.notifyItemRemoved(change.getOldIndex());
-        profileCollectionsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+        try {
+            documentSnapshots.remove(change.getOldIndex());
+            profileCollectionsAdapter.notifyItemRemoved(change.getOldIndex());
+            profileCollectionsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 

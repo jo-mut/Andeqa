@@ -9,15 +9,11 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -36,7 +32,6 @@ import com.andeqa.andeqa.collections.CollectionFragment;
 import com.andeqa.andeqa.creation.CreateCollectionActivity;
 import com.andeqa.andeqa.creation.CreatePostActivity;
 import com.andeqa.andeqa.market.MarketFragment;
-import com.andeqa.andeqa.message.MessagesFragment;
 import com.andeqa.andeqa.message.MessagingActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.profile.ProfileActivity;
@@ -284,17 +279,17 @@ public class NavigationDrawerActivity extends AppCompatActivity
             startActivity(intent);
         }
 
-//        if (id == R.id.action_about){
-//            Intent intent = new Intent(Intent.ACTION_VIEW,
-//                    Uri.parse("https://andeqa.firebaseapp.com"));
-//            startActivity(intent);
-//        }
+        if (id == R.id.action_about){
+            Intent intent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://andeqa.com"));
+            startActivity(intent);
+        }
 
         if (id == R.id.action_share_andeqa){
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
             sendIntent.putExtra(Intent.EXTRA_TEXT,
-                    "Hey! Check out Cinggl and share your best moments, beautiful ideas and discover even more than you know" +
+                    "Hey! Check out Andeqa, the mobile app where you buy and sell beautiful photos with your social value" +
                             " at: https://play.google.com/store/apps/details?id=com.andeqa.andeqa");
             sendIntent.setType("text/plain");
             startActivity(sendIntent);
@@ -311,7 +306,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
             }
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("message/rfc822");
-            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"andeqa.support@gmail.com"});
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"andeqa@andeqa.com"});
             intent.putExtra(Intent.EXTRA_SUBJECT, "Query from android app");
             intent.putExtra(Intent.EXTRA_TEXT, body);
             this.startActivity(Intent.createChooser(intent, this.getString(R.string.choose_email_client)));

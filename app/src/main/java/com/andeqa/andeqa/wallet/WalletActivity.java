@@ -187,9 +187,13 @@ public class WalletActivity extends AppCompatActivity {
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
-        documentSnapshots.remove(change.getOldIndex());
-        walletAdapter.notifyItemRemoved(change.getOldIndex());
-        walletAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+        try{
+            documentSnapshots.remove(change.getOldIndex());
+            walletAdapter.notifyItemRemoved(change.getOldIndex());
+            walletAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 
