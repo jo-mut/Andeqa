@@ -80,10 +80,6 @@ public class WalletActivity extends AppCompatActivity {
             transactionQuery = transactionReference.whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid());
             walletReference = FirebaseFirestore.getInstance().collection(Constants.WALLET);
 
-            setCurrentWalletBalance();
-            setRecyclerView();
-            setTransactions();
-
             transactionQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
                 public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -105,6 +101,38 @@ public class WalletActivity extends AppCompatActivity {
         }
     }
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        documentSnapshots.clear();
+        setCurrentWalletBalance();
+        setRecyclerView();
+        setTransactions();
+
+    }
+
+
+    @Override
+    public void onStop(){
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
     private void setRecyclerView(){
         walletAdapter = new WalletAdapter(this);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -118,6 +146,11 @@ public class WalletActivity extends AppCompatActivity {
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
 
                 if (documentSnapshot.exists()){
                     Balance balance = documentSnapshot.toObject(Balance.class);
@@ -174,16 +207,20 @@ public class WalletActivity extends AppCompatActivity {
     }
 
     protected void onDocumentModified(DocumentChange change) {
-        if (change.getOldIndex() == change.getNewIndex()) {
-            // Item changed but remained in same position
-            documentSnapshots.set(change.getOldIndex(), change.getDocument());
-            walletAdapter.notifyItemChanged(change.getOldIndex());
-        } else {
-            // Item changed and changed position
-            documentSnapshots.remove(change.getOldIndex());
-            documentSnapshots.add(change.getNewIndex(), change.getDocument());
-            walletAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
-        }
+       try {
+           if (change.getOldIndex() == change.getNewIndex()) {
+               // Item changed but remained in same position
+               documentSnapshots.set(change.getOldIndex(), change.getDocument());
+               walletAdapter.notifyItemChanged(change.getOldIndex());
+           } else {
+               // Item changed and changed position
+               documentSnapshots.remove(change.getOldIndex());
+               documentSnapshots.add(change.getNewIndex(), change.getDocument());
+               walletAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+           }
+       }catch (Exception e){
+           e.printStackTrace();
+       }
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
@@ -196,19 +233,5 @@ public class WalletActivity extends AppCompatActivity {
         }
     }
 
-
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-    }
-
-
-    @Override
-    public void onStop(){
-        super.onStop();
-    }
 
 }

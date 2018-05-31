@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Parcelable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -11,11 +12,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -23,6 +21,8 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.collections.ProfileCollectionsActivity;
+import com.andeqa.andeqa.collections.ProfileCollectionsAdapter;
 import com.andeqa.andeqa.message.MessagesAccountActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Room;
@@ -62,7 +62,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Bind(R.id.collapsing_toolbar)CollapsingToolbarLayout collapsingToolbarLayout;
     @Bind(R.id.sendMessageButton)Button mSendMessageButton;
     @Bind(R.id.sendMessageRelativeLayout)RelativeLayout mSendMessageRelativeLayout;
-    @Bind(R.id.bioRelativeLayout)FrameLayout mBioRelativeLayout;
+    @Bind(R.id.profileNestedScrollView)NestedScrollView mProfileNestedScrollView;
     @Bind(R.id.accountSettingsLinearLayout)LinearLayout mAccountSettingsLinearLayout;
     @Bind(R.id.walletLinearlayout)LinearLayout mWalletLinearLayout;
     @Bind(R.id.signOutLinearLayout)LinearLayout mSignOutLinearLayout;
@@ -227,9 +227,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
                             if (TextUtils.isEmpty(bio)){
                                 if (firebaseAuth.getCurrentUser().getUid().equals(mUid)){
-                                    mBioTextView.setText(username + " you can a bio line to your account");
+                                    mBioTextView.setText(username + " you can add bio line to your profile");
                                 }else {
-                                    mBioTextView.setText("Your are looking at " + username + " account");
+                                    mBioTextView.setText("Your are looking at " + username +"'s" + " profile");
                                 }
                             }else {
                                 mBioTextView.setText(bio);

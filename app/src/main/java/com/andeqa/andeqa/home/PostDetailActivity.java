@@ -102,6 +102,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     @Bind(R.id.doneEditingImageView)ImageView mDoneEditingImageView;
     @Bind(R.id.salePriceProgressbar)ProgressBar mSalePriceProgressBar;
     @Bind(R.id.creditsTextView)TextView mCreditsTextView;
+    @Bind(R.id.likesRelativeLayout)RelativeLayout mLikesRelativeLayout;
     @Bind(R.id.priceRelativeLayout)RelativeLayout mPriceRelativeLayout;
 
     //firestore reference
@@ -194,6 +195,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             mDoneEditingImageView.setOnClickListener(this);
             mDislikeImageView.setOnClickListener(this);
             mLikesCountTextView.setOnClickListener(this);
+            mLikesRelativeLayout.setOnClickListener(this);
 
             //firestore
             postsCollections = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
@@ -219,15 +221,6 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
             postWalletReference = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-
-            //RETRIEVE DATA FROM FIREBASE
-            setCingleData();
-            setPostInfo();
-            setEditTextFilter();
-            showBuyButton();
-            showEditImageView();
-            deletePostDialog();
-            deleteFinish();
 
         }
     }
@@ -282,6 +275,28 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         return super.onPrepareOptionsMenu(menu);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //RETRIEVE DATA FROM FIREBASE
+        setCingleData();
+        setPostInfo();
+        setEditTextFilter();
+        showBuyButton();
+        showEditImageView();
+        deletePostDialog();
+        deleteFinish();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 
     private void setCingleData(){
         senseCreditReference.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -767,7 +782,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             startActivity(intent);
         }
 
-        if (v == mLikesCountTextView){
+        if (v == mLikesRelativeLayout){
             Intent intent = new Intent(PostDetailActivity.this, LikesActivity.class);
             intent.putExtra(PostDetailActivity.EXTRA_POST_ID, mPostId);
             startActivity(intent);
@@ -1122,7 +1137,5 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 //        popup.setBackgroundDrawable(new BitmapDrawable());
 //        popup.showAsDropDown(anchorView);
 //    }
-
-
 
 }

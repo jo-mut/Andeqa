@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -146,6 +147,9 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
 
         }
 
+        holder.timeTextView.setText(DateUtils.getRelativeTimeSpanString((long)
+                collectionPost.getTime()));
+
         Picasso.with(mContext)
                 .load(collectionPost.getImage())
                 .networkPolicy(NetworkPolicy.OFFLINE)
@@ -221,17 +225,7 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
             }
         });
 
-        holder.mTradeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent =  new Intent(mContext, PostDetailActivity.class);
-                intent.putExtra(CollectionPostsAdapter.EXTRA_POST_ID, postId);
-                intent.putExtra(CollectionPostsAdapter.COLLECTION_ID, collectionId);
-                intent.putExtra(CollectionPostsAdapter.EXTRA_USER_UID, uid);
-                mContext.startActivity(intent);
-                ((Activity)mContext).finish();
-            }
-        });
+
 
         holder.commentsImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -246,10 +240,12 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
         holder.postImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, ImageViewActivity.class);
-                intent.putExtra(CollectionPostsAdapter.COLLECTION_ID, collectionId);
+                Intent intent =  new Intent(mContext, PostDetailActivity.class);
                 intent.putExtra(CollectionPostsAdapter.EXTRA_POST_ID, postId);
+                intent.putExtra(CollectionPostsAdapter.COLLECTION_ID, collectionId);
+                intent.putExtra(CollectionPostsAdapter.EXTRA_USER_UID, uid);
                 mContext.startActivity(intent);
+                ((Activity)mContext).finish();
             }
         });
 
@@ -283,47 +279,6 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
             }
         });
 
-        //check if single is listed on the marketplace
-        sellingCollection.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    postOwnersReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
-
-                            if (documentSnapshot.exists()){
-                                final TransactionDetails td = documentSnapshot.toObject(TransactionDetails.class);
-                                final String ownerUid = td.getUser_id();
-
-                                if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
-                                    holder.mTradeButton.setText("Unlist");
-                                }else {
-                                    holder.mTradeButton.setText("Buy");
-                                }
-
-                            }
-                        }
-                    });
-                }else if (firebaseAuth.getCurrentUser().getUid().equals(uid)){
-                    holder.mTradeButton.setText("Sell");
-                }else{
-                    holder.mTradeButton.setText("Info");
-                }
-
-            }
-        });
 
         usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override

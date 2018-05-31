@@ -14,7 +14,6 @@ import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.message.MessagesFragment;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -71,13 +70,33 @@ public class TimelineFragment extends Fragment implements SwipeRefreshLayout.OnR
 
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
         timelineQuery = timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
-                .collection("activities").orderBy("time", Query.Direction.DESCENDING)
+                .collection("activities").orderBy("time", Query.Direction.ASCENDING)
                 .limit(TOTAL_ITEMS);
 
+        return  view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        timelineSnapshots.clear();
         setRecyclerView();
         setCollections();
+    }
 
-        return  view;
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
@@ -144,7 +163,7 @@ public class TimelineFragment extends Fragment implements SwipeRefreshLayout.OnR
 
             //retrieve the first bacth of timelineSnapshots
             Query nextSellingQuery = timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
-                    .collection("timeline").orderBy("time", Query.Direction.DESCENDING)
+                    .collection("activities").orderBy("time", Query.Direction.ASCENDING)
                     .startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
 
@@ -193,16 +212,20 @@ public class TimelineFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
 
     protected void onDocumentModified(DocumentChange change) {
-        if (change.getOldIndex() == change.getNewIndex()) {
-            // Item changed but remained in same position
-            timelineSnapshots.set(change.getOldIndex(), change.getDocument());
-            timelineAdapter.notifyItemChanged(change.getOldIndex());
-        } else {
-            // Item changed and changed position
-            timelineSnapshots.remove(change.getOldIndex());
-            timelineSnapshots.add(change.getNewIndex(), change.getDocument());
-            timelineAdapter.notifyItemRangeChanged(0, timelineSnapshots.size());
-        }
+       try {
+           if (change.getOldIndex() == change.getNewIndex()) {
+               // Item changed but remained in same position
+               timelineSnapshots.set(change.getOldIndex(), change.getDocument());
+               timelineAdapter.notifyItemChanged(change.getOldIndex());
+           } else {
+               // Item changed and changed position
+               timelineSnapshots.remove(change.getOldIndex());
+               timelineSnapshots.add(change.getNewIndex(), change.getDocument());
+               timelineAdapter.notifyItemRangeChanged(0, timelineSnapshots.size());
+           }
+       }catch (Exception e){
+           e.printStackTrace();
+       }
     }
 
     protected void onDocumentRemoved(DocumentChange change) {

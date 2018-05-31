@@ -79,8 +79,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             randomPostsQuery = postsCollection.orderBy("random_number", Query.Direction.DESCENDING)
                     .limit(TOTAL_ITEMS);
 
-            setRecyclerView();
-            setPosts();
 
         }
 
@@ -92,6 +90,43 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         super.onViewCreated(view, savedInstanceState);
 
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        posts.clear();
+        setRecyclerView();
+        setPosts();
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        posts.clear();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+
 
     @Override
     public void onRefresh() {
@@ -198,15 +233,19 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     protected void onDocumentModified(DocumentChange change) {
-        if (change.getOldIndex() == change.getNewIndex()) {
-            // Item changed but remained in same position
-            posts.set(change.getOldIndex(), change.getDocument());
-            postsAdapter.notifyItemChanged(change.getOldIndex());
-        } else {
-            // Item changed and changed position
-            posts.remove(change.getOldIndex());
-            posts.add(change.getNewIndex(), change.getDocument());
-            postsAdapter.notifyItemRangeChanged(0, posts.size());
+        try {
+            if (change.getOldIndex() == change.getNewIndex()) {
+                // Item changed but remained in same position
+                posts.set(change.getOldIndex(), change.getDocument());
+                postsAdapter.notifyItemChanged(change.getOldIndex());
+            } else {
+                // Item changed and changed position
+                posts.remove(change.getOldIndex());
+                posts.add(change.getNewIndex(), change.getDocument());
+                postsAdapter.notifyItemRangeChanged(0, posts.size());
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -221,16 +260,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        posts.clear();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
 
 
 }

@@ -36,13 +36,13 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
     public CircleImageView profileImageView;
     public TextView commentsCountTextView;
     public TextView senseCreditsTextView;
-    public TextView mTradeButton;
     public RelativeLayout titleRelativeLayout;
     public ProportionalImageView postImageView;
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
     public RelativeLayout descriptionRelativeLayout;
     public RelativeLayout likesRelativeLayout;
+    public TextView timeTextView;
 
 
 
@@ -63,9 +63,9 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
         descriptionRelativeLayout  = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
         postImageView = (ProportionalImageView) mView.findViewById(R.id.postImageView);
         senseCreditsTextView = (TextView) mView.findViewById(R.id.creditsTextView);
-        mTradeButton = (TextView) mView.findViewById(R.id.tradeButton);
         likesRelativeLayout = (RelativeLayout) mView.findViewById(R.id.likesRelativeLayout);
         likesCountTextView = (TextView) mView.findViewById(R.id.likesCountTextView);
+        timeTextView = (TextView) mView.findViewById(R.id.timeTextView);
     }
 
 

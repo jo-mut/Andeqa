@@ -68,7 +68,6 @@ public class MessagingActivity extends AppCompatActivity implements SwipeRefresh
         });
 
 
-
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -78,14 +77,34 @@ public class MessagingActivity extends AppCompatActivity implements SwipeRefresh
             roomsQuery = roomsCollections.document("rooms")
                     .collection(firebaseAuth.getCurrentUser().getUid());
 
-            setRecyclerView();
-            setCollections();
 
         }
 
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        documentSnapshots.clear();
+        setRecyclerView();
+        setCollections();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
 
     @Override
     public void onRefresh() {
@@ -200,15 +219,19 @@ public class MessagingActivity extends AppCompatActivity implements SwipeRefresh
     }
 
     protected void onDocumentModified(DocumentChange change) {
-        if (change.getOldIndex() == change.getNewIndex()) {
-            // Item changed but remained in same position
-            documentSnapshots.set(change.getOldIndex(), change.getDocument());
-            roomAdapter.notifyItemChanged(change.getOldIndex());
-        } else {
-            // Item changed and changed position
-            documentSnapshots.remove(change.getOldIndex());
-            documentSnapshots.add(change.getNewIndex(), change.getDocument());
-            roomAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+        try {
+            if (change.getOldIndex() == change.getNewIndex()) {
+                // Item changed but remained in same position
+                documentSnapshots.set(change.getOldIndex(), change.getDocument());
+                roomAdapter.notifyItemChanged(change.getOldIndex());
+            } else {
+                // Item changed and changed position
+                documentSnapshots.remove(change.getOldIndex());
+                documentSnapshots.add(change.getNewIndex(), change.getDocument());
+                roomAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

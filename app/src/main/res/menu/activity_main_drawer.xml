@@ -8,24 +8,21 @@
             android:id="@+id/action_profile"
             android:title="@string/profile" />
 
-
-        <item
-            android:icon="@drawable/ic_chat"
-            android:id="@+id/action_people"
-            android:title="Chats" />
-
-
-
         <item
             android:icon="@drawable/ic_feedback"
             android:id="@+id/action_send_feedback"
             android:title="@string/sendfeedback" />
+
 
         <item
             android:icon="@drawable/ic_settings"
             android:id="@+id/action_settings"
             android:title="@string/settings" />
 
+        <item
+            android:icon="@drawable/ic_info"
+            android:id="@+id/action_about"
+            android:title="@string/about" />
 
     </group>
 
@@ -36,12 +33,6 @@
                 android:icon="@drawable/ic_share"
                 android:id="@+id/action_share_andeqa"
                 android:title="@string/share" />
-
-            <item
-                android:icon="@drawable/ic_info"
-                android:id="@+id/action_about"
-                android:title="@string/about" />
-
 
         </menu>
     </item>

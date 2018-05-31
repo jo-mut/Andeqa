@@ -163,35 +163,35 @@
 
             </RelativeLayout>
 
-            <!--<RelativeLayout-->
-                <!--android:paddingLeft="70dp"-->
-                <!--android:paddingRight="70dp"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content">-->
+            <RelativeLayout
+                android:paddingLeft="70dp"
+                android:paddingRight="70dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-                <!--<View-->
-                    <!--android:id="@+id/signingDividingView"-->
-                    <!--android:layout_height="0.3dp"-->
-                    <!--android:layout_alignParentLeft="false"-->
-                    <!--android:background="@color/colorDivider"-->
-                    <!--android:layout_centerHorizontal="true"-->
-                    <!--android:layout_width="400sp"-->
-                    <!--android:layout_marginTop="80dp"-->
-                    <!--android:layout_marginBottom="80dp" />-->
+                <View
+                    android:id="@+id/signingDividingView"
+                    android:layout_height="0.3dp"
+                    android:layout_alignParentLeft="false"
+                    android:background="@color/colorDivider"
+                    android:layout_centerHorizontal="true"
+                    android:layout_width="400sp"
+                    android:layout_marginTop="80dp"
+                    android:layout_marginBottom="80dp" />
 
-                <!--<Button-->
-                    <!--android:id="@+id/googleSignInButton"-->
-                    <!--android:layout_below="@+id/signingDividingView"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:textAlignment="center"-->
-                    <!--android:textColor="@android:color/white"-->
-                    <!--android:background="@drawable/google_btn_background"-->
-                    <!--android:padding="30dp"-->
-                    <!--android:text="Sign in with google+"-->
-                    <!--android:textSize="28sp" />-->
+                <Button
+                    android:id="@+id/googleSignInButton"
+                    android:layout_below="@+id/signingDividingView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:textColor="@android:color/white"
+                    android:background="@drawable/google_btn_background"
+                    android:padding="30dp"
+                    android:text="Sign in with google+"
+                    android:textSize="28sp" />
 
-            <!--</RelativeLayout>-->
+            </RelativeLayout>
 
 
         </LinearLayout>

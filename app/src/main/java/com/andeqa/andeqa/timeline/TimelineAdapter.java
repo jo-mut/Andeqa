@@ -14,9 +14,13 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.home.PostDetailActivity;
+import com.andeqa.andeqa.home.PostsAdapter;
 import com.andeqa.andeqa.models.Andeqan;
+import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Comment;
 import com.andeqa.andeqa.models.Credit;
+import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.profile.ProfileActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,6 +38,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 /**
  * Created by J.EL on 1/18/2018.
  */
@@ -44,7 +50,9 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private Context mContext;
     private static final String KEY_LAYOUT_POSITION = "layout pooition";
     private static final String EXTRA_USER_UID = "uid";
-    private static final String EXTRA_POST_KEY = "post key";
+    private static final String EXTRA_POST_ID = "post id";
+    private static final String COLLECTION_ID = "collection id";
+
     private static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
     private FirebaseAuth firebaseAuth;
@@ -55,6 +63,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private CollectionReference usersCollection;
     private CollectionReference postCollection;
+    private CollectionReference collectionsPostCollections;
     private CollectionReference relationsCollection;
     private CollectionReference timelineCollection;
     private CollectionReference senseCreditCollection;
@@ -146,8 +155,79 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-        postCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
+        postCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+        collectionsPostCollections = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
         senseCreditCollection = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
+
+        postCollection.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (documentSnapshot.exists()){
+                    Post post = documentSnapshot.toObject(Post.class);
+                    final String collectionId = post.getCollection_id();
+
+                    collectionsPostCollections.document("collections").collection(collectionId)
+                            .document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+
+                            if (e != null) {
+                                Log.w(TAG, "Listen error", e);
+                                return;
+                            }
+
+                            if (documentSnapshot.exists()){
+                                CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                                final String image = collectionPost.getImage();
+
+                                Picasso.with(mContext)
+                                        .load(image)
+                                        .resize(MAX_WIDTH, MAX_HEIGHT)
+                                        .centerCrop()
+                                        .placeholder(R.drawable.image_place_holder)
+                                        .networkPolicy(NetworkPolicy.OFFLINE)
+                                        .into(holder.postImageView, new Callback() {
+                                            @Override
+                                            public void onSuccess() {
+
+                                            }
+
+                                            @Override
+                                            public void onError() {
+                                                Picasso.with(mContext)
+                                                        .load(image)
+                                                        .resize(MAX_WIDTH, MAX_HEIGHT)
+                                                        .centerCrop()
+                                                        .placeholder(R.drawable.ic_user)
+                                                        .into(holder.postImageView);
+
+                                            }
+                                        });
+
+                                holder.postImageView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent intent = new Intent(mContext, PostDetailActivity.class);
+                                        intent.putExtra(TimelineAdapter.EXTRA_USER_UID, uid);
+                                        intent.putExtra(TimelineAdapter.EXTRA_POST_ID, postId);
+                                        intent.putExtra(TimelineAdapter.COLLECTION_ID, collectionId);
+                                        mContext.startActivity(intent);
+                                    }
+                                });
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+
+
 
         usersCollection.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -258,10 +338,80 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         firebaseAuth = FirebaseAuth.getInstance();
 
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-        postCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
+        postCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
+        collectionsPostCollections = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
         senseCreditCollection = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
         commentCollection = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
+
+        postCollection.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (documentSnapshot.exists()){
+                    Post post = documentSnapshot.toObject(Post.class);
+                    final String collectionId = post.getCollection_id();
+
+                    collectionsPostCollections.document("collections").collection(collectionId)
+                            .document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+
+                            if (e != null) {
+                                Log.w(TAG, "Listen error", e);
+                                return;
+                            }
+
+                            if (documentSnapshot.exists()){
+                                CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                                final String image = collectionPost.getImage();
+
+                                Picasso.with(mContext)
+                                        .load(image)
+                                        .resize(MAX_WIDTH, MAX_HEIGHT)
+                                        .centerCrop()
+                                        .placeholder(R.drawable.image_place_holder)
+                                        .networkPolicy(NetworkPolicy.OFFLINE)
+                                        .into(holder.postImageView, new Callback() {
+                                            @Override
+                                            public void onSuccess() {
+
+                                            }
+
+                                            @Override
+                                            public void onError() {
+                                                Picasso.with(mContext)
+                                                        .load(image)
+                                                        .resize(MAX_WIDTH, MAX_HEIGHT)
+                                                        .centerCrop()
+                                                        .placeholder(R.drawable.image_place_holder)
+                                                        .into(holder.postImageView);
+
+                                            }
+                                        });
+
+                                holder.postImageView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent intent = new Intent(mContext, PostDetailActivity.class);
+                                        intent.putExtra(TimelineAdapter.EXTRA_USER_UID, uid);
+                                        intent.putExtra(TimelineAdapter.EXTRA_POST_ID, postId);
+                                        intent.putExtra(TimelineAdapter.COLLECTION_ID, collectionId);
+                                        mContext.startActivity(intent);
+                                    }
+                                });
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+
 
         usersCollection.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -345,6 +495,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 mContext.startActivity(intent);
             }
         });
+
 
         if (status.equals("un_read")){
             holder.usernameTextView.setTypeface(holder.usernameTextView.getTypeface(), Typeface.BOLD);

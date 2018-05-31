@@ -122,12 +122,28 @@ public class MessagesAccountActivity extends AppCompatActivity
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             messagesQuery = messagesCollection.document("chat_rooms").collection(roomId);
 
-            setRecyclerView();
-            getProfile();
-            setMessages();
-
         }
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        documentSnapshots.clear();
+        setRecyclerView();
+        getProfile();
+        setMessages();
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     /**get passed uid user profile*/

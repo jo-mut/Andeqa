@@ -20,6 +20,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -28,10 +30,11 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.collections.CollectionFragment;
+import com.andeqa.andeqa.collections.CollectionsFragment;
 import com.andeqa.andeqa.creation.CreateCollectionActivity;
 import com.andeqa.andeqa.creation.CreatePostActivity;
-import com.andeqa.andeqa.market.MarketFragment;
+import com.andeqa.andeqa.explore.ExploreFragment;
+import com.andeqa.andeqa.explore.SellingFragment;
 import com.andeqa.andeqa.message.MessagingActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.profile.ProfileActivity;
@@ -46,6 +49,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -70,6 +74,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
     private int mSelectedItem;
     private CollectionReference usersReference;
     private CollectionReference timelineCollection;
+    private Query timelineQuery;
     private CollectionReference messagingCollection;
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
@@ -79,12 +84,11 @@ public class NavigationDrawerActivity extends AppCompatActivity
     private TextView mEmailTextView;
     final FragmentManager fragmentManager = getSupportFragmentManager();
     final Fragment homeFragment = new HomeFragment();
-    final Fragment marketFragment = new MarketFragment();
-    final Fragment collectionFragment = new CollectionFragment();
+    final Fragment marketFragment = new ExploreFragment();
+    final Fragment collectionFragment = new CollectionsFragment();
     final Fragment timelineFragment = new TimelineFragment();
 
-    //tablayot
-    private HomePagerAdapter homePagerAdapter;
+    private TextView notificationTextView;
 
 
     @Override
@@ -120,10 +124,12 @@ public class NavigationDrawerActivity extends AppCompatActivity
             //firestore
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
+            timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
+            timelineQuery = timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
+                    .collection("activities").orderBy("time", Query.Direction.ASCENDING)
+                    .whereEqualTo("status", "un_read");
             messagingCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
 
-            fetchData();
-            fetchUserEmail();
 
         }
         //bottom navigation
@@ -146,31 +152,53 @@ public class NavigationDrawerActivity extends AppCompatActivity
         selectFragment(selectedItem);
 
 
-
-
-
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.main_menu, menu);
-//        return super.onCreateOptionsMenu(menu);
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        int id = item.getItemId();
-//
-////        if (id == R.id.action_slide_right){
-////            Intent intent = new Intent(NavigationDrawerActivity.this, BestPostsActivity.class);
-////            startActivity(intent);
-////            overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
-////
-////        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        fetchData();
+        fetchUserEmail();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_chats){
+            Intent intent = new Intent(this, MessagingActivity.class);
+            startActivity(intent);
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
 
     private void fetchUserEmail(){
@@ -207,7 +235,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
                             .resize(MAX_WIDTH, MAX_HEIGHT)
                             .onlyScaleDown()
                             .centerCrop()
-                            .placeholder(R.drawable.profle_image_background)
+                            .placeholder(R.drawable.ic_user)
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(mProfileImageView, new Callback() {
                                 @Override
@@ -222,7 +250,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
                                             .resize(MAX_WIDTH, MAX_HEIGHT)
                                             .onlyScaleDown()
                                             .centerCrop()
-                                            .placeholder(R.drawable.profle_image_background)
+                                            .placeholder(R.drawable.ic_user)
                                             .into(mProfileImageView);
 
                                 }
@@ -274,10 +302,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
             startActivity(intent);
         }
 
-        if (id == R.id.action_people){
-            Intent intent = new Intent(this, MessagingActivity.class);
-            startActivity(intent);
-        }
 
         if (id == R.id.action_about){
             Intent intent = new Intent(Intent.ACTION_VIEW,
@@ -318,17 +342,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
         return true;
     }
 
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
 
     private void updateToolbarText(CharSequence text){
         ActionBar actionBar = getSupportActionBar();

@@ -85,8 +85,7 @@ public class LikesActivity extends AppCompatActivity implements
             likesQuery = likesCollection.document(mPostKey).collection("likes")
                     .orderBy("user_id", Query.Direction.DESCENDING).limit(TOTAL_ITEMS);
 
-            setRecyclerView();
-            setCollections();
+
 
         }
 
@@ -95,7 +94,9 @@ public class LikesActivity extends AppCompatActivity implements
     @Override
     protected void onStart() {
         super.onStart();
-
+        documentSnapshots.clear();
+        setRecyclerView();
+        setCollections();
     }
 
 
@@ -209,21 +210,29 @@ public class LikesActivity extends AppCompatActivity implements
     }
 
     protected void onDocumentModified(DocumentChange change) {
-        if (change.getOldIndex() == change.getNewIndex()) {
-            // Item changed but remained in same position
-            documentSnapshots.set(change.getOldIndex(), change.getDocument());
-            likesAdapter.notifyItemChanged(change.getOldIndex());
-        } else {
-            // Item changed and changed position
-            documentSnapshots.remove(change.getOldIndex());
-            documentSnapshots.add(change.getNewIndex(), change.getDocument());
-            likesAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
-        }
+      try {
+          if (change.getOldIndex() == change.getNewIndex()) {
+              // Item changed but remained in same position
+              documentSnapshots.set(change.getOldIndex(), change.getDocument());
+              likesAdapter.notifyItemChanged(change.getOldIndex());
+          } else {
+              // Item changed and changed position
+              documentSnapshots.remove(change.getOldIndex());
+              documentSnapshots.add(change.getNewIndex(), change.getDocument());
+              likesAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+          }
+      }catch (Exception e){
+          e.printStackTrace();
+      }
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
-        documentSnapshots.remove(change.getOldIndex());
-        likesAdapter.notifyItemRemoved(change.getOldIndex());
-        likesAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+     try {
+         documentSnapshots.remove(change.getOldIndex());
+         likesAdapter.notifyItemRemoved(change.getOldIndex());
+         likesAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+     }catch (Exception e){
+         e.printStackTrace();
+     }
     }
 }

@@ -43,5 +43,33 @@
 
     </RelativeLayout>
 
+    <RelativeLayout
+        android:padding="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:scaleType="centerCrop"
+            android:id="@+id/postImageView"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_width="150dp"
+            android:layout_height="150dp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <View
+            android:layout_marginLeft="80dp"
+            android:background="@color/greyColor"
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"/>
+
+    </RelativeLayout>
+
 
 </LinearLayout>

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    tools:context="com.andeqa.andeqa.market.MarketFragment">
+    tools:context="com.andeqa.andeqa.explore.SellingFragment">
 
     <!-- TODO: Update blank fragment layout -->
 

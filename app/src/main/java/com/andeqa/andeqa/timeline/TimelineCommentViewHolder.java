@@ -3,6 +3,7 @@ package com.andeqa.andeqa.timeline;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -22,6 +23,7 @@ public class TimelineCommentViewHolder extends RecyclerView.ViewHolder {
     public TextView usernameTextView;
     public CircleImageView profileImageView;
     public LinearLayout timelineCommentLinearLayout;
+    public ImageView postImageView;
 
     public TimelineCommentViewHolder(View itemView) {
         super(itemView);
@@ -30,6 +32,8 @@ public class TimelineCommentViewHolder extends RecyclerView.ViewHolder {
         usernameTextView = (TextView)itemView.findViewById(R.id.usernameTextView);
         profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         timelineCommentLinearLayout = (LinearLayout) itemView.findViewById(R.id.timelineCommentLinearLayout);
+        postImageView = (ImageView) itemView.findViewById(R.id.postImageView);
+
 
     }
 

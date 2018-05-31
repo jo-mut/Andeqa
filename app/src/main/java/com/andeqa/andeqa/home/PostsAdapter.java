@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,7 +44,9 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -196,6 +199,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                                 }
                             });
 
+                    holder.timeTextView.setText(DateUtils.getRelativeTimeSpanString((long)
+                            collectionPost.getTime()));
 
                     if (!TextUtils.isEmpty(collectionPost.getTitle())){
                         holder.titleTextView.setText(collectionPost.getTitle());
@@ -240,7 +245,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                     }
 
 
-
                 }
             }
         });
@@ -267,22 +271,11 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
         holder.postImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, ImageViewActivity.class);
-                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postId);
-                intent.putExtra(PostsAdapter.COLLECTION_ID, collectionId);
-                mContext.startActivity(intent);
-            }
-        });
-
-        holder.mTradeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
                 Intent intent =  new Intent(mContext, PostDetailActivity.class);
                 intent.putExtra(PostsAdapter.EXTRA_POST_ID, postId);
                 intent.putExtra(PostsAdapter.COLLECTION_ID, collectionId);
                 intent.putExtra(PostsAdapter.EXTRA_USER_UID, uid);
                 mContext.startActivity(intent);
-
             }
         });
 
@@ -294,6 +287,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                 mContext.startActivity(intent);
             }
         });
+
+
 
         senseCreditReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -378,50 +373,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                 });
 
 
-        //check if single is listed on the marketplace
-        sellingCollection.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    postOwnersCollection.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
-
-                            if (documentSnapshot.exists()){
-                                final TransactionDetails td = documentSnapshot.toObject(TransactionDetails.class);
-                                final String ownerUid = td.getUser_id();
-
-                                if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
-                                    holder.mTradeButton.setText("Unlist");
-
-                                }else {
-                                    holder.mTradeButton.setText("Buy");
-                                }
-
-                            }
-                        }
-                    });
-                }else if (firebaseAuth.getCurrentUser().getUid().equals(uid)){
-                    holder.mTradeButton.setText("Sell");
-
-                }else{
-                    holder.mTradeButton.setText("Info");
-
-                }
-
-            }
-        });
 
         //color the like image view if the user has liked
         likesReference.document(postId).collection("likes")
@@ -735,7 +686,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
 
     }
 
-
+//
 //    @Override
 //    public void onViewAttachedToWindow(PostViewHolder holder) {
 //        super.onViewAttachedToWindow(holder);
@@ -756,11 +707,12 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
 //        if (duration > 250){
 //            Map<String, Long> trail = new HashMap<>();
 //            trail.put("duration", duration);
+//            Log.d( "duration" + postId,duration + "");
 //
 //            CollectionReference reference = FirebaseFirestore.getInstance().collection("Trace");
 //            reference.document(postId).collection("post_traces").add(trail);
 //        }else {
-//            Log.d( postId,"Minimum threshold outstanding");
+//            Log.d("Minimum threshold", postId);
 //        }
 //
 //    }

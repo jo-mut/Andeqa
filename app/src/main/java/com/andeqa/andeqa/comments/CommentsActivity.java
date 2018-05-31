@@ -127,11 +127,33 @@ public class CommentsActivity extends AppCompatActivity implements
             mCommentEditText.setFilters(new InputFilter[]{new InputFilter
                     .LengthFilter(DEFAULT_COMMENT_LENGTH_LIMIT)});
 
-            setRecyclerView();
-            setCollections();
-
 
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        comments.clear();
+        setRecyclerView();
+        setCollections();
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     @Override
@@ -240,41 +262,32 @@ public class CommentsActivity extends AppCompatActivity implements
     }
 
     protected void onDocumentModified(DocumentChange change) {
-        if (change.getOldIndex() == change.getNewIndex()) {
-            // Item changed but remained in same position
-            comments.set(change.getOldIndex(), change.getDocument());
-            commentsAdapter.notifyItemChanged(change.getOldIndex());
-        } else {
-            // Item changed and changed position
-            comments.remove(change.getOldIndex());
-            comments.add(change.getNewIndex(), change.getDocument());
-            commentsAdapter.notifyItemRangeChanged(0, comments.size());
-        }
+       try {
+           if (change.getOldIndex() == change.getNewIndex()) {
+               // Item changed but remained in same position
+               comments.set(change.getOldIndex(), change.getDocument());
+               commentsAdapter.notifyItemChanged(change.getOldIndex());
+           } else {
+               // Item changed and changed position
+               comments.remove(change.getOldIndex());
+               comments.add(change.getNewIndex(), change.getDocument());
+               commentsAdapter.notifyItemRangeChanged(0, comments.size());
+           }
+       }catch (Exception e){
+           e.printStackTrace();
+       }
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
-        comments.remove(change.getOldIndex());
-        commentsAdapter.notifyItemRemoved(change.getOldIndex());
-        commentsAdapter.notifyItemRangeChanged(0, comments.size());
+       try {
+           comments.remove(change.getOldIndex());
+           commentsAdapter.notifyItemRemoved(change.getOldIndex());
+           commentsAdapter.notifyItemRangeChanged(0, comments.size());
+       }catch (Exception e){
+           e.printStackTrace();
+       }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop(){
-        super.onStop();
-
-    }
-
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
 
     //let a cingulan add a comment to a cingle
     @Override

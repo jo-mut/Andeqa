@@ -3,13 +3,16 @@ package com.andeqa.andeqa.registration;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -52,7 +55,7 @@ public class SignInActivity extends AppCompatActivity implements
     @Bind(R.id.errorRelativeLayout)RelativeLayout mErrorRelativeLayout;
     @Bind(R.id.errorTextView)TextView mErrorTextView;
     @Bind(R.id.progressBar)ProgressBar mProgressBar;
-//    @Bind(R.id.googleSignInButton)Button mGoogleSignInButton;
+    @Bind(R.id.googleSignInButton)Button mGoogleSignInButton;
 
 
     private FirebaseAuth mAuth;
@@ -74,7 +77,7 @@ public class SignInActivity extends AppCompatActivity implements
         mRegisterTextView.setOnClickListener(this);
         mPasswordLoginButton.setOnClickListener(this);
         mForgotPasswordTextView.setOnClickListener(this);
-//        mGoogleSignInButton.setOnClickListener(this);
+        mGoogleSignInButton.setOnClickListener(this);
         mAuth = FirebaseAuth.getInstance();
         createAuthProgressDialog();
 
@@ -187,17 +190,16 @@ public class SignInActivity extends AppCompatActivity implements
                 }else {
                     mProgressBar.setVisibility(View.VISIBLE);
                     usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-                    usersReference = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_USERS);
-                    final String deviceId = FirebaseInstanceId.getInstance().getToken();
+
+                    /**get the device tokem id*/
+//                    final String deviceId = FirebaseInstanceId.getInstance().getToken();
 
                     usersCollection.document(mAuth.getCurrentUser().getUid())
                             .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             if (documentSnapshot.exists()){
-                                Map<String, String> device = new HashMap<>();
-                                device.put("device_id", deviceId);
-                                usersReference.child(mAuth.getCurrentUser().getUid()).setValue(device);
+
                                 //LAUCNH SETUP PROFIFLE ACTIVITY IF NO
                                 Intent intent = new Intent(SignInActivity.this, NavigationDrawerActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -263,12 +265,12 @@ public class SignInActivity extends AppCompatActivity implements
             finish();
         }
 
-//        if (v == mGoogleSignInButton){
-//            Intent intent = new Intent(SignInActivity.this, SignInWithGoogle.class);
-//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//            startActivity(intent);
-//            finish();
-//        }
+        if (v == mGoogleSignInButton){
+            Intent intent = new Intent(SignInActivity.this, SignInWithGoogle.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
 
     }
 

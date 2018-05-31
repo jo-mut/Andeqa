@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -86,16 +87,19 @@ public class CollectionsAdapter extends RecyclerView.Adapter<CollectionViewHolde
 
         holder.mCollectionNameTextView.setText(collection.getName());
 
-        //prevent collection note from overlapping other layouts
-        final String [] strings = collection.getNote().split("");
+        if (!TextUtils.isEmpty(collection.getNote())){
+            holder.mCollectionsNoteTextView.setVisibility(View.VISIBLE);
+            //prevent collection note from overlapping other layouts
+            final String [] strings = collection.getNote().split("");
 
-        final int size = strings.length;
+            final int size = strings.length;
 
-        if (size <= 50){
-            //setence will not have read more
-            holder.mCollectionsNoteTextView.setText(collection.getNote());
-        }else {
-            holder.mCollectionsNoteTextView.setText(collection.getNote().substring(0, 49) + "...");
+            if (size <= 50){
+                //setence will not have read more
+                holder.mCollectionsNoteTextView.setText(collection.getNote());
+            }else {
+                holder.mCollectionsNoteTextView.setText(collection.getNote().substring(0, 49) + "...");
+            }
         }
 
 
@@ -103,17 +107,17 @@ public class CollectionsAdapter extends RecyclerView.Adapter<CollectionViewHolde
             Picasso.with(mContext)
                     .load(collection.getImage())
                     .resize(MAX_WIDTH, MAX_HEIGHT)
-                    .onlyScaleDown()
                     .centerCrop()
                     .networkPolicy(NetworkPolicy.OFFLINE)
+                    .placeholder(R.drawable.image_place_holder)
                     .into(holder.mCollectionCoverImageView, new Callback() {
                         @Override
                         public void onSuccess() {
                             Picasso.with(mContext)
                                     .load(collection.getImage())
                                     .resize(MAX_WIDTH, MAX_HEIGHT)
-                                    .onlyScaleDown()
                                     .centerCrop()
+                                    .placeholder(R.drawable.image_place_holder)
                                     .into(holder.mCollectionCoverImageView);
                         }
 

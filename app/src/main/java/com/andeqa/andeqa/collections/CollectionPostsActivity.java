@@ -125,11 +125,6 @@ public class CollectionPostsActivity extends AppCompatActivity
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             collectionOwnersCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_OWNERS);
 
-
-
-            setCollectionPosts();
-            setRecyclerView();
-            setCollectionsInfo();
             if (savedInstanceState != null){
                 recyclerViewState = savedInstanceState.getParcelable(KEY_LAYOUT_POSITION);
                 Log.d("Profile saved Instance", "Instance is not null");
@@ -170,6 +165,31 @@ public class CollectionPostsActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mSnapshots.clear();
+        setCollectionPosts();
+        setRecyclerView();
+        setCollectionsInfo();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mSnapshots.clear();
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -420,22 +440,5 @@ public class CollectionPostsActivity extends AppCompatActivity
         }
 
     }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        mSnapshots.clear();
-    }
-
 
 }

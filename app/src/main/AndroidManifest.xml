@@ -32,7 +32,7 @@
         android:allowClearUserData="true"
         android:icon="@mipmap/ic_launcher"
         android:label="Andeqa"
-        android:largeHeap="false"
+        android:largeHeap="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
@@ -177,11 +177,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".profile.ProfileCollectionsActivity"
+            android:name=".collections.ProfileCollectionsActivity"
             android:label="Collection"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".profile.ProfileCollectionPostsActivity"
+            android:name=".collections.ProfileCollectionPostsActivity"
             android:label="Posts"
             android:screenOrientation="portrait" />
     </application>
