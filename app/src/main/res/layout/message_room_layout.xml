@@ -71,6 +71,7 @@
                 android:textSize="14sp"
                 android:paddingRight="3dp"
                 android:paddingEnd="3dp"
+                android:textColor="@android:color/black"
                 android:layout_below="@+id/usernameTextView"
                 android:layout_centerVertical="true" />
 

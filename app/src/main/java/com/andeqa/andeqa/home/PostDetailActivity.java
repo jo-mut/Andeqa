@@ -117,7 +117,6 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     private CollectionReference likesReference;
     private CollectionReference postWalletReference;
     private CollectionReference timelineCollection;
-    private CollectionReference postsCollection;
     private CollectionReference collectionsPosts;
     private CollectionReference marketCollections;
     private CollectionReference collectionsCollection;
@@ -137,11 +136,12 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     private static final double GOLDEN_RATIO = 1.618;
     private String mPostId;
     private String mUid;
-    private String mSource;
+    private String mType;
     private String mCollectionId;
     private static final String COLLECTION_ID = "collection id";
     private static final String EXTRA_POST_ID = "post id";
     private static final String EXTRA_USER_UID = "uid";
+    private static final String TYPE = "type";
     private static final String SOURCE = PostDetailActivity.class.getSimpleName();
     private static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
@@ -157,10 +157,10 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
         firebaseAuth = FirebaseAuth.getInstance();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -168,23 +168,11 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             }
         });
 
-        FirebaseFirestore.setLoggingEnabled(true);
-
         if (firebaseAuth.getCurrentUser()!= null){
             mPostId = getIntent().getStringExtra(EXTRA_POST_ID);
-            if(mPostId == null){
-                throw new IllegalArgumentException("pass a post id");
-            }
-
             mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
-            if (mCollectionId == null){
-                throw new IllegalArgumentException("pass a collection id");
-            }
-
             mUid = getIntent().getStringExtra(EXTRA_USER_UID);
-            if(mUid == null){
-                throw new IllegalArgumentException("pass an EXTRA_UID");
-            }
+            mType = getIntent().getStringExtra(TYPE);
 
             //INITIALIASE CLICK LISTENER
             mLikesImageView.setOnClickListener(this);
@@ -198,16 +186,20 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             mLikesRelativeLayout.setOnClickListener(this);
 
             //firestore
-            postsCollections = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                    .document("collections").collection(mCollectionId);
+            if (mType.equals("single")){
+                collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("singles").collection(mCollectionId);
+                getSupportActionBar().setTitle("Single");
+            }else{
+                collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("collections").collection(mCollectionId);
+                getSupportActionBar().setTitle("Post");
+            }
             postOwnersCollection = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS)
                     .document("post_ids").collection(mPostId);
             sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
-            postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                    .document("collections").collection(mCollectionId);
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
             marketCollections = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             postOnwersCollection = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
@@ -240,6 +232,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             Bundle bundle = new Bundle();
             bundle.putString(PostDetailActivity.EXTRA_POST_ID, mPostId);
             bundle.putString(PostDetailActivity.COLLECTION_ID, mCollectionId);
+            bundle.putString(PostDetailActivity.TYPE, mType);
             FragmentManager fragmenManager = getSupportFragmentManager();
             DialogFragmentPostSettings dialogFragmentPostSettings =  DialogFragmentPostSettings.newInstance("post settings");
             dialogFragmentPostSettings.setArguments(bundle);
@@ -279,14 +272,14 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     protected void onStart() {
         super.onStart();
         //RETRIEVE DATA FROM FIREBASE
-        setCingleData();
         setPostInfo();
         setEditTextFilter();
-        showBuyButton();
         showEditImageView();
         deletePostDialog();
-        deleteFinish();
+        finishActivity();
     }
+
+
 
     @Override
     protected void onStop() {
@@ -298,265 +291,6 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         super.onDestroy();
     }
 
-    private void setCingleData(){
-        senseCreditReference.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    Credit credit = documentSnapshot.toObject(Credit.class);
-                    final double senseCredits = credit.getAmount();
-                    DecimalFormat formatter = new DecimalFormat("0.00000000");
-                    mCreditsTextView.setText("SC" + " " + formatter.format(senseCredits));
-                }else {
-                    mCreditsTextView.setText("SC 0.00000000");
-                }
-
-            }
-        });
-
-        //get the number of commments in a cingle
-        commentsCountQuery.orderBy("comment_id").whereEqualTo("push_id", mPostId)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (!documentSnapshots.isEmpty()){
-                    final int commentsCount = documentSnapshots.size();
-                    mCommentCountTextView.setText(commentsCount + "");
-                }else {
-                    mCommentCountTextView.setText("0");
-
-         }
-
-            }
-        });
-
-        postsCollections.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
-                    final String image = collectionPost.getImage();
-                    final String uid = collectionPost.getUser_id();
-                    final String title = collectionPost.getTitle();
-
-                    //set the title of the single
-                    if (title.equals("")){
-                        mTitleRelativeLayout.setVisibility(View.GONE);
-                    }else {
-                        mTitleRelativeLayout.setVisibility(View.VISIBLE);
-                        titleTextView.setText(title);
-                    }
-
-                    if (!TextUtils.isEmpty(collectionPost.getDescription())){
-                        final String [] strings = collectionPost.getDescription().split("");
-
-                        final int size = strings.length;
-
-                        if (size <= 120){
-                            mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
-                            mDescriptionTextView.setText(collectionPost.getDescription());
-                        }else{
-
-                            mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
-                            final String boldMore = "...read more";
-                            final String boldLess = "...read less";
-                            String normalText = collectionPost.getDescription().substring(0, 119);
-                            mDescriptionTextView.setText(normalText + boldMore);
-                            mDescriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    if (showOnClick){
-                                        String normalText = collectionPost.getDescription();
-                                        mDescriptionTextView.setText(normalText + boldLess);
-                                        showOnClick = false;
-                                    }else {
-                                        String normalText = collectionPost.getDescription().substring(0, 119);
-                                        mDescriptionTextView.setText(normalText + boldMore);
-                                        showOnClick = true;
-                                    }
-                                }
-                            });
-                        }
-                    }else {
-                        mDescriptionRelativeLayout.setVisibility(View.GONE);
-                    }
-
-
-                    //get the current date
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d");
-                    String date = simpleDateFormat.format(new Date());
-
-                    if (date.endsWith("1") && !date.endsWith("11"))
-                        simpleDateFormat = new SimpleDateFormat("d'st' MMM yyyy");
-                    else if (date.endsWith("2") && !date.endsWith("12"))
-                        simpleDateFormat = new SimpleDateFormat("d'nd' MMM yyyy");
-                    else if (date.endsWith("3") && !date.endsWith("13"))
-                        simpleDateFormat = new SimpleDateFormat("d'rd' MMM yyyy");
-                    else
-                        simpleDateFormat = new SimpleDateFormat("d'th' MMM yyyy");
-
-                    mDatePostedTextView.setText(simpleDateFormat.format(collectionPost.getTime()));
-
-
-                    //set the single image
-                    Picasso.with(PostDetailActivity.this)
-                            .load(image)
-                            .networkPolicy(NetworkPolicy.OFFLINE)
-                            .placeholder(R.drawable.image_place_holder)
-                            .into(mPostImageView, new Callback() {
-                                @Override
-                                public void onSuccess() {
-
-                                }
-
-                                @Override
-                                public void onError() {
-                                    Picasso.with(PostDetailActivity.this)
-                                            .load(image)
-                                            .placeholder(R.drawable.image_place_holder)
-                                            .into(mPostImageView);
-                                }
-                            });
-                    
-
-                    sellingCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
-
-                            if (documentSnapshot.exists()){
-                                final Market market = documentSnapshot.toObject(Market.class);
-                                DecimalFormat formatter = new DecimalFormat("0.00000000");
-                                mSalePriceTextView.setText("uC" + " " + formatter.format(market.getSale_price()));
-                                mPriceRelativeLayout.setVisibility(View.VISIBLE);
-                                postOwnersCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                        if (e != null) {
-                                            Log.w(TAG, "Listen error", e);
-                                            return;
-                                        }
-
-                                        if (documentSnapshot.exists()){
-                                            TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
-                                            final String ownerUid = transactionDetails.getUser_id();
-                                            Log.d("owner uid", ownerUid);
-
-                                            if (documentSnapshot.exists()){
-                                                if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
-                                                    mTradeButton.setText("Unlist");
-                                                   mTradeButton.setOnClickListener(new View.OnClickListener() {
-                                                       @Override
-                                                       public void onClick(View v) {
-                                                           Bundle bundle = new Bundle();
-                                                           bundle.putString(PostDetailActivity.EXTRA_POST_ID, mPostId);
-                                                           bundle.putString(PostDetailActivity.COLLECTION_ID, mCollectionId);
-                                                           FragmentManager fragmenManager = getSupportFragmentManager();
-                                                           DialogMarketPostSettings dialogMarketPostSettings = DialogMarketPostSettings.newInstance("post settings");
-                                                           dialogMarketPostSettings.setArguments(bundle);
-                                                           dialogMarketPostSettings.show(fragmenManager, "market post settings fragment");
-                                                       }
-                                                   });
-                                                }else {
-                                                    mTradeButton.setText("Buy");
-                                                   mTradeButton.setOnClickListener(new View.OnClickListener() {
-                                                       @Override
-                                                       public void onClick(View v) {
-                                                           Bundle bundle = new Bundle();
-                                                           bundle.putString(PostDetailActivity.EXTRA_POST_ID, mPostId);
-                                                           bundle.putString(PostDetailActivity.COLLECTION_ID, mCollectionId);
-                                                           FragmentManager fragmenManager = getSupportFragmentManager();
-                                                           DialogSendCredits dialogSendCredits = DialogSendCredits.newInstance("sens credits");
-                                                           dialogSendCredits.setArguments(bundle);
-                                                           dialogSendCredits.show(fragmenManager, "send credits fragment");
-                                                       }
-                                                   });
-                                                }
-                                            }
-                                        }
-                                    }
-                                });
-                            }else if (firebaseAuth.getCurrentUser().getUid().equals(uid)) {
-                                mTradeButton.setText("Sell");
-                               mTradeButton.setOnClickListener(new View.OnClickListener() {
-                                   @Override
-                                   public void onClick(View v) {
-                                       Intent intent = new Intent(PostDetailActivity.this, ListOnMarketActivity.class);
-                                       intent.putExtra(PostDetailActivity.EXTRA_POST_ID, mPostId);
-                                       intent.putExtra(PostDetailActivity.COLLECTION_ID, mCollectionId);
-                                       startActivity(intent);
-                                   }
-                               });
-                            }else {
-                                mPriceRelativeLayout.setVisibility(View.GONE);
-                            }
-                        }
-                    });
-
-                    usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
-
-                            if (documentSnapshot.exists()){
-                                final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                                final String username = cinggulan.getUsername();
-                                final String profileImage = cinggulan.getProfile_image();
-
-                                mUsernameTextView.setText(username);
-                                Picasso.with(PostDetailActivity.this)
-                                        .load(profileImage)
-                                        .fit()
-                                        .centerCrop()
-                                        .placeholder(R.drawable.ic_user)
-                                        .networkPolicy(NetworkPolicy.OFFLINE)
-                                        .into(mProfileImageView, new Callback() {
-                                            @Override
-                                            public void onSuccess() {
-
-                                            }
-
-                                            @Override
-                                            public void onError() {
-                                                Picasso.with(PostDetailActivity.this)
-                                                        .load(profileImage)
-                                                        .fit()
-                                                        .centerCrop()
-                                                        .placeholder(R.drawable.ic_user)
-                                                        .into(mProfileImageView);
-                                            }
-                                        });
-                            }
-                        }
-                    });
-                }
-            }
-        });
-
-    }
-
     /**show delete dialog*/
     public void deletePostDialog(){
         progressDialog = new ProgressDialog(this);
@@ -564,26 +298,29 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         progressDialog.setCancelable(false);
     }
 
-    /**delete post method*/
-    public void deleteFinish(){
-        collectionsPosts.document(mPostId)
-                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
+    /**finish activity if the post does not exist*/
+    private void finishActivity(){
+        collectionsPosts.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
 
-                        if (!documentSnapshot.exists()){
-                            finish();
-                        }
-                    }
-                });
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
 
+                if (!documentSnapshot.exists()){
+                    finish();
+                }
+
+            }
+        });
     }
 
-    private void showBuyButton(){
+
+    /**display the price of the cingle*/
+    private void setPostInfo() {
+
         likesReference.document(mPostId).collection("likes")
                 .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -684,10 +421,262 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             }
         });
 
-    }
+        senseCreditReference.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
 
-    /**display the price of the cingle*/
-    private void setPostInfo() {
+                if (documentSnapshot.exists()){
+                    Credit credit = documentSnapshot.toObject(Credit.class);
+                    final double senseCredits = credit.getAmount();
+                    DecimalFormat formatter = new DecimalFormat("0.00000000");
+                    mCreditsTextView.setText("SC" + " " + formatter.format(senseCredits));
+                }else {
+                    mCreditsTextView.setText("SC 0.00000000");
+                }
+
+            }
+        });
+
+        //get the number of commments in a cingle
+        commentsCountQuery.orderBy("comment_id").whereEqualTo("push_id", mPostId)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!documentSnapshots.isEmpty()){
+                            final int commentsCount = documentSnapshots.size();
+                            mCommentCountTextView.setText(commentsCount + "");
+                        }else {
+                            mCommentCountTextView.setText("0");
+
+                        }
+
+                    }
+                });
+
+        collectionsPosts.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (documentSnapshot.exists()){
+                    final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                    final String image = collectionPost.getImage();
+                    final String uid = collectionPost.getUser_id();
+                    final String title = collectionPost.getTitle();
+
+                    //set the title of the single
+                    if (title.equals("")){
+                        mTitleRelativeLayout.setVisibility(View.GONE);
+                    }else {
+                        mTitleRelativeLayout.setVisibility(View.VISIBLE);
+                        titleTextView.setText(title);
+                    }
+
+                    if (!TextUtils.isEmpty(collectionPost.getDescription())){
+                        final String [] strings = collectionPost.getDescription().split("");
+
+                        final int size = strings.length;
+
+                        if (size <= 120){
+                            mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
+                            mDescriptionTextView.setText(collectionPost.getDescription());
+                        }else{
+
+                            mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
+                            final String boldMore = "...read more";
+                            final String boldLess = "...read less";
+                            String normalText = collectionPost.getDescription().substring(0, 119);
+                            mDescriptionTextView.setText(normalText + boldMore);
+                            mDescriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (showOnClick){
+                                        String normalText = collectionPost.getDescription();
+                                        mDescriptionTextView.setText(normalText + boldLess);
+                                        showOnClick = false;
+                                    }else {
+                                        String normalText = collectionPost.getDescription().substring(0, 119);
+                                        mDescriptionTextView.setText(normalText + boldMore);
+                                        showOnClick = true;
+                                    }
+                                }
+                            });
+                        }
+                    }else {
+                        mDescriptionRelativeLayout.setVisibility(View.GONE);
+                    }
+
+
+                    //get the current date
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d");
+                    String date = simpleDateFormat.format(new Date());
+
+                    if (date.endsWith("1") && !date.endsWith("11"))
+                        simpleDateFormat = new SimpleDateFormat("d'st' MMM yyyy");
+                    else if (date.endsWith("2") && !date.endsWith("12"))
+                        simpleDateFormat = new SimpleDateFormat("d'nd' MMM yyyy");
+                    else if (date.endsWith("3") && !date.endsWith("13"))
+                        simpleDateFormat = new SimpleDateFormat("d'rd' MMM yyyy");
+                    else
+                        simpleDateFormat = new SimpleDateFormat("d'th' MMM yyyy");
+
+                    mDatePostedTextView.setText(simpleDateFormat.format(collectionPost.getTime()));
+
+
+                    //set the single image
+                    Picasso.with(PostDetailActivity.this)
+                            .load(image)
+                            .networkPolicy(NetworkPolicy.OFFLINE)
+                            .placeholder(R.drawable.image_place_holder)
+                            .into(mPostImageView, new Callback() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onError() {
+                                    Picasso.with(PostDetailActivity.this)
+                                            .load(image)
+                                            .placeholder(R.drawable.image_place_holder)
+                                            .into(mPostImageView);
+                                }
+                            });
+
+
+                    sellingCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                            if (e != null) {
+                                Log.w(TAG, "Listen error", e);
+                                return;
+                            }
+
+                            if (documentSnapshot.exists()){
+                                final Market market = documentSnapshot.toObject(Market.class);
+                                DecimalFormat formatter = new DecimalFormat("0.00000000");
+                                mSalePriceTextView.setText("uC" + " " + formatter.format(market.getSale_price()));
+                                mPriceRelativeLayout.setVisibility(View.VISIBLE);
+                                postOwnersCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                        if (e != null) {
+                                            Log.w(TAG, "Listen error", e);
+                                            return;
+                                        }
+
+                                        if (documentSnapshot.exists()){
+                                            TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
+                                            final String ownerUid = transactionDetails.getUser_id();
+                                            Log.d("owner uid", ownerUid);
+
+                                            if (documentSnapshot.exists()){
+                                                if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
+                                                    mTradeButton.setText("Unlist");
+                                                    mTradeButton.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            Bundle bundle = new Bundle();
+                                                            bundle.putString(PostDetailActivity.EXTRA_POST_ID, mPostId);
+                                                            bundle.putString(PostDetailActivity.COLLECTION_ID, mCollectionId);
+                                                            FragmentManager fragmenManager = getSupportFragmentManager();
+                                                            DialogMarketPostSettings dialogMarketPostSettings = DialogMarketPostSettings.newInstance("post settings");
+                                                            dialogMarketPostSettings.setArguments(bundle);
+                                                            dialogMarketPostSettings.show(fragmenManager, "market post settings fragment");
+                                                        }
+                                                    });
+                                                }else {
+                                                    mTradeButton.setText("Buy");
+                                                    mTradeButton.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            Bundle bundle = new Bundle();
+                                                            bundle.putString(PostDetailActivity.EXTRA_POST_ID, mPostId);
+                                                            bundle.putString(PostDetailActivity.COLLECTION_ID, mCollectionId);
+                                                            FragmentManager fragmenManager = getSupportFragmentManager();
+                                                            DialogSendCredits dialogSendCredits = DialogSendCredits.newInstance("sens credits");
+                                                            dialogSendCredits.setArguments(bundle);
+                                                            dialogSendCredits.show(fragmenManager, "send credits fragment");
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            }else if (firebaseAuth.getCurrentUser().getUid().equals(uid)) {
+                                mTradeButton.setText("Sell");
+                                mTradeButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent intent = new Intent(PostDetailActivity.this, ListOnMarketActivity.class);
+                                        intent.putExtra(PostDetailActivity.EXTRA_POST_ID, mPostId);
+                                        intent.putExtra(PostDetailActivity.COLLECTION_ID, mCollectionId);
+                                        startActivity(intent);
+                                    }
+                                });
+                            }else {
+                                mPriceRelativeLayout.setVisibility(View.GONE);
+                            }
+                        }
+                    });
+
+                    usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                            if (e != null) {
+                                Log.w(TAG, "Listen error", e);
+                                return;
+                            }
+
+                            if (documentSnapshot.exists()){
+                                final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                                final String username = cinggulan.getUsername();
+                                final String profileImage = cinggulan.getProfile_image();
+
+                                mUsernameTextView.setText(username);
+                                Picasso.with(PostDetailActivity.this)
+                                        .load(profileImage)
+                                        .fit()
+                                        .centerCrop()
+                                        .placeholder(R.drawable.ic_user)
+                                        .networkPolicy(NetworkPolicy.OFFLINE)
+                                        .into(mProfileImageView, new Callback() {
+                                            @Override
+                                            public void onSuccess() {
+
+                                            }
+
+                                            @Override
+                                            public void onError() {
+                                                Picasso.with(PostDetailActivity.this)
+                                                        .load(profileImage)
+                                                        .fit()
+                                                        .centerCrop()
+                                                        .placeholder(R.drawable.ic_user)
+                                                        .into(mProfileImageView);
+                                            }
+                                        });
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
         /**display the person who currently owns the cingle*/
         postOwnersCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -779,6 +768,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             Intent intent = new Intent(PostDetailActivity.this, CommentsActivity.class);
             intent.putExtra(PostDetailActivity.EXTRA_POST_ID, mPostId);
             intent.putExtra(PostDetailActivity.COLLECTION_ID, mCollectionId);
+            intent.putExtra(PostDetailActivity.TYPE, mType);
             startActivity(intent);
         }
 
@@ -792,6 +782,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             Intent intent = new Intent(PostDetailActivity.this, ImageViewActivity.class);
             intent.putExtra(PostDetailActivity.EXTRA_POST_ID, mPostId);
             intent.putExtra(PostDetailActivity.COLLECTION_ID, mCollectionId);
+            intent.putExtra(PostDetailActivity.TYPE, mType);
             startActivity(intent);
         }
 

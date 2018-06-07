@@ -54,6 +54,8 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
 
     private static final String COLLECTION_ID = "collection id";
     private static final String EXTRA_POST_ID = "post id";
+    private static final String TYPE = "type";
+    private String mType;
     private String mCollectionId;
     private String mUid;
     private static final String EXTRA_USER_UID = "uid";
@@ -104,6 +106,7 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
             if (bundle != null){
                 mCollectionId = bundle.getString(DialogFragmentPostSettings.COLLECTION_ID);
                 mPostId = bundle.getString(DialogFragmentPostSettings.EXTRA_POST_ID);
+                mType = bundle.getString(DialogFragmentPostSettings.TYPE);
 
                 Log.d("the passed poskey", mPostId);
 
@@ -113,8 +116,15 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
 
             //firestore
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                    .document("collections").collection(mCollectionId);
+            //firestore
+            if (mType.equals("single")){
+                collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("singles").collection(mCollectionId);
+            }else{
+                collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("collections").collection(mCollectionId);
+            }
+
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
             marketCollections = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             postOnwersCollection = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
@@ -148,6 +158,7 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
             Intent intent = new Intent(getActivity(), ListOnMarketActivity.class);
             intent.putExtra(DialogFragmentPostSettings.EXTRA_POST_ID, mPostId);
             intent.putExtra(DialogFragmentPostSettings.COLLECTION_ID, mCollectionId);
+            intent.putExtra(DialogFragmentPostSettings.TYPE, mType);
             startActivity(intent);
         }
 
@@ -156,6 +167,7 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
             Intent intent = new Intent(getActivity(), RedeemCreditsActivity.class);
             intent.putExtra(DialogFragmentPostSettings.EXTRA_POST_ID, mPostId);
             intent.putExtra(DialogFragmentPostSettings.COLLECTION_ID, mCollectionId);
+            intent.putExtra(DialogFragmentPostSettings.TYPE, mType);
             startActivity(intent);
         }
 

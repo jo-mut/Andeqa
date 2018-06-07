@@ -39,6 +39,7 @@
                         android:scaleType="centerCrop" />
 
                     <LinearLayout
+                        android:layout_centerVertical="true"
                         android:layout_toRightOf="@+id/profileImageView"
                         android:layout_toEndOf="@+id/profileImageView"
                         android:layout_toLeftOf="@+id/timeRelativeLayout"
@@ -59,6 +60,8 @@
                             android:text="" />
 
                         <LinearLayout
+                            android:padding="10dp"
+                            android:id="@+id/creditsLinearLayout"
                             android:orientation="horizontal"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">

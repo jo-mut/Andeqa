@@ -21,12 +21,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
-            android:paddingBottom="100dp"
             app:contentScrim="@color/colorPrimary"
             app:expandedTitleMargin="16dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <RelativeLayout
+                android:paddingBottom="120dp"
                 android:id="@+id/header_cover_relative_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -35,6 +35,7 @@
                     android:id="@+id/profileCoverImageView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_alignParentTop="true"
                     android:alpha="0.1"
                     android:scaleType="centerCrop"
                     android:src="@color/transparentColor" />
@@ -76,46 +77,116 @@
 
 
                 <RelativeLayout
-                    android:id="@+id/countsLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:id="@+id/bioRelativeLayout"
                     android:layout_below="@+id/nameRelativeLayout"
-                    android:layout_marginTop="50dp"
-                    android:padding="10dp">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                    <RelativeLayout
-                        android:id="@+id/collectionsCountRelativeLayout"
+                    <TextView
+                        android:id="@+id/bioTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
-                        android:layout_marginLeft="60dp"
-                        android:layout_marginStart="60dp">
+                        android:paddingBottom="5dp"
+                        android:paddingEnd="16dp"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:paddingStart="16dp"
+                        android:paddingTop="5dp"
+                        android:text=""
+                        android:textAlignment="center"
+                        android:textSize="28sp" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/countsLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/bioRelativeLayout"
+                    android:layout_marginTop="30dp">
+
+                    <RelativeLayout
+                        android:layout_toLeftOf="@+id/postRelativeLayout"
+                        android:layout_toStartOf="@+id/postRelativeLayout"
+                        android:id="@+id/singlesRelativeLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="40dp"
+                        android:layout_marginEnd="40dp">
 
                         <TextView
+                            android:id="@+id/singlesCountTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:padding="10dp"
+                            android:layout_centerHorizontal="true"
+                            android:textSize="24sp" />
+
+                        <TextView
+                            android:id="@+id/singlesTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="singles"
+                            android:layout_centerHorizontal="true"
+                            android:layout_below="@id/singlesCountTextView"
+                            android:textSize="24sp" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/postRelativeLayout"
+                        android:layout_centerInParent="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+
+                        <TextView
+                            android:padding="10dp"
+                            android:layout_centerHorizontal="true"
+                            android:id="@+id/postsCountTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textSize="24sp" />
+
+                        <TextView
+                            android:id="@+id/postsTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/postsCountTextView"
+                            android:text="posts"
+                            android:layout_centerHorizontal="true"
+                            android:textSize="24sp" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_toRightOf="@+id/postRelativeLayout"
+                        android:layout_toEndOf="@+id/postRelativeLayout"
+                        android:id="@+id/collectionsRelativeLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="40dp"
+                        android:layout_marginRight="40dp">
+
+                        <TextView
+                            android:padding="10dp"
+                            android:layout_centerHorizontal="true"
                             android:id="@+id/collectionsCountTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_centerHorizontal="true"
-                            android:background="@drawable/border_white"
-                            android:paddingBottom="3dp"
-                            android:paddingLeft="10dp"
-                            android:paddingRight="10dp"
-                            android:paddingTop="3dp"
-                            android:textAlignment="center"
-                            android:textColor="@android:color/white"
-                            android:textSize="28sp" />
+                            android:text=""
+                            android:textSize="24sp" />
 
                         <TextView
                             android:id="@+id/collectionsTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_below="@+id/collectionsCountTextView"
+                            android:text="collections"
                             android:layout_centerHorizontal="true"
-                            android:layout_marginTop="10dp"
-                            android:padding="20dp"
-                            android:text="Collections"
-                            android:textColor="@android:color/white"
-                            android:textSize="28sp" />
+                            android:layout_below="@id/collectionsCountTextView"
+                            android:textSize="24sp" />
 
                     </RelativeLayout>
 
@@ -173,65 +244,8 @@
             android:layout_height="wrap_content">
 
             <android.support.v7.widget.CardView
-                android:layout_marginBottom="15dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="160dp">
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/aboutTitleTextView"
-                            android:text="About"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textSize="32sp"
-                            android:textStyle="bold"
-                            android:paddingBottom="5dp"
-                            android:paddingTop="5dp"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="16dp"
-                            android:paddingRight="16dp"
-                            android:paddingLeft="16dp" />
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/bioTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text=""
-                            android:textSize="28sp"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="16dp"
-                            android:paddingRight="16dp"
-                            android:paddingLeft="16dp"
-                            android:paddingBottom="5dp"
-                            android:paddingTop="5dp"
-                            android:textAlignment="center" />
-
-                    </RelativeLayout>
-
-                </LinearLayout>
-
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
                 android:visibility="gone"
                 android:id="@+id/accountInfoCardView"
-                android:layout_marginBottom="15dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 

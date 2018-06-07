@@ -45,7 +45,7 @@ public class FeaturedCollectionFragment extends Fragment implements
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore adapters
-    private CollectionsAdapter collectionsAdapter;
+    private FeaturedCollectionsAdapter featuredCollectionsAdapter;
     private  static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
     //singles meber variables
@@ -120,10 +120,10 @@ public class FeaturedCollectionFragment extends Fragment implements
     }
 
     private void recyclerView(){
-        collectionsAdapter = new CollectionsAdapter(getContext());
+        featuredCollectionsAdapter = new FeaturedCollectionsAdapter(getContext());
         layoutManager = new LinearLayoutManager(getContext());
         mCollectionsRecyclerView.setLayoutManager(layoutManager);
-        mCollectionsRecyclerView.setAdapter(collectionsAdapter);
+        mCollectionsRecyclerView.setAdapter(featuredCollectionsAdapter);
         mCollectionsRecyclerView.setHasFixedSize(false);
     }
 
@@ -168,11 +168,11 @@ public class FeaturedCollectionFragment extends Fragment implements
         mSwipeRefreshLayout.setRefreshing(true);
 
         // Get the last visible document
-        final int snapshotSize = collectionsAdapter.getItemCount();
+        final int snapshotSize = featuredCollectionsAdapter.getItemCount();
         if (snapshotSize == 0){
 
         }else {
-            DocumentSnapshot lastVisible = collectionsAdapter.getSnapshot(snapshotSize - 1);
+            DocumentSnapshot lastVisible = featuredCollectionsAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of documentSnapshots
             Query  nextCollectionsQuery = collectionCollection.orderBy("time", Query.Direction.DESCENDING)
@@ -217,9 +217,9 @@ public class FeaturedCollectionFragment extends Fragment implements
     protected void onDocumentAdded(DocumentChange change) {
         collectionsIds.add(change.getDocument().getId());
         documentSnapshots.add(change.getDocument());
-        collectionsAdapter.setFeaturedCollections(documentSnapshots);
-        collectionsAdapter.notifyItemInserted(documentSnapshots.size() -1);
-        collectionsAdapter.getItemCount();
+        featuredCollectionsAdapter.setFeaturedCollections(documentSnapshots);
+        featuredCollectionsAdapter.notifyItemInserted(documentSnapshots.size() -1);
+        featuredCollectionsAdapter.getItemCount();
 
     }
 
@@ -228,12 +228,12 @@ public class FeaturedCollectionFragment extends Fragment implements
             if (change.getOldIndex() == change.getNewIndex()) {
                 // Item changed but remained in same position
                 documentSnapshots.set(change.getOldIndex(), change.getDocument());
-                collectionsAdapter.notifyItemChanged(change.getOldIndex());
+                featuredCollectionsAdapter.notifyItemChanged(change.getOldIndex());
             } else {
                 // Item changed and changed position
                 documentSnapshots.remove(change.getOldIndex());
                 documentSnapshots.add(change.getNewIndex(), change.getDocument());
-                collectionsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+                featuredCollectionsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -243,8 +243,8 @@ public class FeaturedCollectionFragment extends Fragment implements
     protected void onDocumentRemoved(DocumentChange change) {
         try {
             documentSnapshots.remove(change.getOldIndex());
-            collectionsAdapter.notifyItemRemoved(change.getOldIndex());
-            collectionsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+            featuredCollectionsAdapter.notifyItemRemoved(change.getOldIndex());
+            featuredCollectionsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
         }catch (Exception e){
             e.printStackTrace();
         }

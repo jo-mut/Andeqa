@@ -4,7 +4,9 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -17,6 +19,7 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -26,9 +29,15 @@ import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.camera.GalleryActivity;
+import com.andeqa.andeqa.camera.PreviewActivity;
 import com.andeqa.andeqa.collections.CollectionPostsActivity;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.TransactionDetails;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,6 +53,8 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.Date;
 
 import butterknife.Bind;
@@ -52,25 +63,24 @@ import butterknife.ButterKnife;
 public class CreateCollectionActivity extends AppCompatActivity implements View.OnClickListener{
     @Bind(R.id.collectionNameEditText)EditText mCollectionNameEditText;
     @Bind(R.id.collectionNoteEditText)EditText mCollectionNoteEditText;
-    @Bind(R.id.doneTextView)TextView mDoneTextView;
+    @Bind(R.id.doneImageView)ImageView mDoneImageView;
     @Bind(R.id.noteCountTextView)TextView mNoteCountTextView;
     @Bind(R.id.nameCountTextView)TextView mNameCountTextView;
     @Bind(R.id.collectionCoverImageView)ImageView mCollectionCoverImageView;
     @Bind(R.id.collectionRelativeLayout)RelativeLayout mCollectionRelativeLayout;
-    @Bind(R.id.addCollectionTextView)TextView mAddCollectionTextView;
     @Bind(R.id.addRelativeLayout)RelativeLayout mAddRelativeLayout;
 
 
     private Uri photoUri;
     private static final String KEY_IMAGE = "IMAGE FROM GALLERY";
-    private static final String TAG = "CreatePostActivity";
+    private static final String TAG = CreateCollectionActivity.class.getSimpleName();
+
     private ProgressDialog progressDialog;
     private FirebaseAuth firebaseAuth;
 
     private static final int DEFAULT_TITLE_LENGTH_LIMIT = 25;
     private static final int DEFAULT_DESCRIPTION_LENGTH_LIMIT = 100;
     private static final int IMAGE_GALLERY_REQUEST = 112;
-    private Toolbar toolbar;
 
     //FIRESTORE
     private FirebaseFirestore firebaseFirestore;
@@ -80,8 +90,14 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
     private DatabaseReference postReference;
     private CollectionReference collectionCollection;
 
+    //intent extras
     private static final String COLLECTION_ID = "collection id";
     private static final String EXTRA_USER_UID = "uid";
+    private static final String GALLERY_PATH ="gallery image";
+    private static final String COLLECTION_TAG = CreateCollectionActivity.class.getSimpleName();
+    private String image;
+
+
 
 
     @Override
@@ -90,13 +106,10 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
         setContentView(R.layout.activity_create_collection);
         ButterKnife.bind(this);
 
-        mDoneTextView.setOnClickListener(this);
-        mAddRelativeLayout.setOnClickListener(this);
-
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_black);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -104,11 +117,20 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
             }
         });
 
+        mDoneImageView.setOnClickListener(this);
+        mAddRelativeLayout.setOnClickListener(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
-        if (firebaseAuth.getCurrentUser() != null){
+        if (getIntent().getExtras() != null){
+            if (getIntent().getStringExtra(GALLERY_PATH) != null){
+                image = getIntent().getStringExtra(GALLERY_PATH);
 
+            }
+        }
+
+
+        if (firebaseAuth.getCurrentUser() != null){
             //initialize firestore
             firebaseFirestore =  FirebaseFirestore.getInstance();
             //get the reference to posts(collection reference)
@@ -127,6 +149,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                     .LengthFilter(DEFAULT_DESCRIPTION_LENGTH_LIMIT)});
             textWatchers();
             uploadingToFirebaseDialog();
+            loadCoverPhoto();
 
             //permission
            int version = Build.VERSION.SDK_INT;
@@ -137,6 +160,17 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
            }
 
         }
+    }
+
+    private void loadCoverPhoto(){
+        if (image != null){
+            mAddRelativeLayout.setVisibility(View.GONE);
+            mCollectionRelativeLayout.setVisibility(View.VISIBLE);
+            Picasso.with(CreateCollectionActivity.this)
+                    .load(new File(image))
+                    .into(mCollectionCoverImageView);
+        }
+
     }
 
     private void textWatchers(){
@@ -242,6 +276,13 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
             final DatabaseReference collectionRef= postReference.push();
             final String collectionId = collectionRef.getKey();
 
+            //get the data from the imageview as bytes
+            mCollectionCoverImageView.setDrawingCacheEnabled(true);
+            Bitmap bitmap = ((BitmapDrawable) mCollectionCoverImageView.getDrawable()).getBitmap();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            final byte[] data = baos.toByteArray();
+
             collectionCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot documentSnapshots) {
@@ -257,13 +298,13 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                     transactionDetails.setWallet_balance(0.0);
                     collectionOwnersCollection.document(collectionId).set(transactionDetails);
 
-                    if (photoUri != null){
+                    if (data != null){
                         StorageReference storageReference = FirebaseStorage
                                 .getInstance().getReference()
                                 .child(Constants.USER_COLLECTIONS)
                                 .child(collectionId);
 
-                        UploadTask uploadTask = storageReference.putFile(photoUri);
+                        UploadTask uploadTask = storageReference.putBytes(data);
                         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -352,49 +393,35 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
 
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK){
-            if(requestCode == IMAGE_GALLERY_REQUEST && data != null){
-                photoUri = data.getData();
-                if (photoUri != null){
-                    mAddRelativeLayout.setVisibility(View.GONE);
-                    mCollectionRelativeLayout.setVisibility(View.VISIBLE);
-                    Picasso.with(this)
-                            .load(photoUri)
-                            .into(mCollectionCoverImageView,
-                                    new Callback.EmptyCallback(){
-                                @Override
-                                public void onSuccess(){
-
-                                }
-                            });
-
-                }
-            }else {
-                super.onActivityResult(requestCode, resultCode, data);
-            }
-        }
-    }
-
-
 
     @Override
     public void onClick(View v){
 
-        if (v == mDoneTextView){
+        if (v == mDoneImageView){
             createCollection();
         }
 
         if (v == mAddRelativeLayout){
-            Intent intent = new Intent();
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            intent.setType("image/*");
-            startActivityForResult(intent, IMAGE_GALLERY_REQUEST);
+            mAddRelativeLayout.setVisibility(View.GONE);
+            mCollectionRelativeLayout.setVisibility(View.VISIBLE);
+            Intent intent = new Intent(CreateCollectionActivity.this, GalleryActivity.class);
+            intent.putExtra(CreateCollectionActivity.COLLECTION_TAG, CreateCollectionActivity.class.getSimpleName());
+            startActivity(intent);
+            finish();
+
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
 }
 
 

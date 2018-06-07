@@ -118,5 +118,8 @@
     <string name="title_notifications">Notifications</string>
     <string name="title_activity_collections">CollectionsActivity</string>
 
+    <!--camera-->
+    <string name="file_limit_size_upload_format">Files must be less than %sMB</string>
+
 
 </resources>

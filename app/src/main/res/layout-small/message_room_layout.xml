@@ -70,6 +70,7 @@
                 android:id="@+id/lastMessageTextView"
                 android:textSize="12sp"
                 android:padding="3dp"
+                android:textColor="@android:color/black"
                 android:layout_below="@+id/usernameTextView"
                 android:layout_centerVertical="true" />
 

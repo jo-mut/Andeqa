@@ -30,8 +30,8 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-public class CollectionsAdapter extends RecyclerView.Adapter<CollectionViewHolder> {
-    private static final String TAG = CollectionsAdapter.class.getSimpleName();
+public class FeaturedCollectionsAdapter extends RecyclerView.Adapter<CollectionViewHolder> {
+    private static final String TAG = FeaturedCollectionsAdapter.class.getSimpleName();
 
     private Context mContext;
     //firestore
@@ -45,7 +45,7 @@ public class CollectionsAdapter extends RecyclerView.Adapter<CollectionViewHolde
     private static final int MAX_HEIGHT = 200;
     private List<DocumentSnapshot> featuredCollections = new ArrayList<>();
 
-    public CollectionsAdapter(Context mContext) {
+    public FeaturedCollectionsAdapter(Context mContext) {
         this.mContext = mContext;
     }
 
@@ -153,8 +153,8 @@ public class CollectionsAdapter extends RecyclerView.Adapter<CollectionViewHolde
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, CollectionPostsActivity.class);
-                intent.putExtra(CollectionsAdapter.COLLECTION_ID, collectionId);
-                intent.putExtra(CollectionsAdapter.EXTRA_USER_UID, uid);
+                intent.putExtra(FeaturedCollectionsAdapter.COLLECTION_ID, collectionId);
+                intent.putExtra(FeaturedCollectionsAdapter.EXTRA_USER_UID, uid);
                 mContext.startActivity(intent);
             }
         });

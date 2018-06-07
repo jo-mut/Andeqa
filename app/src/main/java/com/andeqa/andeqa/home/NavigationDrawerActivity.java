@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.camera.CameraActivity;
 import com.andeqa.andeqa.collections.CollectionsFragment;
 import com.andeqa.andeqa.creation.CreateCollectionActivity;
 import com.andeqa.andeqa.creation.CreatePostActivity;
@@ -411,7 +412,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
     public void onClick(View v){
 
         if (v == mFloatingActionButton){
-            Intent intent = new Intent(NavigationDrawerActivity.this, CreateCollectionActivity.class);
+            Intent intent = new Intent(NavigationDrawerActivity.this, CameraActivity.class);
             startActivity(intent);
         }
 

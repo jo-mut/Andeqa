@@ -56,7 +56,7 @@ public class CommentsActivity extends AppCompatActivity implements
     private DatabaseReference databaseReference;
     //firestore
     private CollectionReference commentsCollection;
-    private CollectionReference collectionsPostsCollection;
+    private CollectionReference collectionsCollection;
     private Query commentQuery;
     private CollectionReference usersCollection;
     private CollectionReference timelineCollection;
@@ -67,6 +67,8 @@ public class CommentsActivity extends AppCompatActivity implements
     private static final String COLLECTION_ID = "collection id";
     private static final String EXTRA_POST_ID = "post id";
     private static final String EXTRA_USER_UID = "uid";
+    private static final String TYPE = "type";
+    private String mType;
     private static final String TAG = CommentsActivity.class.getSimpleName();
     private boolean processFollow = false;
     private LinearLayoutManager layoutManager;
@@ -83,10 +85,10 @@ public class CommentsActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_comments);
         ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -104,18 +106,22 @@ public class CommentsActivity extends AppCompatActivity implements
             firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
             mPostId = getIntent().getStringExtra(EXTRA_POST_ID);
-            if(mPostId == null){
-                throw new IllegalArgumentException("pass a post id");
-            }
-
             mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
-            if(mCollectionId == null){
-                throw new IllegalArgumentException("pass a collection id");
-            }
+            mType = getIntent().getStringExtra(TYPE);
 
             //firestore
-            collectionsPostsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
                     .document("collections").collection(mCollectionId);
+
+            //firestore
+            if (mType.equals("single")){
+                collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("singles").collection(mCollectionId);
+            }else{
+                collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("collections").collection(mCollectionId);
+            }
+
             commentsCollection = FirebaseFirestore.getInstance().collection(Constants.COMMENTS)
                     .document("post_ids").collection(mPostId);
             commentQuery = commentsCollection.orderBy("time", Query.Direction.DESCENDING);
@@ -309,7 +315,7 @@ public class CommentsActivity extends AppCompatActivity implements
 
 
                 //record the comment on the timeline
-                collectionsPostsCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                collectionsCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 

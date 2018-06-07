@@ -57,6 +57,9 @@ public class WalletAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private FirebaseAuth firebaseAuth;
     private static final String EXTRA_POST_ID = "post id";
     private static final String COLLECTION_ID = "collection id";
+    private static final String EXTRA_USER_UID = "uid";
+    private static final String TYPE = "type";
+
     private DecimalFormat formatter =  new DecimalFormat("0.00000000");
     private static final String TAG = WalletAdapter.class.getSimpleName();
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
@@ -195,6 +198,7 @@ public class WalletAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 if (documentSnapshot.exists()){
                     final Post post = documentSnapshot.toObject(Post.class);
                     final String collectionId = post.getCollection_id();
+                    final String type = post.getType();
 
                     collectionsPosts.document("collections").collection(collectionId)
                             .document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -207,6 +211,8 @@ public class WalletAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
                             if (documentSnapshot.exists()){
                                 final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                                final String uid = collectionPost.getUser_id();
+
 
                                 Picasso.with(context)
                                         .load(collectionPost.getImage())
@@ -239,21 +245,24 @@ public class WalletAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                             }
                                         });
 
+                                holder.postImageView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent intent = new Intent(context, PostDetailActivity.class);
+                                        intent.putExtra(WalletAdapter.EXTRA_POST_ID, postId);
+                                        intent.putExtra(WalletAdapter.COLLECTION_ID, collectionId);
+                                        intent.putExtra(WalletAdapter.EXTRA_USER_UID, uid);
+                                        intent.putExtra(WalletAdapter.TYPE, type);
+                                        context.startActivity(intent);
+                                    }
+                                });
 
 
                             }
                         }
                     });
 
-                    holder.postImageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent intent = new Intent(context, PostDetailActivity.class);
-                            intent.putExtra(WalletAdapter.EXTRA_POST_ID, postId);
-                            intent.putExtra(WalletAdapter.COLLECTION_ID, collectionId);
-                            context.startActivity(intent);
-                        }
-                    });
+
 
 
                 }
@@ -326,6 +335,7 @@ public class WalletAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 if (documentSnapshot.exists()){
                     final Post post = documentSnapshot.toObject(Post.class);
                     final String collectionId = post.getCollection_id();
+                    final String type = post.getType();
 
                     collectionsPosts.document("collections").collection(collectionId)
                             .document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -338,6 +348,7 @@ public class WalletAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
                             if (documentSnapshot.exists()){
                                 final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                                final String uid = collectionPost.getUser_id();
 
                                 Picasso.with(context)
                                         .load(collectionPost.getImage())
@@ -370,19 +381,20 @@ public class WalletAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                             }
                                         });
 
+                                holder.postImageView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent intent = new Intent(context, PostDetailActivity.class);
+                                        intent.putExtra(WalletAdapter.EXTRA_POST_ID, postId);
+                                        intent.putExtra(WalletAdapter.COLLECTION_ID, collectionId);
+                                        intent.putExtra(WalletAdapter.EXTRA_USER_UID, uid);
+                                        intent.putExtra(WalletAdapter.TYPE, type);
+                                        context.startActivity(intent);
+                                    }
+                                });
 
 
                             }
-                        }
-                    });
-
-                    holder.postImageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent intent = new Intent(context, PostDetailActivity.class);
-                            intent.putExtra(WalletAdapter.EXTRA_POST_ID, postId);
-                            intent.putExtra(WalletAdapter.COLLECTION_ID, collectionId);
-                            context.startActivity(intent);
                         }
                     });
 

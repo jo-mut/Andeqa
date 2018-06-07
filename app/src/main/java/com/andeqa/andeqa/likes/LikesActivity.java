@@ -61,25 +61,21 @@ public class LikesActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_likes);
         ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
         });
-
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
             mPostKey = getIntent().getStringExtra(EXTRA_POST_KEY);
-            if(mPostKey == null){
-                throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
-            }
             //firestore
             likesCollection = FirebaseFirestore.getInstance().collection(Constants.LIKES);
             likesQuery = likesCollection.document(mPostKey).collection("likes")

@@ -15,6 +15,7 @@ import com.andeqa.andeqa.home.PostDetailActivity;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Market;
+import com.andeqa.andeqa.models.Post;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -46,6 +47,7 @@ public class BestPostAdapter extends RecyclerView.Adapter<ExploreViewHolder> {
     private static final String EXTRA_POST_ID = "post id";
     private static final String EXTRA_USER_UID = "uid";
     private static final String COLLECTION_ID = "collection id";
+    private static final String TYPE = "type";
     private static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
@@ -106,8 +108,9 @@ public class BestPostAdapter extends RecyclerView.Adapter<ExploreViewHolder> {
                 }
 
                 if (documentSnapshot.exists()){
-                    final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
-                    final String collectionId = collectionPost.getCollection_id();
+                    final Post post = documentSnapshot.toObject(Post.class);
+                    final String collectionId = post.getCollection_id();
+                    final String type = post.getType();
 
                     holder.postImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -116,6 +119,7 @@ public class BestPostAdapter extends RecyclerView.Adapter<ExploreViewHolder> {
                             intent.putExtra(BestPostAdapter.EXTRA_POST_ID, postId);
                             intent.putExtra(BestPostAdapter.COLLECTION_ID, collectionId);
                             intent.putExtra(BestPostAdapter.EXTRA_USER_UID, uid);
+                            intent.putExtra(BestPostAdapter.TYPE, type);
                             mContext.startActivity(intent);
                         }
                     });

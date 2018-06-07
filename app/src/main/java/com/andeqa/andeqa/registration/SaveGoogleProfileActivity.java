@@ -45,7 +45,7 @@ public class SaveGoogleProfileActivity extends AppCompatActivity implements View
     @Bind(R.id.secondNameEditText)EditText mSecondNameEditText;
     @Bind(R.id.usernameEditText) EditText mUsernameEditText;
     @Bind(R.id.profileImageView)CircleImageView mProfilePictureImageView;
-    @Bind(R.id.updateProfilePictureImageButton)ImageButton mUpdateProfilePictureImageButton;
+    @Bind(R.id.profilePhotoImageButton)ImageButton mUpdateProfilePictureImageButton;
     @Bind(R.id.submitUserInfoButton)Button mSubmitUserInfoButton;
 
 

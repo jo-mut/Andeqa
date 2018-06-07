@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -26,7 +25,6 @@ import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.creation.CreateCollectionActivity;
 import com.andeqa.andeqa.home.NavigationDrawerActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -42,8 +40,6 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.rilixtech.Country;
-import com.rilixtech.CountryCodePicker;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -57,7 +53,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
     @Bind(R.id.secondNameEditText)EditText mSecondNameEditText;
     @Bind(R.id.usernameEditText) EditText mUsernameEditText;
     @Bind(R.id.profileImageView)CircleImageView mProfilePictureImageView;
-    @Bind(R.id.updateProfilePictureImageButton)ImageButton mUpdateProfilePictureImageButton;
+    @Bind(R.id.profilePhotoImageButton)ImageButton mUpdateProfilePictureImageButton;
     @Bind(R.id.submitUserInfoButton)Button mSubmitUserInfoButton;
     @Bind(R.id.errorRelativeLayout)RelativeLayout mErrorRelativeLayout;
     @Bind(R.id.errorTextView)TextView mErrorTextView;
@@ -98,14 +94,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
 
             email = getIntent().getStringExtra(EMAIL);
-            if(email == null){
-               throw new IllegalArgumentException("pass EMAIL");
-            }
-
             password = getIntent().getStringExtra(PASSWORD);
-            if(password == null){
-               throw new IllegalArgumentException("pass PASSWORD");
-            }
 
             createAuthProgressDialog();
             verifyingYourEmailDialog();

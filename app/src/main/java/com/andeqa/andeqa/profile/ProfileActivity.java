@@ -56,8 +56,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Bind(R.id.profileImageView)CircleImageView mProifleImageView;
     @Bind(R.id.fullNameTextView)TextView mFullNameTextView;
     @Bind(R.id.bioTextView)TextView mBioTextView;
+    @Bind(R.id.bioRelativeLayout)RelativeLayout mBioRelativeLayout;
     @Bind(R.id.collectionsCountTextView)TextView mCollectionsCountTextView;
-    @Bind(R.id.collectionsCountRelativeLayout)RelativeLayout mCollectionCountRelativeLayout;
+    @Bind(R.id.postsCountTextView)TextView mPostCountTextView;
+    @Bind(R.id.singlesCountTextView)TextView mSinglesCountTextView;
+    @Bind(R.id.collectionsRelativeLayout)RelativeLayout mCollectionCountRelativeLayout;
     @Bind(R.id.profileCoverImageView)ImageView mProfileCover;
     @Bind(R.id.collapsing_toolbar)CollapsingToolbarLayout collapsingToolbarLayout;
     @Bind(R.id.sendMessageButton)Button mSendMessageButton;
@@ -73,6 +76,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private CollectionReference collectionCollection;
     private CollectionReference usersCollections;
     private CollectionReference roomsCollection;
+    private CollectionReference postsCollection;
     //firebase
     private DatabaseReference databaseReference;
 
@@ -114,7 +118,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -122,17 +126,14 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
 
-
         if (firebaseAuth.getCurrentUser()!= null){
 
             mUid = getIntent().getStringExtra(EXTRA_USER_UID);
-            if(mUid == null){
-                throw new IllegalArgumentException("pass an EXTRA_UID");
-            }
 
             usersCollections = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             collectionCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
             roomsCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
+            postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
 
             //firebase
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
@@ -175,8 +176,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             mAccountSettingsLinearLayout.setOnClickListener(this);
             mWalletLinearLayout.setOnClickListener(this);
             mSignOutLinearLayout.setOnClickListener(this);
-
-
         }
 
 
@@ -185,8 +184,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     private void fetchData(){
 
-        collectionCollection.orderBy("time", Query.Direction.DESCENDING)
-                .whereEqualTo("user_id", mUid).addSnapshotListener(new EventListener<QuerySnapshot>() {
+        collectionCollection.orderBy("user_id", Query.Direction.DESCENDING)
+                .whereEqualTo("user_id", mUid)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
@@ -194,15 +194,59 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     return;
                 }
 
-                final int collectionCount = queryDocumentSnapshots.size();
-
                 if (!queryDocumentSnapshots.isEmpty()){
+                    final int collectionCount = queryDocumentSnapshots.size();
                     mCollectionsCountTextView.setText(collectionCount + "");
                 }else {
                     mCollectionsCountTextView.setText("0");
                 }
             }
         });
+
+        postsCollection.orderBy("user_id").whereEqualTo("user_id", mUid)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (!queryDocumentSnapshots.isEmpty()){
+                    final int count = queryDocumentSnapshots.size();
+                    if (count > 0){
+                        mPostCountTextView.setText(count + "");
+                    }
+                }else {
+                    mPostCountTextView.setText("0");
+                }
+
+            }
+        });
+
+        postsCollection.orderBy("user_id").whereEqualTo("type", "single")
+                .whereEqualTo("user_id", mUid)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!queryDocumentSnapshots.isEmpty()){
+                            final int count = queryDocumentSnapshots.size();
+                            if (count > 0){
+                                mSinglesCountTextView.setText(count + "");
+                            }
+                        }else {
+                            mPostCountTextView.setText("0");
+                        }
+
+                    }
+                });
 
         usersCollections.document(mUid)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {

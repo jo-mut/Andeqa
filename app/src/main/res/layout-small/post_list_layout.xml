@@ -59,6 +59,8 @@
                             android:text="" />
 
                         <LinearLayout
+                            android:id="@+id/creditsLinearLayout"
+                            android:padding="5dp"
                             android:orientation="horizontal"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">

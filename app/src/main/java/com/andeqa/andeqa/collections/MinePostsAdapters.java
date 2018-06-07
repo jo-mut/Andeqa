@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.comments.CommentsActivity;
-import com.andeqa.andeqa.home.ImageViewActivity;
 import com.andeqa.andeqa.home.PostDetailActivity;
 import com.andeqa.andeqa.likes.LikesActivity;
 import com.andeqa.andeqa.models.Andeqan;
@@ -25,7 +24,6 @@ import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Timeline;
-import com.andeqa.andeqa.models.TransactionDetails;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -48,10 +46,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
-public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<CollectionPostsViewHolder> {
-    private static final String TAG = ProfileCollectionPostsAdapter.class.getSimpleName();
+public class MinePostsAdapters extends RecyclerView.Adapter<CollectionPostsViewHolder> {
+    private static final String TAG = MinePostsAdapters.class.getSimpleName();
     private Context mContext;
     //firestore
     private FirebaseFirestore firebaseFirestore;
@@ -83,11 +79,12 @@ public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<Collecti
     private static final String COLLECTION_ID = "collection id";
     private static final String EXTRA_POST_ID = "post id";
     private static final String EXTRA_USER_UID = "uid";
+    private static final String TYPE = "type";
     private  static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
 
-    public ProfileCollectionPostsAdapter(Context mContext) {
+    public MinePostsAdapters(Context mContext) {
         this.mContext = mContext;
     }
 
@@ -114,14 +111,22 @@ public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<Collecti
         final String collectionId = collectionPost.getCollection_id();
         final String postId = collectionPost.getPost_id();
         final String uid = collectionPost.getUser_id();
+        final String type = collectionPost.getType();
 
 
         //initialize firebase auth
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
             //initialize firestore
-            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                    .document("collection").collection(collectionId);
+
+            //firestore
+            if (type.equals("single")){
+                collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("singles").collection(collectionId);
+            }else{
+                collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("collections").collection(collectionId);
+            }
             postOwnersReference = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
@@ -212,7 +217,7 @@ public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<Collecti
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, LikesActivity.class);
-                intent.putExtra(ProfileCollectionPostsAdapter.EXTRA_POST_ID, postId);
+                intent.putExtra(MinePostsAdapters.EXTRA_POST_ID, postId);
                 mContext.startActivity(intent);
             }
         });
@@ -221,8 +226,8 @@ public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<Collecti
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, CommentsActivity.class);
-                intent.putExtra(ProfileCollectionPostsAdapter.COLLECTION_ID, collectionId);
-                intent.putExtra(ProfileCollectionPostsAdapter.EXTRA_POST_ID, postId);
+                intent.putExtra(MinePostsAdapters.COLLECTION_ID, collectionId);
+                intent.putExtra(MinePostsAdapters.EXTRA_POST_ID, postId);
                 mContext.startActivity(intent);
             }
         });
@@ -231,20 +236,15 @@ public class ProfileCollectionPostsAdapter extends RecyclerView.Adapter<Collecti
             @Override
             public void onClick(View view) {
                 Intent intent =  new Intent(mContext, PostDetailActivity.class);
-                intent.putExtra(ProfileCollectionPostsAdapter.EXTRA_POST_ID, postId);
-                intent.putExtra(ProfileCollectionPostsAdapter.COLLECTION_ID, collectionId);
-                intent.putExtra(ProfileCollectionPostsAdapter.EXTRA_USER_UID, uid);
+                intent.putExtra(MinePostsAdapters.EXTRA_POST_ID, postId);
+                intent.putExtra(MinePostsAdapters.COLLECTION_ID, collectionId);
+                intent.putExtra(MinePostsAdapters.EXTRA_USER_UID, uid);
+                intent.putExtra(MinePostsAdapters.TYPE, type);
                 mContext.startActivity(intent);
                 ((Activity)mContext).finish();
             }
         });
 
-        holder.profileImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((Activity)mContext).finish();
-            }
-        });
 
         senseCreditReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override

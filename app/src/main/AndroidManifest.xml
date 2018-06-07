@@ -13,12 +13,23 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
+    <uses-feature android:name="android.hardware.camera.front" />
+    <uses-feature android:name="android.hardware.microphone" />
+    <uses-feature android:name="android.hardware.camera2" />
     <uses-feature
-        android:name="android.hardware.camera2"
-        android:required="false" />
+        android:name="android.hardware.camera.autofocus"
+        android:required="true" />
+    <uses-feature android:name="android.hardware.camera.flash" />
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -42,19 +53,9 @@
             android:name=".registration.SignUpActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:label="Share post"
             android:name=".creation.CreatePostActivity"
-            android:screenOrientation="portrait">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.SEND" /> -->
-
-
-            <!-- <category android:name="android.intent.category.DEFAULT" /> -->
-
-
-            <!-- <data android:mimeType="image/*" /> -->
-            <!-- </intent-filter> -->
-        </activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".profile.UpdateProfileActivity"
             android:label="Account settings"
@@ -85,7 +86,6 @@
         <activity
             android:name=".profile.ProfileActivity"
             android:label="Profile"
-            android:launchMode="standard"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
@@ -107,7 +107,6 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".home.ImageViewActivity"
-            android:label="Post"
             android:screenOrientation="portrait" />
         <activity
             android:name=".wallet.WalletActivity"
@@ -120,11 +119,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
+            android:label="Share post"
             android:name=".registration.CreateProfileActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".home.PostDetailActivity"
-            android:label="Post"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
@@ -156,21 +155,21 @@
         <activity
             android:name=".creation.CreateCollectionActivity"
             android:label="Create collection"
-            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
             android:name=".collections.CollectionPostsActivity"
             android:label="Posts"
-            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
             android:name=".settings.CollectionSettingsActivity"
             android:label="Collection settings"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".market.RedeemCreditsActivity"
-            android:label="Redeem"
-            android:screenOrientation="portrait" />
+            android:label="Redeem uCredits"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".message.MessagingActivity"
             android:label="Chats"
@@ -179,11 +178,36 @@
         <activity
             android:name=".collections.ProfileCollectionsActivity"
             android:label="Collection"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".collections.MinePostsActivity"
+            android:label="Posts"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".camera.CameraActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".collections.ProfileCollectionPostsActivity"
-            android:label="Posts"
+            android:label="Share single"
+            android:name=".camera.PreviewActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".camera.CameraPermissionsActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".camera.GalleryActivity"
+            android:label="Gallery"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

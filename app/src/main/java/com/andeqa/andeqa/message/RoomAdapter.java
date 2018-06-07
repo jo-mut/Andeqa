@@ -89,7 +89,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
 
         }
 
-        if (receiverStatus.equals("un_read") && receiverUid.equals(firebaseAuth.getCurrentUser().getUid())){
+        if (receiverUid.equals(firebaseAuth.getCurrentUser().getUid())){
             holder.lastMessageTextView.setTypeface(holder.lastMessageTextView.getTypeface(), Typeface.BOLD);
             holder.roomRelativeLayout.setOnClickListener(new View.OnClickListener() {
                 @Override

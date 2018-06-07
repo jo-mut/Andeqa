@@ -47,6 +47,10 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnClick
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     private static final String COLLECTION_ID = "collection id";
     private static final String EXTRA_POST_ID = "post id";
+    private static final String TYPE = "type";
+    private String mType;
+
+
     private String mPostId;
     private String mCollectionId;
     public boolean showOnClick = true;
@@ -57,37 +61,44 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnClick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_view);
         ButterKnife.bind(this);
-        setSupportActionBar(mToolbar);
 
-        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
         });
-
         firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseFirestore.setLoggingEnabled(true);
+
 
 
         if (firebaseAuth.getCurrentUser()!=null){
             mCingleImageView.setOnClickListener(this);
 
             mPostId = getIntent().getStringExtra(EXTRA_POST_ID);
-            if(mPostId == null){
-                throw new IllegalArgumentException("pass an post id");
-            }
-
             mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
-            if(mCollectionId == null){
-                throw new IllegalArgumentException("pass a collection id");
+            mType = getIntent().getStringExtra(TYPE);
+
+
+
+
+            //firestore
+            if (mType.equals("single")){
+                collectionPost = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("singles").collection(mCollectionId);
+                getSupportActionBar().setTitle("Single");
+            }else {
+                collectionPost = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("collections").collection(mCollectionId);
+                getSupportActionBar().setTitle("Post");
             }
 
             likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
             commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
-            collectionPost = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                    .document("collections").collection(mCollectionId);
+
             commentsCountQuery = commentsReference;
             //firebase
             cinglesRef = FirebaseDatabase.getInstance().getReference(Constants.USER_COLLECTIONS);

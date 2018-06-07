@@ -71,7 +71,8 @@ public class ProfileCollectionsActivity extends AppCompatActivity implements
         /**set the toolbar*/
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+
+        toolbar.setNavigationIcon(R.drawable.ic_arrow);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -86,9 +87,6 @@ public class ProfileCollectionsActivity extends AppCompatActivity implements
 
             /**get intent extras*/
             mUid = getIntent().getStringExtra(EXTRA_USER_UID);
-            if(mUid == null){
-                throw new IllegalArgumentException("pass an EXTRA_UID");
-            }
 
             /**firestore refences paths*/
             usersCollections = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);

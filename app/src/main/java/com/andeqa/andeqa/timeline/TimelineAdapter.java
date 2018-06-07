@@ -52,6 +52,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private static final String EXTRA_USER_UID = "uid";
     private static final String EXTRA_POST_ID = "post id";
     private static final String COLLECTION_ID = "collection id";
+    private static final String TYPE = "type";
 
     private static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
@@ -170,6 +171,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 if (documentSnapshot.exists()){
                     Post post = documentSnapshot.toObject(Post.class);
                     final String collectionId = post.getCollection_id();
+                    final String type = post.getType();
 
                     collectionsPostCollections.document("collections").collection(collectionId)
                             .document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -203,7 +205,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                                         .load(image)
                                                         .resize(MAX_WIDTH, MAX_HEIGHT)
                                                         .centerCrop()
-                                                        .placeholder(R.drawable.ic_user)
+                                                        .placeholder(R.drawable.image_place_holder)
                                                         .into(holder.postImageView);
 
                                             }
@@ -216,6 +218,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                         intent.putExtra(TimelineAdapter.EXTRA_USER_UID, uid);
                                         intent.putExtra(TimelineAdapter.EXTRA_POST_ID, postId);
                                         intent.putExtra(TimelineAdapter.COLLECTION_ID, collectionId);
+                                        intent.putExtra(TimelineAdapter.TYPE, type);
                                         mContext.startActivity(intent);
                                     }
                                 });
@@ -355,6 +358,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 if (documentSnapshot.exists()){
                     Post post = documentSnapshot.toObject(Post.class);
                     final String collectionId = post.getCollection_id();
+                    final String type  = post.getType();
 
                     collectionsPostCollections.document("collections").collection(collectionId)
                             .document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -401,6 +405,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                         intent.putExtra(TimelineAdapter.EXTRA_USER_UID, uid);
                                         intent.putExtra(TimelineAdapter.EXTRA_POST_ID, postId);
                                         intent.putExtra(TimelineAdapter.COLLECTION_ID, collectionId);
+                                        intent.putExtra(TimelineAdapter.TYPE, type);
                                         mContext.startActivity(intent);
                                     }
                                 });

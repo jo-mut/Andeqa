@@ -20,7 +20,6 @@ import android.widget.TextView;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.creation.CreatePostActivity;
-import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.TransactionDetails;
 import com.andeqa.andeqa.settings.CollectionSettingsActivity;
@@ -44,7 +43,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class ProfileCollectionPostsActivity extends AppCompatActivity implements View.OnClickListener {
+public class MinePostsActivity extends AppCompatActivity implements View.OnClickListener {
     @Bind(R.id.collectionsPostsRecyclerView)RecyclerView mCollectionsPostsRecyclerView;
     @Bind(R.id.createPostButton)FloatingActionButton mCreatePostButton;
     @Bind(R.id.collectionCoverImageView)ImageView mCollectionCoverImageView;
@@ -63,7 +62,7 @@ public class ProfileCollectionPostsActivity extends AppCompatActivity implements
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore adapters
-    private ProfileCollectionPostsAdapter profileCollectionPostsAdapter;
+    private MinePostsAdapters minePostsAdapters;
     private static final String KEY_LAYOUT_POSITION = "layout pooition";
     private Parcelable recyclerViewState;
     private  static final int MAX_WIDTH = 400;
@@ -82,7 +81,7 @@ public class ProfileCollectionPostsActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile_collection_posts);
+        setContentView(R.layout.activity_mine_posts);
         ButterKnife.bind(this);
         //initialize click listener
         mCreatePostButton.setOnClickListener(this);
@@ -93,26 +92,20 @@ public class ProfileCollectionPostsActivity extends AppCompatActivity implements
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
         });
+        collapsingToolbarLayout.setTitle("Posts");
+
 
         if (firebaseAuth.getCurrentUser()!= null){
 
             collectionId = getIntent().getStringExtra(COLLECTION_ID);
-            if(collectionId == null){
-                throw new IllegalArgumentException("pass an collection id");
-            }
-
             mUid = getIntent().getStringExtra(EXTRA_USER_UID);
-            if(mUid == null){
-                throw new IllegalArgumentException("pass an EXTRA_UID");
-            }
-
 
             collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
                     .document("collections").collection(collectionId);
@@ -129,28 +122,6 @@ public class ProfileCollectionPostsActivity extends AppCompatActivity implements
             }
 
             //add appropriate title to the action bar
-            if (mUid.equals(firebaseAuth.getCurrentUser().getUid())){
-                mCreatePostButton.setVisibility(View.VISIBLE);
-                collapsingToolbarLayout.setTitle("Add to collection");
-            }else {
-                usersCollection.document(mUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (documentSnapshot.exists()){
-                            final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                            final String username = cinggulan.getUsername();
-                            collapsingToolbarLayout.setTitle(username + "'s" + " collection");
-                        }
-                    }
-                });
-            }
-
             mCollectionsPostsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
                 @Override
                 public void onLoadMore() {
@@ -198,7 +169,7 @@ public class ProfileCollectionPostsActivity extends AppCompatActivity implements
 
         if (id == R.id.action_collections_settings){
             Intent intent = new Intent(this,    CollectionSettingsActivity.class);
-            intent.putExtra(ProfileCollectionPostsActivity.COLLECTION_ID, collectionId);
+            intent.putExtra(MinePostsActivity.COLLECTION_ID, collectionId);
             startActivity(intent);
         }
 
@@ -235,10 +206,10 @@ public class ProfileCollectionPostsActivity extends AppCompatActivity implements
 
     private void setRecyclerView(){
         // RecyclerView
-        profileCollectionPostsAdapter = new ProfileCollectionPostsAdapter(ProfileCollectionPostsActivity.this);
-        mCollectionsPostsRecyclerView.setAdapter(profileCollectionPostsAdapter);
+        minePostsAdapters = new MinePostsAdapters(MinePostsActivity.this);
+        mCollectionsPostsRecyclerView.setAdapter(minePostsAdapters);
         mCollectionsPostsRecyclerView.setHasFixedSize(false);
-        layoutManager = new LinearLayoutManager(ProfileCollectionPostsActivity.this);
+        layoutManager = new LinearLayoutManager(MinePostsActivity.this);
         layoutManager.setReverseLayout(true);
         mCollectionsPostsRecyclerView.setLayoutManager(layoutManager);
         mCollectionsPostsRecyclerView.setNestedScrollingEnabled(false);
@@ -283,7 +254,7 @@ public class ProfileCollectionPostsActivity extends AppCompatActivity implements
 
                     mCollectionNameTextView.setText(name);
                     mCollectionNoteTextView.setText(note);
-                    Picasso.with(ProfileCollectionPostsActivity.this)
+                    Picasso.with(MinePostsActivity.this)
                             .load(cover)
                             .resize(MAX_WIDTH, MAX_HEIGHT)
                             .onlyScaleDown()
@@ -297,7 +268,7 @@ public class ProfileCollectionPostsActivity extends AppCompatActivity implements
 
                                 @Override
                                 public void onError() {
-                                    Picasso.with(ProfileCollectionPostsActivity.this)
+                                    Picasso.with(MinePostsActivity.this)
                                             .load(cover)
                                             .resize(MAX_WIDTH, MAX_HEIGHT)
                                             .onlyScaleDown()
@@ -348,9 +319,9 @@ public class ProfileCollectionPostsActivity extends AppCompatActivity implements
 
     private void setNextCollectionPosts(){
         // Get the last visible document
-        final int snapshotSize = profileCollectionPostsAdapter.getItemCount();
+        final int snapshotSize = minePostsAdapters.getItemCount();
 
-        DocumentSnapshot lastVisible = profileCollectionPostsAdapter.getSnapshot(snapshotSize - 1);
+        DocumentSnapshot lastVisible = minePostsAdapters.getSnapshot(snapshotSize - 1);
 
         //retrieve the first bacth of mSnapshots
         Query nextCollectionPostsQuery = collectionsPosts.orderBy("time", Query.Direction.DESCENDING)
@@ -389,9 +360,9 @@ public class ProfileCollectionPostsActivity extends AppCompatActivity implements
     protected void onDocumentAdded(DocumentChange change) {
         mSnapshotsIds.add(change.getDocument().getId());
         mSnapshots.add(change.getDocument());
-        profileCollectionPostsAdapter.setCollectionPosts(mSnapshots);
-        profileCollectionPostsAdapter.notifyItemInserted(mSnapshots.size() -1);
-        profileCollectionPostsAdapter.getItemCount();
+        minePostsAdapters.setCollectionPosts(mSnapshots);
+        minePostsAdapters.notifyItemInserted(mSnapshots.size() -1);
+        minePostsAdapters.getItemCount();
 
     }
 
@@ -400,12 +371,12 @@ public class ProfileCollectionPostsActivity extends AppCompatActivity implements
             if (change.getOldIndex() == change.getNewIndex()) {
                 // Item changed but remained in same position
                 mSnapshots.set(change.getOldIndex(), change.getDocument());
-                profileCollectionPostsAdapter.notifyItemChanged(change.getOldIndex());
+                minePostsAdapters.notifyItemChanged(change.getOldIndex());
             } else {
                 // Item changed and changed position
                 mSnapshots.remove(change.getOldIndex());
                 mSnapshots.add(change.getNewIndex(), change.getDocument());
-                profileCollectionPostsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+                minePostsAdapters.notifyItemRangeChanged(0, mSnapshots.size());
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -415,8 +386,8 @@ public class ProfileCollectionPostsActivity extends AppCompatActivity implements
     protected void onDocumentRemoved(DocumentChange change) {
        try {
            mSnapshots.remove(change.getOldIndex());
-           profileCollectionPostsAdapter.notifyItemRemoved(change.getOldIndex());
-           profileCollectionPostsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+           minePostsAdapters.notifyItemRemoved(change.getOldIndex());
+           minePostsAdapters.notifyItemRangeChanged(0, mSnapshots.size());
        }catch (Exception e){
            e.printStackTrace();
        }
@@ -432,8 +403,8 @@ public class ProfileCollectionPostsActivity extends AppCompatActivity implements
     @Override
     public void onClick(View v){
         if (v == mCreatePostButton){
-            Intent intent = new Intent(ProfileCollectionPostsActivity.this, CreatePostActivity.class);
-            intent.putExtra(ProfileCollectionPostsActivity.COLLECTION_ID, collectionId);
+            Intent intent = new Intent(MinePostsActivity.this, CreatePostActivity.class);
+            intent.putExtra(MinePostsActivity.COLLECTION_ID, collectionId);
             startActivity(intent);
         }
 

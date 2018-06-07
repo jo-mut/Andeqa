@@ -302,6 +302,7 @@
                 </RelativeLayout>
 
                 <RelativeLayout
+                    android:visibility="gone"
                     android:padding="10dp"
                     android:id="@+id/priceRelativeLayout"
                     android:layout_width="match_parent"

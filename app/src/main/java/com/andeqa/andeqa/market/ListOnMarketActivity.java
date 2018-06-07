@@ -61,6 +61,8 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
     private static final String EXTRA_POST_ID = "post id";
     private static final String EXTRA_USER_UID = "uid";
     private static final String COLLECTION_ID = "collection id";
+    private static final String TYPE = "type";
+    private String mType;
     private String mCollectionId;
 
 
@@ -86,10 +88,10 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
         setContentView(R.layout.activity_list_on_market);
         ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,24 +99,24 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
             }
         });
 
-
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseFirestore.setLoggingEnabled(true);
 
         if (firebaseAuth.getCurrentUser() != null){
 
             mPostKey = getIntent().getStringExtra(EXTRA_POST_ID);
-            if(mPostKey == null){
-                throw new IllegalArgumentException("pass an EXTRA_POST_ID");
-            }
-
             mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
-            if (mCollectionId == null){
-                throw new IllegalArgumentException("pass a collection id");
+            mType = getIntent().getStringExtra(TYPE);
+
+            //firestore
+            if (mType.equals("single")){
+                collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("singles").collection(mCollectionId);
+            }else{
+                collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("collections").collection(mCollectionId);
             }
 
-            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                    .document("collections").collection(mCollectionId);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);

@@ -1,6 +1,5 @@
 package com.andeqa.andeqa.collections;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -145,11 +144,10 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
         holder.mCollectionsLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, ProfileCollectionPostsActivity.class);
+                Intent intent = new Intent(mContext, MinePostsActivity.class);
                 intent.putExtra(ProfileCollectionsAdapter.COLLECTION_ID, collectionId);
                 intent.putExtra(ProfileCollectionsAdapter.EXTRA_USER_UID, uid);
                 mContext.startActivity(intent);
-                ((Activity)mContext).finish();
             }
         });
 

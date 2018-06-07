@@ -61,9 +61,11 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         mSendFeedbackRelativeLayout.setOnClickListener(this);
         mUpdateProfileRelativeLayout.setOnClickListener(this);
 
-        setSupportActionBar(mToolBar);
-        mToolBar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        toolbar.setNavigationIcon(R.drawable.ic_arrow);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();

@@ -15,6 +15,8 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.likes.LikesActivity;
+import com.andeqa.andeqa.market.ListOnMarketActivity;
+import com.andeqa.andeqa.market.RedeemCreditsActivity;
 import com.andeqa.andeqa.models.Balance;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
@@ -24,6 +26,7 @@ import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.models.TransactionDetails;
 import com.andeqa.andeqa.profile.ProfileActivity;
+import com.andeqa.andeqa.settings.DialogFragmentPostSettings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -62,6 +65,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
     private Context mContext;
     private static final String EXTRA_POST_ID = "post id";
     private static final String COLLECTION_ID = "collection id";
+    private static final String TYPE = "type";
     private static final String SOURCE = PostsAdapter.class.getSimpleName();
 
     private static final String EXTRA_USER_UID =  "uid";
@@ -134,12 +138,24 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
         final String postId = post.getPost_id();
         final String uid = post.getUser_id();
         final String collectionId = post.getCollection_id();
+        final String type = post.getType();
+
+
 
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser()!= null){
             //firestore
-            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                    .document("collections").collection(collectionId);
+
+            if (type.equals("single")){
+                collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("singles").collection(collectionId);
+            }else if (type.equals("post")){
+                collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("collections").collection(collectionId);
+            }else {
+                //there is no query to run
+            }
+
             postOwnersCollection = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
@@ -264,9 +280,11 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                 Intent intent =  new Intent(mContext, CommentsActivity.class);
                 intent.putExtra(PostsAdapter.EXTRA_POST_ID, postId);
                 intent.putExtra(PostsAdapter.COLLECTION_ID, collectionId);
+                intent.putExtra(PostsAdapter.TYPE, type);
                 mContext.startActivity(intent);
             }
         });
+
 
         holder.postImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -275,6 +293,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                 intent.putExtra(PostsAdapter.EXTRA_POST_ID, postId);
                 intent.putExtra(PostsAdapter.COLLECTION_ID, collectionId);
                 intent.putExtra(PostsAdapter.EXTRA_USER_UID, uid);
+                intent.putExtra(PostsAdapter.TYPE, type);
                 mContext.startActivity(intent);
             }
         });
@@ -284,6 +303,17 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, ProfileActivity.class);
                 intent.putExtra(PostsAdapter.EXTRA_USER_UID, uid);
+                mContext.startActivity(intent);
+            }
+        });
+
+        holder.mCreditsLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, RedeemCreditsActivity.class);
+                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postId);
+                intent.putExtra(PostsAdapter.COLLECTION_ID, collectionId);
+                intent.putExtra(PostsAdapter.TYPE, type);
                 mContext.startActivity(intent);
             }
         });

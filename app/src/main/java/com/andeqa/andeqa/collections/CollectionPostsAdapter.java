@@ -87,6 +87,7 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
     private static final String COLLECTION_ID = "collection id";
     private static final String EXTRA_POST_ID = "post id";
     private static final String EXTRA_USER_UID = "uid";
+    private static final String TYPE = "type";
     private  static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
@@ -122,14 +123,23 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
         final String collectionId = collectionPost.getCollection_id();
         final String postId = collectionPost.getPost_id();
         final String uid = collectionPost.getUser_id();
+        final String type = collectionPost.getType();
 
 
         //initialize firebase auth
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
             //initialize firestore
-            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                    .document("collection").collection(collectionId);
+
+            //firestore
+            if (type.equals("single")){
+                collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("singles").collection(collectionId);
+            }else{
+                collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("collections").collection(collectionId);
+            }
+
             postOwnersReference = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
@@ -244,6 +254,7 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
                 intent.putExtra(CollectionPostsAdapter.EXTRA_POST_ID, postId);
                 intent.putExtra(CollectionPostsAdapter.COLLECTION_ID, collectionId);
                 intent.putExtra(CollectionPostsAdapter.EXTRA_USER_UID, uid);
+                intent.putExtra(CollectionPostsAdapter.TYPE, type);
                 mContext.startActivity(intent);
                 ((Activity)mContext).finish();
             }

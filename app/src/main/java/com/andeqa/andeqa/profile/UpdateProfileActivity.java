@@ -1,15 +1,11 @@
 package com.andeqa.andeqa.profile;
 
-import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
-import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -17,10 +13,6 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -31,22 +23,21 @@ import android.widget.ViewAnimator;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.Andeqan;
+import com.andeqa.andeqa.camera.GalleryActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -62,7 +53,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     @Bind(R.id.secondNameEditText)EditText mSecondNameEditText;
     @Bind(R.id.animator)ViewAnimator viewAnimator;
     @Bind(R.id.profileCoverImageView)ImageView mProfileCoverImageView;
-    @Bind(R.id.updateProfilePictureImageButton)ImageButton mUpdateProfilePictureImageButton;
+    @Bind(R.id.profilePhotoImageButton)ImageButton mUpdateProfileImageButton;
     @Bind(R.id.updateCoverTextView)TextView mUpdateCoverTextView;
     @Bind(R.id.statusCountTextView)TextView mStatusCountTextView;
     @Bind(R.id.doneEditingImageView)ImageView mDoneEditingImageView;
@@ -70,8 +61,6 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     private static  final int GALLERY_PROFILE_PHOTO_REQUEST = 111;
     private static final int GALLERY_PROFILE_COVER_PHOTO = 222;
     private static final String TAG = UpdateProfileActivity.class.getSimpleName();
-    private Uri imageUri;
-    private Uri profileUri;
     //firebase auth
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
@@ -84,6 +73,13 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     private static final int MAX_COVER_HEIGHT = 400;
     private static final int DEFAULT_TITLE_LENGTH_LIMIT = 250;
 
+    //intent extras
+    private String profileCoverIntent;
+    private String profilePhotoIntent;
+    private static final String PROFILE_PHOTO_PATH = "profile photo path";
+    private static final String PROFILE_COVER_PATH = "profile cover path";
+    private static final String GALLERY_PATH ="gallery image";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,17 +87,16 @@ public class UpdateProfileActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_update_profile);
         ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
         });
-
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 
@@ -112,21 +107,51 @@ public class UpdateProfileActivity extends AppCompatActivity implements
             mBioEditText.setFilters(new InputFilter[]{new InputFilter
                     .LengthFilter(DEFAULT_TITLE_LENGTH_LIMIT)});
             textWatchers();
+            loadProfileCover();
+            loadProfileImage();
 
-            //permission
-            int version = Build.VERSION.SDK_INT;
-            if (version > Build.VERSION_CODES.LOLLIPOP_MR1){
-                if (!checkIfAlreadyHavePermission()){
-                    requestForSpecificPermission();
-                }
-            }
-
-            mUpdateProfilePictureImageButton.setOnClickListener(this);
+            mUpdateProfileImageButton.setOnClickListener(this);
             mUpdateCoverTextView.setOnClickListener(this);
             mDoneEditingImageView.setOnClickListener(this);
         }
 
     }
+
+    private void loadProfileImage(){
+        profilePhotoIntent = getIntent().getStringExtra(PROFILE_PHOTO_PATH);
+        if (profilePhotoIntent != null){
+            Picasso.with(this)
+                    .load(new File(profilePhotoIntent))
+                    .resize(MAX_HEIGHT, MAX_WIDTH)
+                    .centerCrop()
+                    .into(mProfilePictureImageView,
+                            new Callback.EmptyCallback(){
+                                @Override
+                                public void onSuccess(){
+
+                                }
+                            });
+        }
+    }
+
+    private void loadProfileCover(){
+        profileCoverIntent = getIntent().getStringExtra(PROFILE_COVER_PATH);
+        if (profileCoverIntent != null){
+            Picasso.with(this)
+                    .load(new File(profileCoverIntent))
+                    .resize(MAX_COVER_WIDTH, MAX_COVER_HEIGHT)
+                    .centerCrop()
+                    .into(mProfileCoverImageView,
+                            new Callback.EmptyCallback(){
+                                @Override
+                                public void onSuccess(){
+
+                                }
+                            });
+        }
+    }
+
+
 
 
     private void textWatchers(){
@@ -159,122 +184,35 @@ public class UpdateProfileActivity extends AppCompatActivity implements
         });
     }
 
-    private boolean checkIfAlreadyHavePermission(){
-        int result = ContextCompat.checkSelfPermission(this,  Manifest.permission.GET_ACCOUNTS);
-        if (result == PackageManager.PERMISSION_GRANTED){
-            return true;
-        }else {
-            return false;
-        }
-    }
-
-    private void requestForSpecificPermission(){
-        ActivityCompat.requestPermissions(this, new String[]{
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-        }, 101);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode){
-            case 101:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    //granted
-                }else {
-                    // not granted
-                }
-                break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }
-
-
 
     @Override
     public void onClick(View v){
-
-        if(v == mUpdateProfilePictureImageButton){
-            Intent intent = new Intent();
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            intent.setType("image/*");
-            startActivityForResult(intent, GALLERY_PROFILE_PHOTO_REQUEST);
+        if(v == mUpdateProfileImageButton){
+            Intent intent = new Intent(UpdateProfileActivity.this, GalleryActivity.class);
+            intent.putExtra(UpdateProfileActivity.PROFILE_PHOTO_PATH, UpdateProfileActivity.class.getSimpleName());
+            startActivity(intent);
+            finish();
         }
 
         if (v ==  mDoneEditingImageView){
             updateUsernameAndBio();
 
-            Toast.makeText(UpdateProfileActivity.this, "Successfully updated", Toast.LENGTH_SHORT).show();
+            if (profilePhotoIntent != null){
+                updateProfilePhoto();
+            }
+
+            if (profileCoverIntent != null){
+                updateCoverPhoto();
+            }
+
         }
 
 
         if (v == mUpdateCoverTextView){
-            Intent intent = new Intent();
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            intent.setType("image/*");
-            startActivityForResult(intent, GALLERY_PROFILE_COVER_PHOTO);
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(resultCode == RESULT_OK) {
-            //update the profile cover photo
-            if (requestCode == GALLERY_PROFILE_COVER_PHOTO){
-                imageUri = data.getData();
-
-                Picasso.with(this).load(imageUri)
-                        .resize(MAX_COVER_WIDTH, MAX_COVER_HEIGHT)
-                        .onlyScaleDown().centerCrop()
-                        .placeholder(R.drawable.default_gradient_color)
-                        .networkPolicy(NetworkPolicy.OFFLINE)
-                        .into(mProfileCoverImageView, new Callback() {
-                            @Override
-                            public void onSuccess() {
-
-                            }
-                            @Override
-                            public void onError() {
-                                Picasso.with(UpdateProfileActivity.this).load(imageUri)
-                                        .resize(MAX_COVER_WIDTH, MAX_COVER_HEIGHT)
-                                        .onlyScaleDown().centerCrop()
-                                        .placeholder(R.drawable.profle_image_background)
-                                        .into(mProfileCoverImageView);
-
-                            }
-                        });
-                updateCoverPhoto();
-            }
-
-            //update the profile photo
-            if (requestCode == GALLERY_PROFILE_PHOTO_REQUEST) {
-                profileUri = data.getData();
-
-                Picasso.with(this)
-                        .load(profileUri).resize(MAX_WIDTH, MAX_HEIGHT).onlyScaleDown()
-                        .centerCrop().placeholder(R.drawable.profle_image_background)
-                        .networkPolicy(NetworkPolicy.OFFLINE)
-                        .into(mProfilePictureImageView, new Callback() {
-                            @Override
-                            public void onSuccess() {
-
-                            }
-
-                            @Override
-                            public void onError() {
-                                Picasso.with(UpdateProfileActivity.this)
-                                        .load(profileUri).resize(MAX_WIDTH, MAX_HEIGHT)
-                                        .onlyScaleDown().centerCrop().placeholder(R.drawable.profle_image_background)
-                                        .into(mProfilePictureImageView);
-
-                            }
-                        });
-                updateProfilePhoto();
-            }
-
+            Intent intent = new Intent(UpdateProfileActivity.this, GalleryActivity.class);
+            intent.putExtra(UpdateProfileActivity.PROFILE_COVER_PATH, UpdateProfileActivity.class.getSimpleName());
+            startActivity(intent);
+            finish();
         }
     }
 
@@ -285,70 +223,87 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     }
 
 
+    /**update profile photo*/
     public void updateProfilePhoto(){
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String uid = user.getUid();
-        progressDialog.show();
 
-        if (profileUri != null){
-            StorageReference storageReference = FirebaseStorage
-                    .getInstance().getReference()
-                    .child("profile images")
-                    .child(uid);
+        if ( profilePhotoIntent!= null){
+            progressDialog.show();
+            mProfilePictureImageView.setDrawingCacheEnabled(true);
+            Bitmap bitmap = ((BitmapDrawable) mProfilePictureImageView.getDrawable()).getBitmap();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] data = baos.toByteArray();
 
-            StorageReference filePath = storageReference.child(profileUri.getLastPathSegment());
-            filePath.putFile(profileUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    String downloadUrl = taskSnapshot.getDownloadUrl().toString();
+            if (data != null){
+                StorageReference storageReference = FirebaseStorage
+                        .getInstance().getReference()
+                        .child("profile images")
+                        .child(uid);
 
-                    final String profileImage = (downloadUrl.toString());
-                    Log.d("profile image", profileImage);
+                UploadTask uploadTask = storageReference.putBytes(data);
+                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        String downloadUrl = taskSnapshot.getDownloadUrl().toString();
 
-                    DocumentReference imageRef = usersReference.document(firebaseUser.getUid());
-                    imageRef.update("profile_image", profileImage);
-                    mProfilePictureImageView.setImageBitmap(null);
-                    progressDialog.dismiss();
+                        final String profileImage = (downloadUrl.toString());
 
-                }
-            });
+                        DocumentReference imageRef = usersReference.document(firebaseUser.getUid());
+                        imageRef.update("profile_image", profileImage);
+                        mProfilePictureImageView.setImageBitmap(null);
+                        progressDialog.dismiss();
 
+                    }
+                });
+
+            }
         }
 
     }
 
+    /**update profile cover photo*/
     public void updateCoverPhoto(){
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String uid = user.getUid();
-        progressDialog.show();
 
-        if (imageUri != null){
-            StorageReference storageReference = FirebaseStorage
-                    .getInstance().getReference()
-                    .child("profile cover")
-                    .child(uid);
+        if (profileCoverIntent != null){
+            progressDialog.show();
+            mProfileCoverImageView.setDrawingCacheEnabled(true);
+            Bitmap bitmap = ((BitmapDrawable) mProfileCoverImageView.getDrawable()).getBitmap();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] data = baos.toByteArray();
 
-            StorageReference filePath = storageReference.child(imageUri.getLastPathSegment());
-            filePath.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    String downloadUrl = taskSnapshot.getDownloadUrl().toString();
+            if (data != null){
+                StorageReference storageReference = FirebaseStorage
+                        .getInstance().getReference()
+                        .child("profile cover")
+                        .child(uid);
 
-                    final String profileCoverPhoto = (downloadUrl.toString());
+                UploadTask uploadTask = storageReference.putBytes(data);
+                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        String downloadUrl = taskSnapshot.getDownloadUrl().toString();
 
-                    DocumentReference imageRef = usersReference.document(firebaseUser.getUid());
-                    imageRef.update("profile_cover", profileCoverPhoto);
-                    mProfilePictureImageView.setImageBitmap(null);
-                    progressDialog.dismiss();
+                        final String profileCoverPhoto = (downloadUrl.toString());
 
-                }
-            });
+                        DocumentReference imageRef = usersReference.document(firebaseUser.getUid());
+                        imageRef.update("profile_cover", profileCoverPhoto);
+                        mProfilePictureImageView.setImageBitmap(null);
+                        progressDialog.dismiss();
+
+                    }
+                });
+
+            }
 
         }
-
     }
 
-
+    /**update profile edit text fields*/
     private void updateUsernameAndBio(){
         final String username = (mUsernameEditText.getText().toString());
         final String bio = (mBioEditText.getText().toString());
@@ -359,23 +314,31 @@ public class UpdateProfileActivity extends AppCompatActivity implements
             DocumentReference usernameRef = usersReference.document(firebaseUser.getUid());
             usernameRef.update("username", username);
             mUsernameEditText.setText("");
+            Toast.makeText(UpdateProfileActivity.this,
+                    "Successfully updated", Toast.LENGTH_SHORT).show();
         }
         if(!TextUtils.isEmpty(bio)){
             DocumentReference bioRef = usersReference.document(firebaseUser.getUid());
             bioRef.update("bio", bio);
             mBioEditText.setText("");
+            Toast.makeText(UpdateProfileActivity.this,
+                    "Successfully updated", Toast.LENGTH_SHORT).show();
         }
 
         if (!TextUtils.isEmpty(firstName)){
             DocumentReference firstNameRef = usersReference.document(firebaseUser.getUid());
             firstNameRef.update("first_name", firstName);
             mFirstNameEditText.setText("");
+            Toast.makeText(UpdateProfileActivity.this,
+                    "Successfully updated", Toast.LENGTH_SHORT).show();
         }
 
         if (!TextUtils.isEmpty(secondName)){
             DocumentReference secondNameRef = usersReference.document(firebaseUser.getUid());
             secondNameRef.update("second_name", secondName);
             mSecondNameEditText.setText("");
+            Toast.makeText(UpdateProfileActivity.this,
+                    "Successfully updated", Toast.LENGTH_SHORT).show();
         }
     }
 

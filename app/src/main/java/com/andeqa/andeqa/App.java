@@ -39,7 +39,6 @@ public class App extends Application {
             @Override
             public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
                 exception.printStackTrace();
-                Log.i("Cinggl image load" + uri.toString(), "exception msg" + exception.getMessage());
             }
         });
         builder.downloader(new OkHttpDownloader(this,Integer.MAX_VALUE));

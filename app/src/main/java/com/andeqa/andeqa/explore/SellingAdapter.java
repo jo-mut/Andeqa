@@ -47,6 +47,7 @@ public class SellingAdapter extends RecyclerView.Adapter<ExploreViewHolder> {
     private static final String EXTRA_POST_ID = "post id";
     private static final String EXTRA_USER_UID = "uid";
     private static final String COLLECTION_ID = "collection id";
+    private static final String TYPE = "type";
     private static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
@@ -110,6 +111,7 @@ public class SellingAdapter extends RecyclerView.Adapter<ExploreViewHolder> {
                 if (documentSnapshot.exists()){
                     final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
                     final String collectionId = collectionPost.getCollection_id();
+                    final String type = collectionPost.getType();
 
                     holder.postImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -118,6 +120,7 @@ public class SellingAdapter extends RecyclerView.Adapter<ExploreViewHolder> {
                             intent.putExtra(SellingAdapter.EXTRA_POST_ID, postKey);
                             intent.putExtra(SellingAdapter.COLLECTION_ID, collectionId);
                             intent.putExtra(SellingAdapter.EXTRA_USER_UID, uid);
+                            intent.putExtra(SellingAdapter.TYPE, type);
                             mContext.startActivity(intent);
                         }
                     });

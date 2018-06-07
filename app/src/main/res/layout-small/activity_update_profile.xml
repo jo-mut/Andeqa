@@ -91,7 +91,7 @@
                 </ViewAnimator>
 
                 <ImageButton
-                    android:id="@+id/updateProfilePictureImageButton"
+                    android:id="@+id/profilePhotoImageButton"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_alignBottom="@+id/animator"

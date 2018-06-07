@@ -74,6 +74,8 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
     private static final String EXTRA_POST_KEY = "post id";
     private static final String EXTRA_USER_UID = "uid";
     private static final String COLLECTION_ID = "collection id";
+    private static final String TYPE = "type";
+    private String mType;
     private String mCollectionId;
 
     private static final String TAG = RedeemCreditsActivity.class.getSimpleName();
@@ -97,42 +99,37 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
         setContentView(R.layout.activity_redeem_credits);
         ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
         });
-
-
         mRedeemAmountButton.setOnClickListener(this);
         firebaseAuth = FirebaseAuth.getInstance();
 
         if (firebaseAuth.getCurrentUser() != null){
 
             mPostKey = getIntent().getStringExtra(EXTRA_POST_KEY);
-            if(mPostKey == null){
-                throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
-            }
-
             mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
-            if (mCollectionId == null){
-                throw new IllegalArgumentException("pass a collection id");
-            }
+            mType = getIntent().getStringExtra(TYPE);
 
 
             //firestore
+            if (mType.equals("single")){
+                collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("singles").collection(mCollectionId);
+            }else{
+                collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("collections").collection(mCollectionId);
+            }
             transactionReference = FirebaseFirestore.getInstance().collection(Constants.TRANSACTION_HISTORY);
             postWalletReference = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
             walletReference = FirebaseFirestore.getInstance().collection(Constants.WALLET);
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
-
-            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                    .document("collections").collection(mCollectionId);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
@@ -205,7 +202,7 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
                     Picasso.with(RedeemCreditsActivity.this)
                             .load(image)
                             .networkPolicy(NetworkPolicy.OFFLINE)
-                            .placeholder(R.drawable.profle_image_background)
+                            .placeholder(R.drawable.ic_user)
                             .into(mCingleImageView, new Callback() {
                                 @Override
                                 public void onSuccess() {
@@ -216,7 +213,7 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
                                 public void onError() {
                                     Picasso.with(RedeemCreditsActivity.this)
                                             .load(image)
-                                            .placeholder(R.drawable.profle_image_background)
+                                            .placeholder(R.drawable.ic_user)
                                             .into(mCingleImageView);
                                 }
                             });
@@ -244,7 +241,7 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
                                         .load(profileImage)
                                         .fit()
                                         .centerCrop()
-                                        .placeholder(R.drawable.profle_image_background)
+                                        .placeholder(R.drawable.ic_user)
                                         .networkPolicy(NetworkPolicy.OFFLINE)
                                         .into(mUserProfileImageView, new Callback() {
                                             @Override
@@ -258,7 +255,7 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
                                                         .load(profileImage)
                                                         .fit()
                                                         .centerCrop()
-                                                        .placeholder(R.drawable.profle_image_background)
+                                                        .placeholder(R.drawable.ic_user)
                                                         .into(mUserProfileImageView);
                                             }
                                         });

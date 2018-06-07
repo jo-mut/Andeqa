@@ -70,7 +70,7 @@
                     android:src="@drawable/ic_menu_camera"
                     android:layout_marginLeft="120dp"
                     android:layout_marginStart="120dp"
-                    android:id="@+id/updateProfilePictureImageButton"
+                    android:id="@+id/profilePhotoImageButton"
                     android:layout_alignBottom="@+id/animator"
                     android:layout_alignLeft="@+id/animator"
                     android:layout_alignStart="@+id/animator"

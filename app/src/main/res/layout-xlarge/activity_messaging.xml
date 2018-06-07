@@ -46,8 +46,8 @@
             app:srcCompat="@drawable/ic_start_chat"
             android:id="@+id/imagePlaceHolder"
             android:layout_centerInParent="true"
-            android:layout_width="300dp"
-            android:layout_height="300dp" />
+            android:layout_width="200dp"
+            android:layout_height="200dp" />
 
         <TextView
             android:layout_below="@+id/imagePlaceHolder"

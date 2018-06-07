@@ -97,26 +97,20 @@ public class CollectionPostsActivity extends AppCompatActivity
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
         });
+        collapsingToolbarLayout.setTitle("Posts");
+
 
         if (firebaseAuth.getCurrentUser()!= null){
 
             collectionId = getIntent().getStringExtra(COLLECTION_ID);
-            if(collectionId == null){
-                throw new IllegalArgumentException("pass an collection id");
-            }
-
             mUid = getIntent().getStringExtra(EXTRA_USER_UID);
-            if(mUid == null){
-                throw new IllegalArgumentException("pass an EXTRA_UID");
-            }
-
 
             collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
                     .document("collections").collection(collectionId);
@@ -132,28 +126,6 @@ public class CollectionPostsActivity extends AppCompatActivity
                 Log.d("Saved Instance", "Instance is completely null");
             }
 
-            //add appropriate title to the action bar
-            if (mUid.equals(firebaseAuth.getCurrentUser().getUid())){
-                mCreatePostButton.setVisibility(View.VISIBLE);
-                collapsingToolbarLayout.setTitle("Add to collection");
-            }else {
-                usersCollection.document(mUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (documentSnapshot.exists()){
-                            final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                            final String username = cinggulan.getUsername();
-                            collapsingToolbarLayout.setTitle(username + "'s" + " collection");
-                        }
-                    }
-                });
-            }
 
             mCollectionsPostsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
                 @Override

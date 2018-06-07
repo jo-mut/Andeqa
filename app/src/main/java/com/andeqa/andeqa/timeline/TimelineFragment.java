@@ -39,7 +39,7 @@ public class TimelineFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Bind(R.id.timelineRecyclerView)RecyclerView mTimelineRecyclerView;
     @Bind(R.id.placeHolderRelativeLayout)RelativeLayout mPlaceHolderRelativeLayout;
 
-    private static final String TAG = MessagesFragment.class.getSimpleName();
+    private static final String TAG = TimelineFragment.class.getSimpleName();
     private static final String EXTRA_USER_UID = "uid";
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     private FirebaseAuth firebaseAuth;

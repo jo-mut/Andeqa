@@ -69,7 +69,7 @@
                         android:layout_marginLeft="80dp"
                         android:layout_marginStart="80dp"
                         android:layout_marginTop="120dp"
-                        android:id="@+id/updateProfilePictureImageButton" />
+                        android:id="@+id/profilePhotoImageButton" />
 
                     <TextView
                         android:text="Create your profile to have a better experience with other Andeqans"

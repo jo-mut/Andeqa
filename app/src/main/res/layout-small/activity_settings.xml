@@ -26,6 +26,7 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <RelativeLayout
+                android:layout_marginBottom="60dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -59,7 +60,7 @@
                     android:layout_marginTop="5dp"
                     android:padding="5dp"
                     android:layout_centerHorizontal="true"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
                     android:id="@+id/usernameTextView"
                     android:textStyle="normal|bold"
                     android:textColor="@android:color/white" />
@@ -67,15 +68,12 @@
                 <TextView
                     android:layout_centerHorizontal="true"
                     android:text=""
-                    android:padding="5dp"
+                    android:textAlignment="center"
                     android:textSize="12sp"
                     android:layout_below="@+id/usernameTextView"
-                    android:layout_marginTop="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="60dp"
-                    android:id="@+id/bioTextView"
-                    android:textColor="@android:color/white" />
+                    android:id="@+id/bioTextView" />
 
             </RelativeLayout>
 

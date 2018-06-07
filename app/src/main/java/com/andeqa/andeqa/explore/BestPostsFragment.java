@@ -37,7 +37,7 @@ public class BestPostsFragment extends Fragment implements SwipeRefreshLayout.On
     @Bind(R.id.bestPostsRecyclerView)RecyclerView bestPostRecyclerView;
     @Bind(R.id.swipeRefreshLayout)SwipeRefreshLayout mSwipeRefreshLayout;
 
-    private static final String TAG = "SingleOutFragment";
+    private static final String TAG = BestPostsFragment.class.getSimpleName();
     private GridLayoutManager layoutManager;
     //firestore
     private CollectionReference creditCollection;

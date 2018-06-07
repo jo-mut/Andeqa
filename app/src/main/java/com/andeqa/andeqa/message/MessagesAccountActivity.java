@@ -80,16 +80,16 @@ public class MessagesAccountActivity extends AppCompatActivity
         setContentView(R.layout.activity_messages_account);
         ButterKnife.bind(this);
 
-        //toolbar
-        setSupportActionBar(mToolBar);
-        mToolBar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        toolbar.setNavigationIcon(R.drawable.ic_arrow);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
         });
-
         //initilize click listeners
         mSendMessageImageView.setOnClickListener(this);
 
@@ -97,21 +97,11 @@ public class MessagesAccountActivity extends AppCompatActivity
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
 
-            //get the passed uid
-            roomId = getIntent().getStringExtra(EXTRA_ROOM_ID);
-
             mSwipeRefreshLayout.setOnRefreshListener(this);
 
-            if(roomId == null){
-                throw new IllegalArgumentException("pass an ROOM ID");
-            }
-
+            //get the passed uid
+            roomId = getIntent().getStringExtra(EXTRA_ROOM_ID);
             mUid = getIntent().getStringExtra(EXTRA_USER_UID);
-            Log.d("passed uid", mUid);
-            if(mUid == null){
-                throw new IllegalArgumentException("pass an EXTRA_UID");
-
-            }
 
             //firebase
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.MESSAGES);

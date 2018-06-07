@@ -2,7 +2,9 @@ package com.andeqa.andeqa.settings;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +25,7 @@ import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.camera.GalleryActivity;
 import com.andeqa.andeqa.models.Collection;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -40,6 +43,9 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -68,8 +74,6 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
     private Query collectionsQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
-    private String collectionId;
-    private String mUid;
     private Uri photoUri;
     private ProgressDialog progressDialog;
 
@@ -80,8 +84,15 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
     private  static final int MAX_WIDTH = 400;
     private static final int MAX_HEIGHT = 400;
 
+    //intent extras
     private static final String COLLECTION_ID = "collection id";
     private static final String EXTRA_USER_UID = "uid";
+    private String collectionId;
+    private static final String COLLECTION_SETTINGS_COVER = CollectionSettingsActivity.class.getSimpleName();
+    private static final String GALLERY_PATH ="gallery image";
+    private String mUid;
+    private String collectionSettingsIntent;
+
 
 
     @Override
@@ -91,8 +102,10 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
         ButterKnife.bind(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -107,10 +120,6 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
 
         if (firebaseAuth.getCurrentUser() != null){
             collectionId = getIntent().getStringExtra(COLLECTION_ID);
-            if(collectionId == null){
-                throw new IllegalArgumentException("pass an collection id");
-            }
-
             collectionCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
 
             //textwatchers
@@ -121,9 +130,26 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
             textWatchers();
             uploadingToFirebaseDialog();
             colectionInfo();
+            loadCoverImage();
         }
 
     }
+
+    private void loadCoverImage(){
+        collectionSettingsIntent = getIntent().getStringExtra(GALLERY_PATH);
+        if (collectionSettingsIntent != null){
+            Picasso.with(this)
+                    .load(new File(collectionSettingsIntent))
+                    .into(mCollectionCoverImageView,
+                            new Callback.EmptyCallback(){
+                                @Override
+                                public void onSuccess(){
+
+                                }
+                            });
+        }
+    }
+
 
     private void textWatchers(){
         //TITLE TEXT WATCHER
@@ -203,80 +229,65 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
 
                 if (documentSnapshot.exists()){
                     Collection collection = documentSnapshot.toObject(Collection.class);
-                    final String image = collection.getImage();
                     final String name = collection.getName();
                     final String note = collection.getNote();
 
                     mCollectionNameTextView.setText(name);
                     mCollectionNoteTextView.setText(note);
-                    Picasso.with(CollectionSettingsActivity.this)
-                            .load(image)
-                            .resize(MAX_WIDTH, MAX_HEIGHT)
-                            .onlyScaleDown()
-                            .centerCrop()
-                            .networkPolicy(NetworkPolicy.OFFLINE)
-                            .into(mCollectionCoverImageView, new Callback() {
-                                @Override
-                                public void onSuccess() {
-
-                                }
-
-                                @Override
-                                public void onError() {
-                                    Picasso.with(CollectionSettingsActivity.this)
-                                            .load(image)
-                                            .resize(MAX_WIDTH, MAX_HEIGHT)
-                                            .onlyScaleDown()
-                                            .centerCrop()
-                                            .into(mCollectionCoverImageView);
-                                }
-                            });
 
                 }
             }
         });
     }
 
-    private void collectionSettings(){
-        if (photoUri != null){
-            progressDialog.show();
-            StorageReference storageReference = FirebaseStorage
-                    .getInstance().getReference()
-                    .child(Constants.USER_COLLECTIONS)
-                    .child(collectionId);
-
-            UploadTask uploadTask = storageReference.putFile(photoUri);
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    final Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                    collectionCollection.document(collectionId)
-                            .update("image", downloadUrl.toString());
-
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    progressDialog.dismiss();
-                    Toast.makeText(CollectionSettingsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                    double progress = (100.0 * taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
-                    progressDialog.setMessage("Updating your collection" + " " + ((int) progress) + "%...");
-                    if (progress == 100.0){
-                        progressDialog.dismiss();
-                        //reset input fields
-                    }
-                }
-            });
-
-        }
+    /**update collection cover*/
+    private void updateCollectionCover(){
+        progressDialog.show();
+        //get the data from the imageview as bytes
+       if (collectionSettingsIntent != null){
+           mCollectionCoverImageView.setDrawingCacheEnabled(true);
+           Bitmap bitmap = ((BitmapDrawable) mCollectionCoverImageView.getDrawable()).getBitmap();
+           ByteArrayOutputStream baos = new ByteArrayOutputStream();
+           bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+           byte[] data = baos.toByteArray();
+           StorageReference storageReference = FirebaseStorage
+                   .getInstance().getReference()
+                   .child(Constants.USER_COLLECTIONS)
+                   .child(collectionId);
 
 
+           if (data != null){
+               UploadTask uploadTask = storageReference.putBytes(data);
+               uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                   @Override
+                   public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                       final Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                       collectionCollection.document(collectionId)
+                               .update("image", downloadUrl.toString());
+
+                   }
+               }).addOnFailureListener(new OnFailureListener() {
+                   @Override
+                   public void onFailure(@NonNull Exception e) {
+                       progressDialog.dismiss();
+                       Toast.makeText(CollectionSettingsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                   }
+               }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                   @Override
+                   public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                       double progress = (100.0 * taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
+                       progressDialog.setMessage("Updating your collection" + " " + ((int) progress) + "%...");
+                       if (progress == 100.0){
+                           progressDialog.dismiss();
+                           //reset input fields
+                       }
+                   }
+               });
+           }
+       }
     }
 
+    /**update collection edit text fields*/
     private void collectionNoteAndName(){
         if (!TextUtils.isEmpty(mCollectionNameEditText.getText())){
             collectionCollection.document(collectionId)
@@ -322,10 +333,11 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
     @Override
     public void onClick(View v){
         if (v == mChangeCoverRelativeLayout){
-            Intent intent = new Intent();
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            intent.setType("image/*");
-            startActivityForResult(intent, IMAGE_GALLERY_REQUEST);
+            Intent intent = new Intent(CollectionSettingsActivity.this, GalleryActivity.class);
+            intent.putExtra(CollectionSettingsActivity.COLLECTION_SETTINGS_COVER, CollectionSettingsActivity.class.getSimpleName());
+            intent.putExtra(CollectionSettingsActivity.COLLECTION_ID, collectionId);
+            startActivity(intent);
+            finish();
 
         }
 
@@ -338,8 +350,11 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
         }
 
         if (v == mDoneEditingImageView){
-            collectionSettings();
             collectionNoteAndName();
+
+            if (collectionSettingsIntent != null){
+                updateCollectionCover();
+            }
         }
     }
 }
