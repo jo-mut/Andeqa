@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -41,6 +42,7 @@ public class CollectionPostsViewHolder extends RecyclerView.ViewHolder implement
     public RelativeLayout descriptionRelativeLayout;
     public RelativeLayout likesRelativeLayout;
     public TextView timeTextView;
+    public LinearLayout creditsLinearLayout;
 
 
 
@@ -64,6 +66,7 @@ public class CollectionPostsViewHolder extends RecyclerView.ViewHolder implement
         likesRelativeLayout = (RelativeLayout) mView.findViewById(R.id.likesRelativeLayout);
         likesCountTextView = (TextView) mView.findViewById(R.id.likesCountTextView);
         timeTextView = (TextView) mView.findViewById(R.id.timeTextView);
+        creditsLinearLayout = (LinearLayout) mView.findViewById(R.id.creditsLinearLayout);
 
     }
 

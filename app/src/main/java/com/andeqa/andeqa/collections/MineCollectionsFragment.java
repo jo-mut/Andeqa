@@ -40,13 +40,13 @@ public class MineCollectionsFragment extends Fragment implements
 
     private static final String TAG = FeaturedCollectionFragment.class.getSimpleName();
     //firestore reference
-    private CollectionReference collectionCollection;
+    private CollectionReference collectionsCollection;
     private Query collectionsQuery;
 
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore adapters
-    private ProfileCollectionsAdapter profileCollectionsAdapter;
+    private MineCollectionsAdapter mineCollectionsAdapter;
     private  static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
     //singles meber variables
@@ -77,9 +77,8 @@ public class MineCollectionsFragment extends Fragment implements
 
 
         if (firebaseAuth.getCurrentUser()!= null){
-
-            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
-            collectionsQuery = collectionCollection.orderBy("time", Query.Direction.DESCENDING)
+            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
+            collectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
                     .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
                     .limit(TOTAL_ITEMS);
 
@@ -92,8 +91,8 @@ public class MineCollectionsFragment extends Fragment implements
     public void onStart() {
         super.onStart();
         documentSnapshots.clear();
-        setCollections();
         recyclerView();
+        setCollections();
     }
 
     @Override
@@ -122,10 +121,10 @@ public class MineCollectionsFragment extends Fragment implements
     }
 
     private void recyclerView(){
-        profileCollectionsAdapter = new ProfileCollectionsAdapter(getContext());
+        mineCollectionsAdapter = new MineCollectionsAdapter(getContext());
         layoutManager = new LinearLayoutManager(getContext());
         mCollectionsRecyclerView.setLayoutManager(layoutManager);
-        mCollectionsRecyclerView.setAdapter(profileCollectionsAdapter);
+        mCollectionsRecyclerView.setAdapter(mineCollectionsAdapter);
         mCollectionsRecyclerView.setHasFixedSize(false);
     }
 
@@ -170,14 +169,14 @@ public class MineCollectionsFragment extends Fragment implements
         mSwipeRefreshLayout.setRefreshing(true);
 
         // Get the last visible document
-        final int snapshotSize = profileCollectionsAdapter.getItemCount();
+        final int snapshotSize = mineCollectionsAdapter.getItemCount();
         if (snapshotSize == 0){
 
         }else {
-            DocumentSnapshot lastVisible = profileCollectionsAdapter.getSnapshot(snapshotSize - 1);
+            DocumentSnapshot lastVisible = mineCollectionsAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of documentSnapshots
-            Query  nextCollectionsQuery = collectionCollection.orderBy("time", Query.Direction.DESCENDING)
+            Query  nextCollectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
                     .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
                     .startAfter(lastVisible).limit(TOTAL_ITEMS);
 
@@ -220,9 +219,9 @@ public class MineCollectionsFragment extends Fragment implements
     protected void onDocumentAdded(DocumentChange change) {
         collectionsIds.add(change.getDocument().getId());
         documentSnapshots.add(change.getDocument());
-        profileCollectionsAdapter.setProfileCollections(documentSnapshots);
-        profileCollectionsAdapter.notifyItemInserted(documentSnapshots.size() -1);
-        profileCollectionsAdapter.getItemCount();
+        mineCollectionsAdapter.setProfileCollections(documentSnapshots);
+        mineCollectionsAdapter.notifyItemInserted(documentSnapshots.size() -1);
+        mineCollectionsAdapter.getItemCount();
 
     }
 
@@ -231,12 +230,12 @@ public class MineCollectionsFragment extends Fragment implements
             if (change.getOldIndex() == change.getNewIndex()) {
                 // Item changed but remained in same position
                 documentSnapshots.set(change.getOldIndex(), change.getDocument());
-                profileCollectionsAdapter.notifyItemChanged(change.getOldIndex());
+                mineCollectionsAdapter.notifyItemChanged(change.getOldIndex());
             } else {
                 // Item changed and changed position
                 documentSnapshots.remove(change.getOldIndex());
                 documentSnapshots.add(change.getNewIndex(), change.getDocument());
-                profileCollectionsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+                mineCollectionsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -246,8 +245,8 @@ public class MineCollectionsFragment extends Fragment implements
     protected void onDocumentRemoved(DocumentChange change) {
         try {
             documentSnapshots.remove(change.getOldIndex());
-            profileCollectionsAdapter.notifyItemRemoved(change.getOldIndex());
-            profileCollectionsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+            mineCollectionsAdapter.notifyItemRemoved(change.getOldIndex());
+            mineCollectionsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
         }catch (Exception e){
             e.printStackTrace();
         }

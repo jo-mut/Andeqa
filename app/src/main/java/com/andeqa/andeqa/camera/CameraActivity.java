@@ -71,7 +71,7 @@ public class CameraActivity extends AppCompatActivity  implements
     @Bind(R.id.flashOnOffImageView)ImageView mFlashOnOffImageView;
     @Bind({R.id.imageSurfaceView})SurfaceView mSurfaceImageView;
     @Bind(R.id.imageCaptureImageView)ImageView mImageCaptureImageView;
-    @Bind(R.id.countTextView) TextView mCountTextView;
+//    @Bind(R.id.countTextView) TextView mCountTextView;
     @Bind(R.id.galleryImageView)ImageView mGalleryImageView;
     @Bind(R.id.createCollectionImageView)ImageView mCreateCollectionImageView;
     @Bind(R.id.toolbar)Toolbar toolbar;
@@ -316,7 +316,7 @@ public class CameraActivity extends AppCompatActivity  implements
             progressDialog.show();
             super.onPreExecute();
             mImageCaptureImageView.setOnTouchListener(null);
-            mCountTextView.setVisibility(View.GONE);
+//            mCountTextView.setVisibility(View.GONE);
             mChangeCameraImageView.setVisibility(View.VISIBLE);
             mFlashOnOffImageView.setVisibility(View.VISIBLE);
 
@@ -400,7 +400,7 @@ public class CameraActivity extends AppCompatActivity  implements
     private void initControls() {
 
         mediaRecorder = new MediaRecorder();
-        mCountTextView.setVisibility(View.GONE);
+//        mCountTextView.setVisibility(View.GONE);
         mChangeCameraImageView.setOnClickListener(this);
         mFlashOnOffImageView.setOnClickListener(this);
         mCreateCollectionImageView.setOnClickListener(this);
@@ -709,7 +709,7 @@ public class CameraActivity extends AppCompatActivity  implements
             int hrs = mins / 60;
 
             secs = secs % 60;
-            mCountTextView.setText(String.format("%02d", mins) + ":" + String.format("%02d", secs));
+//            mCountTextView.setText(String.format("%02d", mins) + ":" + String.format("%02d", secs));
             customHandler.postDelayed(this, 0);
 
         }

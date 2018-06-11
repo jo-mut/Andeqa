@@ -4,6 +4,7 @@ package com.andeqa.andeqa.home;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -47,6 +48,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private Parcelable recyclerViewState;
     //firestore reference
     private CollectionReference postsCollection;
+    private CollectionReference collectionReference;
     private Query randomPostsQuery;
     private Query nextRandomQuery;
 
@@ -78,8 +80,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             randomPostsQuery = postsCollection.orderBy("random_number", Query.Direction.DESCENDING)
                     .limit(TOTAL_ITEMS);
-
-
         }
 
         return view;
@@ -258,8 +258,5 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
            e.printStackTrace();
        }
     }
-
-
-
 
 }

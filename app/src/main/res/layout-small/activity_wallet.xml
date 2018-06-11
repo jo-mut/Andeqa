@@ -20,7 +20,6 @@
         app:popupTheme="@style/AppTheme.PopupOverlay"
         app:titleTextColor="@android:color/white"/>
 
-
     <ScrollView
         android:fillViewport="true"
         android:scrollbars="none"
@@ -30,120 +29,93 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:padding="5dp"
+                    android:layout_margin="5dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="uCredit Balance"
+                        android:textStyle="normal|bold"
+                        android:textSize="15sp"
+                        android:id="@+id/amountReceivedTextView" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="uC 9000000000"
+                        android:textSize="12sp"
+                        android:id="@+id/walletBalanceTextView"/>
 
 
-            <LinearLayout
-                android:orientation="vertical"
-                android:paddingLeft="1dp"
+                </LinearLayout>
+
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <LinearLayout
+                    android:id="@+id/historyLinearLayout"
+                    android:padding="5dp"
+                    android:layout_margin="5dp"
                     android:orientation="vertical"
-                    android:background="@android:color/white"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <RelativeLayout
-                        android:paddingTop="10dp"
-                        android:paddingBottom="5dp"
+                        android:orientation="vertical"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <TextView
-                            android:text="Wallet balance"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/walletBalanceTextView"
-                            android:textStyle="normal|bold"
-                            android:layout_marginLeft="5dp"
-                            android:layout_centerVertical="true"
-                            android:textAllCaps="true"
-                            android:layout_centerInParent="false"
-                            android:textSize="10sp" />
-
-                    </RelativeLayout>
+                        <RelativeLayout
+                            android:visibility="gone"
+                            android:layout_centerInParent="true"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:id="@+id/emptyRelativeLayout">
 
 
+                            <TextView
+                                android:text="You have not transaction history"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentTop="false"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginTop="18dp"
+                                android:id="@+id/emptyTextView"
+                                android:textSize="12sp"
+                                android:layout_centerVertical="true" />
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="5dp">
+                        </RelativeLayout>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_toEndOf="@id/creditsImageView"
-                            android:layout_toRightOf="@id/creditsImageView"
-                            android:layout_centerVertical="true"
-                            android:id="@+id/currentWalletBalanceTextview"
-                            android:textSize="12sp"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginLeft="10dp" />
+                        <android.support.v7.widget.RecyclerView
+                            android:overScrollMode="never"
+                            android:id="@+id/transactionHistoryRecyclerView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
 
-                        <ImageView
-                            android:id="@+id/creditsImageView"
-                            android:layout_width="15dp"
-                            android:layout_height="15dp"
-                            android:layout_centerVertical="true"
-                            android:layout_alignParentStart="true"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentTop="true"
-                            app:srcCompat="@drawable/ic_credits" />
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:text="Transaction history"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/transactionHistoryTitleTextView"
-                            android:layout_marginLeft="5dp"
-                            android:layout_centerInParent="false"
-                            android:layout_centerVertical="true"
-                            android:textAllCaps="true"
-                            android:textStyle="normal|bold"
-                            android:layout_centerHorizontal="false"
-                            android:textSize="10sp" />
+                        </android.support.v7.widget.RecyclerView>
 
                     </RelativeLayout>
 
                 </LinearLayout>
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/emptyRelativeLayout">
-
-
-                    <TextView
-                        android:text="You have not transaction history"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="false"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginTop="18dp"
-                        android:id="@+id/emptyTextView"
-                        android:textSize="12sp"
-                        android:layout_centerVertical="true" />
-
-                </RelativeLayout>
-
-                <android.support.v7.widget.RecyclerView
-                    android:overScrollMode="never"
-                    android:id="@+id/transactionHistoryRecyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                </android.support.v7.widget.RecyclerView>
-
-            </LinearLayout>
+            </android.support.v7.widget.CardView>
 
         </LinearLayout>
 

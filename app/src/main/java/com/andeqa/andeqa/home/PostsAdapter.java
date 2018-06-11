@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
@@ -310,13 +311,19 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
         holder.mCreditsLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, RedeemCreditsActivity.class);
-                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postId);
-                intent.putExtra(PostsAdapter.COLLECTION_ID, collectionId);
-                intent.putExtra(PostsAdapter.TYPE, type);
-                mContext.startActivity(intent);
+                if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                    Intent intent = new Intent(mContext, RedeemCreditsActivity.class);
+                    intent.putExtra(PostsAdapter.EXTRA_POST_ID, postId);
+                    intent.putExtra(PostsAdapter.COLLECTION_ID, collectionId);
+                    intent.putExtra(PostsAdapter.TYPE, type);
+                    mContext.startActivity(intent);
+                }else {
+                    Toast.makeText(mContext, "You can only redeem uCredits from your posts or singles",
+                            Toast.LENGTH_SHORT).show();
+                }
             }
         });
+
 
 
 

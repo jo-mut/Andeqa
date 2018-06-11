@@ -72,8 +72,8 @@ public class MessagingActivity extends AppCompatActivity implements SwipeRefresh
 
         if (firebaseAuth.getCurrentUser() != null){
             roomsCollections = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
-            roomsQuery = roomsCollections.document("rooms")
-                    .collection(firebaseAuth.getCurrentUser().getUid());
+            roomsQuery = roomsCollections.document("last messages")
+                    .collection("messages");
 
 
         }
@@ -122,14 +122,14 @@ public class MessagingActivity extends AppCompatActivity implements SwipeRefresh
     }
 
     private void setCollections(){
-        roomsQuery.orderBy("time").limit(TOTAL_ITEMS)
+        roomsQuery.orderBy("time", Query.Direction.DESCENDING).limit(TOTAL_ITEMS)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
                         if (e != null) {
-                            Log.w(TAG, "Liste    onDocumentModified(change);\n" +
-                                    "                                    n error", e);
+                            Log.w(TAG, "Listed    onDocumentModified(change);\n" +
+                                    "n error", e);
                             return;
                         }
 
@@ -168,9 +168,9 @@ public class MessagingActivity extends AppCompatActivity implements SwipeRefresh
             DocumentSnapshot lastVisible = roomAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of documentSnapshots
-            Query nextSellingQuery = roomsCollections.document("rooms")
-                    .collection(firebaseAuth.getCurrentUser().getUid())
-                    .orderBy("time").startAfter(lastVisible)
+            Query nextSellingQuery = roomsCollections.document("last messages")
+                    .collection("messages")
+                    .orderBy("time", Query.Direction.DESCENDING).startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
 
             nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {

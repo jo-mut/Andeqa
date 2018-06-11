@@ -270,19 +270,23 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
     }
 
     private void  createCollection(){
+        final DatabaseReference collectionRef= postReference.push();
+        final String collectionId = collectionRef.getKey();
 
-        if (!TextUtils.isEmpty(mCollectionNameEditText.getText().toString())){
+        if (TextUtils.isEmpty(mCollectionNameEditText.getText())){
+            Toast.makeText(CreateCollectionActivity.this, "Your collection must have a name",
+                    Toast.LENGTH_SHORT).show();
+        }else if (image == null){
+            Toast.makeText(CreateCollectionActivity.this, "Your collection must have a cover photo",
+                    Toast.LENGTH_SHORT).show();
+        }else {
             progressDialog.show();
-            final DatabaseReference collectionRef= postReference.push();
-            final String collectionId = collectionRef.getKey();
-
             //get the data from the imageview as bytes
             mCollectionCoverImageView.setDrawingCacheEnabled(true);
             Bitmap bitmap = ((BitmapDrawable) mCollectionCoverImageView.getDrawable()).getBitmap();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
             final byte[] data = baos.toByteArray();
-
             collectionCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot documentSnapshots) {
@@ -385,10 +389,6 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                 }
             });
 
-
-        }else {
-            Toast.makeText(CreateCollectionActivity.this, "Your collection does'nt have a name",
-                    Toast.LENGTH_SHORT).show();
         }
 
     }

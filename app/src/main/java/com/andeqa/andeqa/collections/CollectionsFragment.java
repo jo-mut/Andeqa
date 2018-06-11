@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.andeqa.andeqa.R;
+import com.google.firebase.firestore.CollectionReference;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -20,6 +21,7 @@ public class CollectionsFragment extends Fragment {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private CollectionsPagerAdapter collectionsPagerAdapter;
+
 
 
     public static CollectionsFragment newInstance(int sectionNumber) {

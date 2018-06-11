@@ -397,6 +397,7 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
                                                                                 //launch the collections activity
                                                                                 Intent intent = new Intent(PreviewActivity.this, ProfileActivity.class);
                                                                                 intent.putExtra(PreviewActivity.EXTRA_USER_UID, ProfileActivity.class);
+                                                                                intent.putExtra(PreviewActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
                                                                                 startActivity(intent);
                                                                                 finish();
                                                                             }

@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BestPostAdapter extends RecyclerView.Adapter<ExploreViewHolder> {
-    private static final String TAG = SellingAdapter.class.getSimpleName();
+    private static final String TAG = BestPostAdapter.class.getSimpleName();
     private Context mContext;
     private List<Market> markets = new ArrayList<>();
     //firestore
@@ -137,38 +137,45 @@ public class BestPostAdapter extends RecyclerView.Adapter<ExploreViewHolder> {
                             if (documentSnapshot.exists()){
                                 final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
 
-                                Picasso.with(mContext)
-                                        .load(collectionPost.getImage())
-                                        .networkPolicy(NetworkPolicy.OFFLINE)
-                                        .placeholder(R.drawable.image_place_holder)
-                                        .into(holder.postImageView, new Callback() {
-                                            @Override
-                                            public void onSuccess() {
+                                if (collectionPost.getImage().equals("")){
+                                    Picasso.with(mContext)
+                                            .load(collectionPost.getImage())
+                                            .networkPolicy(NetworkPolicy.OFFLINE)
+                                            .placeholder(R.drawable.image_place_holder)
+                                            .into(holder.postImageView);
+                                }else {
+                                    Picasso.with(mContext)
+                                            .load(collectionPost.getImage())
+                                            .networkPolicy(NetworkPolicy.OFFLINE)
+                                            .placeholder(R.drawable.image_place_holder)
+                                            .into(holder.postImageView, new Callback() {
+                                                @Override
+                                                public void onSuccess() {
 
-                                            }
+                                                }
 
-                                            @Override
-                                            public void onError() {
-                                                Picasso.with(mContext)
-                                                        .load(collectionPost.getImage())
-                                                        .placeholder(R.drawable.image_place_holder)
-                                                        .into(holder.postImageView, new Callback() {
-                                                            @Override
-                                                            public void onSuccess() {
+                                                @Override
+                                                public void onError() {
+                                                    Picasso.with(mContext)
+                                                            .load(collectionPost.getImage())
+                                                            .placeholder(R.drawable.image_place_holder)
+                                                            .into(holder.postImageView, new Callback() {
+                                                                @Override
+                                                                public void onSuccess() {
 
-                                                            }
+                                                                }
 
-                                                            @Override
-                                                            public void onError() {
-                                                                Log.v("Picasso", "Could not fetch image");
-                                                            }
-                                                        });
-
-
-                                            }
-                                        });
+                                                                @Override
+                                                                public void onError() {
+                                                                    Log.v("Picasso", "Could not fetch image");
+                                                                }
+                                                            });
 
 
+                                                }
+                                            });
+
+                                }
 
                             }
                         }

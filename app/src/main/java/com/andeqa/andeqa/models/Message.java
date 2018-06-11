@@ -7,7 +7,7 @@ package com.andeqa.andeqa.models;
 public class Message {
 
     String sender_id;
-    String recepient_id;
+    String receiver_id;
     String message;
     String message_id;
     String type;
@@ -17,10 +17,10 @@ public class Message {
     public Message() {
     }
 
-    public Message(String sender_id, String recepient_id, String message,
+    public Message(String sender_id, String receiver_id, String message,
                    String message_id, String type, String room_id, long time) {
         this.sender_id = sender_id;
-        this.recepient_id = recepient_id;
+        this.receiver_id = receiver_id;
         this.message = message;
         this.message_id = message_id;
         this.type = type;
@@ -37,12 +37,12 @@ public class Message {
         this.sender_id = sender_id;
     }
 
-    public String getRecepient_id() {
-        return recepient_id;
+    public String getReceiver_id() {
+        return receiver_id;
     }
 
-    public void setRecepient_id(String recepient_id) {
-        this.recepient_id = recepient_id;
+    public void setReceiver_id(String receiver_id) {
+        this.receiver_id = receiver_id;
     }
 
     public String getMessage() {

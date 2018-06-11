@@ -136,8 +136,8 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
     protected void onStart() {
         super.onStart();
         mSnapshots.clear();
-        setCollectionPosts();
         setRecyclerView();
+        setCollectionPosts();
         setCollectionsInfo();
     }
 

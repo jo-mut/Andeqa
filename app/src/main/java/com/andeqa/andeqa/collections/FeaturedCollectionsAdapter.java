@@ -102,34 +102,28 @@ public class FeaturedCollectionsAdapter extends RecyclerView.Adapter<CollectionV
             }
         }
 
+        Picasso.with(mContext)
+                .load(collection.getImage())
+                .resize(MAX_WIDTH, MAX_HEIGHT)
+                .centerCrop()
+                .networkPolicy(NetworkPolicy.OFFLINE)
+                .placeholder(R.drawable.image_place_holder)
+                .into(holder.mCollectionCoverImageView, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        Picasso.with(mContext)
+                                .load(collection.getImage())
+                                .resize(MAX_WIDTH, MAX_HEIGHT)
+                                .centerCrop()
+                                .placeholder(R.drawable.image_place_holder)
+                                .into(holder.mCollectionCoverImageView);
+                    }
 
-        if (collection.getImage() != null){
-            Picasso.with(mContext)
-                    .load(collection.getImage())
-                    .resize(MAX_WIDTH, MAX_HEIGHT)
-                    .centerCrop()
-                    .networkPolicy(NetworkPolicy.OFFLINE)
-                    .placeholder(R.drawable.image_place_holder)
-                    .into(holder.mCollectionCoverImageView, new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            Picasso.with(mContext)
-                                    .load(collection.getImage())
-                                    .resize(MAX_WIDTH, MAX_HEIGHT)
-                                    .centerCrop()
-                                    .placeholder(R.drawable.image_place_holder)
-                                    .into(holder.mCollectionCoverImageView);
-                        }
+                    @Override
+                    public void onError() {
 
-                        @Override
-                        public void onError() {
-
-                        }
-                    });
-
-        }else {
-            holder.mCollectionCoverImageView.setImageBitmap(null);
-        }
+                    }
+                });
 
         postCountQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override

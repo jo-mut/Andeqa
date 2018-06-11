@@ -6,7 +6,10 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -16,7 +19,10 @@ import android.widget.TextView;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Andeqan;
+import com.andeqa.andeqa.profile.DialogConfirmSingOutFragment;
+import com.andeqa.andeqa.profile.ProfileActivity;
 import com.andeqa.andeqa.profile.UpdateProfileActivity;
+import com.andeqa.andeqa.wallet.WalletActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -41,6 +47,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     @Bind(R.id.privacyPolicyRelativeLayout)LinearLayout mPrivacyPolicyRelativeLayout;
     @Bind(R.id.updateProfileRelativeLayout)LinearLayout mUpdateProfileRelativeLayout;
 //    @Bind(R.id.deleteAccountRelativeLayout)RelativeLayout mDeleteAccountRelativeLayout;
+    @Bind(R.id.walletLinearLayout)LinearLayout mWalletLinearLayout;
+    @Bind(R.id.signOutLinearLayout)LinearLayout mSignOutLinearLayout;
 
     private static final String TAG = SettingsActivity.class.getSimpleName();
     private CollectionReference usersCollection;
@@ -60,6 +68,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         mPrivacyPolicyRelativeLayout.setOnClickListener(this);
         mSendFeedbackRelativeLayout.setOnClickListener(this);
         mUpdateProfileRelativeLayout.setOnClickListener(this);
+        mSignOutLinearLayout.setOnClickListener(this);
+        mWalletLinearLayout.setOnClickListener(this);
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -92,10 +102,10 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 }
 
                 if (documentSnapshot.exists()){
-                    final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                    String username = cinggulan.getUsername();
-                    final String profileImage = cinggulan.getProfile_image();
-                    String bio = cinggulan.getBio();
+                    final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                    String username = andeqan.getUsername();
+                    final String profileImage = andeqan.getProfile_image();
+                    String bio = andeqan.getBio();
 
                     mUsernameTextView.setText(username);
                     mBioTextView.setText(bio);
@@ -172,6 +182,17 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             intent.putExtra(Intent.EXTRA_SUBJECT, "Query from android app");
             intent.putExtra(Intent.EXTRA_TEXT, body);
             this.startActivity(Intent.createChooser(intent, this.getString(R.string.choose_email_client)));
+        }
+
+        if (v == mWalletLinearLayout){
+            Intent intent = new Intent(SettingsActivity.this, WalletActivity.class);
+            startActivity(intent);
+        }
+
+        if (v == mSignOutLinearLayout){
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            DialogConfirmSingOutFragment dialogConfirmSingOutFragment = DialogConfirmSingOutFragment.newInstance("sing out");
+            dialogConfirmSingOutFragment.show(fragmentManager, "delete account fragment");
         }
     }
 

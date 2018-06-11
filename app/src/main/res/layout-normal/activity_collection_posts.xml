@@ -80,9 +80,9 @@
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
-        android:layout_below="@+id/addPostRelativeLayout"
+    <android.support.v4.widget.SwipeRefreshLayout
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -93,7 +93,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-    </android.support.v4.widget.NestedScrollView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:visibility="gone"

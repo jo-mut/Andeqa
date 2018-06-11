@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,6 +18,7 @@ import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.home.PostDetailActivity;
 import com.andeqa.andeqa.market.ListOnMarketActivity;
 import com.andeqa.andeqa.market.RedeemCreditsActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -45,11 +47,7 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore
-    private CollectionReference postsCollection;
-    private CollectionReference collectionsPosts;
-    private CollectionReference senseCreditReference;
     private CollectionReference marketCollections;
-    private CollectionReference postOnwersCollection;
     private static final String TAG = DialogFragmentPostSettings.class.getSimpleName();
 
     private static final String COLLECTION_ID = "collection id";
@@ -108,26 +106,10 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
                 mPostId = bundle.getString(DialogFragmentPostSettings.EXTRA_POST_ID);
                 mType = bundle.getString(DialogFragmentPostSettings.TYPE);
 
-                Log.d("the passed poskey", mPostId);
+                marketCollections = FirebaseFirestore.getInstance().collection(Constants.SELLING);
 
-            }else {
-                throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
             }
 
-            //firestore
-            postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            //firestore
-            if (mType.equals("single")){
-                collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                        .document("singles").collection(mCollectionId);
-            }else{
-                collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                        .document("collections").collection(mCollectionId);
-            }
-
-            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
-            marketCollections = FirebaseFirestore.getInstance().collection(Constants.SELLING);
-            postOnwersCollection = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
 
             showSaleLayout();
             deletePostDialog();
@@ -201,107 +183,14 @@ public class DialogFragmentPostSettings extends DialogFragment implements View.O
 
     public void deleteCingle(){
         // delete post in collection and delete post in overall document
-
-        try {
-            progressDialog.show();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-        collectionsPosts.document(mPostId)
-                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (documentSnapshot.exists()){
-                            postsCollection.document(mPostId)
-                                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onEvent(DocumentSnapshot documentSnapshot,
-                                                            FirebaseFirestoreException e) {
-                                            if (e != null) {
-                                                Log.w(TAG, "Listen error", e);
-                                                return;
-                                            }
-
-                                            if (documentSnapshot.exists()){
-                                                postsCollection.document(mPostId).delete();
-                                            }
-                                        }
-                                    });
-
-                            marketCollections.document(mPostId)
-                                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                                            if (e != null) {
-                                                Log.w(TAG, "Listen error", e);
-                                                return;
-                                            }
-
-
-                                            if (documentSnapshot.exists()) {
-                                                marketCollections.document(mPostId).delete();
-
-                                            }
-                                        }
-                                    });
-
-                            senseCreditReference.document(mPostId)
-                                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                            if (e != null) {
-                                                Log.w(TAG, "Listen error", e);
-                                                return;
-                                            }
-
-                                            if (documentSnapshot.exists()){
-                                                senseCreditReference.document(mPostId).delete();
-
-
-                                            }
-                                        }
-                                    });
-
-                            postOnwersCollection.document(mPostId)
-                                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                @Override
-                                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                    if (e != null) {
-                                        Log.w(TAG, "Listen error", e);
-                                        return;
-                                    }
-
-                                    if (documentSnapshot.exists()){
-                                        postOnwersCollection.document(mPostId).delete();
-
-                                    }
-                                }
-                            });
-
-                            collectionsPosts.document(mPostId).delete()
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    try {
-                                        progressDialog.dismiss();
-                                    }catch (Exception e){
-                                        e.printStackTrace();
-                                    }
-
-                                }
-                            });
-
-                        }
-                    }
-                });
-
+        Bundle bundle = new Bundle();
+        bundle.putString(DialogFragmentPostSettings.EXTRA_POST_ID, mPostId);
+        bundle.putString(DialogFragmentPostSettings.COLLECTION_ID, mCollectionId);
+        bundle.putString(DialogFragmentPostSettings.TYPE, mType);
+        FragmentManager fragmenManager = getChildFragmentManager();
+        DialogMarketPostSettings dialogMarketPostSettings =  DialogMarketPostSettings.newInstance("post settings");
+        dialogMarketPostSettings.setArguments(bundle);
+        dialogMarketPostSettings.show(fragmenManager, "market post settings fragment");
 
     }
 

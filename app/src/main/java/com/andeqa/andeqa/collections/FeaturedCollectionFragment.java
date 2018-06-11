@@ -39,7 +39,8 @@ public class FeaturedCollectionFragment extends Fragment implements
 
     private static final String TAG = FeaturedCollectionFragment.class.getSimpleName();
     //firestore reference
-    private CollectionReference collectionCollection;
+    private CollectionReference collectionsCollection;
+
     private Query collectionsQuery;
 
     //firebase auth
@@ -80,8 +81,8 @@ public class FeaturedCollectionFragment extends Fragment implements
 
         if (firebaseAuth.getCurrentUser()!= null){
 
-            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
-            collectionsQuery = collectionCollection.orderBy("time", Query.Direction.DESCENDING)
+            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
+            collectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
                     .whereEqualTo("type", "featured_collection")
                     .limit(TOTAL_ITEMS);
 
@@ -94,8 +95,8 @@ public class FeaturedCollectionFragment extends Fragment implements
     public void onStart() {
         super.onStart();
         documentSnapshots.clear();
-        setCollections();
         recyclerView();
+        setCollections();
 
     }
 
@@ -175,7 +176,7 @@ public class FeaturedCollectionFragment extends Fragment implements
             DocumentSnapshot lastVisible = featuredCollectionsAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of documentSnapshots
-            Query  nextCollectionsQuery = collectionCollection.orderBy("time", Query.Direction.DESCENDING)
+            Query  nextCollectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
                     .startAfter(lastVisible).limit(TOTAL_ITEMS);
 
             nextCollectionsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {

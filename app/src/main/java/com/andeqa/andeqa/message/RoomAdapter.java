@@ -41,7 +41,6 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     private CollectionReference roomCollection;
     private CollectionReference usersCollection;
-    private Query roomQuery;
     private FirebaseAuth firebaseAuth;
     private Context mContext;
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
@@ -77,35 +76,44 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
         final String senderUid = room.getSender_id();
         final String lastMessage = room.getMessage();
         final String roomId = room.getRoom_id();
-        final String receiverStatus = room.getStatus();
+        final String status = room.getStatus();
 
         firebaseAuth = FirebaseAuth.getInstance();
 
         if (firebaseAuth.getCurrentUser() != null){
             roomCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
-            roomQuery = roomCollection.document("rooms")
-                    .collection(firebaseAuth.getCurrentUser().getUid());
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
 
         }
 
-        if (receiverUid.equals(firebaseAuth.getCurrentUser().getUid())){
-            holder.lastMessageTextView.setTypeface(holder.lastMessageTextView.getTypeface(), Typeface.BOLD);
-            holder.roomRelativeLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    roomCollection.document("rooms")
-                            .collection(receiverUid)
-                            .document(senderUid).update("status", "read");
-                    Intent intent = new Intent(mContext, MessagesAccountActivity.class);
-                    intent.putExtra(RoomAdapter.EXTRA_ROOM_ID, roomId);
-                    intent.putExtra(RoomAdapter.EXTRA_USER_UID, receiverUid);
-                    mContext.startActivity(intent);
-                }
-            });
-
+        if (status.equals("un_read")){
+            if (receiverUid.equals(firebaseAuth.getCurrentUser().getUid())){
+                holder.lastMessageTextView.setTypeface(holder.lastMessageTextView.getTypeface(), Typeface.BOLD);
+                holder.roomRelativeLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        roomCollection.document("last messages")
+                                .collection("messages")
+                                .document(roomId).update("status", "read");
+                        Intent intent = new Intent(mContext, MessagesAccountActivity.class);
+                        intent.putExtra(RoomAdapter.EXTRA_ROOM_ID, roomId);
+                        intent.putExtra(RoomAdapter.EXTRA_USER_UID, receiverUid);
+                        mContext.startActivity(intent);
+                    }
+                });
+            }else {
+                holder.lastMessageTextView.setTypeface(holder.lastMessageTextView.getTypeface(), Typeface.NORMAL);
+                holder.roomRelativeLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(mContext, MessagesAccountActivity.class);
+                        intent.putExtra(RoomAdapter.EXTRA_ROOM_ID, roomId);
+                        intent.putExtra(RoomAdapter.EXTRA_USER_UID, receiverUid);
+                        mContext.startActivity(intent);
+                    }
+                });
+            }
         }else {
-            holder.lastMessageTextView.setTypeface(holder.lastMessageTextView.getTypeface(), Typeface.NORMAL);
             holder.roomRelativeLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -116,8 +124,6 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
                 }
             });
         }
-
-
 
         final String [] strings = lastMessage.split("");
 

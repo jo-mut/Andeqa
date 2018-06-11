@@ -2,12 +2,10 @@ package com.andeqa.andeqa.profile;
 
 import android.content.Intent;
 import android.os.Parcelable;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.NestedScrollView;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -15,19 +13,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.collections.ProfileCollectionsActivity;
-import com.andeqa.andeqa.collections.ProfileCollectionsAdapter;
+import com.andeqa.andeqa.collections.MineCollectionsAdapter;
 import com.andeqa.andeqa.message.MessagesAccountActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Room;
 
-import com.andeqa.andeqa.wallet.WalletActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -62,14 +57,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Bind(R.id.singlesCountTextView)TextView mSinglesCountTextView;
     @Bind(R.id.collectionsRelativeLayout)RelativeLayout mCollectionCountRelativeLayout;
     @Bind(R.id.profileCoverImageView)ImageView mProfileCover;
-    @Bind(R.id.collapsing_toolbar)CollapsingToolbarLayout collapsingToolbarLayout;
     @Bind(R.id.sendMessageButton)Button mSendMessageButton;
     @Bind(R.id.sendMessageRelativeLayout)RelativeLayout mSendMessageRelativeLayout;
-    @Bind(R.id.profileNestedScrollView)NestedScrollView mProfileNestedScrollView;
-    @Bind(R.id.accountSettingsLinearLayout)LinearLayout mAccountSettingsLinearLayout;
-    @Bind(R.id.walletLinearlayout)LinearLayout mWalletLinearLayout;
-    @Bind(R.id.signOutLinearLayout)LinearLayout mSignOutLinearLayout;
-    @Bind(R.id.accountInfoCardView)CardView mAccountInfoCarView;
+
 
     private static final String TAG = ProfileActivity.class.getSimpleName();
     //firestore reference
@@ -84,7 +74,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore adapters
-    private ProfileCollectionsAdapter profileCollectionsAdapter;
+    private MineCollectionsAdapter mineCollectionsAdapter;
     private static final String KEY_LAYOUT_POSITION = "layout pooition";
     private Parcelable recyclerViewState;
     private  static final int MAX_WIDTH = 200;
@@ -106,6 +96,13 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private boolean processRoom = false;
     private boolean hideMenu = false;
 
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private ProfilePagerAdapter profilePagerAdapter;
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,6 +123,18 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
 
+        profilePagerAdapter = new ProfilePagerAdapter(getSupportFragmentManager());
+        tabLayout = (TabLayout)findViewById(R.id.tabs);
+        viewPager = (ViewPager)findViewById(R.id.container);
+        viewPager.setAdapter(profilePagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
+
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
+
+
+
+
         if (firebaseAuth.getCurrentUser()!= null){
 
             mUid = getIntent().getStringExtra(EXTRA_USER_UID);
@@ -143,8 +152,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             //show hidden views
             if (!firebaseAuth.getCurrentUser().getUid().equals(mUid)){
                 mSendMessageRelativeLayout.setVisibility(View.VISIBLE);
-            }else {
-                mAccountInfoCarView.setVisibility(View.VISIBLE);
             }
 
             usersCollections.document(mUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -159,10 +166,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     if (documentSnapshot.exists()){
                         Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
                         if (firebaseAuth.getCurrentUser().getUid().equals(mUid)){
-                            collapsingToolbarLayout.setTitle("Profile");
+                            toolbar.setTitle("Profile");
                         }else {
                             toolbar.getMenu().clear();
-                            collapsingToolbarLayout.setTitle(andeqan.getUsername());
+                            toolbar.setTitle(andeqan.getUsername());
                         }
                     }
 
@@ -173,9 +180,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             /**initialize click listners*/
             mSendMessageButton.setOnClickListener(this);
             mCollectionCountRelativeLayout.setOnClickListener(this);
-            mAccountSettingsLinearLayout.setOnClickListener(this);
-            mWalletLinearLayout.setOnClickListener(this);
-            mSignOutLinearLayout.setOnClickListener(this);
+
         }
 
 
@@ -184,24 +189,25 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     private void fetchData(){
 
-        collectionCollection.orderBy("user_id", Query.Direction.DESCENDING)
-                .whereEqualTo("user_id", mUid)
+        collectionCollection.orderBy("user_id").whereEqualTo("user_id", mUid)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
+                    @Override
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-                if (!queryDocumentSnapshots.isEmpty()){
-                    final int collectionCount = queryDocumentSnapshots.size();
-                    mCollectionsCountTextView.setText(collectionCount + "");
-                }else {
-                    mCollectionsCountTextView.setText("0");
-                }
-            }
-        });
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!documentSnapshots.isEmpty()){
+                            final int collectionCount = documentSnapshots.size();
+                            mCollectionsCountTextView.setText(collectionCount + "");
+                        }else {
+                            mCollectionsCountTextView.setText("0");
+                        }
+                    }
+                });
+
 
         postsCollection.orderBy("user_id").whereEqualTo("user_id", mUid)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -371,9 +377,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View v){
         if (v == mSendMessageButton){
+            //look to see if current user has a chat history with mUid
             processRoom = true;
-            roomsCollection.document("rooms")
-                    .collection(mUid).document(firebaseAuth.getCurrentUser().getUid())
+            roomsCollection.document("last messages")
+                    .collection("last message").document(mUid)
                     .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -383,6 +390,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                             }
 
                             if (processRoom){
+                                //have current user sent message to mUid to start a chat or to reply bfre
                                 if (documentSnapshot.exists()){
                                     Room room = documentSnapshot.toObject(Room.class);
                                     roomId = room.getRoom_id();
@@ -394,40 +402,48 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                     processRoom = false;
 
                                 }else {
-                                    roomId = databaseReference.push().getKey();
-                                    Intent intent = new Intent(ProfileActivity.this, MessagesAccountActivity.class);
-                                    intent.putExtra(ProfileActivity.EXTRA_ROOM_UID, roomId);
-                                    intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
-                                    startActivity(intent);
+                                    //has mUid sent current user any message to start a chat or reply
+                                    roomsCollection.document("last messages")
+                                            .collection("last message").document(firebaseAuth.getCurrentUser().getUid())
+                                            .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                                    if (e != null) {
+                                                        Log.w(TAG, "Listen error", e);
+                                                        return;
+                                                    }
 
-                                    processRoom = false;
+                                                    if (processRoom){
+                                                        if (documentSnapshot.exists()){
+                                                            Room room = documentSnapshot.toObject(Room.class);
+                                                            roomId = room.getRoom_id();
+                                                            Intent intent = new Intent(ProfileActivity.this, MessagesAccountActivity.class);
+                                                            intent.putExtra(ProfileActivity.EXTRA_ROOM_UID, roomId);
+                                                            intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
+                                                            startActivity(intent);
+
+                                                            processRoom = false;
+
+                                                        }else {
+                                                            //start a chat with mUid since they have no chatting history
+                                                            roomId = databaseReference.push().getKey();
+                                                            Intent intent = new Intent(ProfileActivity.this, MessagesAccountActivity.class);
+                                                            intent.putExtra(ProfileActivity.EXTRA_ROOM_UID, roomId);
+                                                            intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
+                                                            startActivity(intent);
+
+                                                            processRoom = false;
+                                                        }
+                                                    }
+                                                }
+                                            });
+
                                 }
                             }
                         }
                     });
         }
 
-        if (v == mCollectionCountRelativeLayout){
-            Intent intent = new Intent(ProfileActivity.this, ProfileCollectionsActivity.class);
-            intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
-            startActivity(intent);
-        }
-
-        if (v == mAccountSettingsLinearLayout){
-            Intent intent = new Intent(ProfileActivity.this, UpdateProfileActivity.class);
-            startActivity(intent);
-        }
-
-        if (v == mWalletLinearLayout){
-            Intent intent = new Intent(ProfileActivity.this, WalletActivity.class);
-            startActivity(intent);
-        }
-
-        if (v == mSignOutLinearLayout){
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            DialogConfirmSingOutFragment dialogConfirmSingOutFragment = DialogConfirmSingOutFragment.newInstance("sing out");
-            dialogConfirmSingOutFragment.show(fragmentManager, "delete account fragment");
-        }
     }
 
 }

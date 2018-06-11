@@ -52,12 +52,7 @@ public class ExploreFragment extends Fragment implements SwipeRefreshLayout.OnRe
     private List<String> snapshotsIds = new ArrayList<>();
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
     private static final String TAG = ExploreFragment.class.getSimpleName();
-//    private TabLayout tabLayout;
-//    private ViewPager viewPager;
-//    private ExplorePagerAdapter explorePagerAdapter;
-//
-//
-//
+
 
 
 
@@ -92,17 +87,6 @@ public class ExploreFragment extends Fragment implements SwipeRefreshLayout.OnRe
                     .limit(TOTAL_ITEMS);
 
         }
-
-
-//        explorePagerAdapter = new ExplorePagerAdapter(getChildFragmentManager());
-//        tabLayout = (TabLayout)view.findViewById(R.id.tabs);
-//        viewPager = (ViewPager)view.findViewById(R.id.container);
-//        viewPager.setAdapter(explorePagerAdapter);
-//        tabLayout.setupWithViewPager(viewPager);
-//
-//        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-//        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
-
 
 
         return view;

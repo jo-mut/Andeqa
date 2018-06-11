@@ -34,7 +34,7 @@ import butterknife.ButterKnife;
 
 public class WalletActivity extends AppCompatActivity {
     @Bind(R.id.transactionHistoryRecyclerView)RecyclerView mTransactionHistoryRecyclerView;
-    @Bind(R.id.currentWalletBalanceTextview)TextView mCurrentWalletBalanceTextView;
+    @Bind(R.id.walletBalanceTextView)TextView mWalletBalanceTextView;
     @Bind(R.id.emptyRelativeLayout)RelativeLayout mEmptyRelativeLayout;
     //firestore
     private CollectionReference collectionsPosts;
@@ -156,9 +156,9 @@ public class WalletActivity extends AppCompatActivity {
                     Balance balance = documentSnapshot.toObject(Balance.class);
                     final double walletBalance = balance.getTotal_balance();
 
-                    mCurrentWalletBalanceTextView.setText("uC" + " " + formatter.format(walletBalance));
+                    mWalletBalanceTextView.setText("uC" + " " + formatter.format(walletBalance));
                 }else {
-                    mCurrentWalletBalanceTextView.setText("uC 0.00000000");
+                    mWalletBalanceTextView.setText("uC 0.00000000");
                 }
 
             }

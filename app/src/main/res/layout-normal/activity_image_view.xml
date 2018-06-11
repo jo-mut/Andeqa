@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:fitsSystemWindows="false"
     android:background="#000000"
     android:orientation="vertical"
     tools:context="com.andeqa.andeqa.home.ImageViewActivity">
@@ -13,23 +12,23 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <ScrollView
-            android:fitsSystemWindows="true"
+            android:fillViewport="true"
+            android:layout_centerVertical="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <RelativeLayout
                 android:layout_gravity="center_vertical"
-                android:fitsSystemWindows="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <com.andeqa.andeqa.utils.ProportionalImageView
                     android:id="@+id/postImageView"
                     android:layout_width="match_parent"
-                    android:layout_height="400dp"
+                    android:layout_height="1000dp"
                     android:layout_centerVertical="true"
                     android:layout_alignParentTop="true"
                     android:adjustViewBounds="false" />

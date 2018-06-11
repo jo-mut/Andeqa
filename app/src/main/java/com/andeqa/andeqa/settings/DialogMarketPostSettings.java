@@ -44,12 +44,19 @@ public class DialogMarketPostSettings extends DialogFragment implements View.OnC
     @Bind(R.id.YesRelativeLayout)RelativeLayout mYesRelativeLayout;
 
     private CollectionReference sellingCollection;
+    private CollectionReference postsCollection;
+    private CollectionReference collectionsPosts;
+    private CollectionReference senseCreditReference;
+    private CollectionReference marketCollections;
+    private CollectionReference postOnwersCollection;
     private FirebaseAuth firebaseAuth;
 
     private String mPostId;
     private String mCollectionId;
+    private String mType;
     private static final String COLLECTION_ID = "collection id";
     private static final String EXTRA_POST_ID = "post id";
+    private static final String TYPE = "type";
     private static final String TAG = DialogMarketPostSettings.class.getSimpleName();
     private ProgressDialog progressDialog;
 
@@ -79,23 +86,34 @@ public class DialogMarketPostSettings extends DialogFragment implements View.OnC
         mYesRelativeLayout.setOnClickListener(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
-        if (firebaseAuth.getCurrentUser() != null){
-            sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
-
-            updatingSalePrice();
-        }
 
         Bundle bundle = getArguments();
         if (bundle != null){
             mCollectionId = bundle.getString(DialogMarketPostSettings.COLLECTION_ID);
             mPostId = bundle.getString(DialogMarketPostSettings.EXTRA_POST_ID);
+            mType = bundle.getString(DialogMarketPostSettings.TYPE);
 
-
-        }else {
-            throw new IllegalArgumentException("pass an EXTRA_POST_KEY");
         }
 
+        if (firebaseAuth.getCurrentUser() != null){
+            sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
+            //firestore
+            postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+            //firestore
+            if (mType.equals("single")){
+                collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("singles").collection(mCollectionId);
+            }else{
+                collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("collections").collection(mCollectionId);
+            }
 
+            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
+            marketCollections = FirebaseFirestore.getInstance().collection(Constants.SELLING);
+            postOnwersCollection = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
+
+            updatingSalePrice();
+        }
 
         return view;
     }
@@ -127,29 +145,106 @@ public class DialogMarketPostSettings extends DialogFragment implements View.OnC
     public void onClick(View v){
         if (v == mYesRelativeLayout){
             progressDialog.show();
-            sellingCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                @Override
-                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
-                    if (e != null) {
-                        Log.w(TAG, "Listen error", e);
-                        return;
-                    }
+            try {
+                progressDialog.show();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
 
-                    if (documentSnapshot.exists()){
-                        sellingCollection.document(mPostId).delete();
-                        try {
-                            Toast.makeText(getContext(), "Your post has been deleted from the market",
-                                    Toast.LENGTH_SHORT).show();
-                            progressDialog.dismiss();
-                            dismiss();
-                        }catch (Exception ex){
-                            ex.printStackTrace();
+            collectionsPosts.document(mPostId)
+                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                            if (e != null) {
+                                Log.w(TAG, "Listen error", e);
+                                return;
+                            }
+
+                            if (documentSnapshot.exists()){
+                                postsCollection.document(mPostId)
+                                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onEvent(DocumentSnapshot documentSnapshot,
+                                                                FirebaseFirestoreException e) {
+                                                if (e != null) {
+                                                    Log.w(TAG, "Listen error", e);
+                                                    return;
+                                                }
+
+                                                if (documentSnapshot.exists()){
+                                                    postsCollection.document(mPostId).delete();
+                                                }
+                                            }
+                                        });
+
+                                marketCollections.document(mPostId)
+                                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                                                if (e != null) {
+                                                    Log.w(TAG, "Listen error", e);
+                                                    return;
+                                                }
+
+
+                                                if (documentSnapshot.exists()) {
+                                                    marketCollections.document(mPostId).delete();
+
+                                                }
+                                            }
+                                        });
+
+                                senseCreditReference.document(mPostId)
+                                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                                if (e != null) {
+                                                    Log.w(TAG, "Listen error", e);
+                                                    return;
+                                                }
+
+                                                if (documentSnapshot.exists()){
+                                                    senseCreditReference.document(mPostId).delete();
+
+
+                                                }
+                                            }
+                                        });
+
+                                postOnwersCollection.document(mPostId)
+                                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                                if (e != null) {
+                                                    Log.w(TAG, "Listen error", e);
+                                                    return;
+                                                }
+
+                                                if (documentSnapshot.exists()){
+                                                    postOnwersCollection.document(mPostId).delete();
+
+                                                }
+                                            }
+                                        });
+
+                                collectionsPosts.document(mPostId).delete()
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                try {
+                                                    progressDialog.dismiss();
+                                                }catch (Exception e){
+                                                    e.printStackTrace();
+                                                }
+
+                                            }
+                                        });
+
+                            }
                         }
-
-                    }
-                }
-            });
+                    });
 
         }
 

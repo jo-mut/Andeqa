@@ -53,8 +53,8 @@
             android:name=".registration.SignUpActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:label="Share post"
             android:name=".creation.CreatePostActivity"
+            android:label="Share post"
             android:screenOrientation="portrait" />
         <activity
             android:name=".profile.UpdateProfileActivity"
@@ -119,8 +119,8 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:label="Share post"
             android:name=".registration.CreateProfileActivity"
+            android:label="Share post"
             android:screenOrientation="portrait" />
         <activity
             android:name=".home.PostDetailActivity"
@@ -176,11 +176,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".collections.ProfileCollectionsActivity"
-            android:label="Collection"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
             android:name=".collections.MinePostsActivity"
             android:label="Posts"
             android:screenOrientation="portrait"
@@ -189,8 +184,8 @@
             android:name=".camera.CameraActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:label="Share single"
             android:name=".camera.PreviewActivity"
+            android:label="Share single"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -208,6 +203,8 @@
             android:label="Gallery"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
+        <activity android:name=".wallet.WalletPasswordActivity" />
+        <activity android:name=".wallet.TransactionHistoryActivity"></activity>
     </application>
 
 </manifest>

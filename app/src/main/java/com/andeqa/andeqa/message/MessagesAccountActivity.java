@@ -315,10 +315,10 @@ public class MessagesAccountActivity extends AppCompatActivity
                            final Message message = new Message();
                            message.setMessage(text_message);
                            message.setSender_id(firebaseAuth.getCurrentUser().getUid());
-                           message.setRecepient_id(mUid);
+                           message.setReceiver_id(mUid);
                            message.setTime(time);
                            message.setMessage_id(documentId);
-                           message.setType("Text");
+                           message.setType("text_message");
                            message.setRoom_id(roomId);
                            documentReference.set(message);
                            processMessage = false;
@@ -327,10 +327,10 @@ public class MessagesAccountActivity extends AppCompatActivity
                            final Message message = new Message();
                            message.setMessage(text_message);
                            message.setSender_id(firebaseAuth.getCurrentUser().getUid());
-                           message.setRecepient_id(mUid);
+                           message.setReceiver_id(mUid);
                            message.setTime(time);
                            message.setMessage_id(documentId);
-                           message.setType("Text");
+                           message.setType("text_message");
                            message.setRoom_id(roomId);
                            documentReference.set(message);
                            processMessage = false;
@@ -340,8 +340,19 @@ public class MessagesAccountActivity extends AppCompatActivity
                 }
             });
 
-            DocumentReference receipientReference = roomCollection.document("rooms")
-                    .collection(mUid).document(firebaseAuth.getCurrentUser().getUid());
+            //record the last chat history for reference when start a chat from profile
+            DocumentReference receipientReference = roomCollection.document("last messages")
+                    .collection("last message")
+                    .document(mUid);
+
+            DocumentReference senderReference = roomCollection.document("last messages")
+                    .collection("last message")
+                    .document(firebaseAuth.getCurrentUser().getUid());
+
+            //get the rooms that have been created
+            DocumentReference roomReference = roomCollection.document("last messages")
+                    .collection("messages")
+                    .document(roomId);
 
 
             Room room = new Room();
@@ -352,6 +363,8 @@ public class MessagesAccountActivity extends AppCompatActivity
             room.setRoom_id(roomId);
             room.setStatus("un_read");
             receipientReference.set(room);
+            senderReference.set(room);
+            roomReference.set(room);
             mSendMessageEditText.setText("");
 
         }else {

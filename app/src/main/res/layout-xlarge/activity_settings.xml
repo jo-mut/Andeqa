@@ -68,7 +68,7 @@
 
                 <TextView
                     android:layout_centerHorizontal="true"
-                    android:text="wefeg"
+                    android:text=""
                     android:padding="5dp"
                     android:textAlignment="center"
                     android:textSize="28sp"
@@ -163,7 +163,7 @@
 
                 <TextView
                     android:layout_below="@+id/sendFeedbackTextView"
-                    android:text="@string/summary_support"
+                    android:text="See your wallet balance and transactions history"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="12dp"
@@ -207,6 +207,78 @@
                 android:layout_alignParentBottom="true"
                 android:layout_width="match_parent"
                 android:layout_height="0.3dp"/>
+
+            <LinearLayout
+                android:id="@+id/walletLinearLayout"
+                android:paddingRight="10dp"
+                android:paddingEnd="10dp"
+                android:paddingLeft="10dp"
+                android:paddingStart="10dp"
+                android:paddingBottom="20dp"
+                android:paddingTop="20dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="Wallet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginStart="12dp"
+                    android:textSize="28sp"
+                    android:id="@+id/walletTitleTextView"
+                    android:textStyle="normal|bold" />
+
+                <TextView
+                    android:layout_below="@+id/walletTitleTextView"
+                    android:text="@string/summary_support"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="28sp"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginStart="12dp" />
+
+            </LinearLayout>
+
+            <View
+                android:background="@android:color/darker_gray"
+                android:layout_alignParentBottom="true"
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"/>
+
+            <LinearLayout
+                android:id="@+id/signOutLinearLayout"
+                android:paddingRight="10dp"
+                android:paddingEnd="10dp"
+                android:paddingLeft="10dp"
+                android:paddingStart="10dp"
+                android:paddingBottom="20dp"
+                android:paddingTop="20dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="Sign Out"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginStart="12dp"
+                    android:textSize="28sp"
+                    android:id="@+id/signOutTitleTextView"
+                    android:textStyle="normal|bold" />
+
+                <TextView
+                    android:text="Tap to sign out of Andeqa"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="28sp"
+                    android:id="@+id/signOutTextView"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginStart="12dp" />
+
+            </LinearLayout>
 
 
             <!--<RelativeLayout-->

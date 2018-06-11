@@ -18,7 +18,6 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="42dp"
-            android:layout_weight="1"
             android:background="@color/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/AppTheme.PopupOverlay"

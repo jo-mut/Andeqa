@@ -11,10 +11,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.home.PostDetailActivity;
+import com.andeqa.andeqa.home.PostsAdapter;
+import com.andeqa.andeqa.market.RedeemCreditsActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.comments.CommentsActivity;
@@ -268,6 +271,25 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<CollectionPosts
                 mContext.startActivity(intent);
             }
         });
+
+        holder.creditsLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                    Intent intent = new Intent(mContext, RedeemCreditsActivity.class);
+                    intent.putExtra(CollectionPostsAdapter.EXTRA_POST_ID, postId);
+                    intent.putExtra(CollectionPostsAdapter.COLLECTION_ID, collectionId);
+                    intent.putExtra(CollectionPostsAdapter.TYPE, type);
+                    mContext.startActivity(intent);
+                }else {
+                    Toast.makeText(mContext, "You can only redeem uCredits from your posts or singles",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
+
 
         senseCreditReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override

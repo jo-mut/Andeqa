@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Parcelable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -45,13 +46,15 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class CollectionPostsActivity extends AppCompatActivity
-        implements View.OnClickListener{
+        implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener{
     @Bind(R.id.collectionsPostsRecyclerView)RecyclerView mCollectionsPostsRecyclerView;
     @Bind(R.id.createPostButton)FloatingActionButton mCreatePostButton;
     @Bind(R.id.collectionCoverImageView)ImageView mCollectionCoverImageView;
     @Bind(R.id.collectionNoteTextView)TextView mCollectionNoteTextView;
     @Bind(R.id.collapsing_toolbar)CollapsingToolbarLayout collapsingToolbarLayout;
     @Bind(R.id.collectionNameTextView)TextView mCollectionNameTextView;
+    @Bind(R.id.swipeRefreshLayout)SwipeRefreshLayout mSwipeRefreshLayout;
+
     private static final String TAG = CollectionPostsActivity.class.getSimpleName();
 
 
@@ -119,21 +122,6 @@ public class CollectionPostsActivity extends AppCompatActivity
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             collectionOwnersCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_OWNERS);
 
-            if (savedInstanceState != null){
-                recyclerViewState = savedInstanceState.getParcelable(KEY_LAYOUT_POSITION);
-                Log.d("Profile saved Instance", "Instance is not null");
-            }else {
-                Log.d("Saved Instance", "Instance is completely null");
-            }
-
-
-            mCollectionsPostsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
-                @Override
-                public void onLoadMore() {
-                    setNextCollectionPosts();
-                }
-            });
-
         }
     }
 
@@ -146,8 +134,8 @@ public class CollectionPostsActivity extends AppCompatActivity
     public void onStart() {
         super.onStart();
         mSnapshots.clear();
-        setCollectionPosts();
         setRecyclerView();
+        setCollectionPosts();
         setCollectionsInfo();
     }
 
@@ -161,6 +149,12 @@ public class CollectionPostsActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+
+    @Override
+    public void onRefresh() {
+        setNextCollections();
     }
 
     @Override
@@ -218,6 +212,7 @@ public class CollectionPostsActivity extends AppCompatActivity
         mCollectionsPostsRecyclerView.setHasFixedSize(false);
         layoutManager = new LinearLayoutManager(CollectionPostsActivity.this);
         layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
         mCollectionsPostsRecyclerView.setLayoutManager(layoutManager);
         mCollectionsPostsRecyclerView.setNestedScrollingEnabled(false);
     }
@@ -323,45 +318,50 @@ public class CollectionPostsActivity extends AppCompatActivity
 
     }
 
+    private void setNextCollections(){
+        mSwipeRefreshLayout.setRefreshing(true);
 
-    private void setNextCollectionPosts(){
         // Get the last visible document
         final int snapshotSize = collectionPostsAdapter.getItemCount();
+        if (snapshotSize == 0){
 
-        DocumentSnapshot lastVisible = collectionPostsAdapter.getSnapshot(snapshotSize - 1);
+        }else {
+            DocumentSnapshot lastVisible = collectionPostsAdapter.getSnapshot(snapshotSize - 1);
 
-        //retrieve the first bacth of mSnapshots
-        Query nextCollectionPostsQuery = collectionsPosts.orderBy("time", Query.Direction.DESCENDING)
-                .startAfter(lastVisible)
-                .limit(TOTAL_ITEMS);
+            //retrieve the first bacth of mSnapshots
+            Query nextCollectionPostsQuery = collectionsPosts.orderBy("time", Query.Direction.DESCENDING)
+                    .startAfter(lastVisible)
+                    .limit(TOTAL_ITEMS);
 
-        nextCollectionPostsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+            nextCollectionPostsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
+                    if (e != null) {
+                        Log.w(TAG, "Listen error", e);
+                        return;
+                    }
 
-                if (!documentSnapshots.isEmpty()){
-                    //retrieve the first bacth of mSnapshots
-                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                        switch (change.getType()) {
-                            case ADDED:
-                                onDocumentAdded(change);
-                                break;
-                            case MODIFIED:
-                                onDocumentModified(change);
-                                break;
-                            case REMOVED:
-                                onDocumentRemoved(change);
-                                break;
+                    if (!documentSnapshots.isEmpty()){
+                        //retrieve the first bacth of mSnapshots
+                        for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                            switch (change.getType()) {
+                                case ADDED:
+                                    onDocumentAdded(change);
+                                    break;
+                                case MODIFIED:
+                                    onDocumentModified(change);
+                                    break;
+                                case REMOVED:
+                                    onDocumentRemoved(change);
+                                    break;
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+        }
+
     }
 
     protected void onDocumentAdded(DocumentChange change) {
