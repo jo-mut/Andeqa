@@ -3,6 +3,9 @@ package com.andeqa.andeqa.profile;
 import android.content.Intent;
 import android.os.Parcelable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -31,7 +34,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
@@ -101,8 +103,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private ProfilePagerAdapter profilePagerAdapter;
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,18 +122,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 finish();
             }
         });
-
-        profilePagerAdapter = new ProfilePagerAdapter(getSupportFragmentManager());
-        tabLayout = (TabLayout)findViewById(R.id.tabs);
-        viewPager = (ViewPager)findViewById(R.id.container);
-        viewPager.setAdapter(profilePagerAdapter);
-        tabLayout.setupWithViewPager(viewPager);
-
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
-
-
-
 
         if (firebaseAuth.getCurrentUser()!= null){
 
@@ -176,13 +164,19 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 }
             });
 
+            profilePagerAdapter = new ProfilePagerAdapter(getSupportFragmentManager());
+            tabLayout = (TabLayout)findViewById(R.id.tabs);
+            viewPager = (ViewPager)findViewById(R.id.container);
+            viewPager.setAdapter(profilePagerAdapter);
+            tabLayout.setupWithViewPager(viewPager);
+            viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+            tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
 
             /**initialize click listners*/
             mSendMessageButton.setOnClickListener(this);
             mCollectionCountRelativeLayout.setOnClickListener(this);
 
         }
-
 
     }
 
@@ -289,7 +283,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                     .load(profileImage)
                                     .resize(MAX_WIDTH, MAX_HEIGHT)
                                     .centerCrop()
-                                    .placeholder(R.drawable.ic_user)
+                                    .placeholder(R.drawable.ic_user_white)
                                     .networkPolicy(NetworkPolicy.OFFLINE)
                                     .into(mProifleImageView, new Callback() {
                                         @Override
@@ -303,7 +297,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                                     .load(profileImage)
                                                     .resize(MAX_WIDTH, MAX_HEIGHT)
                                                     .centerCrop()
-                                                    .placeholder(R.drawable.ic_user)
+                                                    .placeholder(R.drawable.ic_user_white)
                                                     .into(mProifleImageView);
 
                                         }
@@ -377,73 +371,129 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View v){
         if (v == mSendMessageButton){
-            //look to see if current user has a chat history with mUid
-            processRoom = true;
-            roomsCollection.document("last messages")
-                    .collection("last message").document(mUid)
-                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
-
-                            if (processRoom){
-                                //have current user sent message to mUid to start a chat or to reply bfre
-                                if (documentSnapshot.exists()){
-                                    Room room = documentSnapshot.toObject(Room.class);
-                                    roomId = room.getRoom_id();
-                                    Intent intent = new Intent(ProfileActivity.this, MessagesAccountActivity.class);
-                                    intent.putExtra(ProfileActivity.EXTRA_ROOM_UID, roomId);
-                                    intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
-                                    startActivity(intent);
-
-                                    processRoom = false;
-
-                                }else {
-                                    //has mUid sent current user any message to start a chat or reply
-                                    roomsCollection.document("last messages")
-                                            .collection("last message").document(firebaseAuth.getCurrentUser().getUid())
-                                            .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                                @Override
-                                                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                                    if (e != null) {
-                                                        Log.w(TAG, "Listen error", e);
-                                                        return;
-                                                    }
-
-                                                    if (processRoom){
-                                                        if (documentSnapshot.exists()){
-                                                            Room room = documentSnapshot.toObject(Room.class);
-                                                            roomId = room.getRoom_id();
-                                                            Intent intent = new Intent(ProfileActivity.this, MessagesAccountActivity.class);
-                                                            intent.putExtra(ProfileActivity.EXTRA_ROOM_UID, roomId);
-                                                            intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
-                                                            startActivity(intent);
-
-                                                            processRoom = false;
-
-                                                        }else {
-                                                            //start a chat with mUid since they have no chatting history
-                                                            roomId = databaseReference.push().getKey();
-                                                            Intent intent = new Intent(ProfileActivity.this, MessagesAccountActivity.class);
-                                                            intent.putExtra(ProfileActivity.EXTRA_ROOM_UID, roomId);
-                                                            intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
-                                                            startActivity(intent);
-
-                                                            processRoom = false;
-                                                        }
-                                                    }
-                                                }
-                                            });
-
-                                }
-                            }
-                        }
-                    });
+           sendMessage();
         }
 
+    }
+
+    private void sendMessage(){
+        //look to see if current user has a chat history with mUid
+        processRoom = true;
+        roomsCollection.document(mUid).collection("last message")
+                .document(firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (processRoom){
+                            if (documentSnapshot.exists()){
+                                Room room = documentSnapshot.toObject(Room.class);
+                                roomId = room.getRoom_id();
+                                Intent intent = new Intent(ProfileActivity.this, MessagesAccountActivity.class);
+                                intent.putExtra(ProfileActivity.EXTRA_ROOM_UID, roomId);
+                                intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
+                                startActivity(intent);
+
+                                processRoom = false;
+                            }else {
+                                roomsCollection.document(firebaseAuth.getCurrentUser().getUid())
+                                        .collection("last message")
+                                        .document(mUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                        if (e != null) {
+                                            Log.w(TAG, "Listen error", e);
+                                            return;
+                                        }
+
+                                        if (processRoom){
+                                            if (documentSnapshot.exists()){
+                                                Room room = documentSnapshot.toObject(Room.class);
+                                                roomId = room.getRoom_id();
+                                                Intent intent = new Intent(ProfileActivity.this, MessagesAccountActivity.class);
+                                                intent.putExtra(ProfileActivity.EXTRA_ROOM_UID, roomId);
+                                                intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
+                                                startActivity(intent);
+
+                                                processRoom = false;
+
+                                            }else {
+                                                //start a chat with mUid since they have no chatting history
+                                                roomId = databaseReference.push().getKey();
+                                                Intent intent = new Intent(ProfileActivity.this, MessagesAccountActivity.class);
+                                                intent.putExtra(ProfileActivity.EXTRA_ROOM_UID, roomId);
+                                                intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
+                                                startActivity(intent);
+
+                                                processRoom = false;
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        }
+
+                    }
+                });
+
+        roomsCollection.document(firebaseAuth.getCurrentUser().getUid())
+                .collection("last message").document(mUid)
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (processRoom){
+                            //have current user sent message to mUid to start a chat or to reply bfre
+                            if (documentSnapshot.exists()){
+
+
+                            }else {
+                                //has mUid sent current user any message to start a chat or reply
+
+
+                            }
+                        }
+                    }
+                });
+    }
+
+    private void launchSinglesFragment(){
+        Bundle bundle = new Bundle();
+        bundle.putString(ProfileActivity.EXTRA_USER_UID, mUid);
+        final Fragment singlesFragment = new SinglesFragment();
+        singlesFragment.setArguments(bundle);
+        FragmentManager fragmenManager = getSupportFragmentManager();
+        FragmentTransaction profileTransaction = fragmenManager.beginTransaction();
+        profileTransaction.replace(R.id.container, singlesFragment).commit();
+    }
+
+
+    private void launchCollectionsFragment(){
+        Bundle bundle = new Bundle();
+        bundle.putString(ProfileActivity.EXTRA_USER_UID, mUid);
+        final Fragment profileCollectionFragment = new ProfileCollectionFragment();
+        profileCollectionFragment.setArguments(bundle);
+        FragmentManager fragmenManager = getSupportFragmentManager();
+        FragmentTransaction profileTransaction = fragmenManager.beginTransaction();
+        profileTransaction.replace(R.id.container, profileCollectionFragment).commit();
+    }
+
+    private void launchPostsFragment(){
+        Bundle bundle = new Bundle();
+        bundle.putString(ProfileActivity.EXTRA_USER_UID, mUid);
+        final Fragment postsFragment = new PostsFragment();
+        postsFragment.setArguments(bundle);
+        FragmentManager fragmenManager = getSupportFragmentManager();
+        FragmentTransaction profileTransaction = fragmenManager.beginTransaction();
+        profileTransaction.replace(R.id.container, postsFragment).commit();
     }
 
 }

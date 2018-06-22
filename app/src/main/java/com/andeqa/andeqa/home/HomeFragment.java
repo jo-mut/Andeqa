@@ -3,12 +3,13 @@ package com.andeqa.andeqa.home;
 
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.os.Trace;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,8 @@ import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.models.TraceData;
+import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -56,10 +59,14 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private FirebaseAuth firebaseAuth;
     //adapters
     private PostsAdapter postsAdapter;
-    private LinearLayoutManager layoutManager;
+    private StaggeredGridLayoutManager layoutManager;
     private int TOTAL_ITEMS = 10;
     private List<String> postsIds = new ArrayList<>();
     private List<DocumentSnapshot> posts = new ArrayList<>();
+    int spanCount = 2; // 3 columns
+    int spacing = 5; // 50px
+    boolean includeEdge = true;
+    private ItemOffsetDecoration itemOffsetDecoration;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -80,6 +87,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             randomPostsQuery = postsCollection.orderBy("random_number", Query.Direction.DESCENDING)
                     .limit(TOTAL_ITEMS);
+
         }
 
         return view;
@@ -103,6 +111,8 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public void onResume() {
         super.onResume();
+
+
     }
 
     @Override
@@ -113,6 +123,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public void onDestroy() {
         super.onDestroy();
+
     }
 
     @Override
@@ -124,6 +135,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public void onStop() {
         super.onStop();
+        postsRecyclerView.removeItemDecoration(itemOffsetDecoration);
     }
 
 
@@ -133,14 +145,15 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         setNextPosts();
     }
 
+
+
     private void setRecyclerView(){
         postsAdapter = new PostsAdapter(getContext());
         postsRecyclerView.setAdapter(postsAdapter);
-        postsAdapter.notifyDataSetChanged();
         postsRecyclerView.setHasFixedSize(false);
-        layoutManager = new LinearLayoutManager(getContext());
-        layoutManager.setReverseLayout(true);
-        layoutManager.setStackFromEnd(true);
+        layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+        itemOffsetDecoration = new ItemOffsetDecoration(getContext(), R.dimen.item_off_set);
+        postsRecyclerView.addItemDecoration(itemOffsetDecoration);
         postsRecyclerView.setLayoutManager(layoutManager);
 
     }
@@ -179,7 +192,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         // Get the last visible document
         mSwipeRefreshLayout.setRefreshing(true);
         final int snapshotSize = postsAdapter.getItemCount();
-
         if (snapshotSize == 0){
             mSwipeRefreshLayout.setRefreshing(false);
         }else {
@@ -258,5 +270,5 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
            e.printStackTrace();
        }
     }
-
+    
 }

@@ -86,18 +86,32 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
 
         }
 
-        if (status.equals("un_read")){
-            if (receiverUid.equals(firebaseAuth.getCurrentUser().getUid())){
+
+        if (senderUid.equals(firebaseAuth.getCurrentUser().getUid())){
+            holder.lastMessageTextView.setTypeface(holder.lastMessageTextView.getTypeface(), Typeface.NORMAL);
+            holder.roomRelativeLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(mContext, MessagesAccountActivity.class);
+                    intent.putExtra(RoomAdapter.EXTRA_ROOM_ID, roomId);
+                    intent.putExtra(RoomAdapter.EXTRA_USER_UID, receiverUid);
+                    mContext.startActivity(intent);
+                }
+            });
+
+        }else {
+
+            if (status.equals("un_read")){
                 holder.lastMessageTextView.setTypeface(holder.lastMessageTextView.getTypeface(), Typeface.BOLD);
                 holder.roomRelativeLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         roomCollection.document("last messages")
-                                .collection("messages")
+                                .collection(firebaseAuth.getCurrentUser().getUid())
                                 .document(roomId).update("status", "read");
                         Intent intent = new Intent(mContext, MessagesAccountActivity.class);
                         intent.putExtra(RoomAdapter.EXTRA_ROOM_ID, roomId);
-                        intent.putExtra(RoomAdapter.EXTRA_USER_UID, receiverUid);
+                        intent.putExtra(RoomAdapter.EXTRA_USER_UID, senderUid);
                         mContext.startActivity(intent);
                     }
                 });
@@ -108,22 +122,14 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
                     public void onClick(View view) {
                         Intent intent = new Intent(mContext, MessagesAccountActivity.class);
                         intent.putExtra(RoomAdapter.EXTRA_ROOM_ID, roomId);
-                        intent.putExtra(RoomAdapter.EXTRA_USER_UID, receiverUid);
+                        intent.putExtra(RoomAdapter.EXTRA_USER_UID, senderUid);
                         mContext.startActivity(intent);
                     }
                 });
             }
-        }else {
-            holder.roomRelativeLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(mContext, MessagesAccountActivity.class);
-                    intent.putExtra(RoomAdapter.EXTRA_ROOM_ID, roomId);
-                    intent.putExtra(RoomAdapter.EXTRA_USER_UID, receiverUid);
-                    mContext.startActivity(intent);
-                }
-            });
+
         }
+
 
         final String [] strings = lastMessage.split("");
 
@@ -138,9 +144,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomViewHolder> {
 
         holder.timeTextView.setText(DateFormat.format("HH:mm", room.getTime()));
 
-
-        //postkey is same as uid
-        usersCollection.document(receiverUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        usersCollection.document(senderUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {

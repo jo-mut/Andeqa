@@ -1,7 +1,13 @@
 package com.andeqa.andeqa.home;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -9,10 +15,13 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.content.res.AppCompatResources;
 import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,6 +29,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,17 +42,17 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.camera.CameraActivity;
 import com.andeqa.andeqa.collections.CollectionsFragment;
-import com.andeqa.andeqa.creation.CreateCollectionActivity;
 import com.andeqa.andeqa.creation.CreatePostActivity;
 import com.andeqa.andeqa.explore.ExploreFragment;
-import com.andeqa.andeqa.explore.SellingFragment;
-import com.andeqa.andeqa.message.MessagingActivity;
+import com.andeqa.andeqa.message.MessagesFragment;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.profile.ProfileActivity;
 import com.andeqa.andeqa.settings.SettingsActivity;
-import com.andeqa.andeqa.timeline.TimelineFragment;
+import com.andeqa.andeqa.timeline.NotificationsActivity;
 import com.andeqa.andeqa.utils.BottomNavigationViewBehavior;
 import com.andeqa.andeqa.utils.BottomNavigationViewHelper;
+import com.andeqa.andeqa.utils.CountDrawable;
+import com.andeqa.andeqa.wallet.WalletActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -51,9 +61,12 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
+
+import javax.annotation.Nullable;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -87,9 +100,9 @@ public class NavigationDrawerActivity extends AppCompatActivity
     final Fragment homeFragment = new HomeFragment();
     final Fragment marketFragment = new ExploreFragment();
     final Fragment collectionFragment = new CollectionsFragment();
-    final Fragment timelineFragment = new TimelineFragment();
-
-    private TextView notificationTextView;
+    final Fragment messagesFragment = new MessagesFragment();
+    private int count;
+    private Menu defaultItem;
 
 
     @Override
@@ -160,6 +173,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
         super.onStart();
         fetchData();
         fetchUserEmail();
+//        getCount();
     }
 
     @Override
@@ -186,15 +200,67 @@ public class NavigationDrawerActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
-        return super.onCreateOptionsMenu(menu);
+        MenuItem menuItem = menu.findItem(R.id.action_notifications);
+        final LayerDrawable icon = (LayerDrawable) menuItem.getIcon();
+        menuItem.setIcon(icon);
+
+        CountDrawable badge;
+        badge = new CountDrawable(NavigationDrawerActivity.this);
+        badge.setCount(count + "");
+        icon.mutate();
+        icon.setDrawableByLayerId(R.id.ic_group_count, badge);
+
+        timelineQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (!queryDocumentSnapshots.isEmpty()){
+                    final int count = queryDocumentSnapshots.size();
+                    CountDrawable badge;
+                    badge = new CountDrawable(NavigationDrawerActivity.this);
+                    badge.setCount(count + "");
+                    icon.mutate();
+                    icon.setDrawableByLayerId(R.id.ic_group_count, badge);
+                }
+            }
+        });
+
+        return true;
     }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    //    private void getCount(){
+//        timelineQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+//                if (e != null) {
+//                    Transaction.w(TAG, "Listen error", e);
+//                    return;
+//                }
+//
+//                if (!queryDocumentSnapshots.isEmpty()){
+//                    count = queryDocumentSnapshots.size();
+//                }
+//            }
+//        });
+//    }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_chats){
-            Intent intent = new Intent(this, MessagingActivity.class);
+        if (id == R.id.action_notifications){
+            Intent intent = new Intent(this, NotificationsActivity.class);
             startActivity(intent);
         }
 
@@ -236,7 +302,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
                             .resize(MAX_WIDTH, MAX_HEIGHT)
                             .onlyScaleDown()
                             .centerCrop()
-                            .placeholder(R.drawable.ic_user)
+                            .placeholder(R.drawable.ic_user_white)
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(mProfileImageView, new Callback() {
                                 @Override
@@ -251,7 +317,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
                                             .resize(MAX_WIDTH, MAX_HEIGHT)
                                             .onlyScaleDown()
                                             .centerCrop()
-                                            .placeholder(R.drawable.ic_user)
+                                            .placeholder(R.drawable.ic_user_white)
                                             .into(mProfileImageView);
 
                                 }
@@ -298,6 +364,12 @@ public class NavigationDrawerActivity extends AppCompatActivity
             startActivity(intent);
         }
 
+        if (id == R.id.action_wallet){
+            Intent intent = new Intent(NavigationDrawerActivity.this, WalletActivity.class);
+            startActivity(intent);
+        }
+
+
         if (id == R.id.action_settings){
             Intent intent = new Intent(NavigationDrawerActivity.this, SettingsActivity.class);
             startActivity(intent);
@@ -314,7 +386,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
             sendIntent.putExtra(Intent.EXTRA_TEXT,
-                    "Hey! Check out Andeqa, the mobile app where you buy and sell beautiful photos with your social value" +
+                    "Hey! Check out Andeqa, the mobile app where you buy and sell beautiful photos with your social traceData" +
                             " at: https://play.google.com/store/apps/details?id=com.andeqa.andeqa");
             sendIntent.setType("text/plain");
             startActivity(sendIntent);
@@ -365,13 +437,13 @@ public class NavigationDrawerActivity extends AppCompatActivity
                 FragmentTransaction collectionTransaction = fragmentManager.beginTransaction();
                  collectionTransaction.replace(R.id.container, collectionFragment).commit();
                 break;
-            case R.id.action_market:
+            case R.id.action_explore:
                 FragmentTransaction profileTransaction = fragmentManager.beginTransaction();
                 profileTransaction.replace(R.id.container, marketFragment).commit();
                 break;
-            case R.id.action_timeline:
+            case R.id.action_chats:
                 FragmentTransaction timelineTransaction = fragmentManager.beginTransaction();
-                timelineTransaction.replace(R.id.container, timelineFragment).commit();
+                timelineTransaction.replace(R.id.container, messagesFragment).commit();
                 break;
 
         }

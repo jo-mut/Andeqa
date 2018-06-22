@@ -10,7 +10,6 @@ import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,12 +18,14 @@ import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.home.NavigationDrawerActivity;
 import com.andeqa.andeqa.models.Andeqan;
-import com.andeqa.andeqa.models.Balance;
+import com.andeqa.andeqa.models.Transaction;
+import com.andeqa.andeqa.models.Wallet;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Credit;
-import com.andeqa.andeqa.models.TransactionDetails;
 import com.andeqa.andeqa.profile.ProfileActivity;
+import com.andeqa.andeqa.registration.SaveGoogleProfileActivity;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -47,6 +48,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.annotation.Nullable;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -63,7 +66,7 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
     //firestore
     private CollectionReference transactionReference;
     private CollectionReference senseCreditReference;
-    private CollectionReference postWalletReference;
+    private CollectionReference postWalletCollection;
     private CollectionReference walletReference;
     //adapters
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
@@ -86,8 +89,11 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
     private CollectionReference relationsReference;
     private CollectionReference commentReference;
     private CollectionReference selllingCollection;
-
     private ProgressDialog progressDialog;
+
+    private double finalCredits;
+    private double newAmount;
+    private double amountTransferred;
 
 
     //REMOVE SCIENTIFIC NOATATION
@@ -127,7 +133,7 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
                         .document("collections").collection(mCollectionId);
             }
             transactionReference = FirebaseFirestore.getInstance().collection(Constants.TRANSACTION_HISTORY);
-            postWalletReference = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
+            postWalletCollection = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
             walletReference = FirebaseFirestore.getInstance().collection(Constants.WALLET);
             senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
@@ -189,7 +195,7 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
                 if (e != null) {
-                    Log.w(TAG, "Listen error", e);
+                    android.util.Log.w(TAG, "Listen error", e);
                     return;
                 }
 
@@ -202,7 +208,7 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
                     Picasso.with(RedeemCreditsActivity.this)
                             .load(image)
                             .networkPolicy(NetworkPolicy.OFFLINE)
-                            .placeholder(R.drawable.ic_user)
+                            .placeholder(R.drawable.image_place_holder)
                             .into(mCingleImageView, new Callback() {
                                 @Override
                                 public void onSuccess() {
@@ -213,7 +219,7 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
                                 public void onError() {
                                     Picasso.with(RedeemCreditsActivity.this)
                                             .load(image)
-                                            .placeholder(R.drawable.ic_user)
+                                            .placeholder(R.drawable.image_place_holder)
                                             .into(mCingleImageView);
                                 }
                             });
@@ -231,6 +237,12 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
                     usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                            if (e != null) {
+                                android.util.Log.w(TAG, "Listen error", e);
+                                return;
+                            }
+
                             if (documentSnapshot.exists()){
                                 final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
                                 final String username = cinggulan.getUsername();
@@ -279,6 +291,7 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
     }
 
 
+
     @Override
     public void onClick(View v){
         if (v == mRedeemAmountButton){
@@ -307,20 +320,20 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
                                 if (documentSnapshot.exists()){
-                                    final Credit cingleCredit = documentSnapshot.toObject(Credit.class);
-                                    final double senseCredits = cingleCredit.getAmount();
+                                    final Credit credit = documentSnapshot.toObject(Credit.class);
+                                    final double redeemedCredits = credit.getAmount();
 
 
                                     if (mAmountEnteredEditText.getText().equals("")) {
                                         mAmountEnteredEditText.setError("Amount cannot be empty");
-                                    } else if (amountTransferred > senseCredits) {
-                                        mAmountEnteredEditText.setError("Your Single has insufficient SC balance");
+                                    } else if (amountTransferred > redeemedCredits) {
+                                        mAmountEnteredEditText.setError("Insufficient credo balance");
                                     }else if (amountTransferred <= 0.00){
                                         mAmountEnteredEditText.setError("Amount cannot be zero");
                                     }else {
                                         progressDialog.show();
 
-                                        final double finalCredits = senseCredits - amountTransferred;
+                                        final double finalCredits = redeemedCredits - amountTransferred;
 
                                         senseCreditReference.document(mPostKey).update("amount", finalCredits)
                                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -330,181 +343,209 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
                                                             //get the now time
                                                             final long timeStamp = new Date().getTime();
 
-                                                            //INCREAMENT THE AMOUNT TRANSFERED AFTER NEW TRANSFERS
-                                                            postWalletReference.document(mPostKey).get()
+                                                            postWalletCollection.document(mPostKey).get()
                                                                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                                        @Override
-                                                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                                            if (documentSnapshot.exists()){
-                                                                                final Balance cingleBalance = documentSnapshot.toObject(Balance.class);
-                                                                                final double currentAmount = cingleBalance.getTotal_balance();
-                                                                                final double newAmount = currentAmount + amountTransferred;
+                                                                @Override
+                                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                                    if (documentSnapshot.exists()){
+                                                                        Wallet wallet = documentSnapshot.toObject(Wallet.class);
+                                                                        final double amount  = wallet.getBalance();
+                                                                        final double newAmount = amount + amountTransferred;
+                                                                        postWalletCollection.document(mPostKey).update("amount", newAmount);
+                                                                        postWalletCollection.document(mPostKey).update("redeemed", amountTransferred);
+                                                                        senseCreditReference.document(mPostKey).update("redeemed",amountTransferred);
 
-                                                                                final Balance balance = new Balance();
-                                                                                balance.setTotal_balance(newAmount);
-                                                                                balance.setAmount_redeemed(amountTransferred);
-                                                                                postWalletReference.document(mPostKey).set(balance).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                                    @Override
-                                                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                                                        if (task.isSuccessful()){
-                                                                                            //RECORD THE REDEEMED AMOUNT TRANSFERRED TO THE USE WALLET
-                                                                                            walletReference.document(firebaseAuth.getCurrentUser().getUid()).get()
-                                                                                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                                                                        @Override
-                                                                                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                                                                            if (documentSnapshot.exists()){
-                                                                                                                Balance walletBalance = documentSnapshot.toObject(Balance.class);
-                                                                                                                final double currentBalance = walletBalance.getTotal_balance();
-                                                                                                                final double newBalance = currentBalance + amountTransferred;
+                                                                        walletReference.document(firebaseAuth.getCurrentUser().getUid())
+                                                                                .collection("account_addresses")
+                                                                                .document(firebaseAuth.getCurrentUser().getUid())
+                                                                                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                                            @Override
+                                                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                                                if (documentSnapshot.exists()){
+                                                                                    Wallet wallet = documentSnapshot.toObject(Wallet.class);
+                                                                                    final double currentBalance = wallet.getBalance();
+                                                                                    final double newBalance = currentBalance + amountTransferred;
 
-                                                                                                                //set transaction details
-                                                                                                                final TransactionDetails transactionDetails = new TransactionDetails();
-                                                                                                                transactionDetails.setAmount(amountTransferred);
-                                                                                                                transactionDetails.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                                                                transactionDetails.setPost_id(mPostKey);
-                                                                                                                transactionDetails.setTime(timeStamp);
-                                                                                                                transactionDetails.setWallet_balance(newBalance);
-                                                                                                                transactionDetails.setType("redeem");
-                                                                                                                //get the push id
-                                                                                                                DocumentReference ref = transactionReference.document();
-                                                                                                                String postId = ref.getId();
-                                                                                                                //set the push id
-                                                                                                                transactionDetails.setTransaction_id(postId);
-                                                                                                                ref.set(transactionDetails);
+                                                                                    //set transaction details
+                                                                                    final Transaction transaction = new Transaction();
+                                                                                    transaction.setAmount(amountTransferred);
+                                                                                    transaction.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                                                    transaction.setPost_id(mPostKey);
+                                                                                    transaction.setTime(timeStamp);
+                                                                                    transaction.setWallet_balance(newBalance);
+                                                                                    transaction.setReceiver_id(firebaseAuth.getCurrentUser().getUid());
+                                                                                    transaction.setType("redeem");
+                                                                                    //get the push id
+                                                                                    DocumentReference ref = transactionReference
+                                                                                            .document(firebaseAuth.getCurrentUser().getUid())
+                                                                                            .collection("transactions").document();
+                                                                                    String postId = ref.getId();
+                                                                                    //set the push id
+                                                                                    transaction.setTransaction_id(postId);
+                                                                                    ref.set(transaction);
 
-                                                                                                                Balance newWalletBalance = new Balance();
-                                                                                                                newWalletBalance.setTotal_balance(newBalance);
-
-                                                                                                                walletReference.document(firebaseAuth.getCurrentUser().getUid())
-                                                                                                                        .set(newWalletBalance).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                                                                    @Override
-                                                                                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                                                                                        progressDialog.dismiss();
-                                                                                                                        Toast.makeText(RedeemCreditsActivity.this, "Transaction successful",
-                                                                                                                                Toast.LENGTH_SHORT).show();
-                                                                                                                    }
-                                                                                                                });
-                                                                                                            }else {
-                                                                                                                //set transaction details
-                                                                                                                final TransactionDetails transactionDetails = new TransactionDetails();
-                                                                                                                transactionDetails.setAmount(amountTransferred);
-                                                                                                                transactionDetails.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                                                                transactionDetails.setPost_id(mPostKey);
-                                                                                                                transactionDetails.setTime(timeStamp);
-                                                                                                                transactionDetails.setWallet_balance(amountTransferred);
-                                                                                                                transactionDetails.setType("redeem");
-
-                                                                                                                //get the push id
-                                                                                                                DocumentReference ref = transactionReference.document();
-                                                                                                                String postId = ref.getId();
-                                                                                                                //set the push id
-                                                                                                                transactionDetails.setTransaction_id(postId);
-                                                                                                                ref.set(transactionDetails);
-
-                                                                                                                Balance newWalletBalance = new Balance();
-                                                                                                                newWalletBalance.setTotal_balance(amountTransferred);
-
-                                                                                                                walletReference.document(firebaseAuth.getCurrentUser().getUid())
-                                                                                                                        .set(newWalletBalance).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                                                                    @Override
-                                                                                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                                                                                        progressDialog.dismiss();
-                                                                                                                        Toast.makeText(RedeemCreditsActivity.this, "Transaction successful",
-                                                                                                                                Toast.LENGTH_SHORT).show();
-                                                                                                                    }
-                                                                                                                });
-                                                                                                            }
-                                                                                                        }
-                                                                                                    });
+                                                                                    walletReference.document(firebaseAuth.getCurrentUser().getUid())
+                                                                                            .collection("account_addresses")
+                                                                                            .document(firebaseAuth.getCurrentUser().getUid())
+                                                                                            .update("balance", newBalance)
+                                                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                        @Override
+                                                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                                                            progressDialog.dismiss();
+                                                                                            Toast.makeText(RedeemCreditsActivity.this, "Transaction successful",
+                                                                                                    Toast.LENGTH_SHORT).show();
                                                                                         }
-                                                                                    }
-                                                                                });
-                                                                            }else {
-                                                                                final Balance balance = new Balance();
-                                                                                balance.setAmount_redeemed(amountTransferred);
-                                                                                //IF THE TRANSACTIONS IS FOR THE FIRST TIME
-                                                                                postWalletReference.document(mPostKey).set(balance)
-                                                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                                            @Override
-                                                                                            public void onComplete(@NonNull Task<Void> task) {
-                                                                                                if (task.isSuccessful()){
-                                                                                                    walletReference.document(firebaseAuth.getCurrentUser().getUid())
-                                                                                                            .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                                                                        @Override
-                                                                                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                                                                            if (documentSnapshot.exists()){
-                                                                                                                Balance walletBalance = documentSnapshot.toObject(Balance.class);
-                                                                                                                final double currentBalance = walletBalance.getTotal_balance();
-                                                                                                                final double newBalance = currentBalance + amountTransferred;
+                                                                                    });
+                                                                                }else {
 
-                                                                                                                final Balance newWalletBalance = new Balance();
-                                                                                                                newWalletBalance.setTotal_balance(newBalance);
+                                                                                    Wallet userWallet = new Wallet();
+                                                                                    userWallet.setAddress(firebaseAuth.getCurrentUser().getEmail());
+                                                                                    userWallet.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                                                    userWallet.setTime(timeStamp);
+                                                                                    userWallet.setDeposited(0.0);
+                                                                                    userWallet.setRedeemed(amountTransferred);
+                                                                                    userWallet.setBalance(amountTransferred);
 
-                                                                                                                //set transaction details
-                                                                                                                final TransactionDetails transactionDetails = new TransactionDetails();
-                                                                                                                transactionDetails.setAmount(amountTransferred);
-                                                                                                                transactionDetails.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                                                                transactionDetails.setPost_id(mPostKey);
-                                                                                                                transactionDetails.setTime(timeStamp);
-                                                                                                                transactionDetails.setWallet_balance(newBalance);
-                                                                                                                transactionDetails.setType("redeem");
+                                                                                    walletReference.document(firebaseAuth.getCurrentUser().getUid())
+                                                                                            .collection("account_addresses")
+                                                                                            .document(firebaseAuth.getCurrentUser().getUid())
+                                                                                            .set(userWallet);
 
-                                                                                                                //get the push id
-                                                                                                                DocumentReference ref = transactionReference.document();
-                                                                                                                String postId = ref.getId();
-                                                                                                                //set the push id
-                                                                                                                transactionDetails.setTransaction_id(postId);
-                                                                                                                ref.set(transactionDetails);
+                                                                                    //set transaction details
+                                                                                    final Transaction transaction = new Transaction();
+                                                                                    transaction.setAmount(amountTransferred);
+                                                                                    transaction.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                                                    transaction.setPost_id(mPostKey);
+                                                                                    transaction.setTime(timeStamp);
+                                                                                    transaction.setReceiver_id(firebaseAuth.getCurrentUser().getUid());
+                                                                                    transaction.setWallet_balance(amountTransferred);
+                                                                                    transaction.setType("redeem");
 
-                                                                                                                walletReference.document(firebaseAuth.getCurrentUser().getUid())
-                                                                                                                        .set(newWalletBalance).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                                                                    @Override
-                                                                                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                                                                                        progressDialog.dismiss();
-                                                                                                                        Toast.makeText(RedeemCreditsActivity.this, "Transaction successful",
-                                                                                                                                Toast.LENGTH_SHORT).show();
-                                                                                                                    }
-                                                                                                                });
+                                                                                    //get the push id
+                                                                                    DocumentReference ref = transactionReference
+                                                                                            .document(firebaseAuth.getCurrentUser().getUid())
+                                                                                            .collection("transactions").document();
+                                                                                    String postId = ref.getId();
+                                                                                    //set the push id
+                                                                                    transaction.setTransaction_id(postId);
+                                                                                    ref.set(transaction);
 
-                                                                                                            }else {
-                                                                                                                //set transaction details
-                                                                                                                final TransactionDetails transactionDetails = new TransactionDetails();
-                                                                                                                transactionDetails.setAmount(amountTransferred);
-                                                                                                                transactionDetails.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                                                                transactionDetails.setPost_id(mPostKey);
-                                                                                                                transactionDetails.setTime(timeStamp);
-                                                                                                                transactionDetails.setWallet_balance(amountTransferred);
-                                                                                                                transactionDetails.setType("redeem");
-
-                                                                                                                //get the push id
-                                                                                                                DocumentReference ref = transactionReference.document();
-                                                                                                                String postId = ref.getId();
-                                                                                                                //set the push id
-                                                                                                                transactionDetails.setTransaction_id(postId);
-                                                                                                                ref.set(transactionDetails);
-
-                                                                                                                final Balance newWalletBalance = new Balance();
-                                                                                                                newWalletBalance.setTotal_balance(amountEntered);
-
-                                                                                                                walletReference.document(firebaseAuth.getCurrentUser().getUid())
-                                                                                                                        .set(newWalletBalance).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                                                                    @Override
-                                                                                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                                                                                        progressDialog.dismiss();
-                                                                                                                        Toast.makeText(RedeemCreditsActivity.this, "Transaction successful",
-                                                                                                                                Toast.LENGTH_SHORT).show();
-                                                                                                                    }
-                                                                                                                });
-                                                                                                            }
-                                                                                                        }
-                                                                                                    });
-                                                                                                }
-                                                                                            }
-                                                                                        });
-
+                                                                                    walletReference.document(firebaseAuth.getCurrentUser().getUid())
+                                                                                            .collection("account_addresses")
+                                                                                            .document(firebaseAuth.getCurrentUser().getUid())
+                                                                                            .update("balance", amountTransferred)
+                                                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                        @Override
+                                                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                                                            progressDialog.dismiss();
+                                                                                            Toast.makeText(RedeemCreditsActivity.this, "Transaction successful",
+                                                                                                    Toast.LENGTH_SHORT).show();
+                                                                                        }
+                                                                                    });
+                                                                                }
                                                                             }
-                                                                        }
-                                                                    });
+                                                                        });
+
+                                                                    }else {
+                                                                        //create a new post wallet
+                                                                        Wallet wallet = new Wallet();
+                                                                        wallet.setTime(timeStamp);
+                                                                        wallet.setBalance(finalCredits);
+                                                                        wallet.setDeposited(0.0);
+                                                                        wallet.setRedeemed(amountTransferred);
+                                                                        wallet.setAddress(mPostKey);
+                                                                        wallet.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                                        postWalletCollection.document(mPostKey).set(wallet);
+
+                                                                        walletReference.document(firebaseAuth.getCurrentUser().getUid())
+                                                                                .collection("account_addresses")
+                                                                                .document(firebaseAuth.getCurrentUser().getUid())
+                                                                                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                                            @Override
+                                                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                                                if (documentSnapshot.exists()){
+                                                                                    Wallet wallet = documentSnapshot.toObject(Wallet.class);
+                                                                                    final double currentBalance = wallet.getBalance();
+                                                                                    final double newBalance = currentBalance + amountTransferred;
+
+                                                                                    //set transaction details
+                                                                                    final Transaction transaction = new Transaction();
+                                                                                    transaction.setAmount(amountTransferred);
+                                                                                    transaction.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                                                    transaction.setPost_id(mPostKey);
+                                                                                    transaction.setTime(timeStamp);
+                                                                                    transaction.setReceiver_id(firebaseAuth.getCurrentUser().getUid());
+                                                                                    transaction.setWallet_balance(newBalance);
+                                                                                    transaction.setType("redeem");
+                                                                                    //get the push id
+                                                                                    DocumentReference ref = transactionReference
+                                                                                            .document(firebaseAuth.getCurrentUser().getUid())
+                                                                                            .collection("transactions").document();
+                                                                                    String postId = ref.getId();
+                                                                                    //set the push id
+                                                                                    transaction.setTransaction_id(postId);
+                                                                                    ref.set(transaction);
+
+                                                                                    walletReference.document(firebaseAuth.getCurrentUser().getUid())
+                                                                                            .collection("account_addresses").document(firebaseAuth.getCurrentUser().getUid())
+                                                                                            .update("balance", newBalance).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                        @Override
+                                                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                                                            progressDialog.dismiss();
+                                                                                            Toast.makeText(RedeemCreditsActivity.this, "Transaction successful",
+                                                                                                    Toast.LENGTH_SHORT).show();
+                                                                                        }
+                                                                                    });
+                                                                                }else {
+
+                                                                                    Wallet userWallet = new Wallet();
+                                                                                    userWallet.setAddress(firebaseAuth.getCurrentUser().getEmail());
+                                                                                    userWallet.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                                                    userWallet.setTime(timeStamp);
+                                                                                    userWallet.setDeposited(0.0);
+                                                                                    userWallet.setRedeemed(amountTransferred);
+                                                                                    userWallet.setBalance(amountTransferred);
+
+                                                                                    walletReference.document(firebaseAuth.getCurrentUser().getUid())
+                                                                                            .collection("account_addresses")
+                                                                                            .document(firebaseAuth.getCurrentUser().getUid())
+                                                                                            .set(userWallet);
+
+                                                                                    //set transaction details
+                                                                                    final Transaction transaction = new Transaction();
+                                                                                    transaction.setAmount(amountTransferred);
+                                                                                    transaction.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                                                    transaction.setPost_id(mPostKey);
+                                                                                    transaction.setTime(timeStamp);
+                                                                                    transaction.setReceiver_id(firebaseAuth.getCurrentUser().getUid());
+                                                                                    transaction.setWallet_balance(amountTransferred);
+                                                                                    transaction.setType("redeem");
+
+                                                                                    //get the push id
+                                                                                    DocumentReference ref = transactionReference
+                                                                                            .document(firebaseAuth.getCurrentUser().getUid())
+                                                                                            .collection("transactions").document();
+                                                                                    String postId = ref.getId();
+                                                                                    //set the push id
+                                                                                    transaction.setTransaction_id(postId);
+                                                                                    ref.set(transaction);
+
+                                                                                    walletReference.document(firebaseAuth.getCurrentUser().getUid())
+                                                                                            .collection("account_addresses").document(firebaseAuth.getCurrentUser().getUid())
+                                                                                            .update("balance", amountTransferred).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                        @Override
+                                                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                                                            progressDialog.dismiss();
+                                                                                            Toast.makeText(RedeemCreditsActivity.this, "Transaction successful",
+                                                                                                    Toast.LENGTH_SHORT).show();
+                                                                                        }
+                                                                                    });
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                }
+                                                            });
 
                                                         }
                                                     }
@@ -512,7 +553,7 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
 
                                     }
                                 }else {
-                                    mAmountEnteredEditText.setError("Your Single has insufficient SC balance");
+                                    mAmountEnteredEditText.setError("Insufficient credo balance");
                                 }
                             }
                         });
@@ -524,3 +565,5 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
         }
     }
 }
+
+

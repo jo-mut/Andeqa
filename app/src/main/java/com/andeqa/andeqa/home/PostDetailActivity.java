@@ -3,19 +3,14 @@ package com.andeqa.andeqa.home;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
-import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,24 +26,17 @@ import android.widget.TextView;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.comments.CommentsActivity;
-import com.andeqa.andeqa.market.DialogSendCredits;
 import com.andeqa.andeqa.likes.LikesActivity;
-import com.andeqa.andeqa.market.ListOnMarketActivity;
 import com.andeqa.andeqa.models.Andeqan;
-import com.andeqa.andeqa.models.Balance;
-import com.andeqa.andeqa.models.Collection;
+import com.andeqa.andeqa.models.Transaction;
+import com.andeqa.andeqa.models.Wallet;
 import com.andeqa.andeqa.models.CollectionPost;
-import com.andeqa.andeqa.models.Market;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Timeline;
-import com.andeqa.andeqa.models.TransactionDetails;
-import com.andeqa.andeqa.profile.ProfileActivity;
-import com.andeqa.andeqa.settings.DialogFragmentPostSettings;
-import com.andeqa.andeqa.settings.DialogMarketPostSettings;
+import com.andeqa.andeqa.settings.PostSettingsFragment;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -86,24 +74,15 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     @Bind(R.id.titleRelativeLayout)RelativeLayout mTitleRelativeLayout;
     @Bind(R.id.descriptionRelativeLayout)RelativeLayout mDescriptionRelativeLayout;
     @Bind(R.id.descriptionTextView)TextView mDescriptionTextView;
-    @Bind(R.id.postOwnerTextView)TextView mPostOwnerTextView;
     @Bind(R.id.likesCountTextView)TextView mLikesCountTextView;
-    @Bind(R.id.dislikesCountTextView)TextView mDislikeCountTextView;
+//    @Bind(R.id.dislikesCountTextView)TextView mDislikeCountTextView;
     @Bind(R.id.likesImageView)ImageView mLikesImageView;
-    @Bind(R.id.dislikesImageView)ImageView mDislikeImageView;
+//    @Bind(R.id.dislikesImageView)ImageView mDislikeImageView;
     @Bind(R.id.commentsImageView)ImageView mCommentImageView;
     @Bind(R.id.commentsCountTextView)TextView mCommentCountTextView;
-    @Bind(R.id.tradeButton)Button mTradeButton;
-    @Bind(R.id.postPriceTextView)TextView mSalePriceTextView;
     @Bind(R.id.datePostedTextView)TextView mDatePostedTextView;
-    @Bind(R.id.ownerImageView)CircleImageView mOwnerImageView;
-    @Bind(R.id.editSalePriceImageView)ImageView mEditSalePriceImageView;
-    @Bind(R.id.editSalePriceEditText)EditText mEditSalePriceEditText;
-    @Bind(R.id.doneEditingImageView)ImageView mDoneEditingImageView;
-    @Bind(R.id.salePriceProgressbar)ProgressBar mSalePriceProgressBar;
     @Bind(R.id.creditsTextView)TextView mCreditsTextView;
-    @Bind(R.id.likesRelativeLayout)RelativeLayout mLikesRelativeLayout;
-    @Bind(R.id.priceRelativeLayout)RelativeLayout mPriceRelativeLayout;
+    @Bind(R.id.likesLinearLayout)RelativeLayout mLikesRelativeLayout;
 
     //firestore reference
     private FirebaseFirestore firebaseFirestore;
@@ -111,8 +90,6 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     private com.google.firebase.firestore.Query commentsCountQuery;
     private CollectionReference usersReference;
     private CollectionReference commentsReference;
-    private CollectionReference postOwnersCollection;
-    private CollectionReference senseCreditReference;
     private CollectionReference sellingCollection;
     private CollectionReference likesReference;
     private CollectionReference postWalletReference;
@@ -120,7 +97,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     private CollectionReference collectionsPosts;
     private CollectionReference marketCollections;
     private CollectionReference collectionsCollection;
-    private CollectionReference postOnwersCollection;
+    private CollectionReference creditsCollection;
     private com.google.firebase.firestore.Query likesQuery;
     //firebase references
     private DatabaseReference databaseReference;
@@ -177,11 +154,8 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             //INITIALIASE CLICK LISTENER
             mLikesImageView.setOnClickListener(this);
             mCommentImageView.setOnClickListener(this);
-            mTradeButton.setOnClickListener(this);
             mPostImageView.setOnClickListener(this);
-            mEditSalePriceImageView.setOnClickListener(this);
-            mDoneEditingImageView.setOnClickListener(this);
-            mDislikeImageView.setOnClickListener(this);
+//            mDislikeImageView.setOnClickListener(this);
             mLikesCountTextView.setOnClickListener(this);
             mLikesRelativeLayout.setOnClickListener(this);
 
@@ -195,24 +169,19 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                         .document("collections").collection(mCollectionId);
                 getSupportActionBar().setTitle("Post");
             }
-            postOwnersCollection = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS)
                     .document("post_ids").collection(mPostId);
             sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
-            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
             marketCollections = FirebaseFirestore.getInstance().collection(Constants.SELLING);
-            postOnwersCollection = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
             collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
-
-
-            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
             //firebase
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
             commentsCountQuery = commentsReference;
             likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
             postWalletReference = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
+            creditsCollection  = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
 
         }
     }
@@ -234,9 +203,9 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             bundle.putString(PostDetailActivity.COLLECTION_ID, mCollectionId);
             bundle.putString(PostDetailActivity.TYPE, mType);
             FragmentManager fragmenManager = getSupportFragmentManager();
-            DialogFragmentPostSettings dialogFragmentPostSettings =  DialogFragmentPostSettings.newInstance("post settings");
-            dialogFragmentPostSettings.setArguments(bundle);
-            dialogFragmentPostSettings.show(fragmenManager, "market post settings fragment");
+            PostSettingsFragment postSettingsFragment =  PostSettingsFragment.newInstance("post settings");
+            postSettingsFragment.setArguments(bundle);
+            postSettingsFragment.show(fragmenManager, "market post settings fragment");
         }
 
         return super.onOptionsItemSelected(item);
@@ -244,27 +213,9 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     public boolean onPrepareOptionsMenu(final Menu menu) {
-        postOnwersCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
-                    final String ownerUid = transactionDetails.getUser_id();
-                    Log.d("owner uid", ownerUid);
-
-                    if (!firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
-                        menu.clear();
-                    }
-                }
-            }
-        });
-
-
+        if (!mUid.equals(firebaseAuth.getCurrentUser().getUid())){
+            menu.clear();
+        }
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -273,8 +224,6 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         super.onStart();
         //RETRIEVE DATA FROM FIREBASE
         setPostInfo();
-        setEditTextFilter();
-        showEditImageView();
         deletePostDialog();
         finishActivity();
     }
@@ -305,7 +254,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
 
                 if (e != null) {
-                    Log.w(TAG, "Listen error", e);
+                    android.util.Log.w(TAG, "Listen error", e);
                     return;
                 }
 
@@ -328,7 +277,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
                         if (e != null) {
-                            Log.w(TAG, "Listen error", e);
+                            android.util.Log.w(TAG, "Listen error", e);
                             return;
                         }
 
@@ -348,7 +297,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
                         if (e != null) {
-                            Log.w(TAG, "Listen error", e);
+                            android.util.Log.w(TAG, "Listen error", e);
                             return;
                         }
 
@@ -361,69 +310,70 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                     }
                 });
 
-        likesReference.document(mPostId).collection("dislikes")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!documentSnapshots.isEmpty()){
-                            mDislikeCountTextView.setText(documentSnapshots.size() + " ");
-                        }else {
-                            mDislikeCountTextView.setText("0");
-                        }
-
-                    }
-                });
-
-
-
-        mDislikeImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                processDislikes = true;
-                likesReference.document(mPostId).collection("dislikes")
-                        .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
-                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                            @Override
-                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                if (e != null) {
-                                    Log.w(TAG, "Listen error", e);
-                                    return;
-                                }
+//        likesReference.document(mPostId).collection("dislikes")
+//                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+//
+//                        if (e != null) {
+//                            android.util.Log.w(TAG, "Listen error", e);
+//                            return;
+//                        }
+//
+//                        if (!documentSnapshots.isEmpty()){
+//                            mDislikeCountTextView.setText(documentSnapshots.size() + " ");
+//                        }else {
+//                            mDislikeCountTextView.setText("0");
+//                        }
+//
+//                    }
+//                });
 
 
-                                if (processDislikes){
-                                    if (documentSnapshots.isEmpty()){
-                                        Like like = new Like();
-                                        like.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                        likesReference.document(mPostId).collection("dislikes")
-                                                .document(firebaseAuth.getCurrentUser().getUid()).set(like);
-                                        processDislikes = false;
-                                        mDislikeImageView.setColorFilter(Color.RED);
 
-                                    }else {
-                                        likesReference.document(mPostId).collection("dislikes")
-                                                .document(firebaseAuth.getCurrentUser().getUid()).delete();
-                                        processDislikes = false;
-                                        mDislikeImageView.setColorFilter(Color.BLACK);
+//        mDislikeImageView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                processDislikes = true;
+//                likesReference.document(mPostId).collection("dislikes")
+//                        .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
+//                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                            @Override
+//                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+//
+//                                if (e != null) {
+//                                    android.util.Log.w(TAG, "Listen error", e);
+//                                    return;
+//                                }
+//
+//
+//                                if (processDislikes){
+//                                    if (documentSnapshots.isEmpty()){
+//                                        Like like = new Like();
+//                                        like.setUser_id(firebaseAuth.getCurrentUser().getUid());
+//                                        likesReference.document(mPostId).collection("dislikes")
+//                                                .document(firebaseAuth.getCurrentUser().getUid()).set(like);
+//                                        processDislikes = false;
+//                                        mDislikeImageView.setColorFilter(Color.RED);
+//
+//                                    }else {
+//                                        likesReference.document(mPostId).collection("dislikes")
+//                                                .document(firebaseAuth.getCurrentUser().getUid()).delete();
+//                                        processDislikes = false;
+//                                        mDislikeImageView.setColorFilter(Color.BLACK);
+//
+//                                    }
+//                                }
+//
+//                            }
+//                        });
+//            }
+//        });
 
-                                    }
-                                }
-
-                            }
-                        });
-            }
-        });
-
-        senseCreditReference.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        creditsCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
                 if (e != null) {
                     Log.w(TAG, "Listen error", e);
                     return;
@@ -433,13 +383,14 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                     Credit credit = documentSnapshot.toObject(Credit.class);
                     final double senseCredits = credit.getAmount();
                     DecimalFormat formatter = new DecimalFormat("0.00000000");
-                    mCreditsTextView.setText("SC" + " " + formatter.format(senseCredits));
-                }else {
-                    mCreditsTextView.setText("SC 0.00000000");
-                }
+                    mCreditsTextView.setText("Credo" + " " + formatter.format(senseCredits));
 
+                }else {
+                    mCreditsTextView.setText("Credo" + " " + "0.00000000");
+                }
             }
         });
+
 
         //get the number of commments in a cingle
         commentsCountQuery.orderBy("comment_id").whereEqualTo("push_id", mPostId)
@@ -447,7 +398,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
                         if (e != null) {
-                            Log.w(TAG, "Listen error", e);
+                            android.util.Log.w(TAG, "Listen error", e);
                             return;
                         }
 
@@ -466,7 +417,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
-                    Log.w(TAG, "Listen error", e);
+                    android.util.Log.w(TAG, "Listen error", e);
                     return;
                 }
 
@@ -495,8 +446,8 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                         }else{
 
                             mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
-                            final String boldMore = "...read more";
-                            final String boldLess = "...read less";
+                            final String boldMore = "...";
+                            final String boldLess = "";
                             String normalText = collectionPost.getDescription().substring(0, 119);
                             mDescriptionTextView.setText(normalText + boldMore);
                             mDescriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
@@ -556,89 +507,11 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                             });
 
 
-                    sellingCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
-
-                            if (documentSnapshot.exists()){
-                                final Market market = documentSnapshot.toObject(Market.class);
-                                DecimalFormat formatter = new DecimalFormat("0.00000000");
-                                mSalePriceTextView.setText("uC" + " " + formatter.format(market.getSale_price()));
-                                mPriceRelativeLayout.setVisibility(View.VISIBLE);
-                                postOwnersCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                        if (e != null) {
-                                            Log.w(TAG, "Listen error", e);
-                                            return;
-                                        }
-
-                                        if (documentSnapshot.exists()){
-                                            TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
-                                            final String ownerUid = transactionDetails.getUser_id();
-                                            Log.d("owner uid", ownerUid);
-
-                                            if (documentSnapshot.exists()){
-                                                if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
-                                                    mTradeButton.setText("Unlist");
-                                                    mTradeButton.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            Bundle bundle = new Bundle();
-                                                            bundle.putString(PostDetailActivity.EXTRA_POST_ID, mPostId);
-                                                            bundle.putString(PostDetailActivity.COLLECTION_ID, mCollectionId);
-                                                            FragmentManager fragmenManager = getSupportFragmentManager();
-                                                            DialogMarketPostSettings dialogMarketPostSettings = DialogMarketPostSettings.newInstance("post settings");
-                                                            dialogMarketPostSettings.setArguments(bundle);
-                                                            dialogMarketPostSettings.show(fragmenManager, "market post settings fragment");
-                                                        }
-                                                    });
-                                                }else {
-                                                    mTradeButton.setText("Buy");
-                                                    mTradeButton.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            Bundle bundle = new Bundle();
-                                                            bundle.putString(PostDetailActivity.EXTRA_POST_ID, mPostId);
-                                                            bundle.putString(PostDetailActivity.COLLECTION_ID, mCollectionId);
-                                                            FragmentManager fragmenManager = getSupportFragmentManager();
-                                                            DialogSendCredits dialogSendCredits = DialogSendCredits.newInstance("sens credits");
-                                                            dialogSendCredits.setArguments(bundle);
-                                                            dialogSendCredits.show(fragmenManager, "send credits fragment");
-                                                        }
-                                                    });
-                                                }
-                                            }
-                                        }
-                                    }
-                                });
-                            }else if (firebaseAuth.getCurrentUser().getUid().equals(uid)) {
-                                mTradeButton.setText("Sell");
-                                mTradeButton.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        Intent intent = new Intent(PostDetailActivity.this, ListOnMarketActivity.class);
-                                        intent.putExtra(PostDetailActivity.EXTRA_POST_ID, mPostId);
-                                        intent.putExtra(PostDetailActivity.COLLECTION_ID, mCollectionId);
-                                        startActivity(intent);
-                                    }
-                                });
-                            }else {
-                                mPriceRelativeLayout.setVisibility(View.GONE);
-                            }
-                        }
-                    });
-
                     usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                             if (e != null) {
-                                Log.w(TAG, "Listen error", e);
+                                android.util.Log.w(TAG, "Listen error", e);
                                 return;
                             }
 
@@ -677,87 +550,6 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             }
         });
 
-        /**display the person who currently owns the cingle*/
-        postOwnersCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()) {
-                    TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
-                    final String ownerUid = transactionDetails.getUser_id();
-
-                    /**show the details of the post owner*/
-                    usersReference.document(ownerUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
-
-
-                            if (documentSnapshot.exists()) {
-                                Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                                final String username = cinggulan.getUsername();
-                                final String profileImage = cinggulan.getProfile_image();
-
-                                mPostOwnerTextView.setText(username);
-                                Picasso.with(PostDetailActivity.this)
-                                        .load(profileImage)
-                                        .fit()
-                                        .centerCrop()
-                                        .placeholder(R.drawable.ic_user)
-                                        .networkPolicy(NetworkPolicy.OFFLINE)
-                                        .into(mOwnerImageView, new Callback() {
-                                            @Override
-                                            public void onSuccess() {
-
-                                            }
-
-                                            @Override
-                                            public void onError() {
-                                                Picasso.with(PostDetailActivity.this)
-                                                        .load(profileImage)
-                                                        .fit()
-                                                        .centerCrop()
-                                                        .placeholder(R.drawable.ic_user)
-                                                        .into(mOwnerImageView);
-                                            }
-                                        });
-                            }
-                        }
-                    });
-
-
-                    /**show the edit sale price image view if the current user is the post owner and
-                     *  if the post is already in the market*/
-                    marketCollections.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
-
-                            if (documentSnapshot.exists()){
-                                if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
-                                    mEditSalePriceImageView.setVisibility(View.VISIBLE);
-                                }
-                            }
-                        }
-                    });
-
-
-
-                }
-            }
-        });
 
     }
 
@@ -786,183 +578,277 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             startActivity(intent);
         }
 
-        if (v == mDoneEditingImageView){
-            setNewPrice();
-        }
-
-        if (v == mEditSalePriceImageView){
-            mEditSalePriceEditText.setVisibility(View.VISIBLE);
-            mSalePriceTextView.setVisibility(View.GONE);
-            mEditSalePriceImageView.setVisibility(View.GONE);
-            mDoneEditingImageView.setVisibility(View.VISIBLE);
-        }
-
         if (v == mLikesImageView){
-//            displayPopupWindow(v);
-            mLikesImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    processLikes = true;
-                    likesReference.document(mPostId).collection("likes")
-                            .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
-                            .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                @Override
-                                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+            calculateValueOfLikes();
+        }
 
-                                    if (e != null) {
-                                        Log.w(TAG, "Listen error", e);
-                                        return;
-                                    }
+//        if (v == mDislikeImageView){
+//            calculateValueOfDislikes();
+//        }
+    }
+
+    private void calculateValueOfDislikes(){
+//        mDislikeImageView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                processDislikes = true;
+//                likesReference.document(mPostId).collection("dislikes")
+//                        .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
+//                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                            @Override
+//                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+//
+//                                if (e != null) {
+//                                    Log.w(TAG, "Listen error", e);
+//                                    return;
+//                                }
+//
+//
+//                                if (processDislikes){
+//                                    if (documentSnapshots.isEmpty()){
+//                                        Like like = new Like();
+//                                        like.setUser_id(firebaseAuth.getCurrentUser().getUid());
+//                                        likesReference.document(mPostId).collection("dislikes")
+//                                                .document(firebaseAuth.getCurrentUser().getUid()).set(like);
+//                                        processDislikes = false;
+//                                        mDislikeImageView.setColorFilter(Color.RED);
+//
+//                                    }else {
+//                                        likesReference.document(mPostId).collection("dislikes")
+//                                                .document(firebaseAuth.getCurrentUser().getUid()).delete();
+//                                        processDislikes = false;
+//                                        mDislikeImageView.setColorFilter(Color.BLACK);
+//
+//                                    }
+//
+//                                    likesReference.document(mPostId).collection("dislikes")
+//                                            .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                                                @Override
+//                                                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+//
+//                                                    if (e != null) {
+//                                                        Log.w(TAG, "Listen error", e);
+//                                                        return;
+//                                                    }
+//
+//                                                    if (!documentSnapshots.isEmpty()){
+//                                                        int likesCount = documentSnapshots.size();
+//                                                        if ( likesCount > 0){
+//                                                            //mille is a thousand likes
+//                                                            double MILLE = 1000.0;
+//                                                            //get the number of likes per a thousand likes
+//                                                            double likesPerMille = likesCount/MILLE;
+//                                                            //get the default rate of likes per unit time in seconds;
+//                                                            double rateOfLike = 1000.0/1800.0;
+//                                                            //get the current rate of likes per unit time in seconds;
+//                                                            double currentRateOfLkes = likesCount * rateOfLike/MILLE;
+//                                                            //get the current price of single
+//                                                            final double currentPrice = currentRateOfLkes * DEFAULT_PRICE/rateOfLike;
+//                                                            //get the perfection traceData of single's interactivity online
+//                                                            double perfectionValue = GOLDEN_RATIO/likesCount;
+//                                                            //get the new worth of Single price in Sen
+//                                                            final double cingleWorth = perfectionValue * likesPerMille * currentPrice;
+//                                                            //round of the worth of the single to 10 decimal number
+//                                                            final double finalPoints = round( cingleWorth, 10);
+//                                                            final double finalCredits = finalPoints * -1;
+//
+//                                                            postWalletReference.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+//                                                                @Override
+//                                                                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+//                                                                    if (e != null) {
+//                                                                        Log.w(TAG, "Listen error", e);
+//                                                                        return;
+//                                                                    }
+//
+//
+//                                                                    if (documentSnapshot.exists()){
+//                                                                        final Wallet wallet = documentSnapshot.toObject(Wallet.class);
+//                                                                        final double amountRedeemed = wallet.getRedeemed();
+//                                                                        final  double amountDeposited = wallet.getDeposited();
+//                                                                        final double credits = amountDeposited + finalCredits;
+//                                                                        final double creditBalance = credits - amountRedeemed;
+//
+//                                                                        postWalletReference.document(mPostId).update("balance", creditBalance);
+//                                                                        processLikes = false;
+//                                                                    }else {
+//
+//                                                                        long time = new Date().getTime();
+//                                                                        Wallet wallet = new Wallet();
+//                                                                        wallet.setUser_id(mUid);
+//                                                                        wallet.setAddress(mPostId);
+//                                                                        wallet.setBalance(finalCredits);
+//                                                                        wallet.setTime(time);
+//                                                                        wallet.setDeposited(0.0);
+//                                                                        wallet.setRedeemed(0.0);
+//                                                                        postWalletReference.document(mPostId).update("balance", wallet);
+//                                                                        processLikes = false;
+//                                                                    }
+//                                                                }
+//                                                            });
+//
+//                                                        }
+//                                                    }else {
+//                                                        final double finalPoints = 0.00;
+//                                                        final double finalCredits = finalPoints * -1;
+//                                                        Log.d("finalpoints <= 0", finalPoints + "");
+//
+//                                                        postWalletReference.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+//                                                            @Override
+//                                                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+//                                                                if (e != null) {
+//                                                                    Log.w(TAG, "Listen error", e);
+//                                                                    return;
+//                                                                }
+//
+//
+//                                                                if (documentSnapshot.exists()){
+//                                                                    final Wallet wallet = documentSnapshot.toObject(Wallet.class);
+//                                                                    final double amountRedeemed = wallet.getRedeemed();
+//                                                                    final  double amountDeposited = wallet.getDeposited();
+//                                                                    final double credits = amountDeposited + finalCredits;
+//                                                                    final double creditBalance = credits - amountRedeemed;
+//
+//                                                                    postWalletReference.document(mPostId).update("balance", creditBalance);
+//                                                                    processLikes = false;
+//                                                                }else {
+//
+//                                                                    long time = new Date().getTime();
+//                                                                    Wallet wallet = new Wallet();
+//                                                                    wallet.setUser_id(mUid);
+//                                                                    wallet.setAddress(mPostId);
+//                                                                    wallet.setBalance(finalCredits);
+//                                                                    wallet.setTime(time);
+//                                                                    wallet.setDeposited(0.0);
+//                                                                    wallet.setRedeemed(0.0);
+//                                                                    postWalletReference.document(mPostId).update("balance", wallet);
+//                                                                    processLikes = false;
+//                                                                }
+//                                                            }
+//                                                        });
+//
+//
+//                                                    }
+//                                                }
+//                                            });
+//
+//                                }
+//
+//
+//
+//                            }
+//                        });
+//            }
+//        });
+
+    }
+
+    private void calculateValueOfLikes(){
+        mLikesImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                processLikes = true;
+                likesReference.document(mPostId).collection("likes")
+                        .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
+                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                            @Override
+                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                                if (e != null) {
+                                    Log.w(TAG, "Listen error", e);
+                                    return;
+                                }
 
 
-                                    if (processLikes){
-                                        if (documentSnapshots.isEmpty()){
-                                            Like like = new Like();
-                                            like.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                            likesReference.document(mPostId).collection("likes")
-                                                    .document(firebaseAuth.getCurrentUser().getUid()).set(like)
-                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    postsCollections.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                                        @Override
-                                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                if (processLikes){
+                                    if (documentSnapshots.isEmpty()){
+                                        final Like like = new Like();
+                                        like.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                        likesReference.document(mPostId).collection("likes")
+                                                .document(firebaseAuth.getCurrentUser().getUid()).set(like);
 
-                                                            if (e != null) {
-                                                                Log.w(TAG, "Listen error", e);
-                                                                return;
-                                                            }
+                                        timelineCollection.document(mUid).collection("activities")
+                                                .whereEqualTo("post_id", mPostId)
+                                                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                                    @Override
+                                                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-
-                                                            if (documentSnapshot.exists()){
-                                                                CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
-                                                                final String uid = collectionPost.getUser_id();
-
-                                                                final Timeline timeline = new Timeline();
-                                                                final long time = new Date().getTime();
-
-                                                                timelineCollection.document(uid).collection("activities")
-                                                                        .orderBy(firebaseAuth.getCurrentUser().getUid())
-                                                                        .whereEqualTo("post_id", mPostId)
-                                                                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                                                            @Override
-                                                                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                                                                if (e != null) {
-                                                                                    Log.w(TAG, "Listen error", e);
-                                                                                    return;
-                                                                                }
+                                                        if (e != null) {
+                                                            Log.w(TAG, "Listen error", e);
+                                                            return;
+                                                        }
 
 
-                                                                                if (documentSnapshots.isEmpty()){
-                                                                                    final String activityId = databaseReference.push().getKey();
-                                                                                    timeline.setPost_id(mPostId);
-                                                                                    timeline.setTime(time);
-                                                                                    timeline.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                                    timeline.setType("like");
-                                                                                    timeline.setActivity_id(activityId);
-                                                                                    timeline.setStatus("un_read");
-                                                                                    timeline.setReceiver_id(uid);
+                                                        if (documentSnapshots.isEmpty()){
+                                                            Log.d("timeline is empty", mPostId);
+                                                            final Timeline timeline = new Timeline();
+                                                            final long time = new Date().getTime();
+
+                                                            final String activityId = databaseReference.push().getKey();
+                                                            timeline.setPost_id(mPostId);
+                                                            timeline.setTime(time);
+                                                            timeline.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                            timeline.setType("like");
+                                                            timeline.setActivity_id(activityId);
+                                                            timeline.setStatus("un_read");
+                                                            timeline.setReceiver_id(mUid);
 
 
-                                                                                    if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                                                                        //do nothing
-                                                                                    }else {
-                                                                                        timelineCollection.document(uid).collection("activities")
-                                                                                                .document(mPostId)
-                                                                                                .set(timeline);
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                        });
-
+                                                            if (mUid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                                                //do nothing
+                                                            }else {
+                                                                timelineCollection.document(mUid).collection("activities")
+                                                                        .document(mPostId).set(timeline);
                                                             }
                                                         }
-                                                    });
-                                                }
-                                            });
-                                            processLikes = false;
-                                            mLikesImageView.setColorFilter(Color.RED);
-
-                                        }else {
-                                            likesReference.document(mPostId).collection("likes")
-                                                    .document(firebaseAuth.getCurrentUser().getUid()).delete();
-                                            processLikes = false;
-                                            mLikesImageView.setColorFilter(Color.BLACK);
-
-                                        }
-                                    }
-
-                                    likesReference.document(mPostId).collection("likes")
-                                            .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                                @Override
-                                                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                                    if (e != null) {
-                                                        Log.w(TAG, "Listen error", e);
-                                                        return;
                                                     }
-
-                                                    if (!documentSnapshots.isEmpty()){
-                                                        int likesCount = documentSnapshots.size();
-
-                                                        if ( likesCount > 0){
-                                                            //mille is a thousand likes
-                                                            double MILLE = 1000.0;
-                                                            //get the number of likes per a thousand likes
-                                                            double likesPerMille = likesCount/MILLE;
-                                                            //get the default rate of likes per unit time in seconds;
-                                                            double rateOfLike = 1000.0/1800.0;
-                                                            //get the current rate of likes per unit time in seconds;
-                                                            double currentRateOfLkes = likesCount * rateOfLike/MILLE;
-                                                            //get the current price of post
-                                                            final double currentPrice = currentRateOfLkes * DEFAULT_PRICE/rateOfLike;
-                                                            //get the perfection value of post's interactivity online
-                                                            double perfectionValue = GOLDEN_RATIO/likesCount;
-                                                            //get the new worth of Single price in Sen
-                                                            final double cingleWorth = perfectionValue * likesPerMille * currentPrice;
-                                                            //round of the worth of the post to 10 decimal number
-                                                            final double finalPoints = round( cingleWorth, 10);
-
-                                                            Log.d("final points", finalPoints + "");
-
-                                                            postWalletReference.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                                                @Override
-                                                                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                                                    if (e != null) {
-                                                                        Log.w(TAG, "Listen error", e);
-                                                                        return;
-                                                                    }
+                                                });
 
 
-                                                                    if (documentSnapshot.exists()){
-                                                                        final Balance balance = documentSnapshot.toObject(Balance.class);
-                                                                        final double amountRedeemed = balance.getAmount_redeemed();
-                                                                        Log.d(amountRedeemed + "", "amount redeemed");
-                                                                        final  double amountDeposited = balance.getAmount_deposited();
-                                                                        Log.d(amountDeposited + "", "amount deposited");
-                                                                        final double senseCredits = amountDeposited + finalPoints;
-                                                                        Log.d("sense credit", senseCredits + "");
-                                                                        final double totalSenseCredits = senseCredits - amountRedeemed;
-                                                                        Log.d("total sense credit", totalSenseCredits + "");
 
-                                                                        senseCreditReference.document(mPostId).update("amount", totalSenseCredits);
-                                                                    }else {
-                                                                        Credit credit = new Credit();
-                                                                        credit.setPost_id(mPostId);
-                                                                        credit.setAmount(finalPoints);
-                                                                        credit.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                        senseCreditReference.document(mPostId).set(credit);
-                                                                        Log.d("new sense credits", finalPoints + "");
-                                                                    }
-                                                                }
-                                                            });
+                                        processLikes = false;
+                                        mLikesImageView.setColorFilter(Color.RED);
 
-                                                        }
+                                    }else {
+                                        likesReference.document(mPostId).collection("likes")
+                                                .document(firebaseAuth.getCurrentUser().getUid()).delete();
+                                        processLikes = false;
+                                        mLikesImageView.setColorFilter(Color.BLACK);
 
-                                                    }else {
-                                                        final double finalPoints = 0.00;
-                                                        Log.d("finalpoints <= 0", finalPoints + "");
+                                    }
+                                }
+
+                                likesReference.document(mPostId).collection("likes")
+                                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                                                if (e != null) {
+                                                    Log.w(TAG, "Listen error", e);
+                                                    return;
+                                                }
+
+                                                if (!documentSnapshots.isEmpty()){
+                                                    int likesCount = documentSnapshots.size();
+                                                    if ( likesCount > 0){
+                                                        //mille is a thousand likes
+                                                        double MILLE = 1000.0;
+                                                        //get the number of likes per a thousand likes
+                                                        double likesPerMille = likesCount/MILLE;
+                                                        //get the default rate of likes per unit time in seconds;
+                                                        double rateOfLike = 1000.0/1800.0;
+                                                        //get the current rate of likes per unit time in seconds;
+                                                        double currentRateOfLkes = likesCount * rateOfLike/MILLE;
+                                                        //get the current price of single
+                                                        final double currentPrice = currentRateOfLkes * DEFAULT_PRICE/rateOfLike;
+                                                        //get the perfection value of single's interactivity online
+                                                        double perfectionValue = GOLDEN_RATIO/likesCount;
+                                                        //get the new worth of Single price in Sen
+                                                        final double cingleWorth = perfectionValue * likesPerMille * currentPrice;
+                                                        //round of the worth of the single to 10 decimal number
+                                                        final double finalPoints = round( cingleWorth, 8);
+
+                                                        Log.d("finalpoints > 0", finalPoints + "");
+
                                                         postWalletReference.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                                             @Override
                                                             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -971,100 +857,84 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                                                     return;
                                                                 }
 
+
                                                                 if (documentSnapshot.exists()){
-                                                                    final Balance balance = documentSnapshot.toObject(Balance.class);
-                                                                    final double amountRedeemed = balance.getAmount_redeemed();
+                                                                    final Credit credit = documentSnapshot.toObject(Credit.class);
+                                                                    final double amountRedeemed =   credit.getAmount();
                                                                     Log.d(amountRedeemed + "", "amount redeemed");
-                                                                    final  double amountDeposited = balance.getAmount_deposited();
+                                                                    final  double amountDeposited = credit.getDeposited();
                                                                     Log.d(amountDeposited + "", "amount deposited");
                                                                     final double senseCredits = amountDeposited + finalPoints;
                                                                     Log.d("sense credit", senseCredits + "");
                                                                     final double totalSenseCredits = senseCredits - amountRedeemed;
                                                                     Log.d("total sense credit", totalSenseCredits + "");
 
-                                                                    senseCreditReference.document(mPostId).update("amount", totalSenseCredits);
+                                                                    creditsCollection.document(mPostId).update("amount", totalSenseCredits);
                                                                 }else {
                                                                     Credit credit = new Credit();
                                                                     credit.setPost_id(mPostId);
                                                                     credit.setAmount(finalPoints);
                                                                     credit.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                    senseCreditReference.document(mPostId).set(credit);
+                                                                    credit.setDeposited(0.0);
+                                                                    credit.setRedeemed(0.0);
+                                                                    creditsCollection.document(mPostId).set(credit);
+                                                                    Log.d("new sense credits", finalPoints + "");
                                                                 }
                                                             }
                                                         });
+
                                                     }
+                                                }else {
+                                                    final double finalPoints = 0.00;
+                                                    Log.d("finalpoints <= 0", finalPoints + "");
+                                                    postWalletReference.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                                        @Override
+                                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                                            if (e != null) {
+                                                                Log.w(TAG, "Listen error", e);
+                                                                return;
+                                                            }
+
+
+                                                            if (documentSnapshot.exists()){
+                                                                final Credit credit = documentSnapshot.toObject(Credit.class);
+                                                                final double amountRedeemed =   credit.getAmount();
+                                                                Log.d(amountRedeemed + "", "amount redeemed");
+                                                                final  double amountDeposited = credit.getDeposited();
+                                                                Log.d(amountDeposited + "", "amount deposited");
+                                                                final double senseCredits = amountDeposited + finalPoints;
+                                                                Log.d("sense credit", senseCredits + "");
+                                                                final double totalSenseCredits = senseCredits - amountRedeemed;
+                                                                Log.d("total sense credit", totalSenseCredits + "");
+
+                                                                creditsCollection.document(mPostId).update("amount", totalSenseCredits);
+                                                            }else {
+                                                                Credit credit = new Credit();
+                                                                credit.setPost_id(mPostId);
+                                                                credit.setAmount(finalPoints);
+                                                                credit.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                                credit.setDeposited(0.0);
+                                                                credit.setRedeemed(0.0);
+                                                                creditsCollection.document(mPostId).set(credit);
+                                                                Log.d("new sense credits", finalPoints + "");
+                                                            }
+                                                        }
+                                                    });
+
                                                 }
-                                            });
+                                            }
+                                        });
 
 
-                                }
-                            });
-                }
-            });
-
-        }
-    }
-
-    private void showEditImageView(){
-        postOwnersCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-
-                    TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
-                    final String ownerUid = transactionDetails.getUser_id();
-
-
-                }
-
+                            }
+                        });
             }
         });
+
+
+
     }
 
-    private void setNewPrice(){
-        final String stringSalePrice = mEditSalePriceEditText.getText().toString().trim();
-        if (stringSalePrice.equals("")){
-            mEditSalePriceEditText.setError("Sale price is empty!");
-        }else {
-            final double intSalePrice = Double.parseDouble(stringSalePrice);
-
-            senseCreditReference.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                @Override
-                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                    if (e != null) {
-                        Log.w(TAG, "Listen error", e);
-                        return;
-                    }
-
-                    if (documentSnapshot.exists()){
-                        final Credit credit = documentSnapshot.toObject(Credit.class);
-                        final double senseCredits = credit.getAmount();
-                        final DecimalFormat formatter = new DecimalFormat("0.00000000");
-                        mCreditsTextView.setText("uC" + " " + formatter.format(senseCredits));
-
-                        if (intSalePrice < senseCredits){
-                            mEditSalePriceEditText.setError("Sale price is less than post's uCrdits!");
-                        }else {
-                            sellingCollection.document(mPostId).update("salePrice", intSalePrice);
-
-                        }
-                    }
-                }
-            });
-
-            mEditSalePriceEditText.setText("");
-            mSalePriceTextView.setVisibility(View.VISIBLE);
-            mDoneEditingImageView.setVisibility(View.GONE);
-            mEditSalePriceImageView.setVisibility(View.VISIBLE);
-            mEditSalePriceEditText.setVisibility(View.GONE);
-        }
-    }
 
     //region listeners
     public static double round(double value, int places) {
@@ -1075,40 +945,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         return bd.doubleValue();
     }
 
-    //cingle sense edittext filter
-    public void setEditTextFilter(){
-        mEditSalePriceEditText.setFilters(new InputFilter[] {
-                new DigitsKeyListener(Boolean.FALSE, Boolean.TRUE) {
-                    int beforeDecimal = 13, afterDecimal = 8;
 
-                    @Override
-                    public CharSequence filter(CharSequence source, int start, int end,
-                                               Spanned dest, int dstart, int dend) {
-                        String temp = mEditSalePriceEditText.getText() + source.toString();
-
-                        if (temp.equals(".")) {
-                            return "0.";
-                        }else if (temp.equals("0")){
-                            return "0.";//if number begins with 0 return decimal place right after
-                        }
-                        else if (temp.toString().indexOf(".") == -1) {
-                            // no decimal point placed yet
-                            if (temp.length() > beforeDecimal) {
-                                return "";
-                            }
-                        } else {
-                            temp = temp.substring(temp.indexOf(".") + 1);
-                            if (temp.length() > afterDecimal) {
-                                return "";
-                            }
-                        }
-
-                        return super.filter(source, start, end, dest, dstart, dend);
-                    }
-                }
-        });
-
-    }
 
 //    private void displayPopupWindow(View anchorView) {
 //        PopupWindow popup = new PopupWindow(PostDetailActivity.this);

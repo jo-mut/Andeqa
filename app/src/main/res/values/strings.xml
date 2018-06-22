@@ -25,7 +25,6 @@
     <string name="menu_search">Search</string>
     <string name="likes">Likes</string>
     <string name="followers">Followers</string>
-    <string name="credit">SP</string>
     <string name="views">Views</string>
     <string name="title_activity_people">PeopleActivity</string>
     <string name="title_activity_main">MainActivity</string>
@@ -70,8 +69,7 @@
     <string name="key_send_feedback">key_send_feedback</string>
 
     <!--u credits-->
-    <string name="u_credit_initials">uC</string>
-    <string name="u_credit">uCredit</string>
+    <string name="credit">Credo</string>
 
 
     <!--ifair related strings-->
@@ -95,7 +93,6 @@
     <string name="date_posted">Date Posted:</string>
     <string name="listed_on_ifair">Listed on Ifair:</string>
     <string name="owner">Owner:</string>
-    <string name="sense_credits">Sense Credits:</string>
     <string name="place_holder_text">Share your beautiful photos and see what other think as your earn in Sense Credits</string>
     <string name="selling_holder_text">Currently there are no posts on sale. Check again later</string>
     <string name="timeline_holder_text">You have no recent activities on your timeline.</string>

@@ -113,7 +113,7 @@
                         <!--android:layout_width="match_parent"-->
                         <!--android:layout_height="wrap_content"-->
                         <!--android:padding="10dp"-->
-                        <!--android:text="Log in"-->
+                        <!--android:text="Transaction in"-->
                         <!--android:background="@drawable/colour_btn_background"-->
                         <!--android:layout_marginTop="15dp"-->
                         <!--android:textSize="14sp"-->

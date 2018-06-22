@@ -23,9 +23,10 @@ import android.widget.VideoView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.models.Wallet;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
-import com.andeqa.andeqa.models.TransactionDetails;
+import com.andeqa.andeqa.models.Transaction;
 import com.andeqa.andeqa.profile.ProfileActivity;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.bumptech.glide.Glide;
@@ -76,6 +77,7 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
     private CollectionReference postsCollection;
     private CollectionReference singlesCollection;
     private CollectionReference postOwnersCollection;
+    private CollectionReference postWalletCollection;
     private CollectionReference usersReference;
     private DatabaseReference randomReference;
     private CollectionReference collectionsCollection;
@@ -127,6 +129,7 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             randomReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
             collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
+            postOwnersCollection = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
 
             mCingleTitleEditText.setFilters(new InputFilter[]{new InputFilter
                     .LengthFilter(DEFAULT_TITLE_LENGTH_LIMIT)});
@@ -375,16 +378,28 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
                                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                             @Override
                                                             public void onSuccess(Void aVoid) {
-                                                                //set the collectionPost ownership
-                                                                TransactionDetails transactionDetails = new TransactionDetails();
-                                                                transactionDetails.setPost_id(post_id);
-                                                                transactionDetails.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                transactionDetails.setTime(timeStamp);
-                                                                transactionDetails.setType("owner");
-                                                                transactionDetails.setAmount(0.0);
-                                                                transactionDetails.setWallet_balance(0.0);
 
-                                                                postOwnersCollection.document(post_id).set(transactionDetails)
+                                                                //create a new post wallet
+                                                                Wallet wallet = new Wallet();
+                                                                wallet.setTime(timeStamp);
+                                                                wallet.setBalance(0.0);
+                                                                wallet.setDeposited(0.0);
+                                                                wallet.setRedeemed(0.0);
+                                                                wallet.setAddress(pushId);
+                                                                wallet.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                                postWalletCollection.document(pushId).set(wallet);
+
+
+                                                                //set the collectionPost ownership
+                                                                Transaction transaction = new Transaction();
+                                                                transaction.setPost_id(post_id);
+                                                                transaction.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                                transaction.setTime(timeStamp);
+                                                                transaction.setType("owner");
+                                                                transaction.setAmount(0.0);
+                                                                transaction.setWallet_balance(0.0);
+
+                                                                postOwnersCollection.document(post_id).set(transaction)
                                                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                             @Override
                                                                             public void onSuccess(Void aVoid) {

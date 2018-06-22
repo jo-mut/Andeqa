@@ -54,7 +54,7 @@
             android:paddingBottom="30dp"
             android:hint="Enter your collection's name"
             android:textStyle="normal|bold"
-            android:background="@drawable/input_background" />
+            android:background="@drawable/edit_text_background" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -94,7 +94,7 @@
             android:paddingRight="16dp"
             android:paddingTop="30dp"
             android:paddingBottom="30dp"
-            android:background="@drawable/input_background"
+            android:background="@drawable/edit_text_background"
             android:textSize="16sp" />
 
         <TextView
@@ -121,7 +121,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
+        <com.andeqa.andeqa.utils.ProportionalImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:srcCompat="@drawable/transparent_background"

@@ -1,43 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="false"
     android:background="#000000"
-    android:orientation="vertical"
     tools:context="com.andeqa.andeqa.home.ImageViewActivity">
 
-
-    <RelativeLayout
+    <ScrollView
+        android:layout_centerVertical="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ScrollView
-            android:fillViewport="true"
-            android:layout_centerVertical="true"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
-            <RelativeLayout
-                android:layout_gravity="center_vertical"
+            <com.andeqa.andeqa.utils.ProportionalImageView
+                android:id="@+id/postImageView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="400dp"
+                android:adjustViewBounds="false" />
 
-                <com.andeqa.andeqa.utils.ProportionalImageView
-                    android:id="@+id/postImageView"
-                    android:layout_width="match_parent"
-                    android:layout_height="1000dp"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentTop="true"
-                    android:adjustViewBounds="false" />
+        </RelativeLayout>
 
-            </RelativeLayout>
-
-        </ScrollView>
-
-    </RelativeLayout>
+    </ScrollView>
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -48,7 +37,7 @@
         app:titleTextAppearance="@style/toolbarTextAppearance"
         app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>
 
 
 

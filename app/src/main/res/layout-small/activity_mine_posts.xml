@@ -7,6 +7,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
+    android:background="@color/blue_grey_50"
     tools:context="com.andeqa.andeqa.profile.ProfileActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -88,6 +89,8 @@
         android:layout_height="wrap_content">
 
         <android.support.v7.widget.RecyclerView
+            android:clipToPadding="false"
+            android:padding="@dimen/item_off_set"
             android:numColumns="auto_fit"
             android:id="@+id/collectionsPostsRecyclerView"
             android:overScrollMode="never"

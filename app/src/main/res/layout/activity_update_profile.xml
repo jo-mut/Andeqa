@@ -7,8 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.andeqa.andeqa.profile.UpdateProfileActivity"
-    android:weightSum="1">
+    tools:context="com.andeqa.andeqa.profile.UpdateProfileActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"
@@ -126,6 +125,7 @@
         android:layout_height="wrap_content">
 
         <android.support.v7.widget.CardView
+            app:contentPadding="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardPreventCornerOverlap="false">
@@ -161,8 +161,9 @@
                         android:layout_height="match_parent">
 
                         <EditText
+                            android:background="@drawable/input_background"
                             android:layout_height="wrap_content"
-                            android:inputType="textMultiLine"
+                            android:inputType="textPersonName"
                             android:ems="10"
                             android:id="@+id/usernameEditText"
                             android:hint="Username"
@@ -173,7 +174,7 @@
                             android:paddingTop="15dp"
                             android:paddingBottom="15dp"
                             android:textSize="14sp"
-                            android:layout_width="250dp"
+                            android:layout_width="match_parent"
                             android:freezesText="true"
                             android:layout_centerVertical="true"
                             android:layout_alignParentLeft="true"
@@ -209,6 +210,7 @@
                         android:layout_height="match_parent">
 
                         <EditText
+                            android:background="@drawable/input_background"
                             android:layout_height="wrap_content"
                             android:ems="10"
                             android:paddingRight="5dp"
@@ -224,20 +226,17 @@
                             android:hint="Bio line"
                             android:freezesText="true"
                             android:textSize="14sp"
-                            android:layout_width="250dp"
-                            android:layout_centerVertical="true"
-                            android:layout_toStartOf="@+id/statusCountTextView"
-                            android:layout_toLeftOf="@+id/statusCountTextView"/>
+                            android:layout_width="match_parent"
+                            android:layout_centerVertical="true" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/statusCountTextView"
                             android:textSize="9sp"
+                            android:layout_below="@+id/bioEditText"
                             android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true"
-                            android:layout_marginRight="5dp"
-                            android:layout_marginEnd="5dp"
                             android:padding="5dp"
                             android:layout_centerVertical="true" />
 
@@ -272,8 +271,9 @@
                         android:layout_height="match_parent">
 
                         <EditText
+                            android:background="@drawable/input_background"
                             android:layout_height="wrap_content"
-                            android:inputType="textMultiLine"
+                            android:inputType="textPersonName"
                             android:ems="10"
                             android:paddingRight="5dp"
                             android:paddingEnd="5dp"
@@ -284,7 +284,7 @@
                             android:id="@+id/fisrtNameEditText"
                             android:hint="First Name"
                             android:textSize="14sp"
-                            android:layout_width="250dp"
+                            android:layout_width="match_parent"
                             android:freezesText="true"
                             android:layout_centerInParent="true"
                             android:layout_centerVertical="true"
@@ -322,8 +322,9 @@
                         android:layout_height="match_parent">
 
                         <EditText
+                            android:background="@drawable/input_background"
                             android:layout_height="wrap_content"
-                            android:inputType="textMultiLine"
+                            android:inputType="textPersonName"
                             android:paddingRight="5dp"
                             android:paddingEnd="5dp"
                             android:paddingLeft="5dp"
@@ -334,7 +335,7 @@
                             android:hint="Second Name"
                             android:textSize="14sp"
                             android:freezesText="true"
-                            android:layout_width="250dp"
+                            android:layout_width="match_parent"
                             android:layout_centerInParent="true"
                             android:layout_centerVertical="true"
                             android:layout_alignParentStart="true"

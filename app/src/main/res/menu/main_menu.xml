@@ -11,19 +11,18 @@
 
     <!--</item>-->
 
-    <item
-        android:id="@+id/action_chats"
-        android:icon="@drawable/ic_chat_white"
-        app:showAsAction="always"
-        android:title="Chats">
-
-    </item>
-
     <!--<item-->
-        <!--android:id="@+id/action_notifications"-->
-        <!--android:icon="@drawable/ic_notification"-->
+        <!--android:id="@+id/action_chats"-->
+        <!--android:icon="@drawable/ic_chat_white"-->
         <!--app:showAsAction="always"-->
-        <!--android:title="Notifications">-->
+        <!--android:title="Chats">-->
 
     <!--</item>-->
+    <item
+        android:id="@+id/action_notifications"
+        android:icon="@drawable/action_bar_group_icon"
+        app:showAsAction="always"
+        android:title="Notifications">
+
+    </item>
 </menu>

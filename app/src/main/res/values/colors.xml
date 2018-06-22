@@ -11,6 +11,7 @@
     <color name="customGradientColor">#00838F</color>
     <color name="bottomNavBackground">#000000</color>
     <color name="transparentColor">#00000000</color>
+    <color name="background_color">#e00032</color>
 
     <color name="red_100">#f9bdbb</color>
     <color name="red_200">#f69988</color>

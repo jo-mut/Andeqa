@@ -124,6 +124,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                     .load(new File(profilePhotoIntent))
                     .resize(MAX_HEIGHT, MAX_WIDTH)
                     .centerCrop()
+                    .placeholder(R.drawable.ic_user_white)
                     .into(mProfilePictureImageView,
                             new Callback.EmptyCallback(){
                                 @Override
@@ -173,10 +174,11 @@ public class UpdateProfileActivity extends AppCompatActivity implements
                 mStatusCountTextView.setText(Integer.toString(count));
 
                 if (count == 0){
-                    mStatusCountTextView.setTextColor(Color.RED);
+                    mStatusCountTextView.setTextColor(Color.GRAY);
                 }else if (count <= 250){
                     mStatusCountTextView.setTextColor(Color.BLACK);
                 }else{
+                    mStatusCountTextView.setTextColor(Color.RED);
                     //do nothing
                 }
 

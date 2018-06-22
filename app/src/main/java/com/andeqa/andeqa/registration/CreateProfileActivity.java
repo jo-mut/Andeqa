@@ -27,6 +27,7 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.home.NavigationDrawerActivity;
 import com.andeqa.andeqa.models.Andeqan;
+import com.andeqa.andeqa.models.Wallet;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -43,6 +44,8 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
+
+import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -61,6 +64,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
 
     private static final String TAG = CreateProfileActivity.class.getSimpleName();
     private CollectionReference usersReference;
+    private CollectionReference walletReference;
     private FirebaseAuth firebaseAuth;
     private ProgressDialog mAuthProgressDialog;
     private ProgressDialog verifyingProgressDialog;
@@ -92,6 +96,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
 
         if (firebaseAuth != null){
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+            walletReference = FirebaseFirestore.getInstance().collection(Constants.WALLET);
 
             email = getIntent().getStringExtra(EMAIL);
             password = getIntent().getStringExtra(PASSWORD);
@@ -308,20 +313,30 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
                     });
                 }
 
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(CreateProfileActivity.this, "Profile successfully updated",
-                        Toast.LENGTH_SHORT).show();
+
+                final String address = walletReference.getId();
+                final long time = new Date().getTime();
+                Wallet wallet = new Wallet();
+                wallet.setAddress(address);
+                wallet.setBalance(0.0);
+                wallet.setTime(time);
+                wallet.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                walletReference.document(firebaseAuth.getCurrentUser().getUid())
+                        .collection("account_addresses")
+                        .document(firebaseAuth.getCurrentUser().getUid())
+                        .set(address).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        //the user is already logged in so create profile and move to next activity
+                        Intent intent = new Intent(CreateProfileActivity.this, NavigationDrawerActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+
             }
         });
-
-        //the user is already logged in so create profile and move to next activity
-        Intent intent = new Intent(CreateProfileActivity.this, NavigationDrawerActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
 
     }
 

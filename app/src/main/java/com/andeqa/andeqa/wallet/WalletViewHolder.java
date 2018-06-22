@@ -7,7 +7,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.utils.ProportionalImageView;
 
 import butterknife.ButterKnife;
 
@@ -26,7 +25,7 @@ public class WalletViewHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this, mView);
         postImageView = (ImageView) mView.findViewById(R.id.postImageView);
         deleteHistoryImageView = (ImageView) mView.findViewById(R.id.deleteHistoryImageView);
-        amountTransferredTextView = (TextView) mView.findViewById(R.id.transactionsHistoryTextView);
+        amountTransferredTextView = (TextView) mView.findViewById(R.id.transactionTextView);
 
 
     }

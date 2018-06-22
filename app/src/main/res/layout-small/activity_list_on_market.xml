@@ -7,8 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.andeqa.andeqa.market.ListOnMarketActivity"
-    android:background="@android:color/white">
+    tools:context="com.andeqa.andeqa.market.ListOnMarketActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -78,19 +77,8 @@
                 android:layout_height="match_parent"
                 android:padding="5dp">
 
-
-                <TextView
-                    android:text="Set the sale price of your post and place it on the market"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/setSalePriceTextView"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:padding="5dp"
-                    android:textSize="10sp" />
-
                 <Button
+                    android:layout_centerVertical="true"
                     android:text="Set"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -101,12 +89,12 @@
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
                     android:background="@drawable/colour_btn_background"
-                    android:minHeight="30dp"
-                    android:minWidth="40dip"
-                    android:layout_below="@+id/setSalePriceTextView"
+                    android:minHeight="35dp"
+                    android:minWidth="60dip"
                     android:textSize="10sp" />
 
                 <EditText
+                    android:background="@drawable/input_background"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="numberDecimal|number"
@@ -115,12 +103,16 @@
                     android:layout_alignParentStart="true"
                     android:id="@+id/setCingleSalePriceEditText"
                     android:hint="Set the sale price"
-                    android:layout_below="@+id/setSalePriceTextView"
                     android:textSize="10sp"
                     android:layout_alignParentBottom="false"
                     android:layout_toLeftOf="@+id/setCinglePriceButton"
                     android:layout_toStartOf="@+id/setCinglePriceButton"
                     android:layout_marginRight="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingRight="10dp"
                     android:paddingTop="10dp"
                     android:paddingBottom="10dp" />
             </RelativeLayout>

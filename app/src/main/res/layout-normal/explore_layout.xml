@@ -4,27 +4,27 @@
     android:orientation="vertical"
     android:id="@+id/explore_linear_layout"
     android:background="@android:color/white"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
 
     <LinearLayout
-        android:layout_margin="0.1dp"
         android:id="@+id/detailsLinearLayout"
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+
         <RelativeLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
+            <com.andeqa.andeqa.utils.ProportionalImageView
                 android:id="@+id/postImageView"
                 android:layout_centerVertical="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:layout_height="120dp"
+                android:layout_height="200dp"
                 android:layout_width="match_parent"
                 android:scaleType="centerCrop" />
 

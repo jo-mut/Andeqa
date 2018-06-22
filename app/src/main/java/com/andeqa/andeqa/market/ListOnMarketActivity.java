@@ -72,12 +72,7 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
     private CollectionReference postsCollection;
     private CollectionReference usersReference;
     private CollectionReference relationsReference;
-    private CollectionReference commentReference;
-    private CollectionReference senseCreditReference;
     private CollectionReference selllingCollection;
-
-
-
     //REMOVE SCIENTIFIC NOATATION
     private DecimalFormat formatter =  new DecimalFormat("0.00000000");
 
@@ -120,8 +115,6 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
             relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            commentReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
-            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
             selllingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
 
             //initialize input filter
@@ -246,77 +239,22 @@ public class ListOnMarketActivity extends AppCompatActivity implements View.OnCl
                         }
 
                         if (documentSnapshot.exists()){
-                            final Post post = documentSnapshot.toObject(Post.class);
-                            final String collectionId = post.getCollection_id();
-                            senseCreditReference.document(mPostKey).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                            final Market market =  new Market();
+                            market.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                            market.setPost_id(mPostKey);
+                            market.setSale_price(intSalePrice);
+                            market.setRandom_number((double) new Random().nextDouble());
+                            market.setTime(timeStamp);
+
+                            selllingCollection.document(mPostKey).set(market).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
-                                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                                    if (e != null) {
-                                        Log.w(TAG, "Listen error", e);
-                                        return;
-                                    }
-
-                                    if (documentSnapshot.exists()){
-                                        final Credit credit = documentSnapshot.toObject(Credit.class);
-                                        final double senseCredits = credit.getAmount();
-
-                                        if (intSalePrice < senseCredits){
-                                            mSetCingleSalePriceEditText.setError("Sale price is less than CollectionPost uCredit!");
-                                        }else if (intSalePrice >= senseCredits){
-                                            //SET CINGLE ON SALE IN SELLING
-
-                                            final Market market =  new Market();
-                                            market.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                            market.setPost_id(mPostKey);
-                                            market.setSale_price(intSalePrice);
-                                            market.setRandom_number((double) new Random().nextDouble());
-                                            market.setTime(timeStamp);
-
-                                            selllingCollection.document(mPostKey).set(market).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if (task.isSuccessful()){
-                                                        Toast.makeText(ListOnMarketActivity.this, "Your post has been listed for sale",
-                                                                Toast.LENGTH_SHORT).show();
-                                                    }
-                                                }
-                                            });
-
-                                        }else {
-
-                                            new AlertDialog.Builder(ListOnMarketActivity.this)
-                                                    .setTitle("Sorry !")
-                                                    .setMessage("The sale price cannot be less than the CollectionPost's uCredit")
-                                                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                                        public void onClick(DialogInterface dialog, int which) {
-                                                        }
-                                                    }).setIcon(android.R.drawable.ic_dialog_alert).show();
-                                        }
-                                    }else {
-                                        //SET CINGLE ON SALE IN SELLING
-                                        final Market market =  new Market();
-                                        market.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                        market.setPost_id(mPostKey);
-                                        market.setSale_price(intSalePrice);
-                                        market.setRandom_number((double) new Random().nextDouble());
-                                        market.setTime(timeStamp);
-
-                                        selllingCollection.document(mPostKey).set(market).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()){
-                                                    Toast.makeText(ListOnMarketActivity.this, "Your post has been listed for sale",
-                                                            Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
-                                        });
-
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()){
+                                        Toast.makeText(ListOnMarketActivity.this, "Successfully listed for sale",
+                                                Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             });
-
-
                         }
                     }
                 });

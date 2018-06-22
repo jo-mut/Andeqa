@@ -2,12 +2,11 @@ package com.andeqa.andeqa.explore;
 
 
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +14,7 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.collections.CollectionsPagerAdapter;
+import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -40,17 +39,18 @@ public class ExploreFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @Bind(R.id.bestPostsRecyclerView)RecyclerView bestPostRecyclerView;
     @Bind(R.id.swipeRefreshLayout)SwipeRefreshLayout mSwipeRefreshLayout;
 
-    private GridLayoutManager layoutManager;
+    private StaggeredGridLayoutManager layoutManager;
     //firestore
-    private CollectionReference creditCollection;
+    private CollectionReference postWalletCollection;
     private Query creditQuery;
     //adapters
-    private BestPostAdapter bestPostAdapter;
+    private ExplorePostAdapter explorePostAdapter;
     private FirebaseAuth firebaseAuth;
     private int TOTAL_ITEMS = 20;
     private DocumentSnapshot lastVisible;
     private List<String> snapshotsIds = new ArrayList<>();
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
+    private ItemOffsetDecoration itemOffsetDecoration;
     private static final String TAG = ExploreFragment.class.getSimpleName();
 
 
@@ -82,8 +82,8 @@ public class ExploreFragment extends Fragment implements SwipeRefreshLayout.OnRe
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser()!= null){
             //firestore
-            creditCollection = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
-            creditQuery = creditCollection.orderBy("amount", Query.Direction.DESCENDING)
+            postWalletCollection = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
+            creditQuery = postWalletCollection.orderBy("amount", Query.Direction.DESCENDING)
                     .limit(TOTAL_ITEMS);
 
         }
@@ -113,6 +113,7 @@ public class ExploreFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @Override
     public void onStop() {
         super.onStop();
+        bestPostRecyclerView.removeItemDecoration(itemOffsetDecoration);
     }
 
     @Override
@@ -132,10 +133,12 @@ public class ExploreFragment extends Fragment implements SwipeRefreshLayout.OnRe
     }
 
     private void setRecyclerView(){
-        bestPostAdapter = new BestPostAdapter(getContext());
-        bestPostRecyclerView.setAdapter(bestPostAdapter);
+        explorePostAdapter = new ExplorePostAdapter(getContext());
+        bestPostRecyclerView.setAdapter(explorePostAdapter);
         bestPostRecyclerView.setHasFixedSize(false);
-        layoutManager = new GridLayoutManager(getContext(), 3);
+        layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        itemOffsetDecoration = new ItemOffsetDecoration(getContext(), R.dimen.item_off_set);
+        bestPostRecyclerView.addItemDecoration(itemOffsetDecoration);
         bestPostRecyclerView.setLayoutManager(layoutManager);
     }
 
@@ -174,15 +177,15 @@ public class ExploreFragment extends Fragment implements SwipeRefreshLayout.OnRe
     private void setNextCollections(){
         mSwipeRefreshLayout.setRefreshing(true);
         // Get the last visible document
-        final int snapshotSize = bestPostAdapter.getItemCount();
+        final int snapshotSize = explorePostAdapter.getItemCount();
 
         if (snapshotSize == 0){
             mSwipeRefreshLayout.setRefreshing(false);
         }else {
-            DocumentSnapshot lastVisible = bestPostAdapter.getSnapshot(snapshotSize - 1);
+            DocumentSnapshot lastVisible = explorePostAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of documentSnapshots
-            Query nextSellingQuery = creditCollection.orderBy("amount", Query.Direction.DESCENDING)
+            Query nextSellingQuery = postWalletCollection.orderBy("amount", Query.Direction.DESCENDING)
                     .startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
 
@@ -223,9 +226,9 @@ public class ExploreFragment extends Fragment implements SwipeRefreshLayout.OnRe
     protected void onDocumentAdded(DocumentChange change) {
         snapshotsIds.add(change.getDocument().getId());
         documentSnapshots.add(change.getDocument());
-        bestPostAdapter.setBestPosts(documentSnapshots);
-        bestPostAdapter.notifyItemInserted(documentSnapshots.size() -1);
-        bestPostAdapter.getItemCount();
+        explorePostAdapter.setBestPosts(documentSnapshots);
+        explorePostAdapter.notifyItemInserted(documentSnapshots.size() -1);
+        explorePostAdapter.getItemCount();
 
     }
 
@@ -234,12 +237,12 @@ public class ExploreFragment extends Fragment implements SwipeRefreshLayout.OnRe
             if (change.getOldIndex() == change.getNewIndex()) {
                 // Item changed but remained in same position
                 documentSnapshots.set(change.getOldIndex(), change.getDocument());
-                bestPostAdapter.notifyItemChanged(change.getOldIndex());
+                explorePostAdapter.notifyItemChanged(change.getOldIndex());
             } else {
                 // Item changed and changed position
                 documentSnapshots.remove(change.getOldIndex());
                 documentSnapshots.add(change.getNewIndex(), change.getDocument());
-                bestPostAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+                explorePostAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -249,8 +252,8 @@ public class ExploreFragment extends Fragment implements SwipeRefreshLayout.OnRe
     protected void onDocumentRemoved(DocumentChange change) {
         try {
             documentSnapshots.remove(change.getOldIndex());
-            bestPostAdapter.notifyItemRemoved(change.getOldIndex());
-            bestPostAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+            explorePostAdapter.notifyItemRemoved(change.getOldIndex());
+            explorePostAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
         }catch (Exception e){
             e.printStackTrace();
         }

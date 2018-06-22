@@ -4,8 +4,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.andeqa.andeqa.collections.MineCollectionsFragment;
-
 public class ProfilePagerAdapter extends FragmentStatePagerAdapter {
 
     private static final String TAG = ProfilePagerAdapter.class.getSimpleName();
@@ -21,8 +19,8 @@ public class ProfilePagerAdapter extends FragmentStatePagerAdapter {
                 SinglesFragment singlesFragment = new SinglesFragment();
                 return singlesFragment;
             case 1:
-                ProfileCollectionsFragment profileCollectionsFragment = new ProfileCollectionsFragment();
-                return  profileCollectionsFragment;
+                ProfileCollectionFragment profileCollectionFragment = new ProfileCollectionFragment();
+                return  profileCollectionFragment;
             case 2:
                 PostsFragment postsFragment = new PostsFragment();
                 return postsFragment;

@@ -7,6 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/blue_grey_50"
     tools:context="com.andeqa.andeqa.wallet.WalletActivity">
 
     <android.support.v7.widget.Toolbar
@@ -20,6 +21,7 @@
         app:popupTheme="@style/AppTheme.PopupOverlay"
         app:titleTextColor="@android:color/white"/>
 
+
     <ScrollView
         android:fillViewport="true"
         android:scrollbars="none"
@@ -27,90 +29,184 @@
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:padding="20dp"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-           <android.support.v7.widget.CardView
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content">
-
-               <LinearLayout
-                   android:padding="10dp"
-                   android:layout_margin="10dp"
-                   android:orientation="vertical"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content">
-
-                   <TextView
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:text="uCredit Balance"
-                       android:textStyle="normal|bold"
-                       android:textSize="40sp"
-                       android:id="@+id/amountReceivedTextView" />
-
-                   <TextView
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:text="uC 9000000000"
-                       android:textSize="28sp"
-                       android:id="@+id/walletBalanceTextView"/>
-
-
-               </LinearLayout>
-
-           </android.support.v7.widget.CardView>
-
-
             <android.support.v7.widget.CardView
-                android:layout_marginBottom="30dp"
-                android:layout_marginTop="30dp"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <LinearLayout
-                    android:id="@+id/historyLinearLayout"
-                    android:layout_margin="10dp"
-                    android:padding="10dp"
+                    android:layout_margin="5dp"
+                    android:padding="20dp"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total Balance"
+                        android:textStyle="normal|bold"
+                        android:textSize="32sp"
+                        android:id="@+id/amountReceivedTextView" />
 
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <RelativeLayout
-                            android:visibility="gone"
-                            android:layout_centerInParent="true"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:id="@+id/emptyRelativeLayout">
-
-
-                            <TextView
-                                android:text="You have not transaction history"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentTop="false"
-                                android:layout_centerHorizontal="true"
-                                android:layout_marginTop="18dp"
-                                android:id="@+id/emptyTextView"
-                                android:textSize="28sp"
-                                android:layout_centerVertical="true" />
-
-                        </RelativeLayout>
-
-                        <android.support.v7.widget.RecyclerView
-                            android:overScrollMode="never"
-                            android:id="@+id/transactionHistoryRecyclerView"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                        </android.support.v7.widget.RecyclerView>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textSize="28sp"
+                            android:id="@+id/walletBalanceTextView"/>
 
                     </RelativeLayout>
+
+                    <!--<View-->
+                        <!--android:background="@color/grey_500"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="0.3dp"/>-->
+
+                    <!--<RelativeLayout-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content">-->
+
+                        <!--<TextView-->
+                            <!--android:layout_alignParentStart="true"-->
+                            <!--android:layout_alignParentLeft="true"-->
+                            <!--android:layout_toLeftOf="@+id/createAccountAddressImageView"-->
+                            <!--android:layout_toStartOf="@+id/createAccountAddressImageView"-->
+                            <!--android:layout_centerVertical="true"-->
+                            <!--android:layout_marginTop="5dp"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:text="Create a new wallet address"-->
+                            <!--android:textStyle="normal"-->
+                            <!--android:textSize="28sp"-->
+                            <!--android:id="@+id/addAccountAddressTextView" />-->
+
+                        <!--<ImageView-->
+                            <!--android:layout_margin="10dp"-->
+                            <!--android:layout_alignParentEnd="true"-->
+                            <!--android:layout_alignParentRight="true"-->
+                            <!--android:layout_centerVertical="true"-->
+                            <!--android:id="@+id/createAccountAddressImageView"-->
+                            <!--android:layout_width="60dp"-->
+                            <!--android:layout_height="60dp"-->
+                            <!--android:adjustViewBounds="true"-->
+                            <!--app:srcCompat="@drawable/ic_plus" />-->
+
+
+                    <!--</RelativeLayout>-->
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="200dp">
+
+                <LinearLayout
+                    android:id="@+id/sendCreditLinearLayout"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/rounded_background"
+                    android:layout_margin="5dp"
+                    android:padding="20dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Send Credo"
+                        android:textStyle="normal|bold"
+                        android:textSize="32sp"
+                        android:id="@+id/sendCreditTextView" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Transfer credo to another account"
+                        android:textSize="28sp" />
+
+
+                </LinearLayout>
+
+
+            </android.support.v7.widget.CardView>
+
+
+            <android.support.v7.widget.CardView
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="200dp">
+
+
+                <LinearLayout
+                    android:id="@+id/redeemCreditLinearLayout"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/rounded_background"
+                    android:layout_margin="5dp"
+                    android:padding="20dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Redeem Credo"
+                        android:textStyle="normal|bold"
+                        android:textSize="32sp"
+                        android:id="@+id/redeemCreditTextView" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Redeem credo earned  from your posts or  singles"
+                        android:textSize="28sp" />
+
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="200dp">
+
+                <LinearLayout
+                    android:id="@+id/transactionHistoryLinearLayout"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/rounded_background"
+                    android:layout_margin="5dp"
+                    android:padding="20dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Transaction Log"
+                        android:textStyle="normal|bold"
+                        android:textSize="32sp"
+                        android:id="@+id/transactionTextView" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="See the history of your transactions"
+                        android:textSize="28sp" />
+
 
                 </LinearLayout>
 

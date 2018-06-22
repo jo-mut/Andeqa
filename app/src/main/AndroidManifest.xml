@@ -23,13 +23,21 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
-    <uses-feature android:name="android.hardware.camera.front" />
-    <uses-feature android:name="android.hardware.microphone" />
-    <uses-feature android:name="android.hardware.camera2" />
+    <uses-feature
+        android:name="android.hardware.camera.front"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera2"
+        android:required="false" />
     <uses-feature
         android:name="android.hardware.camera.autofocus"
-        android:required="true" />
-    <uses-feature android:name="android.hardware.camera.flash" />
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.flash"
+        android:required="false" />
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -138,7 +146,7 @@
         </activity>
         <activity
             android:name=".message.MessagesAccountActivity"
-            android:label="Chat"
+            android:label="Chats"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
@@ -171,11 +179,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".message.MessagingActivity"
-            android:label="Chats"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
             android:name=".collections.MinePostsActivity"
             android:label="Posts"
             android:screenOrientation="portrait"
@@ -203,8 +206,25 @@
             android:label="Gallery"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity android:name=".wallet.WalletPasswordActivity" />
-        <activity android:name=".wallet.TransactionHistoryActivity"></activity>
+        <activity
+            android:name=".wallet.WalletPasswordActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".wallet.TransactionLogActivity"
+            android:label="Transaction log"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".wallet.RedeemActivity"
+            android:label="Redeem credo"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".wallet.SendCreditActivity"
+            android:label="Send credo"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".timeline.NotificationsActivity"
+            android:label="Notifications"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

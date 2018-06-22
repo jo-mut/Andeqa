@@ -10,36 +10,25 @@
     tools:context="com.andeqa.andeqa.home.ImageViewActivity">
 
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
-        <ScrollView
-            android:layout_centerVertical="true"
-            android:fitsSystemWindows="true"
+    <ScrollView
+        android:layout_centerVertical="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <RelativeLayout
-                android:layout_gravity="center_vertical"
-                android:fitsSystemWindows="true"
+            <com.andeqa.andeqa.utils.ProportionalImageView
+                android:id="@+id/postImageView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="600dp"
+                android:adjustViewBounds="false" />
 
-                <com.andeqa.andeqa.utils.ProportionalImageView
-                    android:id="@+id/postImageView"
-                    android:layout_width="match_parent"
-                    android:layout_height="600dp"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentTop="true"
-                    android:adjustViewBounds="false" />
+        </RelativeLayout>
 
-            </RelativeLayout>
-
-        </ScrollView>
-
-
-    </RelativeLayout>
+    </ScrollView>
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

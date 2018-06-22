@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:background="@color/blue_grey_50"
     tools:context="com.andeqa.andeqa.home.HomeFragment">
 
 
@@ -19,6 +20,8 @@
           android:layout_height="wrap_content">
 
           <android.support.v7.widget.RecyclerView
+              android:clipToPadding="false"
+              android:padding="@dimen/item_off_set"
               android:overScrollMode="never"
               android:id="@+id/postsRecyclerView"
               android:layout_width="match_parent"

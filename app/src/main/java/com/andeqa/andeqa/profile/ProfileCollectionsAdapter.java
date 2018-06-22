@@ -3,6 +3,7 @@ package com.andeqa.andeqa.profile;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -81,16 +82,19 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
 
         holder.mCollectionNameTextView.setText(collection.getName());
 
-        //prevent collection note from overlapping other layouts
-        final String [] strings = collection.getNote().split("");
+        if (!TextUtils.isEmpty(collection.getNote())){
+            holder.mCollectionsNoteTextView.setVisibility(View.VISIBLE);
+            //prevent collection note from overlapping other layouts
+            final String [] strings = collection.getNote().split("");
 
-        final int size = strings.length;
+            final int size = strings.length;
 
-        if (size <= 50){
-            //setence will not have read more
-            holder.mCollectionsNoteTextView.setText(collection.getNote());
-        }else {
-            holder.mCollectionsNoteTextView.setText(collection.getNote().substring(0, 54) + "...");
+            if (size <= 50){
+                //setence will not have read more
+                holder.mCollectionsNoteTextView.setText(collection.getNote());
+            }else {
+                holder.mCollectionsNoteTextView.setText(collection.getNote().substring(0, 49) + "...");
+            }
         }
 
         postCountQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {

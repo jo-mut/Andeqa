@@ -15,11 +15,11 @@ public class CollectionsPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position){
             case 0:
-                FeaturedCollectionFragment featuredCollectionFragment = new FeaturedCollectionFragment();
-                return featuredCollectionFragment;
+                FeaturedCollectionsFragment featuredCollectionsFragment = new FeaturedCollectionsFragment();
+                return featuredCollectionsFragment;
             case 1:
-                MineCollectionsFragment mineCollectionsFragment = new MineCollectionsFragment();
-                return mineCollectionsFragment;
+                MineCollectionFragment mineCollectionFragment = new MineCollectionFragment();
+                return mineCollectionFragment;
         }
         return null;
     }

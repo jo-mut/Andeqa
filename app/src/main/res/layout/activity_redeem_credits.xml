@@ -58,17 +58,7 @@
                     android:layout_height="55dp"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:background="@drawable/profle_image_background" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/usernameTextView"
-                    android:layout_alignLeft="@+id/usernameTextView"
-                    android:layout_alignStart="@+id/usernameTextView"
-                    android:id="@+id/postPriceTextView"
-                    android:textSize="10sp" />
+                    android:layout_centerVertical="true" />
 
             </RelativeLayout>
 
@@ -80,17 +70,18 @@
 
 
                 <TextView
-                    android:padding="5dp"
-                    android:textSize="16sp"
+                    android:layout_margin="5dp"
+                    android:textSize="14sp"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:id="@+id/enterAmountDescriptionTextView"
-                    android:text="Enter the amount of uCredits you want to redeem"
+                    android:text="Enter the amount of credo you want to redeem"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
                 <Button
+                    android:layout_below="@+id/enterAmountDescriptionTextView"
                     android:text="Redeem"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -101,12 +92,10 @@
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
                     android:background="@drawable/colour_btn_background"
-                    android:minHeight="35dp"
-                    android:minWidth="80dip"
-                    android:layout_below="@+id/setSalePriceTextView"
-                    android:layout_alignParentBottom="true" />
+                    android:minWidth="90dip" />
 
                 <EditText
+                    android:background="@drawable/input_background"
                     android:id="@+id/amountEnteredEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -117,8 +106,12 @@
                     android:layout_marginRight="10dp"
                     android:layout_toLeftOf="@+id/redeemAmountButton"
                     android:layout_toStartOf="@+id/redeemAmountButton"
-                    android:hint="Enter the ammount"
+                    android:hint="Enter the amount"
                     android:inputType="numberDecimal|number"
+                    android:paddingRight="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingStart="10dp"
+                    android:paddingLeft="10dp"
                     android:paddingBottom="15dp"
                     android:paddingTop="15dp"
                     android:textSize="14sp" />

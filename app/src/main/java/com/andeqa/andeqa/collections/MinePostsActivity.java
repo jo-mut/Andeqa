@@ -4,12 +4,12 @@ import android.content.Intent;
 import android.os.Parcelable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,9 +21,10 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.creation.CreatePostActivity;
 import com.andeqa.andeqa.models.Collection;
-import com.andeqa.andeqa.models.TransactionDetails;
+import com.andeqa.andeqa.models.Transaction;
 import com.andeqa.andeqa.settings.CollectionSettingsActivity;
 import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
+import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -68,7 +69,7 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
     private  static final int MAX_WIDTH = 400;
     private static final int MAX_HEIGHT = 400;
     private int TOTAL_ITEMS = 10;
-    private LinearLayoutManager layoutManager;
+    private StaggeredGridLayoutManager layoutManager;
     private static final String EXTRA_USER_UID = "uid";
 
     private String collectionId;
@@ -77,6 +78,7 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
     private static final String COLLECTION_ID = "collection id";
     private List<String> mSnapshotsIds = new ArrayList<>();
     private List<DocumentSnapshot> mSnapshots = new ArrayList<>();
+    private ItemOffsetDecoration itemOffsetDecoration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,18 +112,17 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
             collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
                     .document("collections").collection(collectionId);
             collectionCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
-            collectionPostsQuery = collectionsPosts.orderBy("time", Query.Direction.DESCENDING);
+            collectionPostsQuery = collectionsPosts.orderBy("time", Query.Direction.ASCENDING);
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             collectionOwnersCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_OWNERS);
 
             if (savedInstanceState != null){
                 recyclerViewState = savedInstanceState.getParcelable(KEY_LAYOUT_POSITION);
-                Log.d("Profile saved Instance", "Instance is not null");
+                android.util.Log.d("Profile saved Instance", "Instance is not null");
             }else {
-                Log.d("Saved Instance", "Instance is completely null");
+                android.util.Log.d("Saved Instance", "Instance is completely null");
             }
 
-            //add appropriate title to the action bar
             mCollectionsPostsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
                 @Override
                 public void onLoadMore() {
@@ -144,6 +145,7 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onStop() {
         super.onStop();
+        mCollectionsPostsRecyclerView.removeItemDecoration(itemOffsetDecoration);
     }
 
     @Override
@@ -182,14 +184,14 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
-                    Log.w(TAG, "Listen error", e);
+                    android.util.Log.w(TAG, "Listen error", e);
                     return;
                 }
 
                 if (documentSnapshot.exists()){
-                    TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
-                    final String ownerUid = transactionDetails.getUser_id();
-                    Log.d("owner uid", ownerUid);
+                    Transaction transaction = documentSnapshot.toObject(Transaction.class);
+                    final String ownerUid = transaction.getUser_id();
+                    android.util.Log.d("owner uid", ownerUid);
 
                     if (!firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
                         menu.clear();
@@ -209,10 +211,11 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
         minePostsAdapters = new MinePostsAdapters(MinePostsActivity.this);
         mCollectionsPostsRecyclerView.setAdapter(minePostsAdapters);
         mCollectionsPostsRecyclerView.setHasFixedSize(false);
-        layoutManager = new LinearLayoutManager(MinePostsActivity.this);
-        layoutManager.setReverseLayout(true);
+        layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+        itemOffsetDecoration = new ItemOffsetDecoration(this, R.dimen.item_off_set);
+        mCollectionsPostsRecyclerView.addItemDecoration(itemOffsetDecoration);
         mCollectionsPostsRecyclerView.setLayoutManager(layoutManager);
-        mCollectionsPostsRecyclerView.setNestedScrollingEnabled(false);
+        ViewCompat.setNestedScrollingEnabled(mCollectionsPostsRecyclerView,false);
     }
 
     private void setCollectionsInfo(){
@@ -221,14 +224,14 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
-                    Log.w(TAG, "Listen error", e);
+                    android.util.Log.w(TAG, "Listen error", e);
                     return;
                 }
 
                 if (documentSnapshot.exists()){
-                    TransactionDetails transactionDetails = documentSnapshot.toObject(TransactionDetails.class);
-                    final String ownerUid = transactionDetails.getUser_id();
-                    Log.d("owner uid", ownerUid);
+                    Transaction transaction = documentSnapshot.toObject(Transaction.class);
+                    final String ownerUid = transaction.getUser_id();
+                    android.util.Log.d("owner uid", ownerUid);
 
                     if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
                         mCreatePostButton.setVisibility(View.VISIBLE);
@@ -242,7 +245,7 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
                 if (e != null) {
-                    Log.w(TAG, "Listen error", e);
+                    android.util.Log.w(TAG, "Listen error", e);
                     return;
                 }
 
@@ -289,7 +292,7 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
                         if (e != null) {
-                            Log.w(TAG, "Listen error", e);
+                            android.util.Log.w(TAG, "Listen error", e);
                             return;
                         }
 
@@ -324,7 +327,7 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
         DocumentSnapshot lastVisible = minePostsAdapters.getSnapshot(snapshotSize - 1);
 
         //retrieve the first bacth of mSnapshots
-        Query nextCollectionPostsQuery = collectionsPosts.orderBy("time", Query.Direction.DESCENDING)
+        Query nextCollectionPostsQuery = collectionsPosts.orderBy("time", Query.Direction.ASCENDING)
                 .startAfter(lastVisible)
                 .limit(TOTAL_ITEMS);
 
@@ -333,7 +336,7 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
                 if (e != null) {
-                    Log.w(TAG, "Listen error", e);
+                    android.util.Log.w(TAG, "Listen error", e);
                     return;
                 }
 

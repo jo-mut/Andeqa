@@ -54,7 +54,7 @@
             android:paddingBottom="40dp"
             android:hint="Enter your collection's name"
             android:textStyle="normal|bold"
-            android:background="@drawable/input_background" />
+            android:background="@drawable/edit_text_background" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -94,7 +94,7 @@
             android:paddingRight="16dp"
             android:paddingTop="40dp"
             android:paddingBottom="40dp"
-            android:background="@drawable/input_background"
+            android:background="@drawable/edit_text_background"
             android:textSize="24sp" />
 
         <TextView
@@ -121,10 +121,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
-            android:layout_width="match_parent"
+         <com.andeqa.andeqa.utils.ProportionalImageView
+
+        android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:srcCompat="@drawable/ic_app"
+            app:srcCompat="@drawable/ic_add_collection"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
             android:id="@+id/collectionCoverImageView"

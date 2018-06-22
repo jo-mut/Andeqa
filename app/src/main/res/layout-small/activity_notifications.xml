@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".timeline.NotificationsActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_gravity="top"
+        app:titleTextAppearance="@style/toolbarTextAppearance"
+        android:layout_height="42dp"
+        android:background="@color/colorPrimary"
+        app:layout_scrollFlags="scroll|enterAlways"
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+        app:titleTextColor="@android:color/white">
+
+    </android.support.v7.widget.Toolbar>
+
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/timelineRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </android.support.v7.widget.RecyclerView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <RelativeLayout
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/placeHolderRelativeLayout">
+
+
+        <ImageView
+            app:srcCompat="@drawable/ic_stopwatch"
+            android:id="@+id/imagePlaceHolder"
+            android:layout_centerInParent="true"
+            android:layout_width="75sp"
+            android:layout_height="75sp" />
+
+        <TextView
+            android:layout_below="@+id/imagePlaceHolder"
+            android:text="@string/timeline_holder_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="false"
+            android:id="@+id/placeHolderTextView"
+            android:textAlignment="center"
+            android:padding="20dp"
+            android:textSize="12sp"
+            android:layout_centerInParent="true" />
+
+
+    </RelativeLayout>
+
+
+</LinearLayout>

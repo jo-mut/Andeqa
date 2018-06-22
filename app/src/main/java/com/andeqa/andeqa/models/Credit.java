@@ -8,6 +8,8 @@ public class Credit {
     double amount;
     String user_id;
     String post_id;
+    double deposited;
+    double redeemed;
 
     public Credit() {
 
@@ -41,6 +43,22 @@ public class Credit {
 
     public void setPost_id(String post_id) {
         this.post_id = post_id;
+    }
+
+    public double getDeposited() {
+        return deposited;
+    }
+
+    public void setDeposited(double deposited) {
+        this.deposited = deposited;
+    }
+
+    public double getRedeemed() {
+        return redeemed;
+    }
+
+    public void setRedeemed(double redeemed) {
+        this.redeemed = redeemed;
     }
 
 }

@@ -5,22 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/blue_grey_50"
     tools:context="com.andeqa.andeqa.message.MessagesAccountActivity">
 
-    <!-- TODO: Update blank fragment layout -->
     <android.support.v7.widget.Toolbar
-        android:layout_alignParentTop="true"
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_gravity="top"
+        app:titleTextAppearance="@style/toolbarTextAppearance"
         android:layout_height="42dp"
         android:background="@color/colorPrimary"
         app:layout_scrollFlags="scroll|enterAlways"
         app:popupTheme="@style/AppTheme.PopupOverlay"
-        app:titleTextColor="@android:color/white"
-        app:titleTextAppearance="@style/toolbarTextAppearance"
-        app:titleMarginStart="-50sp"
-        app:contentInsetStart="0dp">
+        app:titleTextColor="@android:color/white">
 
     </android.support.v7.widget.Toolbar>
 

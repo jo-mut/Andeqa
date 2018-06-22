@@ -19,7 +19,7 @@
     </item>
 
     <item
-        android:id="@+id/action_market"
+        android:id="@+id/action_explore"
         android:icon="@drawable/ic_explore"
         app:showAsAction="ifRoom"
         android:enabled="true"
@@ -27,11 +27,11 @@
     </item>
 
     <item
-        android:id="@+id/action_timeline"
-        android:icon="@drawable/ic_time"
+        android:id="@+id/action_chats"
+        android:icon="@drawable/message_notifications"
         app:showAsAction="ifRoom"
         android:enabled="true"
-        android:title="Timeline">
+        android:title="Messages">
     </item>
 
 

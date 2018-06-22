@@ -11,9 +11,7 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.utils.ProportionalImageView;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import com.google.firebase.firestore.CollectionReference;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -27,8 +25,8 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
     Context mContext;
     ProgressBar progressBar;
     public ImageView likesImageView;
-    public ImageView dislikeImageView;
-    public TextView dislikeCountTextView;
+    //    public ImageView dislikeImageView;
+//    public TextView dislikeCountTextView;
     public ImageView commentsImageView;
     public TextView likesCountTextView;
     public TextView titleTextView;
@@ -42,9 +40,14 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
     public RelativeLayout descriptionRelativeLayout;
-    public RelativeLayout likesRelativeLayout;
+    public LinearLayout likesRelativeLayout;
+    public LinearLayout mCommentsLinearLayout;
     public TextView timeTextView;
+    public LinearLayout bottomLinearLayout;
     public LinearLayout mCreditsLinearLayout;
+
+    private CollectionReference postsCollection;
+
 
 
 
@@ -53,8 +56,9 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
         mView = itemView;
         mContext = itemView.getContext();
         likesImageView = (ImageView) itemView.findViewById(R.id.likesImageView);
-        dislikeImageView = (ImageView) itemView.findViewById(R.id.dislikesImageView);
-        dislikeCountTextView = (TextView) itemView.findViewById(R.id.dislikesCountTextView);
+        bottomLinearLayout  =  (LinearLayout)  itemView.findViewById(R.id.bottomLinearLayout);
+//        dislikeImageView = (ImageView) itemView.findViewById(R.id.dislikesImageView);
+//        dislikeCountTextView = (TextView) itemView.findViewById(R.id.dislikesCountTextView);
         commentsImageView = (ImageView) itemView.findViewById(R.id.commentsImageView);
         descriptionTextView = (TextView) itemView.findViewById(R.id.descriptionTextView);
         titleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
@@ -65,18 +69,10 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
         descriptionRelativeLayout  = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
         postImageView = (ProportionalImageView) mView.findViewById(R.id.postImageView);
         senseCreditsTextView = (TextView) mView.findViewById(R.id.creditsTextView);
-        likesRelativeLayout = (RelativeLayout) mView.findViewById(R.id.likesRelativeLayout);
+        likesRelativeLayout = (LinearLayout) mView.findViewById(R.id.likesLinearLayout);
         likesCountTextView = (TextView) mView.findViewById(R.id.likesCountTextView);
-        timeTextView = (TextView) mView.findViewById(R.id.timeTextView);
+        mCommentsLinearLayout = (LinearLayout) mView.findViewById(R.id.commentsLinearLayout);
         mCreditsLinearLayout = (LinearLayout) mView.findViewById(R.id.creditsLinearLayout);
     }
 
-
-    private static double round(double value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
-
-        BigDecimal bd = new BigDecimal(value);
-        bd = bd.setScale(places, RoundingMode.HALF_UP);
-        return bd.doubleValue();
-    }
 }

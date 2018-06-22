@@ -7,6 +7,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
+    android:background="@color/blue_grey_50"
     tools:context="com.andeqa.andeqa.profile.ProfileActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -81,6 +82,8 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
+        android:clipToPadding="false"
+        android:padding="@dimen/item_off_set"
         android:layout_below="@+id/addPostRelativeLayout"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"

@@ -1,26 +1,18 @@
 package com.andeqa.andeqa.creation;
 
-import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
-import android.os.Build;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -31,12 +23,11 @@ import android.widget.Toast;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.camera.GalleryActivity;
-import com.andeqa.andeqa.models.Andeqan;
+import com.andeqa.andeqa.models.Wallet;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
-import com.andeqa.andeqa.models.TransactionDetails;
+import com.andeqa.andeqa.models.Transaction;
 import com.andeqa.andeqa.collections.CollectionPostsActivity;
-import com.andeqa.andeqa.settings.DialogProgressFragment;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -44,28 +35,22 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 import java.util.Random;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CreatePostActivity extends AppCompatActivity implements View.OnClickListener{
     @Bind(R.id.titleEditText)EditText mCingleTitleEditText;
@@ -96,8 +81,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
     //FIRESTORE
     private FirebaseFirestore firebaseFirestore;
     private CollectionReference postsCollection;
-    private CollectionReference postOwnersCollection;
-    private CollectionReference usersReference;
+    private CollectionReference postWalletCollection;
     private DatabaseReference randomReference;
     private CollectionReference collectionsCollection;
 
@@ -137,10 +121,9 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
             firebaseFirestore =  FirebaseFirestore.getInstance();
             //get the reference to posts(collection reference)
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            postOwnersCollection = firebaseFirestore.collection(Constants.POST_OWNERS);
-            usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             randomReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
             collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
+            postWalletCollection =    FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
 
             mCingleTitleEditText.setFilters(new InputFilter[]{new InputFilter
                     .LengthFilter(DEFAULT_TITLE_LENGTH_LIMIT)});
@@ -313,33 +296,23 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                             @Override
                                                             public void onSuccess(Void aVoid) {
-                                                                //set the collectionPost ownership
-                                                                TransactionDetails transactionDetails = new TransactionDetails();
-                                                                transactionDetails.setPost_id(pushId);
-                                                                transactionDetails.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                transactionDetails.setTime(timeStamp);
-                                                                transactionDetails.setType("owner");
-                                                                transactionDetails.setAmount(0.0);
-                                                                transactionDetails.setWallet_balance(0.0);
+                                                                //create a new post wallet
+                                                                Wallet wallet = new Wallet();
+                                                                wallet.setTime(timeStamp);
+                                                                wallet.setBalance(0.0);
+                                                                wallet.setDeposited(0.0);
+                                                                wallet.setRedeemed(0.0);
+                                                                wallet.setAddress(pushId);
+                                                                wallet.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                                postWalletCollection.document(pushId).set(wallet);
 
-                                                                postOwnersCollection.document(pushId).set(transactionDetails)
-                                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                            @Override
-                                                                            public void onSuccess(Void aVoid) {
-                                                                                progressDialog.dismiss();
-                                                                                //reset input fields
-                                                                                mCingleTitleEditText.setText("");
-                                                                                mCingleDescriptionEditText.setText("");
-                                                                                mPostImageView.setImageBitmap(null);
+                                                                //launch the collections activity
+                                                                Intent intent = new Intent(CreatePostActivity.this, CollectionPostsActivity.class);
+                                                                intent.putExtra(CreatePostActivity.COLLECTION_ID, collectionId);
+                                                                intent.putExtra(CreatePostActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
+                                                                startActivity(intent);
+                                                                finish();
 
-                                                                                //launch the collections activity
-                                                                                Intent intent = new Intent(CreatePostActivity.this, CollectionPostsActivity.class);
-                                                                                intent.putExtra(CreatePostActivity.COLLECTION_ID, collectionId);
-                                                                                intent.putExtra(CreatePostActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
-                                                                                startActivity(intent);
-                                                                                finish();
-                                                                            }
-                                                                        });
                                                             }
                                                         });
                                             }

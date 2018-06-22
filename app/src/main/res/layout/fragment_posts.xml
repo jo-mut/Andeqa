@@ -4,22 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/blue_grey_50"
     tools:context=".profile.PostsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayout"
+    <android.support.v7.widget.RecyclerView
+        android:clipToPadding="false"
+        android:padding="@dimen/item_off_set"
+        android:id="@+id/postsRecyclerView"
+        android:overScrollMode="never"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/postsRecyclerView"
-            android:overScrollMode="never"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-
-    </android.support.v4.widget.SwipeRefreshLayout>
-
-
+        android:layout_height="wrap_content"/>
 </FrameLayout>

@@ -3,7 +3,7 @@ package com.andeqa.andeqa.message;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -22,7 +22,7 @@ public class MessageReceiveViewHolder extends RecyclerView.ViewHolder {
     public TextView messageTextView;
     public TextView timeTextView;
 //    public ImageView statusImageView;
-    public RelativeLayout receiveRelativeLayout;
+    public LinearLayout receiveLinearLayout;
     public RelativeLayout statusRelativeLayout;
     public TextView dateTextView;
 
@@ -34,7 +34,7 @@ public class MessageReceiveViewHolder extends RecyclerView.ViewHolder {
         timeTextView = (TextView) mView.findViewById(R.id.timeTextView);
 //        statusImageView = (ImageView) mView.findViewById(R.id.statusImageView);
         statusRelativeLayout = (RelativeLayout) mView.findViewById(R.id.statusRelativeLayout);
-        receiveRelativeLayout = (RelativeLayout) mView.findViewById(R.id.receiveRelativeLayout);
+        receiveLinearLayout = (LinearLayout) mView.findViewById(R.id.receiveRelativeLayout);
         dateTextView = (TextView) mView.findViewById(R.id.dateTextView);
 
     }

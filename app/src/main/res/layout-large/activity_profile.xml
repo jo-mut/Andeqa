@@ -6,7 +6,9 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:fitsSystemWindows="true"
+    android:background="@color/blue_grey_50"
     tools:context="com.andeqa.andeqa.profile.ProfileActivity">
+
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
@@ -22,11 +24,10 @@
             android:fitsSystemWindows="true"
             app:contentScrim="@color/colorPrimary"
             app:expandedTitleMargin="16dp"
-            app:titleEnabled="false"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <RelativeLayout
-                android:paddingBottom="120dp"
+                android:paddingBottom="90dp"
                 android:id="@+id/header_cover_relative_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -223,11 +224,25 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="84dp"
+                app:layout_collapseMode="pin"
                 android:background="@color/transparentColor"
                 app:titleTextColor="@android:color/white"
                 app:layout_scrollFlags="scroll|enterAlways"
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
 
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <android.support.design.widget.TabLayout
                 android:layout_gravity="bottom"
@@ -236,19 +251,23 @@
                 android:layout_height="84dp"
                 app:tabMode="fixed"
                 app:tabGravity="fill"
+                app:layout_scrollFlags="scroll|enterAlways"
+                android:background="@android:color/white"
                 app:tabTextAppearance="@style/tablayoutTextAppearance"
                 app:tabIndicatorColor="@android:color/white"
                 app:tabSelectedTextColor="@color/colorAccent"
-                app:tabTextColor="@android:color/white" />
+                app:tabTextColor="@android:color/black" />
 
-        </android.support.design.widget.CollapsingToolbarLayout>
-    </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            <android.support.v4.view.ViewPager
+                android:layout_marginBottom="0.1dp"
+                android:id="@+id/container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
 
 
 </android.support.design.widget.CoordinatorLayout>

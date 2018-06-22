@@ -7,77 +7,68 @@
     android:layout_height="wrap_content"
     android:id="@+id/collectionLinearLayout">
 
-    <android.support.v7.widget.CardView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:cardPreventCornerOverlap="false"
-        app:cardCornerRadius="0dp"
-        app:cardElevation="0dp"
-        app:cardMaxElevation="1dp">
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:padding="10dp"
+            android:background="@drawable/post_top_background"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_margin="0.1dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.andeqa.andeqa.utils.ProportionalImageView
+                android:layout_width="match_parent"
+                app:srcCompat="@drawable/transparent_background"
+                android:id="@+id/collectionCoverImageView"
+                android:scaleType="centerCrop"
+                android:adjustViewBounds="true"
+                android:layout_height="200dp" />
+
+        </RelativeLayout>
 
         <LinearLayout
+            android:padding="5dp"
+            android:background="@drawable/post_bottom_background"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <RelativeLayout
-                android:layout_margin="0.1dp"
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_height="200dp">
+                android:layout_height="wrap_content"
+                android:id="@+id/collectionNameTextView"
+                android:textSize="12sp"
+                android:text=""
+                android:textColor="@android:color/black" />
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    app:srcCompat="@drawable/transparent_background"
-                    android:id="@+id/collectionCoverImageView"
-                    android:scaleType="centerCrop"
-                    android:adjustViewBounds="true"
-                    android:layout_height="match_parent" />
-
-            </RelativeLayout>
-
-            <LinearLayout
-                android:layout_margin="5dp"
-                android:background="@drawable/border_rectangle"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:orientation="vertical"
+            <TextView
+                android:visibility="gone"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:id="@+id/collectionsNoteTextView"
+                android:textSize="10sp"
+                android:textColor="@android:color/black"
+                android:text="" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/collectionNameTextView"
-                    android:padding="5dp"
-                    android:textSize="16sp"
-                    android:text=""
-                    android:textColor="@android:color/black" />
-
-                <TextView
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/collectionsNoteTextView"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/black"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp"
-                    android:paddingEnd="5dp"
-                    android:text=""
-                    android:paddingStart="5dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/postsCountTextView"
-                    android:textSize="12sp"
-                    android:textColor="@android:color/black"
-                    android:padding="5dp"
-                    android:text="" />
-
-            </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/postsCountTextView"
+                android:textSize="10sp"
+                android:textColor="@android:color/black"
+                android:text="" />
 
         </LinearLayout>
 
-    </android.support.v7.widget.CardView>
+    </LinearLayout>
+
 </LinearLayout>

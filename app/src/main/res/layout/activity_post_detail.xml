@@ -97,7 +97,7 @@
                                     <RelativeLayout
                                         android:layout_alignParentLeft="true"
                                         android:layout_alignParentStart="true"
-                                        android:id="@id/likesRelativeLayout"
+                                        android:id="@id/likesLinearLayout"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content">
 
@@ -126,36 +126,36 @@
 
                                     </RelativeLayout>
 
-                                    <RelativeLayout
-                                        android:id="@+id/dislikeRelativeLayout"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_toEndOf="@+id/likesRelativeLayout"
-                                        android:layout_toRightOf="@+id/likesRelativeLayout">
+                                    <!--<RelativeLayout-->
+                                        <!--android:id="@+id/dislikeRelativeLayout"-->
+                                        <!--android:layout_width="wrap_content"-->
+                                        <!--android:layout_height="wrap_content"-->
+                                        <!--android:layout_toEndOf="@+id/likesRelativeLayout"-->
+                                        <!--android:layout_toRightOf="@+id/likesRelativeLayout">-->
 
 
-                                        <ImageView
-                                            android:id="@+id/dislikesImageView"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:padding="5dp"
-                                            app:srcCompat="@drawable/ic_thumb_down" />
+                                        <!--<ImageView-->
+                                            <!--android:id="@+id/dislikesImageView"-->
+                                            <!--android:layout_width="wrap_content"-->
+                                            <!--android:layout_height="wrap_content"-->
+                                            <!--android:padding="5dp"-->
+                                            <!--app:srcCompat="@drawable/ic_thumb_down" />-->
 
 
-                                        <TextView
-                                            android:id="@+id/dislikesCountTextView"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_below="@+id/dislikesImageView"
-                                            android:layout_centerHorizontal="true"
-                                            android:paddingBottom="2dp"
-                                            android:paddingTop="2dp"
-                                            android:text="0"
-                                            android:textSize="12sp"
-                                            android:textStyle="normal|bold" />
+                                        <!--<TextView-->
+                                            <!--android:id="@+id/dislikesCountTextView"-->
+                                            <!--android:layout_width="wrap_content"-->
+                                            <!--android:layout_height="wrap_content"-->
+                                            <!--android:layout_below="@+id/dislikesImageView"-->
+                                            <!--android:layout_centerHorizontal="true"-->
+                                            <!--android:paddingBottom="2dp"-->
+                                            <!--android:paddingTop="2dp"-->
+                                            <!--android:text="0"-->
+                                            <!--android:textSize="12sp"-->
+                                            <!--android:textStyle="normal|bold" />-->
 
 
-                                    </RelativeLayout>
+                                    <!--</RelativeLayout>-->
 
                                     <RelativeLayout
                                         android:layout_width="wrap_content"
@@ -230,102 +230,6 @@
                     </android.support.v7.widget.CardView>
 
                 </RelativeLayout>
-
-                <RelativeLayout
-                    android:id="@+id/salePriceRelativeLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-
-                    <TextView
-                        android:text=""
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="false"
-                        android:layout_alignParentRight="false"
-                        android:layout_alignParentEnd="false"
-                        android:id="@+id/postPriceTextView"
-                        android:layout_centerInParent="true"
-                        android:textSize="16sp"
-                        android:textColor="@android:color/black"
-                        android:textStyle="normal|bold" />
-
-                    <ImageView
-                        android:visibility="gone"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:srcCompat="@drawable/ic_create_white_24dp"
-                        android:layout_alignParentTop="false"
-                        android:layout_alignParentRight="true"
-                        android:id="@+id/editSalePriceImageView"
-                        android:tint="@color/colorPrimary"
-                        android:padding="10dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:srcCompat="@drawable/ic_done_white_24dp"
-                        android:layout_alignParentTop="false"
-                        android:layout_alignParentRight="true"
-                        android:id="@+id/doneEditingImageView"
-                        android:tint="@color/colorPrimary"
-                        android:visibility="gone"
-                        android:padding="10dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true" />
-
-                    <ProgressBar
-                        android:id="@+id/salePriceProgressbar"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true" />
-
-                    <EditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="number|numberDecimal"
-                        android:layout_toLeftOf="@+id/doneEditingImageView"
-                        android:layout_toStartOf="@+id/doneEditingImageView"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:textSize="14sp"
-                        android:visibility="invisible"
-                        android:id="@+id/editSalePriceEditText" />
-
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:visibility="gone"
-                    android:padding="10dp"
-                    android:id="@+id/priceRelativeLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <Button
-                        android:text="Buy"
-                        android:layout_width="match_parent"
-                        android:id="@+id/tradeButton"
-                        android:textAllCaps="true"
-                        android:textSize="16sp"
-                        android:background="@drawable/colour_btn_background"
-                        android:layout_height="match_parent"
-                        android:textColor="@android:color/white"
-                        android:layout_marginLeft="10dp"
-                        android:layout_centerInParent="true"
-                        android:layout_marginStart="10dp" />
-
-
-                </RelativeLayout>
-
 
                 <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
@@ -426,7 +330,7 @@
                             android:paddingRight="3dp">
 
                             <TextView
-                                android:text="uCredit:"
+                                android:text="Credo:"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:id="@+id/senseCreditsTitleTextView"
@@ -447,49 +351,6 @@
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginStart="10dp"
                                 android:layout_centerVertical="true" />
-
-                        </RelativeLayout>
-
-                        <RelativeLayout
-                            android:paddingTop="5dp"
-                            android:paddingBottom="5dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:text="Owner:"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:id="@+id/ownerTitleTextView"
-                                android:textStyle="normal|bold"
-                                android:textSize="14sp"
-                                android:layout_marginTop="5dp"
-                                android:layout_marginRight="3dp"
-                                android:layout_marginLeft="3dp"
-                                android:layout_centerVertical="true" />
-
-                            <TextView
-                                android:text=""
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_toRightOf="@+id/ownerTitleTextView"
-                                android:layout_toEndOf="@+id/ownerTitleTextView"
-                                android:layout_toLeftOf="@+id/ownerImageView"
-                                android:layout_toStartOf="@+id/ownerImageView"
-                                android:id="@+id/postOwnerTextView"
-                                android:layout_marginTop="5dp"
-                                android:layout_marginLeft="10dp"
-                                android:textSize="14sp"
-                                android:layout_centerVertical="true" />
-
-                            <de.hdodenhof.circleimageview.CircleImageView
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
-                                android:layout_marginRight="5dp"
-                                android:layout_centerVertical="true"
-                                android:layout_alignParentRight="true"
-                                android:layout_alignParentEnd="true"
-                                android:id="@+id/ownerImageView" />
 
                         </RelativeLayout>
 

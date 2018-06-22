@@ -19,7 +19,6 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -30,14 +29,10 @@ import android.widget.Toast;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.camera.GalleryActivity;
-import com.andeqa.andeqa.camera.PreviewActivity;
 import com.andeqa.andeqa.collections.CollectionPostsActivity;
 import com.andeqa.andeqa.models.Collection;
-import com.andeqa.andeqa.models.TransactionDetails;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
+import com.andeqa.andeqa.models.Transaction;
+import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -50,7 +45,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
@@ -66,7 +60,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
     @Bind(R.id.doneImageView)ImageView mDoneImageView;
     @Bind(R.id.noteCountTextView)TextView mNoteCountTextView;
     @Bind(R.id.nameCountTextView)TextView mNameCountTextView;
-    @Bind(R.id.collectionCoverImageView)ImageView mCollectionCoverImageView;
+    @Bind(R.id.collectionCoverImageView)ProportionalImageView mCollectionCoverImageView;
     @Bind(R.id.collectionRelativeLayout)RelativeLayout mCollectionRelativeLayout;
     @Bind(R.id.addRelativeLayout)RelativeLayout mAddRelativeLayout;
 
@@ -85,8 +79,6 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
     //FIRESTORE
     private FirebaseFirestore firebaseFirestore;
     private CollectionReference postsCollection;
-    private CollectionReference collectionOwnersCollection;
-    private CollectionReference usersReference;
     private DatabaseReference postReference;
     private CollectionReference collectionCollection;
 
@@ -135,8 +127,6 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
             firebaseFirestore =  FirebaseFirestore.getInstance();
             //get the reference to posts(collection reference)
             postsCollection = firebaseFirestore.collection(Constants.USER_COLLECTIONS);
-            collectionOwnersCollection = firebaseFirestore.collection(Constants.COLLECTION_OWNERS);
-            usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             collectionCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
 
             //firebase
@@ -292,15 +282,6 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                 public void onSuccess(QuerySnapshot documentSnapshots) {
                     final Collection collection = new Collection();
                     final long timeStamp = new Date().getTime();
-                    //set the single ownership
-                    TransactionDetails transactionDetails = new TransactionDetails();
-                    transactionDetails.setPost_id(collectionId);
-                    transactionDetails.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                    transactionDetails.setTime(timeStamp);
-                    transactionDetails.setType("owner");
-                    transactionDetails.setAmount(0.0);
-                    transactionDetails.setWallet_balance(0.0);
-                    collectionOwnersCollection.document(collectionId).set(transactionDetails);
 
                     if (data != null){
                         StorageReference storageReference = FirebaseStorage

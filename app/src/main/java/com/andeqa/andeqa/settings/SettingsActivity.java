@@ -114,7 +114,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                             .resize(MAX_WIDTH, MAX_HEIGHT)
                             .onlyScaleDown()
                             .centerCrop()
-                            .placeholder(R.drawable.ic_user)
+                            .placeholder(R.drawable.ic_user_white)
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .into(mProfileImageView, new Callback() {
                                 @Override
@@ -129,7 +129,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                                             .resize(MAX_WIDTH, MAX_HEIGHT)
                                             .onlyScaleDown()
                                             .centerCrop()
-                                            .placeholder(R.drawable.ic_user)
+                                            .placeholder(R.drawable.ic_user_white)
                                             .into(mProfileImageView);
 
                                 }
@@ -146,7 +146,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View v){
 //        if (v == mDeleteAccountRelativeLayout){
 //            FragmentManager fragmentManager = getSupportFragmentManager();
-//            DialogDeleteAccountFragment dialogDeleteAccountFragment = DialogDeleteAccountFragment.newInstance("delete account");
+//            DeleteAccountFragment dialogDeleteAccountFragment = DeleteAccountFragment.newInstance("delete account");
 //            dialogDeleteAccountFragment.show(fragmentManager, "delete account dialog fragment");
 //        }
 

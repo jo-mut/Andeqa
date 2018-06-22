@@ -134,7 +134,7 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         holder.dateTextView.setText(DateFormat.format("dd-MMM-yy", message.getTime()));
 
 
-        holder.sendRelativeLayout.setOnClickListener(new View.OnClickListener() {
+        holder.sendLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (showOnClick){
@@ -161,7 +161,7 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         holder.timeTextView.setText(DateFormat.format("HH:mm", message.getTime()));
         holder.dateTextView.setText(DateFormat.format("dd-MMM-yy", message.getTime()));
 
-        holder.receiveRelativeLayout.setOnClickListener(new View.OnClickListener() {
+        holder.receiveLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (showOnClick){

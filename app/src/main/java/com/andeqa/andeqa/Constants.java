@@ -22,7 +22,9 @@ public final class Constants {
     public static final String SELLING = "sells";
     public static final String TIMELINE = "timelines";
     public static final String MESSAGES = "messages";
+    public static final String IMPRESSIONS = "impressions";
     public static final String VIEWS = "views";
+    public static final String TRACES = "traces";
     public static final String RANDOM_PUSH_ID = "random_ids";
 
 

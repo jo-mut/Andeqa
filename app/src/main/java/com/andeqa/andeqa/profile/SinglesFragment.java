@@ -4,9 +4,9 @@ package com.andeqa.andeqa.profile;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +15,8 @@ import android.view.ViewGroup;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.collections.CollectionPostsActivity;
+import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
+import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -34,10 +36,9 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SinglesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
+public class SinglesFragment extends Fragment {
 
     @Bind(R.id.singlesRecyclerView)RecyclerView mSinglesRecyclerView;
-    @Bind(R.id.swipeRefreshLayout)SwipeRefreshLayout mSwipeRefreshLayout;
     private static final String TAG = CollectionPostsActivity.class.getSimpleName();
 
 
@@ -48,21 +49,24 @@ public class SinglesFragment extends Fragment implements SwipeRefreshLayout.OnRe
     private FirebaseAuth firebaseAuth;
     //firestore adapters
     private ProfilePostsAdapter profilePostsAdapter;
-    private static final String KEY_LAYOUT_POSITION = "layout pooition";
-    private Parcelable recyclerViewState;
-    private  static final int MAX_WIDTH = 400;
-    private static final int MAX_HEIGHT = 400;
     private int TOTAL_ITEMS = 10;
-    private LinearLayoutManager layoutManager;
+    private StaggeredGridLayoutManager layoutManager;
     private static final String EXTRA_USER_UID = "uid";
 
-    private String collectionId;
     private String mUid;
-    private String mSource;
-    private static final String COLLECTION_ID = "collection id";
     private List<String> mSnapshotsIds = new ArrayList<>();
     private List<DocumentSnapshot> mSnapshots = new ArrayList<>();
+    private ItemOffsetDecoration itemOffsetDecoration;
 
+
+
+    public static SinglesFragment newInstance(String title) {
+        SinglesFragment fragment = new SinglesFragment();
+        Bundle args = new Bundle();
+        args.putString("title", title);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
 
     public SinglesFragment() {
@@ -79,8 +83,6 @@ public class SinglesFragment extends Fragment implements SwipeRefreshLayout.OnRe
         //initialize click listener
         //FIREBASE AUTH
         firebaseAuth = FirebaseAuth.getInstance();
-        mSwipeRefreshLayout.setOnRefreshListener(this);
-
 
         if (firebaseAuth.getCurrentUser()!= null){
 
@@ -90,6 +92,13 @@ public class SinglesFragment extends Fragment implements SwipeRefreshLayout.OnRe
             profileSinglesQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
                     .whereEqualTo("type", "single")
                     .whereEqualTo("user_id", mUid).limit(TOTAL_ITEMS);
+
+            mSinglesRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+                @Override
+                public void onLoadMore() {
+                    setNextSingles();
+                }
+            });
 
         }
          return view;
@@ -111,6 +120,7 @@ public class SinglesFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @Override
     public void onStop() {
         super.onStop();
+        mSinglesRecyclerView.removeItemDecoration(itemOffsetDecoration);
     }
 
 
@@ -119,22 +129,15 @@ public class SinglesFragment extends Fragment implements SwipeRefreshLayout.OnRe
         super.onDestroy();
     }
 
-
-    @Override
-    public void onRefresh() {
-        setNextCollectionPosts();
-    }
-
     private void setRecyclerView(){
         // RecyclerView
         profilePostsAdapter = new ProfilePostsAdapter(getContext());
         mSinglesRecyclerView.setAdapter(profilePostsAdapter);
         mSinglesRecyclerView.setHasFixedSize(false);
-        layoutManager = new LinearLayoutManager(getContext());
-        layoutManager.setReverseLayout(true);
-        layoutManager.setStackFromEnd(true);
+        layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+        itemOffsetDecoration = new ItemOffsetDecoration(getContext(), R.dimen.item_off_set);
+        mSinglesRecyclerView.addItemDecoration(itemOffsetDecoration);
         mSinglesRecyclerView.setLayoutManager(layoutManager);
-        mSinglesRecyclerView.setNestedScrollingEnabled(false);
     }
 
     private void setSingles(){
@@ -169,13 +172,11 @@ public class SinglesFragment extends Fragment implements SwipeRefreshLayout.OnRe
     }
 
 
-    private void setNextCollectionPosts(){
+    private void setNextSingles(){
         // Get the last visible document
-        mSwipeRefreshLayout.setRefreshing(true);
         final int snapshotSize = profilePostsAdapter.getItemCount();
 
         if (snapshotSize == 0){
-            mSwipeRefreshLayout.setRefreshing(false);
         }else {
             DocumentSnapshot lastVisible = profilePostsAdapter.getSnapshot(snapshotSize - 1);
 
@@ -209,9 +210,6 @@ public class SinglesFragment extends Fragment implements SwipeRefreshLayout.OnRe
                                     break;
                             }
                         }
-                        mSwipeRefreshLayout.setRefreshing(false);
-                    }else {
-                        mSwipeRefreshLayout.setRefreshing(false);
                     }
                 }
             });

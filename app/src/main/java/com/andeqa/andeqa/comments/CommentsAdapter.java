@@ -126,8 +126,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
             }else{
 
                 holder.mCommentTextView.setVisibility(View.VISIBLE);
-                final String boldMore = "...read more";
-                final String boldLess = "...read less";
+                final String boldMore = "...";
+                final String boldLess = "...";
                 String normalText = comment.getComment_text().substring(0, 119);
                 holder.mCommentTextView.setText(normalText + boldMore);
                 holder.mCommentTextView.setOnClickListener(new View.OnClickListener() {

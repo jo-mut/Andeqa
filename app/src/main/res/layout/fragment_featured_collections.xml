@@ -4,7 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".collections.FeaturedCollectionFragment">
+    android:background="@color/blue_grey_50"
+    tools:context=".collections.FeaturedCollectionsFragment">
+
+    <ProgressBar
+        android:visibility="gone"
+        android:id="@+id/progressBar"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <!-- TODO: Update blank fragment layout -->
     <android.support.v4.widget.SwipeRefreshLayout
@@ -13,6 +21,8 @@
         android:layout_height="wrap_content">
 
         <android.support.v7.widget.RecyclerView
+            android:clipToPadding="false"
+            android:padding="@dimen/item_off_set"
             android:id="@+id/collectionsRecyclerView"
             android:overScrollMode="never"
             android:layout_width="match_parent"

@@ -25,8 +25,8 @@ public class CollectionPostsViewHolder extends RecyclerView.ViewHolder implement
     Context mContext;
     ProgressBar progressBar;
     public ImageView likesImageView;
-    public ImageView dislikeImageView;
-    public TextView dislikeCountTextView;
+    //    public ImageView dislikeImageView;
+//    public TextView dislikeCountTextView;
     public ImageView commentsImageView;
     public TextView likesCountTextView;
     public TextView titleTextView;
@@ -40,19 +40,20 @@ public class CollectionPostsViewHolder extends RecyclerView.ViewHolder implement
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
     public RelativeLayout descriptionRelativeLayout;
-    public RelativeLayout likesRelativeLayout;
+    public LinearLayout likesRelativeLayout;
+    public LinearLayout mCommentsLinearLayout;
     public TextView timeTextView;
-    public LinearLayout creditsLinearLayout;
-
-
+    public LinearLayout bottomLinearLayout;
+    public LinearLayout mCreditsLinearLayout;
 
     public CollectionPostsViewHolder(View itemView){
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
         likesImageView = (ImageView) itemView.findViewById(R.id.likesImageView);
-        dislikeImageView = (ImageView) itemView.findViewById(R.id.dislikesImageView);
-        dislikeCountTextView = (TextView) itemView.findViewById(R.id.dislikesCountTextView);
+        bottomLinearLayout  =  (LinearLayout)  itemView.findViewById(R.id.bottomLinearLayout);
+//        dislikeImageView = (ImageView) itemView.findViewById(R.id.dislikesImageView);
+//        dislikeCountTextView = (TextView) itemView.findViewById(R.id.dislikesCountTextView);
         commentsImageView = (ImageView) itemView.findViewById(R.id.commentsImageView);
         descriptionTextView = (TextView) itemView.findViewById(R.id.descriptionTextView);
         titleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
@@ -63,10 +64,10 @@ public class CollectionPostsViewHolder extends RecyclerView.ViewHolder implement
         descriptionRelativeLayout  = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
         postImageView = (ProportionalImageView) mView.findViewById(R.id.postImageView);
         senseCreditsTextView = (TextView) mView.findViewById(R.id.creditsTextView);
-        likesRelativeLayout = (RelativeLayout) mView.findViewById(R.id.likesRelativeLayout);
+        likesRelativeLayout = (LinearLayout) mView.findViewById(R.id.likesLinearLayout);
+        mCommentsLinearLayout = (LinearLayout) mView.findViewById(R.id.commentsLinearLayout);
         likesCountTextView = (TextView) mView.findViewById(R.id.likesCountTextView);
-        timeTextView = (TextView) mView.findViewById(R.id.timeTextView);
-        creditsLinearLayout = (LinearLayout) mView.findViewById(R.id.creditsLinearLayout);
+        mCreditsLinearLayout = (LinearLayout) mView.findViewById(R.id.creditsLinearLayout);
 
     }
 

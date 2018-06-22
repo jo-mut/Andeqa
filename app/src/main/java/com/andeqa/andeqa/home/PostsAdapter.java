@@ -16,18 +16,15 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.likes.LikesActivity;
-import com.andeqa.andeqa.market.ListOnMarketActivity;
 import com.andeqa.andeqa.market.RedeemCreditsActivity;
-import com.andeqa.andeqa.models.Balance;
+import com.andeqa.andeqa.models.Wallet;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Timeline;
-import com.andeqa.andeqa.models.TransactionDetails;
 import com.andeqa.andeqa.profile.ProfileActivity;
-import com.andeqa.andeqa.settings.DialogFragmentPostSettings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -36,8 +33,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
@@ -48,9 +43,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -61,7 +54,6 @@ import static android.media.CamcorderProfile.get;
  */
 
 public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
-
     private static final String TAG =  PostsAdapter.class.getSimpleName();
     private Context mContext;
     private static final String EXTRA_POST_ID = "post id";
@@ -72,38 +64,33 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
     private static final String EXTRA_USER_UID =  "uid";
     private boolean processLikes = false;
     private boolean processDislikes = false;
-    private boolean processCredits = false;
+    private boolean processWallet = false;
+    private boolean processAmount = false;
+    private boolean processCredit = false;
     private static final double DEFAULT_PRICE = 1.5;
     private static final double GOLDEN_RATIO = 1.618;
     private static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
     private static final int LIMIT = 10;
     //firestore reference
-    private FirebaseFirestore firebaseFirestore;
     private CollectionReference collectionsPosts;
-    private CollectionReference sellingCollection;
     private com.google.firebase.firestore.Query commentsCountQuery;
-    private CollectionReference postOwnersCollection;
     private CollectionReference usersReference;
     private CollectionReference commentsReference;
-    private CollectionReference relationsReference;
     private CollectionReference likesReference;
-    private CollectionReference senseCreditReference;
+    private CollectionReference postWalletCollection;
     private CollectionReference postWalletReference;
     private CollectionReference timelineCollection;
-    private Query likesQuery;
+    private CollectionReference creditsCollection;
     //firebase
     private DatabaseReference databaseReference;
-    private ListenerRegistration listenerRegistration;
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //adapters
 
-    //impression tracking
-    private long startTime;
-    private long endTime;
     public boolean showOnClick = true;
 
+    DecimalFormat formatter = new DecimalFormat("0.000");
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
 
 
@@ -117,7 +104,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
     }
 
 
-    protected DocumentSnapshot getSnapshot(int index) {
+    public DocumentSnapshot getSnapshot(int index) {
         return documentSnapshots.get(index);
     }
 
@@ -127,20 +114,23 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
         return documentSnapshots.size();
     }
 
+
+
     @Override
     public PostViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.post_list_layout, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.post_layout, parent, false);
         return new PostViewHolder(view);
     }
 
+
+
     @Override
     public void onBindViewHolder(final PostViewHolder holder, int position) {
-        final Post post = getSnapshot(position).toObject(Post.class);
+        final Post post = getSnapshot(holder.getAdapterPosition()).toObject(Post.class);
         final String postId = post.getPost_id();
         final String uid = post.getUser_id();
         final String collectionId = post.getCollection_id();
         final String type = post.getType();
-
 
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -157,13 +147,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                 //there is no query to run
             }
 
-            postOwnersCollection = FirebaseFirestore.getInstance().collection(Constants.POST_OWNERS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
             commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS)
                     .document("post_ids").collection(postId);
-            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
-            relationsReference = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             //firebase
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
@@ -171,6 +157,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
             commentsCountQuery= commentsReference;
             likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
             postWalletReference = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
+            postWalletCollection = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
+            creditsCollection = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
+
 
         }
 
@@ -216,10 +205,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                                 }
                             });
 
-                    holder.timeTextView.setText(DateUtils.getRelativeTimeSpanString((long)
-                            collectionPost.getTime()));
-
                     if (!TextUtils.isEmpty(collectionPost.getTitle())){
+                        holder.bottomLinearLayout.setVisibility(View.VISIBLE);
                         holder.titleTextView.setText(collectionPost.getTitle());
                         holder.titleRelativeLayout.setVisibility(View.VISIBLE);
                     }else {
@@ -233,12 +220,14 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                         final int size = strings.length;
 
                         if (size <= 120){
+                            holder.bottomLinearLayout.setVisibility(View.VISIBLE);
                             holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
                             holder.descriptionTextView.setText(collectionPost.getDescription());
                         }else{
+                            holder.bottomLinearLayout.setVisibility(View.VISIBLE);
                             holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
-                            final String boldMore = "...read more";
-                            final String boldLess = "...read less";
+                            final String boldMore = "...";
+                            final String boldLess = "";
                             String normalText = collectionPost.getDescription().substring(0, 119);
                             holder.descriptionTextView.setText(normalText + boldMore);
                             holder.descriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
@@ -266,16 +255,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
             }
         });
 
-        holder.likesRelativeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(mContext, LikesActivity.class);
-                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postId);
-                mContext.startActivity(intent);
-            }
-        });
-
-        holder.commentsImageView.setOnClickListener(new View.OnClickListener() {
+        holder.mCommentsLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent =  new Intent(mContext, CommentsActivity.class);
@@ -318,18 +298,17 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                     intent.putExtra(PostsAdapter.TYPE, type);
                     mContext.startActivity(intent);
                 }else {
-                    Toast.makeText(mContext, "You can only redeem uCredits from your posts or singles",
+                    Toast.makeText(mContext, "You can only redeem credo from your posts or singles",
                             Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
 
-
-
-        senseCreditReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        creditsCollection.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
                 if (e != null) {
                     Log.w(TAG, "Listen error", e);
                     return;
@@ -339,14 +318,14 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                     Credit credit = documentSnapshot.toObject(Credit.class);
                     final double senseCredits = credit.getAmount();
                     DecimalFormat formatter = new DecimalFormat("0.00000000");
-                    holder.senseCreditsTextView.setText("uC" + " " + formatter.format(senseCredits));
+                    holder.senseCreditsTextView.setText("Credo" + " " + formatter.format(senseCredits));
 
                 }else {
-                    holder.senseCreditsTextView.setText("uC 0.00000000");
+                    holder.senseCreditsTextView.setText("Credo" + " " + "0.00000000");
                 }
-
             }
         });
+
 
         usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -410,6 +389,44 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                 });
 
 
+        likesReference.document(postId).collection("likes")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!documentSnapshots.isEmpty()){
+                            holder.likesCountTextView.setText(documentSnapshots.size() + " ");
+                        }else {
+                            holder.likesCountTextView.setText("0");
+                        }
+
+                    }
+                });
+
+//        likesReference.document(postId).collection("dislikes")
+//                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+//
+//                        if (e != null) {
+//                            Log.w(TAG, "Listen error", e);
+//                            return;
+//                        }
+//
+//                        if (!documentSnapshots.isEmpty()){
+//                            holder.dislikeCountTextView.setText(documentSnapshots.size() + " ");
+//                        }else {
+//                            holder.dislikeCountTextView.setText("0");
+//                        }
+//
+//                    }
+//                });
+
 
         //color the like image view if the user has liked
         likesReference.document(postId).collection("likes")
@@ -423,124 +440,210 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                             return;
                         }
 
-                        if (!documentSnapshots.isEmpty()){
+                        if (documentSnapshots.isEmpty()){
+                            //change the like image view backgroud color
+                            holder.likesImageView.setColorFilter(Color.BLACK);
+                            //record new impression when on likes
+//                            if (duration >= 3000){
+//                                impressionCollection.document(postId)
+//                                        .collection("post_impressions")
+//                                        .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
+//                                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                                            @Override
+//                                            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+//                                                if (e != null) {
+//                                                    Transaction.w(TAG, "Listen error", e);
+//                                                    return;
+//                                                }
+//
+//                                                if (queryDocumentSnapshots.isEmpty()){
+//                                                    final String impression_id = databaseReference.push().getKey();
+//                                                    Impression impression = new Impression();
+//                                                    impression.setPost_id(postId);
+//                                                    impression.setImpression_id(impression_id);
+//                                                    impression.setUser_id(firebaseAuth.getCurrentUser().getUid());
+//                                                    impressionCollection.document(postId).collection("post_impressions")
+//                                                            .document(impression_id).set(impression);
+//                                                }else {
+//                                                    final String impression_id = databaseReference.push().getKey();
+//                                                    Impression impression = new Impression();
+//                                                    impression.setPost_id(postId);
+//                                                    impression.setImpression_id(impression_id);
+//                                                    impression.setUser_id(firebaseAuth.getCurrentUser().getUid());
+//                                                    impressionCollection.document(postId).collection("post_impressions")
+//                                                            .document(impression_id).set(impression);
+//                                                }
+//                                            }
+//                                        });
+//                            }
+
+                        }else {
+                            //changed the like image view background color to show user has liked
                             holder.likesImageView.setColorFilter(Color.RED);
 
-                        }else {
-                            holder.likesImageView.setColorFilter(Color.BLACK);
+//                            if (duration >= 3000){
+//                                impressionCollection.document(postId)
+//                                        .collection("post_impressions")
+//                                        .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
+//                                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                                            @Override
+//                                            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+//                                                if (e != null) {
+//                                                    Transaction.w(TAG, "Listen error", e);
+//                                                    return;
+//                                                }
+//
+//                                                if (queryDocumentSnapshots.isEmpty()){
+//                                                    final String impression_id = databaseReference.push().getKey();
+//                                                    Impression impression = new Impression();
+//                                                    impression.setPost_id(postId);
+//                                                    impression.setImpression_id(impression_id);
+//                                                    impression.setUser_id(firebaseAuth.getCurrentUser().getUid());
+//                                                    impressionCollection.document(postId).collection("post_impressions")
+//                                                            .document(impression_id).set(impression);
+//                                                }else {
+//                                                    //do not record new impression because previous records were successfull impressions
+//                                                }
+//                                            }
+//                                        });
+//
+//                            }
 
                         }
 
                     }
                 });
 
-        //get the count of likes after the top 5
-        likesReference.document(postId).collection("likes")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
+//      color the like image view if the user has dislikes
+//        likesReference.document(postId).collection("dislikes")
+//                .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
+//                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+//
+//                        if (e != null) {
+//                            Log.w(TAG, "Listen error", e);
+//                            return;
+//                        }
 
-                        if (!documentSnapshots.isEmpty()){
-                            holder.likesCountTextView.setText(documentSnapshots.size() + "");
-                        }else {
-                            holder.likesCountTextView.setText("0");
-                        }
-                    }
-                });
+//                        if (documentSnapshots.isEmpty()){
+                            //changed the dislike image view background color to show user has not disliked
+//                            holder.dislikeImageView.setColorFilter(Color.BLACK);
 
-        //get the count of likes after the top 5
-        likesReference.document(postId).collection("dislikes")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+//                            if (duration >= 3000){
+//                                impressionCollection.document(postId)
+//                                        .collection("post_impressions")
+//                                        .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
+//                                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                                            @Override
+//                                            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+//                                                if (e != null) {
+//                                                    Transaction.w(TAG, "Listen error", e);
+//                                                    return;
+//                                                }
+//
+//                                                if (queryDocumentSnapshots.isEmpty()){
+//                                                    final String impression_id = databaseReference.push().getKey();
+//                                                    Impression impression = new Impression();
+//                                                    impression.setPost_id(postId);
+//                                                    impression.setImpression_id(impression_id);
+//                                                    impression.setUser_id(firebaseAuth.getCurrentUser().getUid());
+//                                                    impressionCollection.document(postId).collection("post_impressions")
+//                                                            .document(impression_id).set(impression);
+//                                                }else {
+//                                                    final String impression_id = databaseReference.push().getKey();
+//                                                    Impression impression = new Impression();
+//                                                    impression.setPost_id(postId);
+//                                                    impression.setImpression_id(impression_id);
+//                                                    impression.setUser_id(firebaseAuth.getCurrentUser().getUid());
+//                                                    impressionCollection.document(postId).collection("post_impressions")
+//                                                            .document(impression_id).set(impression);
+//                                                }
+//                                            }
+//                                        });
+//
+//                            }
+//                        }else {
+                            //changed the dislike image view background color to show user has disliked
+//                            holder.dislikeImageView.setColorFilter(Color.RED);
+//                            if (duration >= 3000){
+//                                impressionCollection.document(postId)
+//                                        .collection("post_impressions")
+//                                        .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
+//                                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                                    @Override
+//                                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+//                                        if (e != null) {
+//                                            Transaction.w(TAG, "Listen error", e);
+//                                            return;
+//                                        }
+//
+//                                        if (queryDocumentSnapshots.isEmpty()){
+//                                            final String impression_id = databaseReference.push().getKey();
+//                                            Impression impression = new Impression();
+//                                            impression.setPost_id(postId);
+//                                            impression.setImpression_id(impression_id);
+//                                            impression.setUser_id(firebaseAuth.getCurrentUser().getUid());
+//                                            impressionCollection.document(postId).collection("post_impressions")
+//                                                    .document(impression_id).set(impression);
+//                                        }else {
+//                                            //do not record new impression because previous records were successfull impressions
+//                                        }
+//                                    }
+//                                });
+//
+//                            }
+//                        }
+//
+//                    }
+//                });
 
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!documentSnapshots.isEmpty()){
-                            holder.dislikeCountTextView.setText(documentSnapshots.size() + "");
-                        }else {
-                            holder.dislikeCountTextView.setText("0");
-                        }
-                    }
-                });
-
-
-
-
-//        color the like image view if the user has dislikes
-        likesReference.document(postId).collection("dislikes")
-                .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!documentSnapshots.isEmpty()){
-                            holder.dislikeImageView.setColorFilter(Color.RED);
-                        }else {
-                            holder.dislikeImageView.setColorFilter(Color.BLACK);
-                        }
-
-                    }
-                });
-
-        holder.dislikeImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                processDislikes = true;
-                likesReference.document(postId).collection("dislikes")
-                        .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
-                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                            @Override
-                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                if (e != null) {
-                                    Log.w(TAG, "Listen error", e);
-                                    return;
-                                }
+//        holder.dislikeImageView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                processDislikes = true;
+//                processWallet = true;
+//                likesReference.document(postId).collection("dislikes")
+//                        .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
+//                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                            @Override
+//                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+//
+//                                if (e != null) {
+//                                    Log.w(TAG, "Listen error", e);
+//                                    return;
+//                                }
+//
+//
+//                                if (processDislikes){
+//                                    if (documentSnapshots.isEmpty()){
+//                                        Like like = new Like();
+//                                        like.setUser_id(firebaseAuth.getCurrentUser().getUid());
+//                                        likesReference.document(postId).collection("dislikes")
+//                                                .document(firebaseAuth.getCurrentUser().getUid()).set(like);
+//                                        processDislikes = false;
+//                                        holder.dislikeImageView.setColorFilter(Color.RED);
+//
+//                                    }else {
+//                                        likesReference.document(postId).collection("dislikes")
+//                                                .document(firebaseAuth.getCurrentUser().getUid()).delete();
+//                                        processDislikes = false;
+//                                        holder.dislikeImageView.setColorFilter(Color.BLACK);
+//
+//                                    }
+//                                }
+//
+//                            }
+//                        });
+//            }
+//        });
 
 
-                                if (processDislikes){
-                                    if (documentSnapshots.isEmpty()){
-                                        Like like = new Like();
-                                        like.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                        likesReference.document(postId).collection("dislikes")
-                                                .document(firebaseAuth.getCurrentUser().getUid()).set(like);
-                                        processDislikes = false;
-                                        holder.dislikeImageView.setColorFilter(Color.RED);
-
-                                    }else {
-                                        likesReference.document(postId).collection("dislikes")
-                                                .document(firebaseAuth.getCurrentUser().getUid()).delete();
-                                        processDislikes = false;
-                                        holder.dislikeImageView.setColorFilter(Color.BLACK);
-
-                                    }
-                                }
-
-                            }
-                        });
-            }
-        });
-
-
-        holder.likesImageView.setOnClickListener(new View.OnClickListener() {
+        holder.likesRelativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 processLikes = true;
-
                 likesReference.document(postId).collection("likes")
                         .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
                         .addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -653,23 +756,25 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
 
 
                                                                 if (documentSnapshot.exists()){
-                                                                    final Balance balance = documentSnapshot.toObject(Balance.class);
-                                                                    final double amountRedeemed = balance.getAmount_redeemed();
+                                                                    final Credit credit = documentSnapshot.toObject(Credit.class);
+                                                                    final double amountRedeemed =   credit.getAmount();
                                                                     Log.d(amountRedeemed + "", "amount redeemed");
-                                                                    final  double amountDeposited = balance.getAmount_deposited();
+                                                                    final  double amountDeposited = credit.getDeposited();
                                                                     Log.d(amountDeposited + "", "amount deposited");
                                                                     final double senseCredits = amountDeposited + finalPoints;
                                                                     Log.d("sense credit", senseCredits + "");
                                                                     final double totalSenseCredits = senseCredits - amountRedeemed;
                                                                     Log.d("total sense credit", totalSenseCredits + "");
 
-                                                                    senseCreditReference.document(postId).update("amount", totalSenseCredits);
+                                                                    creditsCollection.document(postId).update("amount", totalSenseCredits);
                                                                 }else {
                                                                     Credit credit = new Credit();
                                                                     credit.setPost_id(postId);
                                                                     credit.setAmount(finalPoints);
                                                                     credit.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                    senseCreditReference.document(postId).set(credit);
+                                                                    credit.setDeposited(0.0);
+                                                                    credit.setRedeemed(0.0);
+                                                                    creditsCollection.document(postId).set(credit);
                                                                     Log.d("new sense credits", finalPoints + "");
                                                                 }
                                                             }
@@ -687,27 +792,32 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                                                                 return;
                                                             }
 
+
                                                             if (documentSnapshot.exists()){
-                                                                final Balance balance = documentSnapshot.toObject(Balance.class);
-                                                                final double amountRedeemed = balance.getAmount_redeemed();
+                                                                final Credit credit = documentSnapshot.toObject(Credit.class);
+                                                                final double amountRedeemed =   credit.getAmount();
                                                                 Log.d(amountRedeemed + "", "amount redeemed");
-                                                                final  double amountDeposited = balance.getAmount_deposited();
+                                                                final  double amountDeposited = credit.getDeposited();
                                                                 Log.d(amountDeposited + "", "amount deposited");
                                                                 final double senseCredits = amountDeposited + finalPoints;
                                                                 Log.d("sense credit", senseCredits + "");
                                                                 final double totalSenseCredits = senseCredits - amountRedeemed;
                                                                 Log.d("total sense credit", totalSenseCredits + "");
 
-                                                                senseCreditReference.document(postId).update("amount", totalSenseCredits);
+                                                                creditsCollection.document(postId).update("amount", totalSenseCredits);
                                                             }else {
                                                                 Credit credit = new Credit();
                                                                 credit.setPost_id(postId);
                                                                 credit.setAmount(finalPoints);
                                                                 credit.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                senseCreditReference.document(postId).set(credit);
+                                                                credit.setDeposited(0.0);
+                                                                credit.setRedeemed(0.0);
+                                                                creditsCollection.document(postId).set(credit);
+                                                                Log.d("new sense credits", finalPoints + "");
                                                             }
                                                         }
                                                     });
+
                                                 }
                                             }
                                         });
@@ -718,41 +828,121 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
             }
         });
 
-
-
-
     }
 
+
+    @Override
+    public void onViewAttachedToWindow(PostViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+//        startTime = System.currentTimeMillis();
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(PostViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+//        endTime = System.currentTimeMillis();
+//        duration = endTime - startTime;
+
+//        if (documentSnapshots.size() >0 ){
+//            Post post = getSnapshot(holder.getAdapterPosition()).toObject(Post.class);
+//            final String postId = post.getPost_id();
 //
-//    @Override
-//    public void onViewAttachedToWindow(PostViewHolder holder) {
-//        super.onViewAttachedToWindow(holder);
-//        startTime = new Date().getTime();
-//    }
+//            if (duration >= 3000){
 //
-//    @Override
-//    public void onViewDetachedFromWindow(PostViewHolder holder) {
-//        super.onViewDetachedFromWindow(holder);
-//        final int position = holder.getAdapterPosition();
-//        endTime = new Date().getTime();
-//        final long duration = endTime - startTime;
+//                viewCollection.document(postId)
+//                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+//                            @Override
+//                            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+//                                if (e != null) {
+//                                    Transaction.w(TAG, "Listen error", e);
+//                                    return;
+//                                }
 //
-//        Post post = getSnapshot(position).toObject(Post.class);
-//        final String postId = post.getPost_id();
+//                                if (documentSnapshot.exists()){
+//                                    traceData = documentSnapshot.toObject(TraceData.class);
+//                                    final long recordedDuration = traceData.getDuration();
+//                                    final long newDuration = recordedDuration + duration;
+//                                    //record total time spent on the post
+//                                    viewCollection.document(postId).update("duration", newDuration);
+//                                    Transaction.d("traced post_id", traceData.getPost_id());
+//                                    Transaction.d("traced duration", newDuration + "");
+//                                    //record the time each user spent on a post under their id
+//                                    viewCollection.document(postId).collection(firebaseAuth.getCurrentUser().getUid())
+//                                            .document(firebaseAuth.getCurrentUser().getUid())
+//                                            .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+//                                                @Override
+//                                                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+//                                                    if (e != null) {
+//                                                        Transaction.w(TAG, "Listen error", e);
+//                                                        return;
+//                                                    }
 //
+//                                                    if (documentSnapshot.exists()){
+//                                                        traceData = documentSnapshot.toObject(TraceData.class);
+//                                                        final long recordedDuration = traceData.getDuration();
+//                                                        final long newDuration = recordedDuration + duration;
+//                                                        traceData.setDuration(newDuration);
+//                                                        traceData.setPost_id(postId);
+//                                                        traceData.setUser_id(firebaseAuth.getCurrentUser().getUid());
+//                                                        viewCollection.document(postId).collection(firebaseAuth.getCurrentUser().getUid())
+//                                                                .document(firebaseAuth.getCurrentUser().getUid()).set(traceData);
+//                                                    }else {
+//                                                        traceData = new TraceData();
+//                                                        traceData.setDuration(duration + 3000);
+//                                                        traceData.setPost_id(postId);
+//                                                        traceData.setUser_id(firebaseAuth.getCurrentUser().getUid());
+//                                                        viewCollection.document(postId).collection(firebaseAuth.getCurrentUser().getUid())
+//                                                                .document(firebaseAuth.getCurrentUser().getUid()).set(traceData);
+//                                                    }
+//                                                }
+//                                            });
+//                                }else {
+//                                    traceData = new TraceData();
+//                                    traceData.setDuration(duration + 3000);
+//                                    traceData.setPost_id(postId);
+//                                    traceData.setUser_id(firebaseAuth.getCurrentUser().getUid());
+//                                    viewCollection.document(postId).set(traceData);
 //
-//        if (duration > 250){
-//            Map<String, Long> trail = new HashMap<>();
-//            trail.put("duration", duration);
-//            Log.d( "duration" + postId,duration + "");
+//                                    Transaction.d("traced post_id", traceData.getPost_id());
+//                                    Transaction.d("traced duration", traceData.getDuration() + "");
 //
-//            CollectionReference reference = FirebaseFirestore.getInstance().collection("Trace");
-//            reference.document(postId).collection("post_traces").add(trail);
-//        }else {
-//            Log.d("Minimum threshold", postId);
+//                                    //record the time each user spent on a post under their id
+//                                    viewCollection.document(postId).collection(firebaseAuth.getCurrentUser().getUid())
+//                                            .document(firebaseAuth.getCurrentUser().getUid())
+//                                            .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+//                                                @Override
+//                                                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+//                                                    if (e != null) {
+//                                                        Transaction.w(TAG, "Listen error", e);
+//                                                        return;
+//                                                    }
+//
+//                                                    if (documentSnapshot.exists()){
+//                                                        traceData = documentSnapshot.toObject(TraceData.class);
+//                                                        final long recordedDuration = traceData.getDuration();
+//                                                        final long newDuration = recordedDuration + duration;
+//                                                        traceData.setDuration(newDuration);
+//                                                        traceData.setPost_id(postId);
+//                                                        traceData.setUser_id(firebaseAuth.getCurrentUser().getUid());
+//                                                        viewCollection.document(postId).collection(firebaseAuth.getCurrentUser().getUid())
+//                                                                .document(firebaseAuth.getCurrentUser().getUid()).set(traceData);
+//                                                    }else {
+//                                                        traceData = new TraceData();
+//                                                        traceData.setDuration(duration + 3000);
+//                                                        traceData.setPost_id(postId);
+//                                                        traceData.setUser_id(firebaseAuth.getCurrentUser().getUid());
+//                                                        viewCollection.document(postId).collection(firebaseAuth.getCurrentUser().getUid())
+//                                                                .document(firebaseAuth.getCurrentUser().getUid()).set(traceData);
+//                                                    }
+//                                                }
+//                                            });
+//                                }
+//                            }
+//                        });
+//            }
 //        }
-//
-//    }
+
+    }
 
 
     //region listeners
@@ -770,13 +960,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.intValue();
-    }
-
-    public void removeListener(){
-        if (listenerRegistration != null){
-            listenerRegistration.remove();
-        }
-
     }
 
 }

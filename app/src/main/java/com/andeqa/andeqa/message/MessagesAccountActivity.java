@@ -17,6 +17,7 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Message;
 import com.andeqa.andeqa.models.Room;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -110,7 +111,8 @@ public class MessagesAccountActivity extends AppCompatActivity
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             roomCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            messagesQuery = messagesCollection.document("chat_rooms").collection(roomId);
+            messagesQuery = messagesCollection.document(firebaseAuth.getCurrentUser().getUid())
+                    .collection(roomId);
 
         }
 
@@ -217,9 +219,8 @@ public class MessagesAccountActivity extends AppCompatActivity
             DocumentSnapshot lastVisible = messagingAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of documentSnapshots
-            Query nextSellingQuery =messagesCollection.document("chat_rooms").collection(roomId)
-                    .orderBy("time")
-                    .startAfter(lastVisible)
+            Query nextSellingQuery =messagesCollection.document(firebaseAuth.getCurrentUser().getUid())
+                    .collection(roomId).orderBy("time").startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
 
             nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -296,64 +297,38 @@ public class MessagesAccountActivity extends AppCompatActivity
             final long time = new Date().getTime();
 
             final String documentId = databaseReference.push().getKey();
-            final DocumentReference documentReference = messagesCollection.document("chat_rooms")
+            final DocumentReference senderRef = messagesCollection.document(firebaseAuth.getCurrentUser().getUid())
+                    .collection(roomId).document(documentId);
+            final DocumentReference receiverRef = messagesCollection.document(mUid)
                     .collection(roomId).document(documentId);
 
-            processMessage = true;
-            messagesCollection.document("chat_rooms").collection(roomId)
-                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                    if (e != null) {
-                        Log.w(TAG, "Listen error", e);
-                        return;
-                    }
+            final Message message = new Message();
+            message.setMessage(text_message);
+            message.setSender_id(firebaseAuth.getCurrentUser().getUid());
+            message.setReceiver_id(mUid);
+            message.setTime(time);
+            message.setMessage_id(documentId);
+            message.setType("text_message");
+            message.setRoom_id(roomId);
+            senderRef.set(message);
+            receiverRef.set(message);
 
-                    if (processMessage){
-                       if (!documentSnapshots.isEmpty()){
-
-                           final Message message = new Message();
-                           message.setMessage(text_message);
-                           message.setSender_id(firebaseAuth.getCurrentUser().getUid());
-                           message.setReceiver_id(mUid);
-                           message.setTime(time);
-                           message.setMessage_id(documentId);
-                           message.setType("text_message");
-                           message.setRoom_id(roomId);
-                           documentReference.set(message);
-                           processMessage = false;
-
-                       }else {
-                           final Message message = new Message();
-                           message.setMessage(text_message);
-                           message.setSender_id(firebaseAuth.getCurrentUser().getUid());
-                           message.setReceiver_id(mUid);
-                           message.setTime(time);
-                           message.setMessage_id(documentId);
-                           message.setType("text_message");
-                           message.setRoom_id(roomId);
-                           documentReference.set(message);
-                           processMessage = false;
-
-                       }
-                   }
-                }
-            });
-
-            //record the last chat history for reference when start a chat from profile
-            DocumentReference receipientReference = roomCollection.document("last messages")
-                    .collection("last message")
-                    .document(mUid);
-
-            DocumentReference senderReference = roomCollection.document("last messages")
+            //get the rooms that have been created
+            DocumentReference sendReference = roomCollection.document(mUid)
                     .collection("last message")
                     .document(firebaseAuth.getCurrentUser().getUid());
 
-            //get the rooms that have been created
-            DocumentReference roomReference = roomCollection.document("last messages")
-                    .collection("messages")
+            DocumentReference receiveReference = roomCollection.document(firebaseAuth.getCurrentUser().getUid())
+                    .collection("last message")
+                    .document(mUid);
+
+            DocumentReference receiverReference = roomCollection.document("last messages")
+                    .collection(firebaseAuth.getCurrentUser().getUid())
                     .document(roomId);
 
+            DocumentReference senderReference = roomCollection.document("last messages")
+                    .collection(mUid)
+                    .document(roomId);
 
             Room room = new Room();
             room.setReceiver_id(mUid);
@@ -362,9 +337,10 @@ public class MessagesAccountActivity extends AppCompatActivity
             room.setTime(time);
             room.setRoom_id(roomId);
             room.setStatus("un_read");
-            receipientReference.set(room);
+            sendReference.set(room);
+            receiveReference.set(room);
             senderReference.set(room);
-            roomReference.set(room);
+            receiverReference.set(room);
             mSendMessageEditText.setText("");
 
         }else {
