@@ -336,7 +336,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                     @Override
                     public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                         double progress = (100.0 * taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
-                        progressDialog.setMessage("Adding your post" + " " + ((int) progress) + "%...");
+                        progressDialog.setMessage("Adding your post" + " " + ((int) progress) + "%");
                         if (progress == 100.0){
 
                         }

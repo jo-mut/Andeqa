@@ -224,26 +224,6 @@ public class CollectionPostsActivity extends AppCompatActivity
 
     private void setCollectionsInfo(){
 
-        collectionOwnersCollection.document(collectionId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    android.util.Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    Transaction transaction = documentSnapshot.toObject(Transaction.class);
-                    final String ownerUid = transaction.getUser_id();
-                    android.util.Log.d("owner uid", ownerUid);
-
-                    if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
-                        mCreatePostButton.setVisibility(View.VISIBLE);
-                    }
-                }
-            }
-        });
-
         collectionCollection.document(collectionId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -258,6 +238,7 @@ public class CollectionPostsActivity extends AppCompatActivity
                     final String name = collection.getName();
                     final String note = collection.getNote();
                     final String cover = collection.getImage();
+                    final String userId = collection.getUser_id();
 
                     mCollectionNameTextView.setText(name);
                     mCollectionNoteTextView.setText(note);
@@ -283,6 +264,10 @@ public class CollectionPostsActivity extends AppCompatActivity
                                             .into(mCollectionCoverImageView);
                                 }
                             });
+
+                    if (firebaseAuth.getCurrentUser().getUid().equals(userId)){
+                        mCreatePostButton.setVisibility(View.VISIBLE);
+                    }
 
                 }
             }
@@ -412,6 +397,7 @@ public class CollectionPostsActivity extends AppCompatActivity
             Intent intent = new Intent(CollectionPostsActivity.this, CreatePostActivity.class);
             intent.putExtra(CollectionPostsActivity.COLLECTION_ID, collectionId);
             startActivity(intent);
+            finish();
         }
 
     }

@@ -120,7 +120,6 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
 
 
         if (firebaseAuth.getCurrentUser() != null){
-
             //initialize firestore
             firebaseFirestore =  FirebaseFirestore.getInstance();
             //get the reference to posts(collection reference)
@@ -202,11 +201,11 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     public void handleIntentData(Intent data){
-        Uri imageSelected = data.getParcelableExtra(Intent.EXTRA_STREAM);
+        photoUri = data.getParcelableExtra(Intent.EXTRA_STREAM);
         try {
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageSelected);
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), photoUri);
             Picasso.with(this)
-                    .load(imageSelected)
+                    .load(photoUri)
                     .into(mPostImageView, new Callback.EmptyCallback(){
                         @Override
                         public void onSuccess(){
@@ -233,7 +232,7 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
             }
         }
 
-        if(image != null){
+        if(image != null || photoUri != null){
             Glide.with(PreviewActivity.this)
                     .load(image)
                     .listener(new RequestListener<String, GlideDrawable>() {

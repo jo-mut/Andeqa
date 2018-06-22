@@ -220,26 +220,6 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
 
     private void setCollectionsInfo(){
 
-        collectionOwnersCollection.document(collectionId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    android.util.Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    Transaction transaction = documentSnapshot.toObject(Transaction.class);
-                    final String ownerUid = transaction.getUser_id();
-                    android.util.Log.d("owner uid", ownerUid);
-
-                    if (firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
-                        mCreatePostButton.setVisibility(View.VISIBLE);
-                    }
-                }
-            }
-        });
-
         collectionCollection.document(collectionId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -254,6 +234,7 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
                     final String name = collection.getName();
                     final String note = collection.getNote();
                     final String cover = collection.getImage();
+                    final String userId = collection.getUser_id();
 
                     mCollectionNameTextView.setText(name);
                     mCollectionNoteTextView.setText(note);
@@ -279,6 +260,10 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
                                             .into(mCollectionCoverImageView);
                                 }
                             });
+
+                    if (firebaseAuth.getCurrentUser().getUid().equals(userId)){
+                        mCreatePostButton.setVisibility(View.VISIBLE);
+                    }
 
                 }
             }
@@ -409,6 +394,7 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
             Intent intent = new Intent(MinePostsActivity.this, CreatePostActivity.class);
             intent.putExtra(MinePostsActivity.COLLECTION_ID, collectionId);
             startActivity(intent);
+            finish();
         }
 
     }
