@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.utils.EndlessLinearRecyclerViewOnScrollListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -32,9 +33,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class LikesActivity extends AppCompatActivity implements
-        SwipeRefreshLayout.OnRefreshListener{
-    @Bind(R.id.swipeRefreshLayout)SwipeRefreshLayout mSwipeRefreshLayout;
+public class LikesActivity extends AppCompatActivity{
     @Bind(R.id.recentLikesRecyclerView)RecyclerView mRecentLikesRecyclerView;
     @Bind(R.id.emptyLikesRelativeLayout)RelativeLayout mEmptyRelativelayout;
 
@@ -71,7 +70,6 @@ public class LikesActivity extends AppCompatActivity implements
                 finish();
             }
         });
-        mSwipeRefreshLayout.setOnRefreshListener(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
@@ -81,7 +79,12 @@ public class LikesActivity extends AppCompatActivity implements
             likesQuery = likesCollection.document(mPostKey).collection("likes")
                     .orderBy("user_id", Query.Direction.DESCENDING).limit(TOTAL_ITEMS);
 
-
+          mRecentLikesRecyclerView.addOnScrollListener(new EndlessLinearRecyclerViewOnScrollListener() {
+              @Override
+              public void onLoadMore() {
+                  setNextCollections();
+              }
+          });
 
         }
 
@@ -90,9 +93,8 @@ public class LikesActivity extends AppCompatActivity implements
     @Override
     protected void onStart() {
         super.onStart();
-        documentSnapshots.clear();
-        setRecyclerView();
-        setCollections();
+        loadData();
+
     }
 
 
@@ -101,11 +103,12 @@ public class LikesActivity extends AppCompatActivity implements
         super.onStop();
     }
 
-    @Override
-    public void onRefresh() {
-        setNextCollections();
-    }
 
+    private void loadData(){
+        documentSnapshots.clear();
+        setRecyclerView();
+        setCollections();
+    }
 
     private void setRecyclerView(){
         likesAdapter = new LikesAdapter(this);
@@ -149,12 +152,10 @@ public class LikesActivity extends AppCompatActivity implements
     }
 
     private void setNextCollections(){
-        mSwipeRefreshLayout.setRefreshing(true);
         // Get the last visible document
         final int snapshotSize = likesAdapter.getItemCount();
 
         if (snapshotSize == 0){
-            mSwipeRefreshLayout.setRefreshing(false);
         }else {
             DocumentSnapshot lastVisible = likesAdapter.getSnapshot(snapshotSize - 1);
 
@@ -187,9 +188,6 @@ public class LikesActivity extends AppCompatActivity implements
                                     break;
                             }
                         }
-                        mSwipeRefreshLayout.setRefreshing(true);
-                    }else {
-                        mSwipeRefreshLayout.setRefreshing(true);
                     }
                 }
             });

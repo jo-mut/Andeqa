@@ -9,6 +9,7 @@ public final class Constants {
     public static final String FEATURED_COLLECTIONS = "featured_collections";
     public static final String COLLECTIONS_POSTS = "posts_collections";
     public static final String POSTS = "posts";
+    public static final String SHARES = "shares";
     public static final String FIREBASE_USERS = "users";
     public static final String COMMENTS = "comments";
     public static final String LIKES= "likes";

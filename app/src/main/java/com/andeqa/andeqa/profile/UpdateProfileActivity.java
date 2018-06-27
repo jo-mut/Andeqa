@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +14,7 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -24,7 +26,10 @@ import android.widget.ViewAnimator;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.camera.GalleryActivity;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -239,24 +244,41 @@ public class UpdateProfileActivity extends AppCompatActivity implements
             byte[] data = baos.toByteArray();
 
             if (data != null){
-                StorageReference storageReference = FirebaseStorage
+
+                final StorageReference storageReference = FirebaseStorage
                         .getInstance().getReference()
                         .child("profile images")
                         .child(uid);
 
                 UploadTask uploadTask = storageReference.putBytes(data);
-                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                     @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        String downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()) {
+                            throw task.getException();
+                        }
 
-                        final String profileImage = (downloadUrl.toString());
+                        // Continue with the task to get the download URL
+                        return storageReference.getDownloadUrl();
+                    }
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()) {
+                            final Uri downloadUri = task.getResult();
 
-                        DocumentReference imageRef = usersReference.document(firebaseUser.getUid());
-                        imageRef.update("profile_image", profileImage);
-                        mProfilePictureImageView.setImageBitmap(null);
-                        progressDialog.dismiss();
+                            final String profileImage = (downloadUri.toString());
 
+                            DocumentReference imageRef = usersReference.document(firebaseUser.getUid());
+                            imageRef.update("profile_image", profileImage);
+                            mProfilePictureImageView.setImageBitmap(null);
+                            progressDialog.dismiss();
+
+
+                        } else {
+                            // Handle failures
+                            // ...
+                        }
                     }
                 });
 
@@ -278,25 +300,43 @@ public class UpdateProfileActivity extends AppCompatActivity implements
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
             byte[] data = baos.toByteArray();
 
+
             if (data != null){
-                StorageReference storageReference = FirebaseStorage
+
+                final StorageReference storageReference = FirebaseStorage
                         .getInstance().getReference()
                         .child("profile cover")
                         .child(uid);
 
                 UploadTask uploadTask = storageReference.putBytes(data);
-                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                     @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        String downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()) {
+                            throw task.getException();
+                        }
 
-                        final String profileCoverPhoto = (downloadUrl.toString());
+                        // Continue with the task to get the download URL
+                        return storageReference.getDownloadUrl();
+                    }
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()) {
+                            final Uri downloadUri = task.getResult();
 
-                        DocumentReference imageRef = usersReference.document(firebaseUser.getUid());
-                        imageRef.update("profile_cover", profileCoverPhoto);
-                        mProfilePictureImageView.setImageBitmap(null);
-                        progressDialog.dismiss();
+                            final String profileCoverPhoto = (downloadUri.toString());
 
+                            DocumentReference imageRef = usersReference.document(firebaseUser.getUid());
+                            imageRef.update("profile_cover", profileCoverPhoto);
+                            mProfilePictureImageView.setImageBitmap(null);
+                            progressDialog.dismiss();
+
+
+                        } else {
+                            // Handle failures
+                            // ...
+                        }
                     }
                 });
 

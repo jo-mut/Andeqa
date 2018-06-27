@@ -2,9 +2,9 @@ package com.andeqa.andeqa.collections;
 
 
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -14,9 +14,9 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.profile.ProfileCollectionsAdapter;
 import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -36,8 +36,9 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FeaturedCollectionsFragment extends Fragment {
+public class FeaturedCollectionsFragment extends Fragment{
     @Bind(R.id.collectionsRecyclerView)RecyclerView mCollectionsRecyclerView;
+
     private static final String TAG = FeaturedCollectionsFragment.class.getSimpleName();
 
     //firestore reference
@@ -77,19 +78,25 @@ public class FeaturedCollectionsFragment extends Fragment {
             mUid = getActivity().getIntent().getStringExtra(EXTRA_USER_UID);
 
             collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
-            collectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
+            collectionsQuery = collectionsCollection.orderBy("time", Query.Direction.ASCENDING)
                     .whereEqualTo("type", "featured_collection").limit(TOTAL_ITEMS);
 
             mCollectionsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
                 @Override
                 public void onLoadMore() {
-                    setNextSingles();
+                    setNextCollections();
                 }
             });
 
         }
 
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        loadData();
     }
 
     @Override
@@ -100,15 +107,13 @@ public class FeaturedCollectionsFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        mSnapshots.clear();
-        setRecyclerView();
-        setSingles();
+        mCollectionsRecyclerView.addItemDecoration(itemOffsetDecoration);
+
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mSnapshots.clear();
     }
 
     @Override
@@ -117,10 +122,15 @@ public class FeaturedCollectionsFragment extends Fragment {
         mCollectionsRecyclerView.removeItemDecoration(itemOffsetDecoration);
     }
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    private void loadData(){
+        mSnapshots.clear();
+        setRecyclerView();
+        setColections();
     }
 
     private void setRecyclerView(){
@@ -130,11 +140,10 @@ public class FeaturedCollectionsFragment extends Fragment {
         mCollectionsRecyclerView.setHasFixedSize(false);
         layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
         itemOffsetDecoration = new ItemOffsetDecoration(getContext(), R.dimen.item_off_set);
-        mCollectionsRecyclerView.addItemDecoration(itemOffsetDecoration);
         mCollectionsRecyclerView.setLayoutManager(layoutManager);
     }
 
-    private void setSingles(){
+    private void setColections(){
         collectionsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -166,7 +175,7 @@ public class FeaturedCollectionsFragment extends Fragment {
     }
 
 
-    private void setNextSingles(){
+    private void setNextCollections(){
         // Get the last visible document
         final int snapshotSize = featuredCollectionsAdapter.getItemCount();
 
@@ -175,20 +184,14 @@ public class FeaturedCollectionsFragment extends Fragment {
             DocumentSnapshot lastVisible = featuredCollectionsAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of posts
-            Query nextSinglesQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
+            Query nextSinglesQuery = collectionsCollection.orderBy("time", Query.Direction.ASCENDING)
                     .whereEqualTo("type", "featured_collection")
                     .startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
 
-            nextSinglesQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            nextSinglesQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
-                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                    if (e != null) {
-                        Log.w(TAG, "Listen error", e);
-                        return;
-                    }
-
+                public void onSuccess(QuerySnapshot documentSnapshots) {
                     if (!documentSnapshots.isEmpty()){
                         //retrieve the first bacth of posts
                         for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
@@ -207,6 +210,7 @@ public class FeaturedCollectionsFragment extends Fragment {
                     }
                 }
             });
+
         }
 
     }

@@ -59,9 +59,10 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
     private static final String EXTRA_POST_ID = "post id";
     private static final String COLLECTION_ID = "collection id";
     private static final String TYPE = "type";
+    private static final String EXTRA_USER_UID =  "uid";
+
     private static final String SOURCE = PostsAdapter.class.getSimpleName();
 
-    private static final String EXTRA_USER_UID =  "uid";
     private boolean processLikes = false;
     private boolean processDislikes = false;
     private boolean processWallet = false;

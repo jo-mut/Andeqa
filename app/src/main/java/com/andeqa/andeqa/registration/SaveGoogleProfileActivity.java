@@ -23,8 +23,11 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.home.NavigationDrawerActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Wallet;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -182,7 +185,6 @@ public class SaveGoogleProfileActivity extends AppCompatActivity implements View
         usersReference.document(uid).set(andeqan).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-
                 //move to next actvity even if the user doesnt submit a profile image
                 if (profileUri != null){
                     StorageReference storageRef = FirebaseStorage
@@ -190,19 +192,37 @@ public class SaveGoogleProfileActivity extends AppCompatActivity implements View
                             .child("profile images")
                             .child(uid);
 
-                    StorageReference path = storageRef.child(profileUri.getLastPathSegment());
-                    path.putFile(profileUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    final StorageReference path = storageRef.child(profileUri.getLastPathSegment());
+                    UploadTask uploadTask = storageRef.putFile(profileUri);
+                    Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                         @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            String downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                        public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                            if (!task.isSuccessful()) {
+                                throw task.getException();
+                            }
 
-                            final String profileImage = (downloadUrl.toString());
-                            Log.d("profile image", profileImage);
-                            usersReference.document(uid).update("profile_images", profileImage);
+                            // Continue with the task to get the download URL
+                            return path.getDownloadUrl();
+                        }
+                    }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Uri> task) {
+                            if (task.isSuccessful()) {
+                                final Uri downloadUri = task.getResult();
 
+                                final String profileImage = (downloadUri.toString());
+                                Log.d("profile image", profileImage);
+                                usersReference.document(uid).update("profile_images", profileImage);
+
+                            } else {
+                                // Handle failures
+                                // ...
+                            }
                         }
                     });
+
                 }
+
 
                 final String address = walletReference.getId();
                 final long time = new Date().getTime();

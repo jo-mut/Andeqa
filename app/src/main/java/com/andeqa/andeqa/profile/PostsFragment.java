@@ -3,8 +3,8 @@ package com.andeqa.andeqa.profile;
 
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -17,6 +17,7 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.collections.CollectionPostsActivity;
 import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -111,6 +112,12 @@ public class PostsFragment extends Fragment{
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        loadData();
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
     }
@@ -118,9 +125,7 @@ public class PostsFragment extends Fragment{
     @Override
     public void onStart() {
         super.onStart();
-        mSnapshots.clear();
-        setRecyclerView();
-        setSingles();
+        mPostssRecyclerView.addItemDecoration(itemOffsetDecoration);
     }
 
     @Override
@@ -135,6 +140,12 @@ public class PostsFragment extends Fragment{
         super.onDestroy();
     }
 
+    private void loadData(){
+        mSnapshots.clear();
+        setRecyclerView();
+        setPosts();
+    }
+
     private void setRecyclerView(){
         // RecyclerView
         profilePostsAdapter = new ProfilePostsAdapter(getContext());
@@ -142,12 +153,11 @@ public class PostsFragment extends Fragment{
         mPostssRecyclerView.setHasFixedSize(false);
         layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
         itemOffsetDecoration = new ItemOffsetDecoration(getContext(), R.dimen.item_off_set);
-        mPostssRecyclerView.addItemDecoration(itemOffsetDecoration);
         mPostssRecyclerView.setLayoutManager(layoutManager);
 
     }
 
-    private void setSingles(){
+    private void setPosts(){
         profileSinglesQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -191,16 +201,9 @@ public class PostsFragment extends Fragment{
                     .whereEqualTo("type", "post")
                     .whereEqualTo("user_id", mUid).startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
-
-            nextSinglesQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            nextSinglesQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
-                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                    if (e != null) {
-                        Log.w(TAG, "Listen error", e);
-                        return;
-                    }
-
+                public void onSuccess(QuerySnapshot documentSnapshots) {
                     if (!documentSnapshots.isEmpty()){
                         //retrieve the first bacth of posts
                         for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {

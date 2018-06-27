@@ -2,6 +2,7 @@ package com.andeqa.andeqa.message;
 
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +16,8 @@ import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.utils.EndlessLinearRecyclerViewOnScrollListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -34,10 +37,9 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MessagesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
+public class MessagesFragment extends Fragment{
     @Bind(R.id.roomsRecyclerView)RecyclerView mRoomsRecyclerView;
     @Bind(R.id.placeHolderRelativeLayout)RelativeLayout mPlaceHolderRelativeLayout;
-    @Bind(R.id.swipeRefreshLayout)SwipeRefreshLayout mSwipeRefreshLayout;
 
 
     private static final String TAG = MessagesFragment.class.getSimpleName();
@@ -62,7 +64,6 @@ public class MessagesFragment extends Fragment implements SwipeRefreshLayout.OnR
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_messages, container, false);
         ButterKnife.bind(this, view);
-        mSwipeRefreshLayout.setOnRefreshListener(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -71,17 +72,27 @@ public class MessagesFragment extends Fragment implements SwipeRefreshLayout.OnR
             roomsQuery = roomsCollections.document("last messages")
                     .collection(firebaseAuth.getCurrentUser().getUid());
 
+            mRoomsRecyclerView.addOnScrollListener(new EndlessLinearRecyclerViewOnScrollListener() {
+                @Override
+                public void onLoadMore() {
+                    setNextCollections();
+                }
+            });
+
         }
 
         return view;
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        loadData();
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
-        documentSnapshots.clear();
-        setRecyclerView();
-        setCollections();
     }
 
     @Override
@@ -110,9 +121,11 @@ public class MessagesFragment extends Fragment implements SwipeRefreshLayout.OnR
         super.onResume();
     }
 
-    @Override
-    public void onRefresh() {
-        setNextCollections();
+
+    private void loadData(){
+        documentSnapshots.clear();
+        setRecyclerView();
+        setCollections();
     }
 
     private void setRecyclerView(){
@@ -160,12 +173,10 @@ public class MessagesFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
 
     private void setNextCollections(){
-        mSwipeRefreshLayout.setRefreshing(true);
         // Get the last visible document
         final int snapshotSize = roomAdapter.getItemCount();
 
         if (snapshotSize == 0){
-            mSwipeRefreshLayout.setRefreshing(false);
         }else {
             DocumentSnapshot lastVisible = roomAdapter.getSnapshot(snapshotSize - 1);
 
@@ -175,37 +186,28 @@ public class MessagesFragment extends Fragment implements SwipeRefreshLayout.OnR
                     .orderBy("time", Query.Direction.DESCENDING).startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
 
-            nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+           nextSellingQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+               @Override
+               public void onSuccess(QuerySnapshot documentSnapshots) {
+                   if (!documentSnapshots.isEmpty()){
+                       //retrieve the first bacth of documentSnapshots
+                       for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                           switch (change.getType()) {
+                               case ADDED:
+                                   onDocumentAdded(change);
+                                   break;
+                               case MODIFIED:
+                                   onDocumentModified(change);
+                                   break;
+                               case REMOVED:
+                                   onDocumentRemoved(change);
+                                   break;
+                           }
+                       }
 
-                    if (e != null) {
-                        Log.w(TAG, "Listen error", e);
-                        return;
-                    }
-
-                    if (!documentSnapshots.isEmpty()){
-                        //retrieve the first bacth of documentSnapshots
-                        for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                            switch (change.getType()) {
-                                case ADDED:
-                                    onDocumentAdded(change);
-                                    break;
-                                case MODIFIED:
-                                    onDocumentModified(change);
-                                    break;
-                                case REMOVED:
-                                    onDocumentRemoved(change);
-                                    break;
-                            }
-                        }
-
-                        mSwipeRefreshLayout.setRefreshing(false);
-                    }else {
-                        mSwipeRefreshLayout.setRefreshing(false);
-                    }
-                }
-            });
+                   }
+               }
+           });
         }
     }
 

@@ -98,6 +98,7 @@
                             android:id="@+id/likesImageView"
                             android:layout_width="12dp"
                             android:layout_height="12dp"
+                            android:tint="@color/grey_700"
                             app:srcCompat="@drawable/ic_thumb_up" />
 
 
@@ -150,8 +151,8 @@
                             android:layout_width="12dp"
                             android:layout_height="12dp"
                             android:layout_marginLeft="5dp"
+                            android:tint="@color/grey_700"
                             android:layout_marginStart="5dp"
-                            android:tint="@android:color/black"
                             app:srcCompat="@drawable/ic_chat" />
 
                         <TextView
@@ -180,6 +181,7 @@
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:padding="3dp"
+                        android:tint="@color/grey_700"
                         app:srcCompat="@drawable/ic_credits" />
 
                     <TextView

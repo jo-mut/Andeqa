@@ -46,6 +46,7 @@ import com.andeqa.andeqa.creation.CreatePostActivity;
 import com.andeqa.andeqa.explore.ExploreFragment;
 import com.andeqa.andeqa.message.MessagesFragment;
 import com.andeqa.andeqa.models.Andeqan;
+import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.profile.ProfileActivity;
 import com.andeqa.andeqa.settings.SettingsActivity;
 import com.andeqa.andeqa.timeline.NotificationsActivity;
@@ -53,8 +54,15 @@ import com.andeqa.andeqa.utils.BottomNavigationViewBehavior;
 import com.andeqa.andeqa.utils.BottomNavigationViewHelper;
 import com.andeqa.andeqa.utils.CountDrawable;
 import com.andeqa.andeqa.wallet.WalletActivity;
+import com.google.android.gms.appinvite.AppInviteInvitation;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.appinvite.FirebaseAppInvite;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -65,6 +73,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
+
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -82,12 +92,19 @@ public class NavigationDrawerActivity extends AppCompatActivity
     private static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
     private static final int IMAGE_GALLERY_REQUEST = 112;
-    private static final String EXTRA_USER_UID = "uid";
+
+    private static final String EXTRA_POST_ID = "post id";
+    private static final String COLLECTION_ID = "collection id";
+    private static final String TYPE = "type";
+    private static final String EXTRA_USER_UID =  "uid";
+
     private Uri photoUri;
     private static final String TAG = NavigationDrawerActivity.class.getSimpleName();
+    private static final String KEY_STATE = "state";
     private int mSelectedItem;
     private CollectionReference usersReference;
     private CollectionReference timelineCollection;
+    private CollectionReference postCollection;
     private Query timelineQuery;
     private CollectionReference messagingCollection;
     private FirebaseAuth firebaseAuth;
@@ -101,6 +118,9 @@ public class NavigationDrawerActivity extends AppCompatActivity
     final Fragment marketFragment = new ExploreFragment();
     final Fragment collectionFragment = new CollectionsFragment();
     final Fragment messagesFragment = new MessagesFragment();
+
+    //firebase invites
+    private static final int REQUEST_INVITE = 0;
     private int count;
     private Menu defaultItem;
 
@@ -143,6 +163,8 @@ public class NavigationDrawerActivity extends AppCompatActivity
                     .collection("activities").orderBy("time", Query.Direction.ASCENDING)
                     .whereEqualTo("status", "un_read");
             messagingCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
+            postCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+
 
 
         }
@@ -161,11 +183,22 @@ public class NavigationDrawerActivity extends AppCompatActivity
                 mBottomNavigationView.getLayoutParams();
         layoutParams.setBehavior(new BottomNavigationViewBehavior());
 
+
         MenuItem selectedItem;
         selectedItem = mBottomNavigationView.getMenu().getItem(0);
         selectFragment(selectedItem);
 
+    }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
     }
 
     @Override
@@ -236,22 +269,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
     public boolean onPrepareOptionsMenu(Menu menu) {
         return super.onPrepareOptionsMenu(menu);
     }
-
-    //    private void getCount(){
-//        timelineQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-//                if (e != null) {
-//                    Transaction.w(TAG, "Listen error", e);
-//                    return;
-//                }
-//
-//                if (!queryDocumentSnapshots.isEmpty()){
-//                    count = queryDocumentSnapshots.size();
-//                }
-//            }
-//        });
-//    }
 
 
 
@@ -473,7 +490,13 @@ public class NavigationDrawerActivity extends AppCompatActivity
                     intent.putExtra("photoUri", photoUri.toString());
                     startActivity(intent);
                 }
-            }else {
+            }else if (requestCode == REQUEST_INVITE){
+                // Get the invitation IDs of all sent messages
+                String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
+                for (String id : ids) {
+                    Log.d(TAG, "onActivityResult: sent invitation " + id);
+                }
+            } else{
                 super.onActivityResult(requestCode, resultCode, data);
             }
         }
@@ -488,6 +511,17 @@ public class NavigationDrawerActivity extends AppCompatActivity
             startActivity(intent);
         }
 
+    }
+
+
+    private void onInviteClicked() {
+//        Intent intent = new AppInviteInvitation.IntentBuilder("Invites")
+//                .setMessage("Ern creo when you hre your photo on neq. Worth checking out thi pp")
+//                .setDeepLink(Uri.parse(getString(R.string.invitation_deep_link)))
+//                .setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
+//                .setCallToActionText("")
+//                .build();
+//        startActivityForResult(intent, REQUEST_INVITE);
     }
 
 }

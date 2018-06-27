@@ -20,6 +20,7 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.models.Comment;
+import com.andeqa.andeqa.utils.EndlessLinearRecyclerViewOnScrollListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -42,11 +43,10 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CommentsActivity extends AppCompatActivity implements
-        View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
+        View.OnClickListener{
     @Bind(R.id.sendCommentImageView)ImageView mSendCommentImageView;
     @Bind(R.id.commentEditText)EditText mCommentEditText;
     @Bind(R.id.commentsRecyclerView)RecyclerView mCommentsRecyclerView;
-    @Bind(R.id.swipeRefreshLayout)SwipeRefreshLayout mSwipeRefreshLayout;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -98,7 +98,6 @@ public class CommentsActivity extends AppCompatActivity implements
 
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
-        mSwipeRefreshLayout.setOnRefreshListener(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
@@ -133,6 +132,13 @@ public class CommentsActivity extends AppCompatActivity implements
             mCommentEditText.setFilters(new InputFilter[]{new InputFilter
                     .LengthFilter(DEFAULT_COMMENT_LENGTH_LIMIT)});
 
+            mCommentsRecyclerView.addOnScrollListener(new EndlessLinearRecyclerViewOnScrollListener() {
+                @Override
+                public void onLoadMore() {
+                    setNextCollections();
+                }
+            });
+
 
         }
     }
@@ -140,9 +146,8 @@ public class CommentsActivity extends AppCompatActivity implements
     @Override
     protected void onStart() {
         super.onStart();
-        comments.clear();
-        setRecyclerView();
-        setCollections();
+        loadData();
+
     }
 
     @Override
@@ -162,11 +167,12 @@ public class CommentsActivity extends AppCompatActivity implements
         super.onPause();
     }
 
-    @Override
-    public void onRefresh() {
-        setNextCollections();
-    }
 
+    private void loadData(){
+        comments.clear();
+        setRecyclerView();
+        setCollections();
+    }
 
     private void setRecyclerView(){
         commentsAdapter = new CommentsAdapter(this);
@@ -179,7 +185,8 @@ public class CommentsActivity extends AppCompatActivity implements
 
 
     private void setCollections(){
-        commentQuery.limit(TOTAL_ITEMS)
+        commentQuery.orderBy("time", Query.Direction.DESCENDING)
+                .limit(TOTAL_ITEMS)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -211,13 +218,11 @@ public class CommentsActivity extends AppCompatActivity implements
     }
 
     private void setNextCollections(){
-        mSwipeRefreshLayout.setRefreshing(true);
         // Get the last visible document
         final int snapshotSize = commentsAdapter.getItemCount();
 
         if (snapshotSize == 0){
             //do nothing
-            mSwipeRefreshLayout.setRefreshing(false);
         }else{
             DocumentSnapshot lastVisible = commentsAdapter.getSnapshot(snapshotSize - 1);
             //retrieve the first bacth of documentSnapshots
@@ -248,9 +253,6 @@ public class CommentsActivity extends AppCompatActivity implements
                                     break;
                             }
                         }
-                        mSwipeRefreshLayout.setRefreshing(false);
-                    }else {
-                        mSwipeRefreshLayout.setRefreshing(false);
                     }
                 }
             });

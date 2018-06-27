@@ -117,6 +117,7 @@
 
     <!--camera-->
     <string name="file_limit_size_upload_format">Files must be less than %sMB</string>
+    <string name="title_activity_main2">Main2Activity</string>
 
 
 </resources>

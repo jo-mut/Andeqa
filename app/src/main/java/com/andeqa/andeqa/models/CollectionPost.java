@@ -1,5 +1,7 @@
 package com.andeqa.andeqa.models;
 
+import android.net.Uri;
+
 /**
  * Created by J.EL on 2/28/2018.
  */
@@ -15,6 +17,7 @@ public class CollectionPost {
     String user_id;
     String type;
     String collection_id;
+    String deeplink;
 
 
     public CollectionPost() {
@@ -98,5 +101,13 @@ public class CollectionPost {
 
     public void setCollection_id(String collection_id) {
         this.collection_id = collection_id;
+    }
+
+    public String getDeeplink() {
+        return deeplink;
+    }
+
+    public void setDeeplink(String deeplink) {
+        this.deeplink = deeplink;
     }
 }

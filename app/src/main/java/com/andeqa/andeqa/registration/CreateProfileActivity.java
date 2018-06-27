@@ -25,9 +25,14 @@ import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.collections.CollectionPostsActivity;
+import com.andeqa.andeqa.creation.CreatePostActivity;
 import com.andeqa.andeqa.home.NavigationDrawerActivity;
 import com.andeqa.andeqa.models.Andeqan;
+import com.andeqa.andeqa.models.CollectionPost;
+import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Wallet;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -37,6 +42,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -46,6 +52,7 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.Date;
+import java.util.Random;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -299,18 +306,35 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
                             .child("profile images")
                             .child(uid);
 
-                    StorageReference path = storageRef.child(profileUri.getLastPathSegment());
-                    path.putFile(profileUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    final StorageReference path = storageRef.child(profileUri.getLastPathSegment());
+                    UploadTask uploadTask = storageRef.putFile(profileUri);
+                    Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                         @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            String downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                        public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                            if (!task.isSuccessful()) {
+                                throw task.getException();
+                            }
 
-                            final String profileImage = (downloadUrl.toString());
-                            Log.d("profile image", profileImage);
-                            usersReference.document(uid).update("profile_image", profileImage);
+                            // Continue with the task to get the download URL
+                            return path.getDownloadUrl();
+                        }
+                    }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Uri> task) {
+                            if (task.isSuccessful()) {
+                                final Uri downloadUri = task.getResult();
 
+                                final String profileImage = (downloadUri.toString());
+                                Log.d("profile image", profileImage);
+                                usersReference.document(uid).update("profile_image", profileImage);
+
+                            } else {
+                                // Handle failures
+                                // ...
+                            }
                         }
                     });
+
                 }
 
 

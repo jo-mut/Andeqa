@@ -31,13 +31,22 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.camera.GalleryActivity;
 import com.andeqa.andeqa.collections.CollectionPostsActivity;
 import com.andeqa.andeqa.models.Collection;
+import com.andeqa.andeqa.models.CollectionPost;
+import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Transaction;
 import com.andeqa.andeqa.utils.ProportionalImageView;
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.dynamiclinks.DynamicLink;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.ShortDynamicLink;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -50,6 +59,7 @@ import com.squareup.picasso.Picasso;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Date;
+import java.util.Random;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -156,8 +166,9 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
         if (image != null){
             mAddRelativeLayout.setVisibility(View.GONE);
             mCollectionRelativeLayout.setVisibility(View.VISIBLE);
-            Picasso.with(CreateCollectionActivity.this)
+            Glide.with(CreateCollectionActivity.this)
                     .load(new File(image))
+                    .asBitmap()
                     .into(mCollectionCoverImageView);
         }
 
@@ -284,40 +295,56 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                     final long timeStamp = new Date().getTime();
 
                     if (data != null){
-                        StorageReference storageReference = FirebaseStorage
+                        final StorageReference storageReference = FirebaseStorage
                                 .getInstance().getReference()
                                 .child(Constants.USER_COLLECTIONS)
                                 .child(collectionId);
 
                         UploadTask uploadTask = storageReference.putBytes(data);
-                        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                             @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                final Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                                if (!task.isSuccessful()) {
+                                    throw task.getException();
+                                }
 
-                                CollectionReference cl = postsCollection;
-                                cl.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onSuccess(QuerySnapshot documentSnapshots) {
+                                // Continue with the task to get the download URL
+                                return storageReference.getDownloadUrl();
+                            }
+                        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Uri> task) {
+                                if (task.isSuccessful()) {
+                                    final Uri downloadUri = task.getResult();
 
-                                        final int count = documentSnapshots.getDocuments().size();
-                                        //save the collection
-                                        collection.setType("collection");
-                                        collection.setName(mCollectionNameEditText.getText().toString().trim());
-                                        collection.setNote(mCollectionNoteEditText.getText().toString().trim());
-                                        collection.setNumber(count + 1);
-                                        collection.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                        collection.setCollection_id(collectionId);
-                                        collection.setTime(timeStamp);
-                                        collection.setImage(downloadUrl.toString());
-                                        collectionCollection.document(collectionId).set(collection);
+                                    CollectionReference cl = postsCollection;
+                                    cl.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onSuccess(QuerySnapshot documentSnapshots) {
 
-                                        mCollectionNameEditText.setText("");
-                                        mCollectionNoteEditText.setText("");
+                                            final int count = documentSnapshots.getDocuments().size();
+                                            //save the collection
+                                            collection.setType("collection");
+                                            collection.setName(mCollectionNameEditText.getText().toString().trim());
+                                            collection.setNote(mCollectionNoteEditText.getText().toString().trim());
+                                            collection.setNumber(count + 1);
+                                            collection.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                            collection.setCollection_id(collectionId);
+                                            collection.setTime(timeStamp);
+                                            collection.setImage(downloadUri.toString());
+                                            collectionCollection.document(collectionId).set(collection);
+
+                                            mCollectionNameEditText.setText("");
+                                            mCollectionNoteEditText.setText("");
 
 
-                                    }
-                                });
+                                        }
+                                    });
+
+                                } else {
+                                    // Handle failures
+                                    // ...
+                                }
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
@@ -325,7 +352,9 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                                 progressDialog.dismiss();
                                 Toast.makeText(CreateCollectionActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
-                        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        });
+
+                        uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                                 double progress = (100.0 * taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());

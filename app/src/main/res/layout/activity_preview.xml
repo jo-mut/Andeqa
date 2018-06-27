@@ -13,8 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         app:layout_scrollFlags="scroll|enterAlways"
-        android:background="@android:color/white"
-        app:titleTextColor="@color/grey_500"
+        app:titleTextColor="@android:color/black"
         android:padding="5dp"
         app:titleTextAppearance="@style/toolbarTextAppearance"
         app:popupTheme="@style/AppTheme.PopupOverlay">

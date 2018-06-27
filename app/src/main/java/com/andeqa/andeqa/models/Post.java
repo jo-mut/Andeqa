@@ -12,6 +12,7 @@ public class Post {
     String user_id;
     String type;
     String collection_id;
+    String deeplink;
 
     public Post() {
     }
@@ -70,5 +71,13 @@ public class Post {
 
     public void setUser_id(String user_id) {
         this.user_id = user_id;
+    }
+
+    public String getDeeplink() {
+        return deeplink;
+    }
+
+    public void setDeeplink(String deeplink) {
+        this.deeplink = deeplink;
     }
 }

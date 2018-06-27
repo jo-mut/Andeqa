@@ -152,7 +152,7 @@
                             android:layout_height="30dp"
                             android:layout_marginLeft="5dp"
                             android:layout_marginStart="5dp"
-                            android:tint="@android:color/black"
+                            android:tint="@color/grey_700"
                             app:srcCompat="@drawable/ic_chat" />
 
                         <TextView
@@ -181,6 +181,7 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:padding="3dp"
+                        android:tint="@color/grey_700"
                         app:srcCompat="@drawable/ic_credits" />
 
                     <TextView

@@ -25,6 +25,7 @@ import com.andeqa.andeqa.models.Transaction;
 import com.andeqa.andeqa.settings.CollectionSettingsActivity;
 import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -316,15 +317,9 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
                 .startAfter(lastVisible)
                 .limit(TOTAL_ITEMS);
 
-        nextCollectionPostsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        nextCollectionPostsQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                if (e != null) {
-                    android.util.Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
+            public void onSuccess(QuerySnapshot documentSnapshots) {
                 if (!documentSnapshots.isEmpty()){
                     //retrieve the first bacth of mSnapshots
                     for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {

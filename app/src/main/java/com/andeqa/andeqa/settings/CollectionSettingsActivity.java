@@ -27,10 +27,14 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.camera.GalleryActivity;
 import com.andeqa.andeqa.models.Collection;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -250,23 +254,43 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
            ByteArrayOutputStream baos = new ByteArrayOutputStream();
            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
            byte[] data = baos.toByteArray();
-           StorageReference storageReference = FirebaseStorage
+           final StorageReference storageReference = FirebaseStorage
                    .getInstance().getReference()
                    .child(Constants.USER_COLLECTIONS)
                    .child(collectionId);
 
 
            if (data != null){
-               UploadTask uploadTask = storageReference.putBytes(data);
-               uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                   @Override
-                   public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                       final Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                       collectionCollection.document(collectionId)
-                               .update("image", downloadUrl.toString());
 
+               UploadTask uploadTask = storageReference.putBytes(data);
+               Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                   @Override
+                   public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                       if (!task.isSuccessful()) {
+                           throw task.getException();
+                       }
+
+                       // Continue with the task to get the download URL
+                       return storageReference.getDownloadUrl();
                    }
-               }).addOnFailureListener(new OnFailureListener() {
+               }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                   @Override
+                   public void onComplete(@NonNull Task<Uri> task) {
+                       if (task.isSuccessful()) {
+                           final Uri downloadUri = task.getResult();
+
+                           collectionCollection.document(collectionId)
+                                   .update("image", downloadUri.toString());
+                           progressDialog.dismiss();
+
+                       } else {
+                           // Handle failures
+                           // ...
+                       }
+                   }
+               });
+
+              uploadTask.addOnFailureListener(new OnFailureListener() {
                    @Override
                    public void onFailure(@NonNull Exception e) {
                        progressDialog.dismiss();

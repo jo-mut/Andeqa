@@ -14,19 +14,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <!-- TODO: Update blank fragment layout -->
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayout"
+    <android.support.v7.widget.RecyclerView
+        android:clipToPadding="false"
+        android:padding="@dimen/item_off_set"
+        android:id="@+id/collectionsRecyclerView"
+        android:overScrollMode="never"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"/>
 
-        <android.support.v7.widget.RecyclerView
-            android:clipToPadding="false"
-            android:padding="@dimen/item_off_set"
-            android:id="@+id/collectionsRecyclerView"
-            android:overScrollMode="never"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-    </android.support.v4.widget.SwipeRefreshLayout>
 </FrameLayout>

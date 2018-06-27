@@ -3,6 +3,7 @@ package com.andeqa.andeqa.utils;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 
 public abstract class EndlessLinearRecyclerViewOnScrollListener extends RecyclerView.OnScrollListener {
     //    public static String TAG = EndlessRecyclerOnScrollListener.class.getSimpleName();
@@ -15,6 +16,7 @@ public abstract class EndlessLinearRecyclerViewOnScrollListener extends Recycler
      * True if we are still waiting for the last set of data to load.
      */
     private boolean mLoading = true;
+    private StaggeredGridLayoutManager layoutManager;
 
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -22,7 +24,8 @@ public abstract class EndlessLinearRecyclerViewOnScrollListener extends Recycler
 
         int visibleItemCount = recyclerView.getChildCount();
         int totalItemCount = recyclerView.getLayoutManager().getItemCount();
-        int firstVisibleItem = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+        layoutManager = ((StaggeredGridLayoutManager) recyclerView.getLayoutManager());
+        int [] lastVisible = layoutManager.findFirstVisibleItemPositions(null);
 
         if (mLoading) {
             if (totalItemCount > mPreviousTotal) {
@@ -30,9 +33,9 @@ public abstract class EndlessLinearRecyclerViewOnScrollListener extends Recycler
                 mPreviousTotal = totalItemCount;
             }
         }
-        int visibleThreshold = 5;
-        if (!mLoading && (totalItemCount - visibleItemCount)
-                <= (firstVisibleItem + visibleThreshold)) {
+        int visibleThreshold = 10;
+        if (!mLoading && totalItemCount
+                <= (lastVisible[0] + visibleThreshold)) {
             // End has been reached
 
             onLoadMore();

@@ -2,6 +2,7 @@ package com.andeqa.andeqa.explore;
 
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,7 +15,9 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -34,10 +37,9 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ExploreFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class ExploreFragment extends Fragment {
 
     @Bind(R.id.bestPostsRecyclerView)RecyclerView bestPostRecyclerView;
-    @Bind(R.id.swipeRefreshLayout)SwipeRefreshLayout mSwipeRefreshLayout;
 
     private StaggeredGridLayoutManager layoutManager;
     //firestore
@@ -52,9 +54,6 @@ public class ExploreFragment extends Fragment implements SwipeRefreshLayout.OnRe
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
     private ItemOffsetDecoration itemOffsetDecoration;
     private static final String TAG = ExploreFragment.class.getSimpleName();
-
-
-
 
     public static ExploreFragment newInstance(int sectionNumber) {
         ExploreFragment fragment = new ExploreFragment();
@@ -77,27 +76,37 @@ public class ExploreFragment extends Fragment implements SwipeRefreshLayout.OnRe
         // Inflate the layout for this fragment
         ButterKnife.bind(this, view);
 
-        mSwipeRefreshLayout.setOnRefreshListener(this);
-
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser()!= null){
             //firestore
             postWalletCollection = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
-            creditQuery = postWalletCollection.orderBy("amount", Query.Direction.DESCENDING)
+            creditQuery = postWalletCollection.orderBy("amount", Query.Direction.ASCENDING)
                     .limit(TOTAL_ITEMS);
 
+            bestPostRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+                @Override
+                public void onLoadMore() {
+                    setNextCollections();
+                }
+            });
         }
 
 
         return view;
     }
 
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        loadData();
+    }
+
     @Override
     public void onStart() {
         super.onStart();
-        documentSnapshots.clear();
-        setRecyclerView();
-        setCollections();
+        bestPostRecyclerView.addItemDecoration(itemOffsetDecoration);
+
     }
 
     @Override
@@ -119,7 +128,6 @@ public class ExploreFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        documentSnapshots.clear();
     }
 
     @Override
@@ -127,9 +135,11 @@ public class ExploreFragment extends Fragment implements SwipeRefreshLayout.OnRe
         super.onDestroy();
     }
 
-    @Override
-    public void onRefresh() {
-        setNextCollections();
+
+    private void loadData(){
+        documentSnapshots.clear();
+        setRecyclerView();
+        setCollections();
     }
 
     private void setRecyclerView(){
@@ -138,7 +148,6 @@ public class ExploreFragment extends Fragment implements SwipeRefreshLayout.OnRe
         bestPostRecyclerView.setHasFixedSize(false);
         layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         itemOffsetDecoration = new ItemOffsetDecoration(getContext(), R.dimen.item_off_set);
-        bestPostRecyclerView.addItemDecoration(itemOffsetDecoration);
         bestPostRecyclerView.setLayoutManager(layoutManager);
     }
 
@@ -175,29 +184,22 @@ public class ExploreFragment extends Fragment implements SwipeRefreshLayout.OnRe
     }
 
     private void setNextCollections(){
-        mSwipeRefreshLayout.setRefreshing(true);
         // Get the last visible document
         final int snapshotSize = explorePostAdapter.getItemCount();
 
         if (snapshotSize == 0){
-            mSwipeRefreshLayout.setRefreshing(false);
+            //do nothing
         }else {
             DocumentSnapshot lastVisible = explorePostAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of documentSnapshots
-            Query nextSellingQuery = postWalletCollection.orderBy("amount", Query.Direction.DESCENDING)
+            Query nextSellingQuery = postWalletCollection.orderBy("amount", Query.Direction.ASCENDING)
                     .startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
 
-            nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            nextSellingQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
-                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                    if (e != null) {
-                        Log.w(TAG, "Listen error", e);
-                        return;
-                    }
-
+                public void onSuccess(QuerySnapshot documentSnapshots) {
                     if (!documentSnapshots.isEmpty()){
                         //retrieve the first bacth of documentSnapshots
                         for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
@@ -213,13 +215,10 @@ public class ExploreFragment extends Fragment implements SwipeRefreshLayout.OnRe
                                     break;
                             }
                         }
-
-                        mSwipeRefreshLayout.setRefreshing(false);
-                    }else {
-                        mSwipeRefreshLayout.setRefreshing(false);
                     }
                 }
             });
+
         }
     }
 

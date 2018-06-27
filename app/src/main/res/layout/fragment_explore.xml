@@ -7,19 +7,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".explore.ExploreFragment">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayout"
+    <android.support.v7.widget.RecyclerView
+        android:clipToPadding="false"
+        android:padding="@dimen/item_off_set"
+        android:id="@+id/bestPostsRecyclerView"
+        android:overScrollMode="never"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <android.support.v7.widget.RecyclerView
-            android:clipToPadding="false"
-            android:padding="@dimen/item_off_set"
-            android:id="@+id/bestPostsRecyclerView"
-            android:overScrollMode="never"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-    </android.support.v4.widget.SwipeRefreshLayout>
+        android:layout_height="wrap_content"/>
 
 </FrameLayout>

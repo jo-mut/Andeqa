@@ -269,7 +269,6 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
                 intent.putExtra(ProfilePostsAdapter.EXTRA_USER_UID, uid);
                 intent.putExtra(ProfilePostsAdapter.TYPE, type);
                 mContext.startActivity(intent);
-                ((Activity)mContext).finish();
             }
         });
 

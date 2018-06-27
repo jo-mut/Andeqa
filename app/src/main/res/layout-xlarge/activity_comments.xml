@@ -26,19 +26,11 @@
        android:layout_width="match_parent"
        android:layout_height="match_parent">
 
-       <android.support.v4.widget.SwipeRefreshLayout
-           android:layout_marginBottom="100dp"
-           android:id="@+id/swipeRefreshLayout"
+       <android.support.v7.widget.RecyclerView
+           android:id="@+id/commentsRecyclerView"
            android:layout_width="match_parent"
-           android:layout_height="wrap_content">
-
-           <android.support.v7.widget.RecyclerView
-               android:id="@+id/commentsRecyclerView"
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content"
-               android:overScrollMode="never" />
-
-       </android.support.v4.widget.SwipeRefreshLayout>
+           android:layout_height="wrap_content"
+           android:overScrollMode="never" />
 
        <RelativeLayout
            android:layout_alignParentBottom="true"

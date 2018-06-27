@@ -2,24 +2,22 @@ package com.andeqa.andeqa.home;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.support.v4.app.FragmentManager;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.InputFilter;
-import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.method.DigitsKeyListener;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -28,15 +26,14 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.likes.LikesActivity;
 import com.andeqa.andeqa.models.Andeqan;
-import com.andeqa.andeqa.models.Transaction;
-import com.andeqa.andeqa.models.Wallet;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Timeline;
-import com.andeqa.andeqa.settings.PostSettingsFragment;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -51,10 +48,12 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.annotation.Nullable;
@@ -65,11 +64,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.util.Log.d;
 
-public class PostDetailActivity extends AppCompatActivity implements View.OnClickListener{
+public class PostDetailActivity extends AppCompatActivity
+        implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener{
 
     @Bind(R.id.usernameTextView)TextView mUsernameTextView;
     @Bind(R.id.postImageView)ProportionalImageView mPostImageView;
-    @Bind(R.id.profileImageView)ImageView mProfileImageView;
+    @Bind(R.id.profileImageView)CircleImageView mProfileImageView;
     @Bind(R.id.titleTextView)TextView titleTextView;
     @Bind(R.id.titleRelativeLayout)RelativeLayout mTitleRelativeLayout;
     @Bind(R.id.descriptionRelativeLayout)RelativeLayout mDescriptionRelativeLayout;
@@ -80,9 +80,9 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 //    @Bind(R.id.dislikesImageView)ImageView mDislikeImageView;
     @Bind(R.id.commentsImageView)ImageView mCommentImageView;
     @Bind(R.id.commentsCountTextView)TextView mCommentCountTextView;
-    @Bind(R.id.datePostedTextView)TextView mDatePostedTextView;
     @Bind(R.id.creditsTextView)TextView mCreditsTextView;
-    @Bind(R.id.likesLinearLayout)RelativeLayout mLikesRelativeLayout;
+    @Bind(R.id.likesLinearLayout)LinearLayout mLikesLinearLayout;
+    @Bind(R.id.settingsRelativeLayout)RelativeLayout mSettingsRelativeLayout;
 
     //firestore reference
     private FirebaseFirestore firebaseFirestore;
@@ -119,12 +119,14 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     private static final String EXTRA_POST_ID = "post id";
     private static final String EXTRA_USER_UID = "uid";
     private static final String TYPE = "type";
+    private static final String EXTRA_URI = "uri";
     private static final String SOURCE = PostDetailActivity.class.getSimpleName();
     private static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
     private static final String TAG = PostDetailActivity.class.getSimpleName();
     private ProgressDialog progressDialog;
     private boolean showOnClick = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,7 +139,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.ic_arrow);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_black);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -145,19 +147,23 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             }
         });
 
+
+        //INITIALIASE CLICK LISTENER
+        mLikesImageView.setOnClickListener(this);
+        mCommentImageView.setOnClickListener(this);
+        mPostImageView.setOnClickListener(this);
+//            mDislikeImageView.setOnClickListener(this);
+        mLikesCountTextView.setOnClickListener(this);
+        mLikesLinearLayout.setOnClickListener(this);
+        mSettingsRelativeLayout.setOnClickListener(this);
+
         if (firebaseAuth.getCurrentUser()!= null){
+
             mPostId = getIntent().getStringExtra(EXTRA_POST_ID);
             mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
             mUid = getIntent().getStringExtra(EXTRA_USER_UID);
             mType = getIntent().getStringExtra(TYPE);
 
-            //INITIALIASE CLICK LISTENER
-            mLikesImageView.setOnClickListener(this);
-            mCommentImageView.setOnClickListener(this);
-            mPostImageView.setOnClickListener(this);
-//            mDislikeImageView.setOnClickListener(this);
-            mLikesCountTextView.setOnClickListener(this);
-            mLikesRelativeLayout.setOnClickListener(this);
 
             //firestore
             if (mType.equals("single")){
@@ -169,6 +175,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                         .document("collections").collection(mCollectionId);
                 getSupportActionBar().setTitle("Post");
             }
+
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS)
                     .document("post_ids").collection(mPostId);
@@ -186,38 +193,6 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.post_settings, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings){
-            Bundle bundle = new Bundle();
-            bundle.putString(PostDetailActivity.EXTRA_POST_ID, mPostId);
-            bundle.putString(PostDetailActivity.COLLECTION_ID, mCollectionId);
-            bundle.putString(PostDetailActivity.TYPE, mType);
-            FragmentManager fragmenManager = getSupportFragmentManager();
-            PostSettingsFragment postSettingsFragment =  PostSettingsFragment.newInstance("post settings");
-            postSettingsFragment.setArguments(bundle);
-            postSettingsFragment.show(fragmenManager, "market post settings fragment");
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(final Menu menu) {
-        if (!mUid.equals(firebaseAuth.getCurrentUser().getUid())){
-            menu.clear();
-        }
-        return super.onPrepareOptionsMenu(menu);
-    }
 
     @Override
     protected void onStart() {
@@ -470,25 +445,11 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                     }
 
 
-                    //get the current date
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d");
-                    String date = simpleDateFormat.format(new Date());
-
-                    if (date.endsWith("1") && !date.endsWith("11"))
-                        simpleDateFormat = new SimpleDateFormat("d'st' MMM yyyy");
-                    else if (date.endsWith("2") && !date.endsWith("12"))
-                        simpleDateFormat = new SimpleDateFormat("d'nd' MMM yyyy");
-                    else if (date.endsWith("3") && !date.endsWith("13"))
-                        simpleDateFormat = new SimpleDateFormat("d'rd' MMM yyyy");
-                    else
-                        simpleDateFormat = new SimpleDateFormat("d'th' MMM yyyy");
-
-                    mDatePostedTextView.setText(simpleDateFormat.format(collectionPost.getTime()));
-
+                    Log.d("post image", image);
 
                     //set the single image
                     Picasso.with(PostDetailActivity.this)
-                            .load(image)
+                            .load(Uri.parse(image))
                             .networkPolicy(NetworkPolicy.OFFLINE)
                             .placeholder(R.drawable.image_place_holder)
                             .into(mPostImageView, new Callback() {
@@ -500,7 +461,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                                 @Override
                                 public void onError() {
                                     Picasso.with(PostDetailActivity.this)
-                                            .load(image)
+                                            .load(Uri.parse(image))
                                             .placeholder(R.drawable.image_place_holder)
                                             .into(mPostImageView);
                                 }
@@ -546,11 +507,39 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                             }
                         }
                     });
+
                 }
             }
         });
 
 
+    }
+
+
+    public Uri getLocalBitmapUri(ImageView imageView) {
+        // Extract Bitmap from ImageView drawable
+        Drawable drawable = imageView.getDrawable();
+        Bitmap bmp = null;
+        if (drawable instanceof BitmapDrawable){
+            bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        } else {
+            return null;
+        }
+        // Store image to default external storage directory
+        Uri bmpUri = null;
+        try {
+
+            File file =  new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
+            FileOutputStream out = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
+            out.close();
+            // wrap File object into a content provider. NOTE: authority here should match authority in manifest declaration
+            bmpUri = FileProvider.getUriForFile(PostDetailActivity.this, "com.andeqa.andeqa", file);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bmpUri;
     }
 
     @Override
@@ -564,7 +553,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             startActivity(intent);
         }
 
-        if (v == mLikesRelativeLayout){
+        if (v == mLikesLinearLayout){
             Intent intent = new Intent(PostDetailActivity.this, LikesActivity.class);
             intent.putExtra(PostDetailActivity.EXTRA_POST_ID, mPostId);
             startActivity(intent);
@@ -578,6 +567,23 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             startActivity(intent);
         }
 
+        if (v == mSettingsRelativeLayout){
+
+            final Uri bmpUri = getLocalBitmapUri(mPostImageView);
+            if (bmpUri != null){
+                Bundle bundle = new Bundle();
+                bundle.putString(PostDetailActivity.EXTRA_POST_ID, mPostId);
+                bundle.putString(PostDetailActivity.COLLECTION_ID, mCollectionId);
+                bundle.putString(PostDetailActivity.TYPE, mType);
+                bundle.putString(PostDetailActivity.EXTRA_URI, bmpUri.toString());
+                ShareBottomFragment shareBottomFragment = ShareBottomFragment.newInstance();
+                shareBottomFragment.setArguments(bundle);
+                shareBottomFragment.show(getSupportFragmentManager(), "share bottom fragment");
+            }
+
+        }
+
+
         if (v == mLikesImageView){
             calculateValueOfLikes();
         }
@@ -586,6 +592,8 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 //            calculateValueOfDislikes();
 //        }
     }
+
+
 
     private void calculateValueOfDislikes(){
 //        mDislikeImageView.setOnClickListener(new View.OnClickListener() {
@@ -944,9 +952,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
-
-
-
+    
 //    private void displayPopupWindow(View anchorView) {
 //        PopupWindow popup = new PopupWindow(PostDetailActivity.this);
 //        View layout = getLayoutInflater().inflate(R.layout.popup_layout, null);
@@ -965,5 +971,10 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 //        popup.setBackgroundDrawable(new BitmapDrawable());
 //        popup.showAsDropDown(anchorView);
 //    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+    }
 
 }
