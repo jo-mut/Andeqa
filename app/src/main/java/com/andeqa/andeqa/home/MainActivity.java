@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String COLLECTION_ID = "collection id";
     private static final String TYPE = "type";
     private static final String EXTRA_USER_UID =  "uid";
-    @Bind(R.id.progressBar)ProgressBar mProgressBar;
 
 
 
@@ -107,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void authenticationListener(){
         firebaseAuth = FirebaseAuth.getInstance();
-        mProgressBar.setVisibility(View.VISIBLE);
         if (firebaseAuth.getCurrentUser() != null){
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             usersReference.document(firebaseAuth.getCurrentUser().getUid())

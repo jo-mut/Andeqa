@@ -7,7 +7,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/default_gradient_color"
     tools:context="com.andeqa.andeqa.home.MainActivity">
 
     <RelativeLayout
@@ -15,32 +14,14 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:background="@drawable/logo_background"
-            android:layout_centerInParent="true"
+            android:textStyle="bold"
+            android:text="Andeqa"
+            android:textColor="@color/grey_500"
             android:textSize="30sp"
-            android:paddingTop="50dp"
-            android:paddingBottom="50dp"
-            android:paddingStart="15dp"
-            android:paddingEnd="15dp"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:textColor="@android:color/white"
-            android:id="@+id/appLogoTextView"
+            android:layout_margin="20dp"
+            android:layout_centerInParent="true"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Andeqa"/>
-
-
-        <ProgressBar
-            android:visibility="gone"
-            android:layout_below="@+id/appLogoTextView"
-            android:indeterminateOnly="true"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="75dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:id="@+id/progressBar"
-            android:layout_centerInParent="true" />
+            android:layout_height="wrap_content" />
 
     </RelativeLayout>
 

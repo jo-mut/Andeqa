@@ -1,40 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_initialization"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/default_gradient_color"
+    android:orientation="vertical"
     tools:context="com.andeqa.andeqa.home.MainActivity">
 
-    <ProgressBar
-        android:visibility="gone"
-        android:layout_below="@+id/appLogoTextView"
-        android:indeterminateOnly="true"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:id="@+id/progressBar"
-        android:layout_centerInParent="true" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <TextView
-        android:background="@drawable/logo_background"
-        android:layout_centerInParent="true"
-        android:textSize="40sp"
-        android:paddingTop="60dp"
-        android:paddingBottom="60dp"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:textColor="@android:color/white"
-        android:id="@+id/appLogoTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Andeqa"/>
+        <TextView
+            android:textStyle="bold"
+            android:text="Andeqa"
+            android:textColor="@color/grey_500"
+            android:textSize="40sp"
+            android:layout_margin="20dp"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
+    </RelativeLayout>
 
-</RelativeLayout>
+</LinearLayout>

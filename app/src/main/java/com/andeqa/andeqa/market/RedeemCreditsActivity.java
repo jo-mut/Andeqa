@@ -140,7 +140,6 @@ public class RedeemCreditsActivity extends AppCompatActivity implements View.OnC
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             commentReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
-            senseCreditReference = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
             selllingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
 
 

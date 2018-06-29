@@ -16,7 +16,7 @@ public abstract class EndlessLinearRecyclerViewOnScrollListener extends Recycler
      * True if we are still waiting for the last set of data to load.
      */
     private boolean mLoading = true;
-    private StaggeredGridLayoutManager layoutManager;
+    private LinearLayoutManager layoutManager;
 
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -24,8 +24,8 @@ public abstract class EndlessLinearRecyclerViewOnScrollListener extends Recycler
 
         int visibleItemCount = recyclerView.getChildCount();
         int totalItemCount = recyclerView.getLayoutManager().getItemCount();
-        layoutManager = ((StaggeredGridLayoutManager) recyclerView.getLayoutManager());
-        int [] lastVisible = layoutManager.findFirstVisibleItemPositions(null);
+        layoutManager = ((LinearLayoutManager) recyclerView.getLayoutManager());
+        int firstVisibleItem = layoutManager.findLastVisibleItemPosition();
 
         if (mLoading) {
             if (totalItemCount > mPreviousTotal) {
@@ -34,8 +34,8 @@ public abstract class EndlessLinearRecyclerViewOnScrollListener extends Recycler
             }
         }
         int visibleThreshold = 10;
-        if (!mLoading && totalItemCount
-                <= (lastVisible[0] + visibleThreshold)) {
+        if (!mLoading && (totalItemCount - visibleItemCount)
+                <= (firstVisibleItem + visibleThreshold)) {
             // End has been reached
 
             onLoadMore();

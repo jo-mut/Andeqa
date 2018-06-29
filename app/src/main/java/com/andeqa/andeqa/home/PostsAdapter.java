@@ -758,9 +758,10 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
 
                                                                 if (documentSnapshot.exists()){
                                                                     final Credit credit = documentSnapshot.toObject(Credit.class);
-                                                                    final double amountRedeemed =   credit.getAmount();
-                                                                    Log.d(amountRedeemed + "", "amount redeemed");
+                                                                    final double amount =   credit.getAmount();
+                                                                    Log.d(amount + "", "amount redeemed");
                                                                     final  double amountDeposited = credit.getDeposited();
+                                                                    final double amountRedeemed = credit.getRedeemed();
                                                                     Log.d(amountDeposited + "", "amount deposited");
                                                                     final double senseCredits = amountDeposited + finalPoints;
                                                                     Log.d("sense credit", senseCredits + "");
@@ -796,9 +797,10 @@ public class PostsAdapter extends RecyclerView.Adapter<PostViewHolder> {
 
                                                             if (documentSnapshot.exists()){
                                                                 final Credit credit = documentSnapshot.toObject(Credit.class);
-                                                                final double amountRedeemed =   credit.getAmount();
-                                                                Log.d(amountRedeemed + "", "amount redeemed");
+                                                                final double amount =   credit.getAmount();
+                                                                Log.d(amount + "", "amount redeemed");
                                                                 final  double amountDeposited = credit.getDeposited();
+                                                                final double amountRedeemed = credit.getRedeemed();
                                                                 Log.d(amountDeposited + "", "amount deposited");
                                                                 final double senseCredits = amountDeposited + finalPoints;
                                                                 Log.d("sense credit", senseCredits + "");

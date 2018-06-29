@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -77,7 +78,7 @@ public class DeepLinkActivity extends AppCompatActivity {
     @Bind(R.id.commentsImageView)ImageView mCommentImageView;
     @Bind(R.id.commentsCountTextView)TextView mCommentCountTextView;
     @Bind(R.id.creditsTextView)TextView mCreditsTextView;
-    @Bind(R.id.likesLinearLayout)RelativeLayout mLikesLinearLayout;
+    @Bind(R.id.likesLinearLayout)LinearLayout mLikesLinearLayout;
     @Bind(R.id.settingsRelativeLayout)RelativeLayout mShareLinearLayout;
 
 
