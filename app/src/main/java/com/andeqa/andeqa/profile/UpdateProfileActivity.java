@@ -25,7 +25,10 @@ import android.widget.ViewAnimator;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.camera.GalleryActivity;
+import com.andeqa.andeqa.camera.PicturesActivity;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -125,35 +128,20 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     private void loadProfileImage(){
         profilePhotoIntent = getIntent().getStringExtra(PROFILE_PHOTO_PATH);
         if (profilePhotoIntent != null){
-            Picasso.with(this)
+            Glide.with(this)
+                    .asBitmap()
                     .load(new File(profilePhotoIntent))
-                    .resize(MAX_HEIGHT, MAX_WIDTH)
-                    .centerCrop()
-                    .placeholder(R.drawable.ic_user_white)
-                    .into(mProfilePictureImageView,
-                            new Callback.EmptyCallback(){
-                                @Override
-                                public void onSuccess(){
-
-                                }
-                            });
+                    .into(mProfilePictureImageView);
         }
     }
 
     private void loadProfileCover(){
         profileCoverIntent = getIntent().getStringExtra(PROFILE_COVER_PATH);
         if (profileCoverIntent != null){
-            Picasso.with(this)
+            Glide.with(this)
+                    .asBitmap()
                     .load(new File(profileCoverIntent))
-                    .resize(MAX_COVER_WIDTH, MAX_COVER_HEIGHT)
-                    .centerCrop()
-                    .into(mProfileCoverImageView,
-                            new Callback.EmptyCallback(){
-                                @Override
-                                public void onSuccess(){
-
-                                }
-                            });
+                    .into(mProfileCoverImageView);
         }
     }
 
@@ -195,7 +183,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     @Override
     public void onClick(View v){
         if(v == mUpdateProfileImageButton){
-            Intent intent = new Intent(UpdateProfileActivity.this, GalleryActivity.class);
+            Intent intent = new Intent(UpdateProfileActivity.this, PicturesActivity.class);
             intent.putExtra(UpdateProfileActivity.PROFILE_PHOTO_PATH, UpdateProfileActivity.class.getSimpleName());
             startActivity(intent);
             finish();
@@ -216,7 +204,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 
 
         if (v == mUpdateCoverTextView){
-            Intent intent = new Intent(UpdateProfileActivity.this, GalleryActivity.class);
+            Intent intent = new Intent(UpdateProfileActivity.this, PicturesActivity.class);
             intent.putExtra(UpdateProfileActivity.PROFILE_COVER_PATH, UpdateProfileActivity.class.getSimpleName());
             startActivity(intent);
             finish();

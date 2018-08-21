@@ -12,6 +12,7 @@ public class Message {
     String message_id;
     String type;
     String room_id;
+    String photo;
     long time;
 
     public Message() {
@@ -84,5 +85,13 @@ public class Message {
 
     public void setTime(long timeStamp) {
         this.time = timeStamp;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 }

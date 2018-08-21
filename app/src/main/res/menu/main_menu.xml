@@ -3,13 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.andeqa.andeqa.home.TestActivity">
 
-    <!--<item-->
-        <!--android:id="@+id/action_search"-->
-        <!--android:icon="@drawable/ic_search"-->
-        <!--app:showAsAction="always"-->
-        <!--android:title="Search">-->
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search"
+        app:showAsAction="always"
+        android:title="Search">
 
-    <!--</item>-->
+    </item>
 
     <!--<item-->
         <!--android:id="@+id/action_chats"-->
@@ -18,11 +18,11 @@
         <!--android:title="Chats">-->
 
     <!--</item>-->
-    <item
-        android:id="@+id/action_notifications"
-        android:icon="@drawable/action_bar_group_icon"
-        app:showAsAction="always"
-        android:title="Notifications">
+    <!--<item-->
+        <!--android:id="@+id/action_notifications"-->
+        <!--android:icon="@drawable/action_bar_group_icon"-->
+        <!--app:showAsAction="always"-->
+        <!--android:title="Notifications">-->
 
-    </item>
+    <!--</item>-->
 </menu>

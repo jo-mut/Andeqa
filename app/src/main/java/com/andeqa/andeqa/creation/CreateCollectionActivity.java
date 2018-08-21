@@ -28,7 +28,7 @@ import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.camera.GalleryActivity;
+import com.andeqa.andeqa.camera.PicturesActivity;
 import com.andeqa.andeqa.collections.CollectionPostsActivity;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.CollectionPost;
@@ -167,8 +167,8 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
             mAddRelativeLayout.setVisibility(View.GONE);
             mCollectionRelativeLayout.setVisibility(View.VISIBLE);
             Glide.with(CreateCollectionActivity.this)
-                    .load(new File(image))
                     .asBitmap()
+                    .load(new File(image))
                     .into(mCollectionCoverImageView);
         }
 
@@ -298,6 +298,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                         final StorageReference storageReference = FirebaseStorage
                                 .getInstance().getReference()
                                 .child(Constants.USER_COLLECTIONS)
+                                .child("collection_covers")
                                 .child(collectionId);
 
                         UploadTask uploadTask = storageReference.putBytes(data);
@@ -414,7 +415,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
         if (v == mAddRelativeLayout){
             mAddRelativeLayout.setVisibility(View.GONE);
             mCollectionRelativeLayout.setVisibility(View.VISIBLE);
-            Intent intent = new Intent(CreateCollectionActivity.this, GalleryActivity.class);
+            Intent intent = new Intent(CreateCollectionActivity.this, PicturesActivity.class);
             intent.putExtra(CreateCollectionActivity.COLLECTION_TAG, CreateCollectionActivity.class.getSimpleName());
             startActivity(intent);
             finish();

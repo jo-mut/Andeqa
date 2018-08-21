@@ -26,6 +26,7 @@
         android:title="Explore">
     </item>
 
+
     <item
         android:id="@+id/action_chats"
         android:icon="@drawable/message_notifications"
@@ -34,5 +35,12 @@
         android:title="Messages">
     </item>
 
+    <item
+        android:id="@+id/action_timeline"
+        android:icon="@drawable/timeline_notifications"
+        app:showAsAction="ifRoom"
+        android:enabled="true"
+        android:title="Timeline">
+    </item>
 
 </menu>

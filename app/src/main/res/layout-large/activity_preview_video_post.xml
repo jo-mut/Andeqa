@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/black"
+    tools:context=".creation.PreviewVideoPostActivity">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+            android:id="@+id/simpleExoPlayerView"
+            android:focusable="true"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:controller_layout_id="@layout/playback_control_view">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/stateRelativeLayout"
+                android:visibility="gone"
+                android:background="#CCDEDEDE">
+
+                <ProgressBar
+                    android:layout_centerInParent="true"
+                    android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+        </com.google.android.exoplayer2.ui.SimpleExoPlayerView>
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="84dp"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:titleTextColor="@android:color/white"
+            android:background="@android:color/transparent"
+            app:titleTextAppearance="@style/toolbarTextAppearance"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStart="0dp">
+
+            <ImageView
+                android:background="@drawable/white_rounded_background"
+                app:srcCompat="@drawable/ic_send"
+                android:tint="@color/grey_700"
+                android:textColor="@android:color/white"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:id="@+id/nextImageView"
+                android:layout_gravity="right"
+                android:padding="15dp"
+                android:layout_margin="5dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true" />
+
+        </android.support.v7.widget.Toolbar>
+
+    </RelativeLayout>
+
+</LinearLayout>

@@ -4,7 +4,6 @@ package com.andeqa.andeqa.collections;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -48,7 +47,7 @@ public class MineCollectionFragment extends Fragment {
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore adapters
-    private FeaturedCollectionsAdapter featuredCollectionsAdapter;
+    private MineCollectionsAdapter mineCollectionsAdapter;
     private int TOTAL_ITEMS = 10;
     private StaggeredGridLayoutManager layoutManager;
     private static final String EXTRA_USER_UID = "uid";
@@ -136,8 +135,8 @@ public class MineCollectionFragment extends Fragment {
 
     private void setRecyclerView(){
         // RecyclerView
-        featuredCollectionsAdapter = new FeaturedCollectionsAdapter(getContext());
-        mCollectionsRecyclerView.setAdapter(featuredCollectionsAdapter);
+        mineCollectionsAdapter = new MineCollectionsAdapter(getContext());
+        mCollectionsRecyclerView.setAdapter(mineCollectionsAdapter);
         mCollectionsRecyclerView.setHasFixedSize(false);
         layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
         itemOffsetDecoration = new ItemOffsetDecoration(getContext(), R.dimen.item_off_set);
@@ -178,11 +177,11 @@ public class MineCollectionFragment extends Fragment {
 
     private void setNextCollections(){
         // Get the last visible document
-        final int snapshotSize = featuredCollectionsAdapter.getItemCount();
+        final int snapshotSize = mineCollectionsAdapter.getItemCount();
 
         if (snapshotSize == 0){
         }else {
-            DocumentSnapshot lastVisible = featuredCollectionsAdapter.getSnapshot(snapshotSize - 1);
+            DocumentSnapshot lastVisible = mineCollectionsAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of posts
             Query nextSinglesQuery = collectionsCollection.orderBy("time", Query.Direction.ASCENDING)
@@ -217,9 +216,9 @@ public class MineCollectionFragment extends Fragment {
     protected void onDocumentAdded(DocumentChange change) {
         mSnapshotsIds.add(change.getDocument().getId());
         mSnapshots.add(change.getDocument());
-        featuredCollectionsAdapter.setFeaturedCollections(mSnapshots);
-        featuredCollectionsAdapter.notifyItemInserted(mSnapshots.size() -1);
-        featuredCollectionsAdapter.getItemCount();
+        mineCollectionsAdapter.setProfileCollections(mSnapshots);
+        mineCollectionsAdapter.notifyItemInserted(mSnapshots.size() -1);
+        mineCollectionsAdapter.getItemCount();
 
     }
 
@@ -227,20 +226,20 @@ public class MineCollectionFragment extends Fragment {
         if (change.getOldIndex() == change.getNewIndex()) {
             // Item changed but remained in same position
             mSnapshots.set(change.getOldIndex(), change.getDocument());
-            featuredCollectionsAdapter.notifyItemChanged(change.getOldIndex());
+            mineCollectionsAdapter.notifyItemChanged(change.getOldIndex());
         } else {
             // Item changed and changed position
             mSnapshots.remove(change.getOldIndex());
             mSnapshots.add(change.getNewIndex(), change.getDocument());
-            featuredCollectionsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+            mineCollectionsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
         }
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
         try{
             mSnapshots.remove(change.getOldIndex());
-            featuredCollectionsAdapter.notifyItemRemoved(change.getOldIndex());
-            featuredCollectionsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+            mineCollectionsAdapter.notifyItemRemoved(change.getOldIndex());
+            mineCollectionsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
         }catch (Exception e){
             e.printStackTrace();
         }

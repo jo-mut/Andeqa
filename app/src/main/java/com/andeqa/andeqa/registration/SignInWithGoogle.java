@@ -2,28 +2,21 @@ package com.andeqa.andeqa.registration;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 // Importing Google GMS Auth API Libraries.
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.home.NavigationDrawerActivity;
-import com.google.android.gms.auth.api.Auth;
+import com.andeqa.andeqa.main.HomeActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -37,11 +30,9 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
-import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class SignInWithGoogle extends AppCompatActivity {
-    @Bind(R.id.progressBar)ProgressBar progressBar;
 
     private static final String TAG = SignInWithGoogle.class.getSimpleName();
     private static final int RC_SIGN_IN = 9001;
@@ -155,7 +146,7 @@ public class SignInWithGoogle extends AppCompatActivity {
                                             }
 
                                             if (documentSnapshot.exists()){
-                                                Intent intent = new Intent(SignInWithGoogle.this, NavigationDrawerActivity.class);
+                                                Intent intent = new Intent(SignInWithGoogle.this, HomeActivity.class);
                                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                                 startActivity(intent);
                                                 finish();

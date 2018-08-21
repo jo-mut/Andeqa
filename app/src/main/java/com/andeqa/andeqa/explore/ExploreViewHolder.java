@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Market;
+import com.andeqa.andeqa.utils.ProportionalImageView;
 
 /**
  * Created by J.EL on 9/14/2017.
@@ -18,7 +19,7 @@ public class ExploreViewHolder extends RecyclerView.ViewHolder {
     View mView;
     Context mContext;
     public TextView creatorTextView;
-    public ImageView postImageView;
+    public ProportionalImageView postImageView;
     public TextView ownerTextView;
     public TextView salePriceTextView;
     public LinearLayout exploreLinearLayout;
@@ -28,7 +29,7 @@ public class ExploreViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
-        postImageView = (ImageView) mView.findViewById(R.id.postImageView);
+        postImageView = (ProportionalImageView) mView.findViewById(R.id.postImageView);
         exploreLinearLayout = (LinearLayout) mView.findViewById(R.id.explore_linear_layout);
     }
 

@@ -1,5 +1,6 @@
 package com.andeqa.andeqa.profile;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
@@ -33,8 +36,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 
-public class ProfileCollectionFragment extends Fragment {
+public class ProfileCollectionFragment extends Fragment{
     @Bind(R.id.collectionsRecyclerView)RecyclerView mCollectionsRecyclerView;
+
     private static final String TAG = CollectionPostsActivity.class.getSimpleName();
 
     //firestore reference
@@ -44,7 +48,7 @@ public class ProfileCollectionFragment extends Fragment {
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore adapters
-    private ProfileCollectionsAdapter profileCollectionsAdapter;
+    private ProfileCollectionAdapter profileCollectionAdapter;
     private int TOTAL_ITEMS = 10;
     private StaggeredGridLayoutManager layoutManager;
     private static final String EXTRA_USER_UID = "uid";
@@ -79,6 +83,7 @@ public class ProfileCollectionFragment extends Fragment {
         if (firebaseAuth.getCurrentUser()!= null){
 
             mUid = getActivity().getIntent().getStringExtra(EXTRA_USER_UID);
+            Log.d("fragment uid", mUid);
 
             collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
             collectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
@@ -126,6 +131,7 @@ public class ProfileCollectionFragment extends Fragment {
         super.onDestroy();
     }
 
+
     private void loadData(){
         mSnapshots.clear();
         setRecyclerView();
@@ -134,10 +140,10 @@ public class ProfileCollectionFragment extends Fragment {
 
     private void setRecyclerView(){
         // RecyclerView
-        profileCollectionsAdapter = new ProfileCollectionsAdapter(getContext());
-        mCollectionsRecyclerView.setAdapter(profileCollectionsAdapter);
+        profileCollectionAdapter = new ProfileCollectionAdapter(getContext());
+        mCollectionsRecyclerView.setAdapter(profileCollectionAdapter);
         mCollectionsRecyclerView.setHasFixedSize(false);
-        layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+        layoutManager = new StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL);
         itemOffsetDecoration = new ItemOffsetDecoration(getContext(), R.dimen.item_off_set);
         mCollectionsRecyclerView.setLayoutManager(layoutManager);
     }
@@ -176,11 +182,11 @@ public class ProfileCollectionFragment extends Fragment {
 
     private void setNextCollections(){
         // Get the last visible document
-        final int snapshotSize = profileCollectionsAdapter.getItemCount();
+        final int snapshotSize = profileCollectionAdapter.getItemCount();
 
         if (snapshotSize == 0){
         }else {
-            DocumentSnapshot lastVisible = profileCollectionsAdapter.getSnapshot(snapshotSize - 1);
+            DocumentSnapshot lastVisible = profileCollectionAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of posts
             Query nextSinglesQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
@@ -215,9 +221,9 @@ public class ProfileCollectionFragment extends Fragment {
     protected void onDocumentAdded(DocumentChange change) {
         mSnapshotsIds.add(change.getDocument().getId());
         mSnapshots.add(change.getDocument());
-        profileCollectionsAdapter.setProfileCollections(mSnapshots);
-        profileCollectionsAdapter.notifyItemInserted(mSnapshots.size() -1);
-        profileCollectionsAdapter.getItemCount();
+        profileCollectionAdapter.setProfileCollections(mSnapshots);
+        profileCollectionAdapter.notifyItemInserted(mSnapshots.size() -1);
+        profileCollectionAdapter.getItemCount();
 
     }
 
@@ -225,20 +231,20 @@ public class ProfileCollectionFragment extends Fragment {
         if (change.getOldIndex() == change.getNewIndex()) {
             // Item changed but remained in same position
             mSnapshots.set(change.getOldIndex(), change.getDocument());
-            profileCollectionsAdapter.notifyItemChanged(change.getOldIndex());
+            profileCollectionAdapter.notifyItemChanged(change.getOldIndex());
         } else {
             // Item changed and changed position
             mSnapshots.remove(change.getOldIndex());
             mSnapshots.add(change.getNewIndex(), change.getDocument());
-            profileCollectionsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+            profileCollectionAdapter.notifyItemRangeChanged(0, mSnapshots.size());
         }
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
         try{
             mSnapshots.remove(change.getOldIndex());
-            profileCollectionsAdapter.notifyItemRemoved(change.getOldIndex());
-            profileCollectionsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+            profileCollectionAdapter.notifyItemRemoved(change.getOldIndex());
+            profileCollectionAdapter.notifyItemRangeChanged(0, mSnapshots.size());
         }catch (Exception e){
             e.printStackTrace();
         }

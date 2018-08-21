@@ -1,6 +1,7 @@
 package com.andeqa.andeqa.profile;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
@@ -11,10 +12,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.collections.CollectionPostsActivity;
+import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -43,11 +47,11 @@ public class PostsFragment extends Fragment{
 
     //firestore reference
     private CollectionReference postsCollection;
-    private Query profileSinglesQuery;
+    private Query postsQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore adapters
-    private ProfilePostsAdapter profilePostsAdapter;
+    private ProfilePostAdapter profilePostAdapter;
     private static final String KEY_LAYOUT_POSITION = "layout pooition";
     private Parcelable recyclerViewState;
     private  static final int MAX_WIDTH = 400;
@@ -95,8 +99,7 @@ public class PostsFragment extends Fragment{
             mUid = getActivity().getIntent().getStringExtra(EXTRA_USER_UID);
 
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            profileSinglesQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
-                    .whereEqualTo("type", "post")
+            postsQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
                     .whereEqualTo("user_id", mUid).limit(TOTAL_ITEMS);
 
             mPostssRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
@@ -110,6 +113,7 @@ public class PostsFragment extends Fragment{
 
         return view;
     }
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -140,6 +144,7 @@ public class PostsFragment extends Fragment{
         super.onDestroy();
     }
 
+
     private void loadData(){
         mSnapshots.clear();
         setRecyclerView();
@@ -148,17 +153,17 @@ public class PostsFragment extends Fragment{
 
     private void setRecyclerView(){
         // RecyclerView
-        profilePostsAdapter = new ProfilePostsAdapter(getContext());
-        mPostssRecyclerView.setAdapter(profilePostsAdapter);
+        profilePostAdapter = new ProfilePostAdapter(getContext());
+        mPostssRecyclerView.setAdapter(profilePostAdapter);
         mPostssRecyclerView.setHasFixedSize(false);
-        layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+        layoutManager = new StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL);
         itemOffsetDecoration = new ItemOffsetDecoration(getContext(), R.dimen.item_off_set);
         mPostssRecyclerView.setLayoutManager(layoutManager);
 
     }
 
     private void setPosts(){
-        profileSinglesQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        postsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
@@ -171,7 +176,11 @@ public class PostsFragment extends Fragment{
                     for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
                         switch (change.getType()) {
                             case ADDED:
-                                onDocumentAdded(change);
+                                Post post = change.getDocument().toObject(Post.class);
+                                String type = post.getType();
+                                if (!type.equals("single_video_post") || !type.equals("collection_video_post")){
+                                    onDocumentAdded(change);
+                                }
                                 break;
                             case MODIFIED:
                                 onDocumentModified(change);
@@ -190,15 +199,14 @@ public class PostsFragment extends Fragment{
 
     private void setNextPosts(){
         // Get the last visible document
-        final int snapshotSize = profilePostsAdapter.getItemCount();
+        final int snapshotSize = profilePostAdapter.getItemCount();
 
         if (snapshotSize == 0){
         }else {
-            DocumentSnapshot lastVisible = profilePostsAdapter.getSnapshot(snapshotSize - 1);
+            DocumentSnapshot lastVisible = profilePostAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of posts
             Query nextSinglesQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
-                    .whereEqualTo("type", "post")
                     .whereEqualTo("user_id", mUid).startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
             nextSinglesQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -209,7 +217,11 @@ public class PostsFragment extends Fragment{
                         for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
                             switch (change.getType()) {
                                 case ADDED:
-                                    onDocumentAdded(change);
+                                    Post post = change.getDocument().toObject(Post.class);
+                                    String type = post.getType();
+                                    if (!type.equals("single_video_post") || !type.equals("collection_video_post")){
+                                        onDocumentAdded(change);
+                                    }
                                     break;
                                 case MODIFIED:
                                     onDocumentModified(change);
@@ -229,9 +241,9 @@ public class PostsFragment extends Fragment{
     protected void onDocumentAdded(DocumentChange change) {
         mSnapshotsIds.add(change.getDocument().getId());
         mSnapshots.add(change.getDocument());
-        profilePostsAdapter.setCollectionPosts(mSnapshots);
-        profilePostsAdapter.notifyItemInserted(mSnapshots.size() -1);
-        profilePostsAdapter.getItemCount();
+        profilePostAdapter.setCollectionPosts(mSnapshots);
+        profilePostAdapter.notifyItemInserted(mSnapshots.size() -1);
+        profilePostAdapter.getItemCount();
 
     }
 
@@ -239,20 +251,20 @@ public class PostsFragment extends Fragment{
         if (change.getOldIndex() == change.getNewIndex()) {
             // Item changed but remained in same position
             mSnapshots.set(change.getOldIndex(), change.getDocument());
-            profilePostsAdapter.notifyItemChanged(change.getOldIndex());
+            profilePostAdapter.notifyItemChanged(change.getOldIndex());
         } else {
             // Item changed and changed position
             mSnapshots.remove(change.getOldIndex());
             mSnapshots.add(change.getNewIndex(), change.getDocument());
-            profilePostsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+            profilePostAdapter.notifyItemRangeChanged(0, mSnapshots.size());
         }
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
         try{
             mSnapshots.remove(change.getOldIndex());
-            profilePostsAdapter.notifyItemRemoved(change.getOldIndex());
-            profilePostsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+            profilePostAdapter.notifyItemRemoved(change.getOldIndex());
+            profilePostAdapter.notifyItemRangeChanged(0, mSnapshots.size());
         }catch (Exception e){
             e.printStackTrace();
         }

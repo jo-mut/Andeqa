@@ -8,26 +8,32 @@
             android:id="@+id/action_profile"
             android:title="@string/profile" />
 
-        <item
-            android:icon="@drawable/ic_wallet"
-            android:id="@+id/action_wallet"
-            android:title="Wallet" />
+        <!--<item-->
+            <!--android:icon="@drawable/ic_people"-->
+            <!--android:id="@+id/action_people"-->
+            <!--android:title="People" />-->
+
+        <!--<item-->
+            <!--android:icon="@drawable/ic_wallet"-->
+            <!--android:id="@+id/action_wallet"-->
+            <!--android:title="Wallet" />-->
 
 
         <item
-            android:icon="@drawable/ic_feedback"
-            android:id="@+id/action_send_feedback"
-            android:title="@string/sendfeedback" />
+            android:icon="@drawable/ic_info"
+            android:id="@+id/action_about"
+            android:title="@string/about" />
 
         <item
             android:icon="@drawable/ic_settings"
             android:id="@+id/action_settings"
             android:title="@string/settings" />
 
+
         <item
-            android:icon="@drawable/ic_info"
-            android:id="@+id/action_about"
-            android:title="@string/about" />
+            android:icon="@drawable/ic_feedback"
+            android:id="@+id/action_send_feedback"
+            android:title="@string/sendfeedback" />
 
     </group>
 

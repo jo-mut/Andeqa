@@ -21,10 +21,11 @@ public class CollectionViewHolder extends RecyclerView.ViewHolder {
 
     View mView;
     Context mContext;
-    public ProportionalImageView mCollectionCoverImageView;
+    public ImageView mCollectionCoverImageView;
     public TextView mCollectionNameTextView;
     public TextView mCollectionsNoteTextView;
     public LinearLayout mCollectionsLinearLayout;
+    public LinearLayout collectionDetailsLinearLayout;
     public TextView postCountTextVew;
 
 
@@ -33,11 +34,12 @@ public class CollectionViewHolder extends RecyclerView.ViewHolder {
         mContext = itemView.getContext();
         mView = itemView;
 
-        mCollectionCoverImageView = (ProportionalImageView) mView.findViewById(R.id.collectionCoverImageView);
+        mCollectionCoverImageView = (ImageView) mView.findViewById(R.id.collectionCoverImageView);
         mCollectionNameTextView = (TextView) mView.findViewById(R.id.collectionNameTextView);
         mCollectionsNoteTextView = (TextView) mView.findViewById(R.id.collectionsNoteTextView);
         mCollectionsLinearLayout = (LinearLayout) mView.findViewById(R.id.collectionLinearLayout);
         postCountTextVew = (TextView) mView.findViewById(R.id.postsCountTextView);
+        collectionDetailsLinearLayout = (LinearLayout) mView.findViewById(R.id.collectionDetailsLinearLayout);
 
 
     }

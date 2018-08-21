@@ -38,13 +38,10 @@ import butterknife.ButterKnife;
  */
 public class FeaturedCollectionsFragment extends Fragment{
     @Bind(R.id.collectionsRecyclerView)RecyclerView mCollectionsRecyclerView;
-
     private static final String TAG = FeaturedCollectionsFragment.class.getSimpleName();
-
     //firestore reference
     private CollectionReference collectionsCollection;
     private Query collectionsQuery;
-
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore adapters

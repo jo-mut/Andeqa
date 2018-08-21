@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -44,6 +45,8 @@ public class ExploreFragment extends Fragment {
     private StaggeredGridLayoutManager layoutManager;
     //firestore
     private CollectionReference postWalletCollection;
+    private CollectionReference likesCollection;
+    private CollectionReference followersCollection;
     private Query creditQuery;
     //adapters
     private ExplorePostAdapter explorePostAdapter;
@@ -80,9 +83,9 @@ public class ExploreFragment extends Fragment {
         if (firebaseAuth.getCurrentUser()!= null){
             //firestore
             postWalletCollection = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
-            creditQuery = postWalletCollection.orderBy("amount", Query.Direction.ASCENDING)
-                    .limit(TOTAL_ITEMS);
-
+            creditQuery = postWalletCollection.orderBy("time", Query.Direction.ASCENDING);
+            followersCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE);
+            likesCollection = FirebaseFirestore.getInstance().collection(Constants.LIKES);
             bestPostRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
                 @Override
                 public void onLoadMore() {
@@ -152,9 +155,13 @@ public class ExploreFragment extends Fragment {
     }
 
     private void setCollections(){
-        creditQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+
+        followersCollection.document("followers")
+                .collection(firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+            public void onEvent(@javax.annotation.Nullable QuerySnapshot documentSnapshots,
+                                @javax.annotation.Nullable FirebaseFirestoreException e) {
 
                 if (e != null) {
                     Log.w(TAG, "Listen error", e);
@@ -162,62 +169,105 @@ public class ExploreFragment extends Fragment {
                 }
 
                 if (!documentSnapshots.isEmpty()){
-                    Log.d("snapshot is empty", documentSnapshots.size() + "");
-                    //retrieve the first bacth of documentSnapshots
                     for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                        switch (change.getType()) {
-                            case ADDED:
-                                onDocumentAdded(change);
-                                break;
-                            case MODIFIED:
-                                onDocumentModified(change);
-                                break;
-                            case REMOVED:
-                                onDocumentRemoved(change);
-                                break;
-                        }
+                        Relation relation = change.getDocument().toObject(Relation.class);
+                        final String userId = relation.getUser_id();
+
+                        creditQuery.whereEqualTo("user_id", userId)
+                                .limit(TOTAL_ITEMS).addSnapshotListener(new EventListener<QuerySnapshot>() {
+                            @Override
+                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                                if (e != null) {
+                                    Log.w(TAG, "Listen error", e);
+                                    return;
+                                }
+
+                                if (!documentSnapshots.isEmpty()){
+                                    Log.d("snapshot is empty", documentSnapshots.size() + "");
+                                    //retrieve the first bacth of documentSnapshots
+                                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                                        switch (change.getType()) {
+                                            case ADDED:
+                                                onDocumentAdded(change);
+                                                break;
+                                            case MODIFIED:
+                                                onDocumentModified(change);
+                                                break;
+                                            case REMOVED:
+                                                onDocumentRemoved(change);
+                                                break;
+                                        }
+                                    }
+                                }
+
+                            }
+                        });
                     }
+                }else {
+
                 }
 
             }
         });
+
     }
 
     private void setNextCollections(){
         // Get the last visible document
         final int snapshotSize = explorePostAdapter.getItemCount();
 
-        if (snapshotSize == 0){
-            //do nothing
-        }else {
-            DocumentSnapshot lastVisible = explorePostAdapter.getSnapshot(snapshotSize - 1);
+        if (snapshotSize >= 0){
+            final DocumentSnapshot lastVisible = explorePostAdapter.getSnapshot(snapshotSize - 1);
+            followersCollection.document("followers")
+                    .collection(firebaseAuth.getCurrentUser().getUid())
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                        @Override
+                        public void onEvent(@javax.annotation.Nullable QuerySnapshot documentSnapshots,
+                                            @javax.annotation.Nullable FirebaseFirestoreException e) {
 
-            //retrieve the first bacth of documentSnapshots
-            Query nextSellingQuery = postWalletCollection.orderBy("amount", Query.Direction.ASCENDING)
-                    .startAfter(lastVisible)
-                    .limit(TOTAL_ITEMS);
-
-            nextSellingQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                @Override
-                public void onSuccess(QuerySnapshot documentSnapshots) {
-                    if (!documentSnapshots.isEmpty()){
-                        //retrieve the first bacth of documentSnapshots
-                        for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                            switch (change.getType()) {
-                                case ADDED:
-                                    onDocumentAdded(change);
-                                    break;
-                                case MODIFIED:
-                                    onDocumentModified(change);
-                                    break;
-                                case REMOVED:
-                                    onDocumentRemoved(change);
-                                    break;
+                            if (e != null) {
+                                Log.w(TAG, "Listen error", e);
+                                return;
                             }
+
+                            if (!documentSnapshots.isEmpty()){
+                                for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                                    Relation relation = change.getDocument().toObject(Relation.class);
+                                    final String userId = relation.getUser_id();
+                                    //retrieve the first bacth of documentSnapshots
+                                    Query nextSellingQuery = postWalletCollection.orderBy("time", Query.Direction.ASCENDING)
+                                            .whereEqualTo("user_id", userId).startAfter(lastVisible).limit(TOTAL_ITEMS);
+
+                                    nextSellingQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onSuccess(QuerySnapshot documentSnapshots) {
+                                            if (!documentSnapshots.isEmpty()){
+                                                //retrieve the first bacth of documentSnapshots
+                                                for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                                                    switch (change.getType()) {
+                                                        case ADDED:
+                                                            onDocumentAdded(change);
+                                                            break;
+                                                        case MODIFIED:
+                                                            onDocumentModified(change);
+                                                            break;
+                                                        case REMOVED:
+                                                            onDocumentRemoved(change);
+                                                            break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    });
+
+                                }
+                            }else {
+
+                            }
+
                         }
-                    }
-                }
-            });
+                    });
 
         }
     }

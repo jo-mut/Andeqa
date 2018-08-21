@@ -1,7 +1,5 @@
 package com.andeqa.andeqa.models;
 
-import android.net.Uri;
-
 /**
  * Created by J.EL on 2/28/2018.
  */
@@ -10,6 +8,8 @@ public class CollectionPost {
     long time;
     long number;
     double random_number;
+    String height;
+    String width;
     String title;
     String image;
     String description;
@@ -109,5 +109,21 @@ public class CollectionPost {
 
     public void setDeeplink(String deeplink) {
         this.deeplink = deeplink;
+    }
+
+    public String getHeight() {
+        return height;
+    }
+
+    public void setHeight(String height) {
+        this.height = height;
+    }
+
+    public String getWidth() {
+        return width;
+    }
+
+    public void setWidth(String width) {
+        this.width = width;
     }
 }

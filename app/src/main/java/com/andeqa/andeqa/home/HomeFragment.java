@@ -3,10 +3,8 @@ package com.andeqa.andeqa.home;
 
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -17,6 +15,7 @@ import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -47,17 +46,11 @@ public class HomeFragment extends Fragment{
     @Bind(R.id.progressBarRelativeLayout)RelativeLayout mProgressBarRelativeLayout;
 
     private static final String TAG = HomeFragment.class.getSimpleName();
-    private static final String LAYOUT_STATE = "layout position";
-    private static final String RECYCLER_VIEW_ITEMS = "items";
-    private Parcelable parcelable = null;
-    private Bundle savedState = null;
-    private int firstVisiblePosition = RecyclerView.NO_POSITION;
     //firestore reference
     private CollectionReference postsCollection;
-    private CollectionReference postCollections;
-    private CollectionReference collectionReference;
     private Query randomPostsQuery;
     private Query nextRandomQuery;
+    private CollectionReference usersReference;
 
     //firebase auth
     private FirebaseAuth firebaseAuth;
@@ -72,6 +65,7 @@ public class HomeFragment extends Fragment{
     int spacing = 5; // 50px
     boolean includeEdge = true;
     private ItemOffsetDecoration itemOffsetDecoration;
+
 
 
     public HomeFragment() {
@@ -91,10 +85,9 @@ public class HomeFragment extends Fragment{
         if (firebaseAuth.getCurrentUser() != null){
             //firestore
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            randomPostsQuery = postsCollection.orderBy("random_number", Query.Direction.ASCENDING)
+            usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+            randomPostsQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
                     .limit(TOTAL_ITEMS);
-
-
             postsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
                 @Override
                 public void onLoadMore() {
@@ -108,40 +101,12 @@ public class HomeFragment extends Fragment{
     }
 
 
-//    @Override
-//    public void onSaveInstanceState(@NonNull Bundle outState) {
-//        parcelable = postsRecyclerView.getLayoutManager().onSaveInstanceState();
-//        outState.putParcelable(LAYOUT_STATE, parcelable);
-//        outState.putParcelableArrayList(RECYCLER_VIEW_ITEMS, snapshots);
-//        super.onSaveInstanceState(outState);
-//    }
-
-
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         loadData();
-//        if (savedInstanceState != null && savedState == null){
-//            savedState = savedInstanceState.getParcelable(LAYOUT_STATE);
-//            postsRecyclerView.getLayoutManager().onRestoreInstanceState(savedState);
-//            Log.d("saved state", "present");
-//        }
-//
-//        if (savedState != null) {
-//            Log.d("saved state bundle", "present");
-//            savedState.getParcelable(LAYOUT_STATE);
-//            postsRecyclerView.getLayoutManager()
-//                    .onRestoreInstanceState(savedState);
-//        }
-//
-//        parcelable = null;
     }
 
-//    @Override
-//    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-//        super.onViewStateRestored(savedInstanceState);
-//
-//    }
 
     @Override
     public void onStart() {
@@ -170,7 +135,6 @@ public class HomeFragment extends Fragment{
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-//        savedState = saveState();
     }
 
     @Override
@@ -179,15 +143,6 @@ public class HomeFragment extends Fragment{
         postsRecyclerView.removeItemDecoration(itemOffsetDecoration);
     }
 
-
-//    public Bundle saveState(){
-//        Bundle bundle = new Bundle();
-//        parcelable = postsRecyclerView.getLayoutManager().onSaveInstanceState();
-//        bundle.putParcelable(LAYOUT_STATE, parcelable);
-//        bundle.putParcelableArrayList(RECYCLER_VIEW_ITEMS, snapshots);
-//        return bundle;
-//    }
-
     public void loadData(){
         posts.clear();
         setRecyclerView();
@@ -195,7 +150,7 @@ public class HomeFragment extends Fragment{
     }
 
     private void setRecyclerView(){
-        postsAdapter = new PostsAdapter(getContext());
+        postsAdapter = new PostsAdapter(getActivity());
         postsRecyclerView.setAdapter(postsAdapter);
         postsRecyclerView.setHasFixedSize(false);
         layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
@@ -220,7 +175,11 @@ public class HomeFragment extends Fragment{
                     for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
                         switch (change.getType()) {
                             case ADDED:
-                                onDocumentAdded(change);
+                                Post post = change.getDocument().toObject(Post.class);
+                                String type = post.getType();
+                                if (!type.equals("single_video_post") || !type.equals("collection_video_post")){
+                                    onDocumentAdded(change);
+                                }
                                 break;
                             case MODIFIED:
                                 onDocumentModified(change);
@@ -231,7 +190,6 @@ public class HomeFragment extends Fragment{
                         }
                     }
 
-                    Log.d("size of documents", documentSnapshots.size() + "");
                 }
             }
         });
@@ -245,7 +203,7 @@ public class HomeFragment extends Fragment{
         }else {
             DocumentSnapshot lastVisible = postsAdapter.getSnapshot(snapshotSize - 1);
             //retrieve the first bacth of posts
-            nextRandomQuery = postsCollection.orderBy("random_number", Query.Direction.ASCENDING)
+            nextRandomQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
                     .startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
 
@@ -258,7 +216,11 @@ public class HomeFragment extends Fragment{
                         for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
                             switch (change.getType()) {
                                 case ADDED:
-                                    onDocumentAdded(change);
+                                    Post post = change.getDocument().toObject(Post.class);
+                                    String type = post.getType();
+                                    if (!type.equals("single_video_post") || !type.equals("collection_video_post")){
+                                        onDocumentAdded(change);
+                                    }
                                     break;
                                 case MODIFIED:
                                     onDocumentModified(change);
@@ -311,5 +273,5 @@ public class HomeFragment extends Fragment{
            e.printStackTrace();
        }
     }
-    
+
 }

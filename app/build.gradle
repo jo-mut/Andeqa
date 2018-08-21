@@ -7,8 +7,8 @@ android {
         applicationId "com.andeqa.andeqa"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 52
-        versionName "1.4.2"
+        versionCode 65
+        versionName "1.4.3"
         multiDexEnabled true
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -57,6 +57,8 @@ android {
     repositories {
         mavenCentral()
         jcenter()
+        maven { url 'https://github.com/leonardocardoso/mvn-repo/raw/master/maven-deploy' }
+
     }
 }
 
@@ -74,14 +76,13 @@ dependencies {
     //third party libraries
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:support-v4:27.1.1'
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support:palette-v7:27.1.1'
-    implementation 'com.android.support:support-v4:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     implementation 'com.jakewharton:butterknife:7.0.1'
     implementation 'com.squareup.okhttp:okhttp:2.4.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
-    implementation 'com.github.bumptech.glide:glide:3.7.0'
     implementation 'org.parceler:parceler-api:1.1.6'
     implementation 'com.google.firebase:firebase-database:16.0.1'
     implementation 'com.google.firebase:firebase-crash:16.0.1'
@@ -97,9 +98,23 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore:17.0.2'
     implementation 'com.google.firebase:firebase-invites:16.0.1'
     implementation 'com.google.firebase:firebase-dynamic-links:16.0.1'
+    implementation 'com.google.firebase:firebase-config:16.0.0'
     implementation 'com.firebaseui:firebase-ui-database:3.3.1'
     implementation 'com.firebaseui:firebase-ui-firestore:3.3.1'
     implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.github.waynell:VideoRangeSlider:1.0.1'
+    implementation 'com.vincent.filepicker:MultiTypeFilePicker:1.0.7'
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
+    implementation 'com.github.bumptech.glide:glide:4.7.1'
+    implementation 'com.google.android.exoplayer:exoplayer:2.6.0'
+
+
+//    //rich link previews
+    implementation 'org.jsoup:jsoup:1.11.3'
+    implementation 'com.leocardz:link-preview:2.0.0@aar'
+    implementation 'com.koushikdutta.urlimageviewhelper:urlimageviewhelper:1.0.4'
+
+
 
 
     testImplementation 'junit:junit:4.12'

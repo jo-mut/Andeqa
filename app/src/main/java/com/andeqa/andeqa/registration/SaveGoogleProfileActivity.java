@@ -16,16 +16,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.home.NavigationDrawerActivity;
+import com.andeqa.andeqa.main.HomeActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Wallet;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,9 +35,6 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.util.Date;
 
@@ -50,7 +46,7 @@ public class SaveGoogleProfileActivity extends AppCompatActivity implements View
     @Bind(R.id.fisrtNameEditText)EditText mFirstNameEditText;
     @Bind(R.id.secondNameEditText)EditText mSecondNameEditText;
     @Bind(R.id.usernameEditText) EditText mUsernameEditText;
-    @Bind(R.id.profileImageView)CircleImageView mProfilePictureImageView;
+    @Bind(R.id.profileImageView)CircleImageView mProfileImageView;
     @Bind(R.id.profilePhotoImageButton)ImageButton mUpdateProfilePictureImageButton;
     @Bind(R.id.submitUserInfoButton)Button mSubmitUserInfoButton;
 
@@ -213,6 +209,10 @@ public class SaveGoogleProfileActivity extends AppCompatActivity implements View
                                 final String profileImage = (downloadUri.toString());
                                 Log.d("profile image", profileImage);
                                 usersReference.document(uid).update("profile_images", profileImage);
+                                Intent intent = new Intent(SaveGoogleProfileActivity.this, HomeActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                                finish();
 
                             } else {
                                 // Handle failures
@@ -221,29 +221,28 @@ public class SaveGoogleProfileActivity extends AppCompatActivity implements View
                         }
                     });
 
+                }else {
+                    final String address = walletReference.getId();
+                    final long time = new Date().getTime();
+                    Wallet wallet = new Wallet();
+                    wallet.setAddress(address);
+                    wallet.setBalance(0.0);
+                    wallet.setTime(time);
+                    wallet.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                    walletReference.document(firebaseAuth.getCurrentUser().getUid())
+                            .collection("account_addresses")
+                            .document(firebaseAuth.getCurrentUser().getUid())
+                            .set(address).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            //the user is already logged in so create profile and move to next activity
+                            Intent intent = new Intent(SaveGoogleProfileActivity.this, HomeActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
                 }
-
-
-                final String address = walletReference.getId();
-                final long time = new Date().getTime();
-                Wallet wallet = new Wallet();
-                wallet.setAddress(address);
-                wallet.setBalance(0.0);
-                wallet.setTime(time);
-                wallet.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                walletReference.document(firebaseAuth.getCurrentUser().getUid())
-                        .collection("account_addresses")
-                        .document(firebaseAuth.getCurrentUser().getUid())
-                        .set(address).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        //the user is already logged in so create profile and move to next activity
-                        Intent intent = new Intent(SaveGoogleProfileActivity.this, NavigationDrawerActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        finish();
-                    }
-                });
 
             }
         });
@@ -283,29 +282,13 @@ public class SaveGoogleProfileActivity extends AppCompatActivity implements View
             //update the profile photo
             if (requestCode == GALLERY_PROFILE_PHOTO_REQUEST) {
                 profileUri = data.getData();
-//                mProfilePictureImageView.setImageURI(imageUri);
+//                mProfileImageView.setImageURI(imageUri);
 
-                Picasso.with(this)
-                        .load(profileUri).resize(MAX_WIDTH, MAX_HEIGHT).onlyScaleDown()
-                        .centerCrop()
-                        .placeholder(R.drawable.ic_user)
-                        .networkPolicy(NetworkPolicy.OFFLINE)
-                        .into(mProfilePictureImageView, new Callback() {
-                            @Override
-                            public void onSuccess() {
 
-                            }
-
-                            @Override
-                            public void onError() {
-                                Picasso.with(SaveGoogleProfileActivity.this)
-                                        .load(profileUri).resize(MAX_WIDTH, MAX_HEIGHT)
-                                        .onlyScaleDown().centerCrop()
-                                        .placeholder(R.drawable.ic_user)
-                                        .into(mProfilePictureImageView);
-
-                            }
-                        });
+                Glide.with(this)
+                        .asBitmap()
+                        .load(profileUri)
+                        .into(mProfileImageView);
 
             }
 

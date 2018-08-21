@@ -2,6 +2,9 @@ package com.andeqa.andeqa.collections;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -12,6 +15,13 @@ import android.view.ViewGroup;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Collection;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -81,6 +91,42 @@ public class MineCollectionsAdapter extends RecyclerView.Adapter<CollectionViewH
                     .orderBy("collection_id");
         }
 
+        Glide.with(mContext.getApplicationContext())
+                .asBitmap()
+                .load(collection.getImage())
+                .apply(new RequestOptions()
+                        .placeholder(R.drawable.post_placeholder)
+                        .diskCacheStrategy(DiskCacheStrategy.DATA))
+                .listener(new RequestListener<Bitmap>() {
+                    @Override
+                    public boolean onLoadFailed(@android.support.annotation.Nullable GlideException e,
+                                                Object model, Target<Bitmap> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Bitmap resource, Object model,
+                                                   Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                        if (resource != null){
+                            int colorPalette;
+                            Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
+                                @Override
+                                public void onGenerated(@NonNull Palette palette) {
+                                    try {
+                                        Palette.Swatch swatch = palette.getVibrantSwatch();
+                                        holder.collectionDetailsLinearLayout.setBackgroundColor(swatch.getRgb());
+                                    }catch (Exception e){
+
+                                    }
+                                }
+                            });
+                        }
+                        return false;
+                    }
+                })
+                .into(holder.mCollectionCoverImageView);
+
+
         holder.mCollectionNameTextView.setText(collection.getName());
 
         if (!TextUtils.isEmpty(collection.getNote())){
@@ -117,28 +163,6 @@ public class MineCollectionsAdapter extends RecyclerView.Adapter<CollectionViewH
             }
         });
 
-        Picasso.with(mContext)
-                .load(collection.getImage())
-                .resize(MAX_WIDTH, MAX_HEIGHT)
-                .centerCrop()
-                .networkPolicy(NetworkPolicy.OFFLINE)
-                .into(holder.mCollectionCoverImageView, new Callback() {
-                    @Override
-                    public void onSuccess() {
-
-                    }
-
-                    @Override
-                    public void onError() {
-                        Picasso.with(mContext)
-                                .load(collection.getImage())
-                                .resize(MAX_WIDTH, MAX_HEIGHT)
-                                .centerCrop()
-                                .placeholder(R.drawable.image_place_holder)
-                                .into(holder.mCollectionCoverImageView);
-
-                    }
-                });
 
         holder.mCollectionsLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -154,7 +178,7 @@ public class MineCollectionsAdapter extends RecyclerView.Adapter<CollectionViewH
 
     @Override
     public CollectionViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.collections_layout, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_collections, parent, false);
         return new CollectionViewHolder(view );
     }
 

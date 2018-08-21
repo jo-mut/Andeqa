@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/receiveRelativeLayout"
+    android:orientation="vertical"
+    android:layout_gravity="start"
+    android:paddingTop="2dp"
+    android:paddingBottom="2dp"
+    android:paddingStart="10dp"
+    android:paddingLeft="10dp"
+    android:paddingEnd="140dp"
+    android:paddingRight="140dp">
+
+    <TextView
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"
+        android:id="@+id/dateTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical|end"
+        android:textSize="24sp"
+        tools:text="06:00a.m." />
+
+    <LinearLayout
+        android:id="@+id/photoLinearLayout"
+        android:layout_gravity="start"
+        android:background="@drawable/message_received_photo_background"
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            app:srcCompat="@drawable/transparent_background"
+            android:id="@+id/photoImageView"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/messageTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical|start"
+            android:textColor="@android:color/black"
+            android:textSize="28sp"
+            tools:text="" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:visibility="gone"
+        android:id="@+id/statusLinearLayout"
+        android:layout_gravity="start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/timeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|end"
+            android:textSize="20sp"
+            tools:text="06:00a.m." />
+
+    </RelativeLayout>
+
+
+</LinearLayout>

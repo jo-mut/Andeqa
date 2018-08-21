@@ -52,14 +52,14 @@ public class CountDrawable extends Drawable {
         /*Using Math.max rather than Math.min */
 
         float radius = ((Math.max(width, height) / 2)) / 2;
-        float centerX = (width - radius - 1) +5;
-        float centerY = radius -5;
+        float centerX = (width - radius - 1);
+        float centerY = radius;
         if(mCount.length() <= 2){
             // Draw badge circle.
-            canvas.drawCircle(centerX, centerY, (int)(radius+5.5), mBadgePaint);
+            canvas.drawCircle(centerX, centerY, (int)(radius), mBadgePaint);
         }
         else{
-            canvas.drawCircle(centerX, centerY, (int)(radius+6.5), mBadgePaint);
+            canvas.drawCircle(centerX, centerY, (int)(radius ), mBadgePaint);
         }
         // Draw badge count text inside the circle.
         mTextPaint.getTextBounds(mCount, 0, mCount.length(), mTxtRect);

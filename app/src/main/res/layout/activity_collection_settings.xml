@@ -17,7 +17,7 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/collapsing_toolbar"
+            android:id="@+id/collapsingToolbar"
             android:layout_width="match_parent"
             android:layout_height="400dp"
             android:fitsSystemWindows="true"
@@ -36,6 +36,7 @@
                     android:alpha="0.1"
                     android:scaleType="centerCrop"
                     android:src="@color/transparentColor" />
+
                 <TextView
                     android:id="@+id/collectionNameTextView"
                     android:layout_above="@+id/collectionNoteTextView"

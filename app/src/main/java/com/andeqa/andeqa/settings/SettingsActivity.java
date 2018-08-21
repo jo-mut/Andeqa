@@ -22,7 +22,9 @@ import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.profile.DialogConfirmSingOutFragment;
 import com.andeqa.andeqa.profile.ProfileActivity;
 import com.andeqa.andeqa.profile.UpdateProfileActivity;
-import com.andeqa.andeqa.wallet.WalletActivity;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -109,31 +111,13 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
                     mUsernameTextView.setText(username);
                     mBioTextView.setText(bio);
-                    Picasso.with(SettingsActivity.this)
+
+                    Glide.with(getApplicationContext())
                             .load(profileImage)
-                            .resize(MAX_WIDTH, MAX_HEIGHT)
-                            .onlyScaleDown()
-                            .centerCrop()
-                            .placeholder(R.drawable.ic_user_white)
-                            .networkPolicy(NetworkPolicy.OFFLINE)
-                            .into(mProfileImageView, new Callback() {
-                                @Override
-                                public void onSuccess() {
-
-                                }
-
-                                @Override
-                                public void onError() {
-                                    Picasso.with(SettingsActivity.this)
-                                            .load(profileImage)
-                                            .resize(MAX_WIDTH, MAX_HEIGHT)
-                                            .onlyScaleDown()
-                                            .centerCrop()
-                                            .placeholder(R.drawable.ic_user_white)
-                                            .into(mProfileImageView);
-
-                                }
-                            });
+                            .apply(new RequestOptions()
+                                    .placeholder(R.drawable.ic_user_white)
+                                    .diskCacheStrategy(DiskCacheStrategy.DATA))
+                            .into(mProfileImageView);
 
 
                 }
@@ -184,10 +168,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             this.startActivity(Intent.createChooser(intent, this.getString(R.string.choose_email_client)));
         }
 
-        if (v == mWalletLinearLayout){
-            Intent intent = new Intent(SettingsActivity.this, WalletActivity.class);
-            startActivity(intent);
-        }
 
         if (v == mSignOutLinearLayout){
             FragmentManager fragmentManager = getSupportFragmentManager();

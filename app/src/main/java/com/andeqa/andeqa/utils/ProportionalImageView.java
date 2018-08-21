@@ -1,9 +1,14 @@
 package com.andeqa.andeqa.utils;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.ImageView;
+
+import com.andeqa.andeqa.R;
+
 
 /**
  * Created by J.EL on 7/1/2017.
@@ -23,8 +28,10 @@ public class ProportionalImageView extends ImageView {
         super(context, attrs, defStyle);
     }
 
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         try {
             Drawable d = getDrawable();
@@ -37,7 +44,6 @@ public class ProportionalImageView extends ImageView {
         }catch (Exception e){
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
-
     }
 
 }

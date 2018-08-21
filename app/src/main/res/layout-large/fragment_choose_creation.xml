@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".creation.ChooseCreationFragment">
+
+
+    <LinearLayout
+        android:layout_margin="2dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_margin="2dp"
+            android:background="@drawable/bottom_fragment_background"
+            android:layout_width="match_parent"
+            android:layout_height="75dp">
+
+            <TextView
+                android:layout_margin="15dp"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/titleTextView"
+                android:textStyle="normal|bold"
+                android:textColor="@android:color/white"
+                android:textSize="21sp"
+                android:text="Create a new post or collection" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:background="@android:color/white"
+            android:layout_margin="2dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="150dp">
+
+                <RelativeLayout
+                    android:id="@+id/galleryRelativeLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_centerInParent="true"
+                        android:tint="@color/grey_500"
+                        app:srcCompat="@drawable/ic_gallery"
+                        android:id="@+id/galleryImageView"
+                        android:layout_width="75dp"
+                        android:layout_height="75dp" />
+
+                    <TextView
+                        android:layout_below="@+id/galleryImageView"
+                        android:layout_centerHorizontal="true"
+                        android:text="Gallery"
+                        android:textSize="21sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="150dp">
+
+                <RelativeLayout
+                    android:id="@+id/cameraRelativeLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_centerInParent="true"
+                        android:tint="@color/grey_500"
+                        app:srcCompat="@drawable/ic_camera"
+                        android:id="@+id/cameraImageView"
+                        android:layout_width="75dp"
+                        android:layout_height="75dp" />
+
+                    <TextView
+                        android:layout_below="@+id/cameraImageView"
+                        android:layout_centerHorizontal="true"
+                        android:text="Camera"
+                        android:textSize="21sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="150dp">
+
+
+                <RelativeLayout
+                    android:id="@+id/collectionRelativeLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_centerInParent="true"
+                        android:tint="@color/grey_500"
+                        app:srcCompat="@drawable/ic_collection"
+                        android:id="@+id/collectionImageView"
+                        android:layout_width="75dp"
+                        android:layout_height="75dp" />
+
+                    <TextView
+                        android:layout_below="@+id/collectionImageView"
+                        android:layout_centerHorizontal="true"
+                        android:text="Collection"
+                        android:textSize="21sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

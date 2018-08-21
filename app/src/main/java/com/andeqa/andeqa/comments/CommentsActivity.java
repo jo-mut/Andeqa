@@ -116,9 +116,17 @@ public class CommentsActivity extends AppCompatActivity implements
             if (mType.equals("single")){
                 collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
                         .document("singles").collection(mCollectionId);
-            }else{
+            }else if (mType.equals("post")){
                 collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
                         .document("collections").collection(mCollectionId);
+            }else if (mType.equals("photo_post")){
+                collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("collections").collection(mCollectionId);
+            }else if (mType.equals("video_post")){
+                collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("collections").collection(mCollectionId);
+            }else {
+                //do noghting
             }
 
             commentsCollection = FirebaseFirestore.getInstance().collection(Constants.COMMENTS)

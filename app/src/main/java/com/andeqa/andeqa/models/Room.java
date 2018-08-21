@@ -8,9 +8,11 @@ public class Room {
     String receiver_id;
     String sender_id;
     String message;
+    String type;
     long time;
     String room_id;
     String status;
+    boolean blocked;
 
     public Room() {
 
@@ -65,5 +67,21 @@ public class Room {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
     }
 }

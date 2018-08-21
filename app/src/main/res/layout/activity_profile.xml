@@ -15,23 +15,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        android:background="@drawable/default_gradient_color"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.design.widget.CollapsingToolbarLayout
+            android:background="@drawable/default_gradient_color"
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="@color/colorPrimary"
-            app:expandedTitleMargin="16dp"
+            app:expandedTitleMargin="20dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <RelativeLayout
-                android:paddingBottom="60dp"
-                android:id="@+id/header_cover_relative_layout"
+                android:id="@+id/profileCoverRelativeLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="450dp">
 
                 <ImageView
                     android:id="@+id/profileCoverImageView"
@@ -40,16 +39,15 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
-                    android:alpha="0.1"
                     android:scaleType="centerCrop"
-                    android:src="@color/transparentColor" />
+                    android:alpha="0.4"
+                    android:src="@drawable/transparent_background" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/profileImageView"
                     android:layout_width="100dp"
                     android:layout_height="120dp"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
+                    android:layout_centerInParent="true"
                     android:layout_marginTop="80dp"
                     android:background="@drawable/profile_circular_border_imageview"
                     android:padding="10dp"
@@ -79,8 +77,101 @@
 
                 </RelativeLayout>
 
+                <RelativeLayout
+                    android:layout_below="@+id/nameRelativeLayout"
+                    android:id="@+id/peopleRelativeLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <RelativeLayout
+                        android:layout_toLeftOf="@+id/centerRelativeLayout"
+                        android:layout_toStartOf="@+id/centerRelativeLayout"
+                        android:id="@+id/followersRelativeLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/followersCountTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:padding="5dp"
+                            android:layout_centerHorizontal="true"
+                            android:textSize="10sp" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_centerInParent="true"
+                        android:id="@+id/centerRelativeLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <View
+                            android:id="@+id/centerView"
+                            android:layout_width="0.1dp"
+                            android:layout_height="0.1dp"/>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_toRightOf="@+id/centerRelativeLayout"
+                        android:layout_toEndOf="@+id/centerRelativeLayout"
+                        android:id="@+id/followingRelativeLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+
+                        <TextView
+                            android:padding="5dp"
+                            android:layout_centerHorizontal="true"
+                            android:id="@+id/followingCountTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textSize="10sp" />
+
+                    </RelativeLayout>
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@drawable/transparent_background"
+                app:titleTextColor="@android:color/white"
+                app:layout_collapseMode="pin"
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:popupTheme="@style/AppTheme.PopupOverlay"
+                app:contentInsetLeft="0dp"
+                app:contentInsetStart="0dp"/>
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/bioCardView"
+                android:layout_marginTop="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <RelativeLayout
+                    android:padding="16dp"
                     android:id="@+id/bioRelativeLayout"
                     android:layout_below="@+id/nameRelativeLayout"
                     android:layout_width="match_parent"
@@ -103,173 +194,213 @@
 
                 </RelativeLayout>
 
-                <RelativeLayout
-                    android:id="@+id/countsLayout"
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:visibility="gone"
+                android:id="@+id/connectCardView"
+                android:layout_marginTop="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/bioRelativeLayout">
+                    android:layout_height="wrap_content">
 
                     <RelativeLayout
-                        android:layout_toLeftOf="@+id/collectionsRelativeLayout"
-                        android:layout_toStartOf="@+id/collectionsRelativeLayout"
-                        android:id="@+id/singlesRelativeLayout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="20dp"
-                        android:layout_marginEnd="20dp">
-
-                        <TextView
-                            android:id="@+id/singlesCountTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text=""
-                            android:padding="5dp"
-                            android:layout_centerHorizontal="true"
-                            android:textSize="12sp" />
-
-                        <TextView
-                            android:id="@+id/singlesTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="singles"
-                            android:layout_centerHorizontal="true"
-                            android:layout_below="@id/singlesCountTextView"
-                            android:textSize="12sp" />
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_centerInParent="true"
-                        android:id="@+id/collectionsRelativeLayout"
-                        android:layout_width="wrap_content"
+                        android:layout_weight="50"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content">
 
-                        <TextView
-                            android:padding="5dp"
-                            android:layout_centerHorizontal="true"
-                            android:id="@+id/collectionsCountTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text=""
-                            android:textSize="12sp" />
+                        <RelativeLayout
+                            android:id="@+id/followRelativeLayout"
+                            android:layout_margin="20dp"
+                            android:padding="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
 
-                        <TextView
-                            android:id="@+id/collectionsTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="collections"
-                            android:layout_centerHorizontal="true"
-                            android:layout_below="@id/collectionsCountTextView"
-                            android:textSize="12sp" />
+                            <Button
+                                android:textAllCaps="false"
+                                android:textColor="@android:color/white"
+                                android:textSize="14sp"
+                                android:background="@drawable/colour_btn_background"
+                                android:text="Follow"
+                                android:id="@+id/followButton"
+                                android:layout_width="match_parent"
+                                android:layout_height="30dp" />
+
+                        </RelativeLayout>
 
                     </RelativeLayout>
 
                     <RelativeLayout
-                        android:layout_toRightOf="@+id/collectionsRelativeLayout"
-                        android:layout_toEndOf="@+id/collectionsRelativeLayout"
-                        android:id="@+id/postRelativeLayout"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        android:layout_width="wrap_content"
+                        android:layout_weight="50"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content">
 
+                        <RelativeLayout
+                            android:id="@+id/sendMessageRelativeLayout"
+                            android:layout_margin="20dp"
+                            android:padding="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <Button
+                                android:textAllCaps="false"
+                                android:textColor="@android:color/white"
+                                android:textSize="14sp"
+                                android:background="@drawable/colour_btn_background"
+                                android:text="Message"
+                                android:id="@+id/sendMessageButton"
+                                android:layout_width="match_parent"
+                                android:layout_height="30dp" />
+
+
+                        </RelativeLayout>
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:visibility="gone"
+                android:id="@+id/postCardView"
+                android:layout_marginTop="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:id="@+id/postsRelativeLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
                         <TextView
-                            android:padding="5dp"
-                            android:layout_centerHorizontal="true"
+                            android:layout_centerVertical="true"
                             android:id="@+id/postsCountTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text=""
-                            android:textSize="12sp" />
+                            android:textColor="@android:color/black"
+                            android:padding="5dp"
+                            android:textSize="16sp" />
 
-                        <TextView
-                            android:id="@+id/postsTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/postsCountTextView"
-                            android:text="posts"
-                            android:layout_centerHorizontal="true"
-                            android:textSize="12sp" />
+                        <ImageView
+                            android:visibility="gone"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentEnd="true"
+                            android:id="@+id/addPostImageView"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:tint="@color/grey_700"
+                            app:srcCompat="@drawable/ic_plus" />
+
                     </RelativeLayout>
 
+                    <FrameLayout
+                        android:id="@+id/post_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-                </RelativeLayout>
+                    </FrameLayout>
 
-                <RelativeLayout
-                    android:visibility="gone"
-                    android:id="@+id/sendMessageRelativeLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/countsLayout"
-                    android:layout_marginTop="20dp">
+                    <RelativeLayout
+                        android:id="@+id/viewPostRelativelayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-                    <Button
-                        android:id="@+id/sendMessageButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
-                        android:background="@drawable/colour_btn_background"
-                        android:minHeight="30dp"
-                        android:paddingEnd="20dp"
-                        android:paddingLeft="20dp"
-                        android:paddingRight="20dp"
-                        android:paddingStart="20dp"
-                        android:text="Send Message" />
+                        <TextView
+                            android:id="@+id/viewPostsTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="View all"
+                            android:textColor="@color/colorPrimary"
+                            android:padding="5dp"
+                            android:textSize="14sp" />
 
-                </RelativeLayout>
+                    </RelativeLayout>
 
-            </RelativeLayout>
+                </LinearLayout>
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:visibility="gone"
+                android:id="@+id/collectionsCardView"
+                android:layout_marginTop="15dp"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:background="@color/transparentColor"
-                app:titleTextColor="@android:color/white"
-                app:layout_collapseMode="pin"
-                app:layout_scrollFlags="scroll|enterAlways"
-                app:popupTheme="@style/AppTheme.PopupOverlay" />
+                android:layout_height="wrap_content">
 
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-        </android.support.design.widget.CollapsingToolbarLayout>
-    </android.support.design.widget.AppBarLayout>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-   <android.support.v4.widget.NestedScrollView
-       android:fillViewport="true"
-       app:layout_behavior="@string/appbar_scrolling_view_behavior"
-       android:layout_width="match_parent"
-       android:layout_height="match_parent">
+                        <TextView
+                            android:layout_centerVertical="true"
+                            android:id="@+id/collectionCountTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:padding="5dp"
+                            android:textColor="@android:color/black"
+                            android:textSize="16sp" />
 
-       <LinearLayout
-           android:orientation="vertical"
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content">
+                        <ImageView
+                            android:layout_centerVertical="true"
+                            android:visibility="gone"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentEnd="true"
+                            android:id="@+id/addCollectionImageView"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:tint="@color/grey_700"
+                            app:srcCompat="@drawable/ic_plus" />
 
-           <android.support.design.widget.TabLayout
-               android:id="@+id/tabs"
-               android:layout_width="match_parent"
-               android:layout_height="56dp"
-               app:tabMode="fixed"
-               app:tabGravity="fill"
-               app:layout_scrollFlags="scroll|enterAlways"
-               android:background="@android:color/white"
-               app:tabTextAppearance="@style/tablayoutTextAppearance"
-               app:tabIndicatorColor="@android:color/white"
-               app:tabSelectedTextColor="@color/colorAccent"
-               app:tabTextColor="@android:color/black" />
+                    </RelativeLayout>
 
-           <android.support.v4.view.ViewPager
-               android:layout_marginBottom="0.1dp"
-               android:id="@+id/container"
-               android:layout_width="match_parent"
-               android:layout_height="match_parent" />
+                    <FrameLayout
+                        android:id="@+id/collection_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-       </LinearLayout>
+                    </FrameLayout>
 
-   </android.support.v4.widget.NestedScrollView>
+                    <RelativeLayout
+                        android:id="@+id/viewCollectionsRelativeLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
+                        <TextView
+                            android:id="@+id/viewCollectionsTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="View all"
+                            android:textColor="@color/colorPrimary"
+                            android:padding="5dp"
+                            android:textSize="14sp" />
 
+                    </RelativeLayout>
 
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
 
 </android.support.design.widget.CoordinatorLayout>
 

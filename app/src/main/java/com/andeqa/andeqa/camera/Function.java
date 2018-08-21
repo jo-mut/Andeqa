@@ -49,19 +49,27 @@ public class Function {
 
 
 
-    public static String getCount(Context c, String album_name)
+    public static String getImagesCount(Context c, String album_name)
     {
-        Uri uriExternal = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        Uri uriInternal = android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI;
+        Uri imagesExternalUri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        Uri imagesInternalUri = android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI;
+        Uri videosInternalUri = android.provider.MediaStore.Video.Media.INTERNAL_CONTENT_URI;
+        Uri videosExternalUri = android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+
 
         String[] projection = { MediaStore.MediaColumns.DATA,
                 MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.MediaColumns.DATE_MODIFIED };
-        Cursor cursorExternal = c.getContentResolver().query(uriExternal, projection, "bucket_display_name = \""+album_name+"\"", null, null);
-        Cursor cursorInternal = c.getContentResolver().query(uriInternal, projection, "bucket_display_name = \""+album_name+"\"", null, null);
-        Cursor cursor = new MergeCursor(new Cursor[]{cursorExternal,cursorInternal});
+
+        Cursor imagesCursorExternal = c.getContentResolver().query(imagesExternalUri, projection,"bucket_display_name = \""+album_name+"\"", null, null);
+        Cursor imagesCursorInternal = c.getContentResolver().query(imagesInternalUri, projection, "bucket_display_name = \""+album_name+"\"", null, null);
+        Cursor videosCursorExternal = c.getContentResolver().query(videosInternalUri, projection, "bucket_display_name = \""+album_name+"\"", null, null);
+        Cursor videosCursorInternal = c.getContentResolver().query(videosExternalUri, projection, "bucket_display_name = \""+album_name+"\"", null, null);
 
 
-        return cursor.getCount()+" Photos";
+        Cursor cursor = new MergeCursor(new Cursor[]{imagesCursorExternal,imagesCursorInternal,videosCursorExternal,videosCursorInternal });
+
+
+        return cursor.getCount() +"";
     }
 
     public static String converToTime(String timestamp)

@@ -1,27 +1,27 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="5dp"
     tools:context="com.andeqa.andeqa.settings.ConfirmDeleteFragment"
     android:background="@android:color/white">
 
-<!-- TODO: Update blank fragment layout -->
+    <!-- TODO: Update blank fragment layout -->
 
 
     <RelativeLayout
         android:padding="5dp"
-        android:layout_width="300dp"
+        android:layout_width="match_parent"
         android:layout_height="50dp">
 
         <TextView
-            android:text="Are you want to delete"
+            android:text=""
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="normal"
-            android:id="@+id/textView"
+            android:id="@+id/confirmTextView"
             android:textSize="16dp"
             android:layout_centerVertical="true" />
     </RelativeLayout>
@@ -31,11 +31,12 @@
         android:layout_height="wrap_content">
 
         <RelativeLayout
+            android:layout_margin="1dp"
             android:layout_toStartOf="@+id/dividerView"
             android:layout_toLeftOf="@+id/dividerView"
             android:background="@drawable/border_rectangle"
             android:id="@+id/YesRelativeLayout"
-            android:layout_width="150dp"
+            android:layout_width="match_parent"
             android:layout_height="50dp">
 
             <TextView
@@ -59,11 +60,12 @@
             android:layout_centerInParent="true" />
 
         <RelativeLayout
+            android:layout_margin="1dp"
             android:layout_toRightOf="@+id/dividerView"
             android:layout_toEndOf="@+id/dividerView"
             android:background="@drawable/border_rectangle"
             android:id="@+id/noRelativeLayout"
-            android:layout_width="150dp"
+            android:layout_width="match_parent"
             android:layout_height="50dp">
 
             <TextView

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="false"
-    tools:context="com.andeqa.andeqa.home.NavigationDrawerActivity">
+    tools:context="com.andeqa.andeqa.main.HomeActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -17,17 +17,32 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
+            android:layout_gravity="top"
+            app:titleTextAppearance="@style/toolbarTextAppearance"
             android:layout_height="42dp"
             android:background="@color/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:title="@string/app_name">
+            app:titleTextColor="@android:color/white">
+
+            <ImageView
+                android:id="@+id/appLogoImageView"
+                android:layout_width="23dp"
+                android:layout_height="23dp"
+                app:srcCompat="@drawable/ic_log" />
+
+            <TextView
+                android:layout_gravity="center"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:text="Andeqa"
+                android:textSize="15sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
-
-
 
     <FrameLayout
         android:id="@+id/container"
@@ -39,7 +54,8 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
-        android:layout_width="wrap_content"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:layout_gravity="end|bottom"
         app:srcCompat="@drawable/ic_create"
         app:backgroundTint="@color/colorAccent"
@@ -48,7 +64,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="50dp"
         android:layout_marginRight="16dp"
-        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
         app:elevation="0dp" />
 
     <android.support.design.widget.BottomNavigationView
@@ -58,7 +74,7 @@
         android:layout_width="match_parent"
         android:layout_height="42dp"
         android:layout_gravity="bottom"
-        app:itemIconTint="@color/colorPrimaryDark"
-        app:itemTextColor="@color/colorPrimaryDark"/>
+        app:itemIconTint="@android:color/black"
+        app:itemTextColor="@android:color/black"/>
 
 </android.support.design.widget.CoordinatorLayout>

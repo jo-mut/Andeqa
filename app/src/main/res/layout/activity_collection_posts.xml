@@ -17,11 +17,12 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/collapsing_toolbar"
+            android:id="@+id/collapsingToolbar"
             android:layout_width="match_parent"
             android:layout_height="400dp"
             android:fitsSystemWindows="true"
             app:contentScrim="@color/colorPrimary"
+            app:expandedTitleMargin="20dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <RelativeLayout
@@ -33,36 +34,38 @@
                     android:id="@+id/collectionCoverImageView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:alpha="0.1"
+                    android:alpha="0.4"
                     android:scaleType="centerCrop"
                     android:src="@color/transparentColor" />
 
-                <TextView
-                    android:id="@+id/collectionNameTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_above="@+id/collectionNoteTextView"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginEnd="35dp"
-                    android:layout_marginLeft="35dp"
-                    android:layout_marginRight="35dp"
-                    android:layout_marginStart="35dp"
-                    android:layout_marginTop="10dp"
-                    android:textSize="25sp" />
-
-                <TextView
-                    android:id="@+id/collectionNoteTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <LinearLayout
+                    android:layout_marginBottom="80dp"
                     android:layout_alignParentBottom="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginBottom="100dp"
-                    android:layout_marginEnd="35dp"
-                    android:layout_marginLeft="35dp"
-                    android:layout_marginRight="35dp"
-                    android:layout_marginStart="35dp" />
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/collectionNameTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginStart="20dp"
+                        android:textSize="25sp" />
+
+                    <TextView
+                        android:id="@+id/collectionNoteTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginStart="20dp" />
+
+                </LinearLayout>
 
             </RelativeLayout>
 
@@ -74,6 +77,25 @@
                 android:title="Collapsing Toolbar"
                 app:layout_collapseMode="pin"
                 tools:ignore="HardcodedText,UnusedAttribute">
+
+                <RelativeLayout
+                    android:visibility="gone"
+                    android:id="@+id/collectionSettingsRelativeLayout"
+                    android:layout_gravity="end"
+                    android:padding="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        app:srcCompat="@drawable/ic_settings_vert"
+                        android:tint="@android:color/white"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:id="@+id/collectionSettingsImageView"
+                        android:textColor="@android:color/white"
+                        android:layout_gravity="end"/>
+
+                </RelativeLayout>
 
             </android.support.v7.widget.Toolbar>
         </android.support.design.widget.CollapsingToolbarLayout>

@@ -6,11 +6,9 @@
     android:id="@+id/activity_sign_in_with_google"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/default_gradient_color"
     tools:context="com.andeqa.andeqa.registration.SignInWithGoogle">
 
     <TextView
-        android:background="@drawable/logo_background"
         android:layout_centerInParent="true"
         android:textSize="30sp"
         android:paddingTop="50dp"
@@ -19,32 +17,10 @@
         android:paddingEnd="15dp"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
-        android:textColor="@android:color/white"
         android:id="@+id/appLogoTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Andeqa"/>
-
-
-    <TextView
-        android:padding="3dp"
-        android:textSize="12sp"
-        android:text="Signing in..."
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/appLogoTextView"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/signingInTextView"
-        android:textColor="@color/greyColor" />
-
-    <ProgressBar
-        android:layout_below="@+id/signingInTextView"
-        android:indeterminateOnly="true"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_height="wrap_content"
-        android:id="@+id/progressBar"
-        android:layout_centerInParent="true"
-        android:layout_width="75dp" />
 
 </RelativeLayout>
 

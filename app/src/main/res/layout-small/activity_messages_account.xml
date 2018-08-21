@@ -4,99 +4,126 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/blue_grey_50"
+    android:orientation="vertical"
     tools:context="com.andeqa.andeqa.message.MessagesAccountActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
-        android:layout_gravity="top"
-        app:titleTextAppearance="@style/toolbarTextAppearance"
-        android:layout_height="42dp"
-        android:background="@color/colorPrimary"
-        app:layout_scrollFlags="scroll|enterAlways"
-        app:popupTheme="@style/AppTheme.PopupOverlay"
-        app:titleTextColor="@android:color/white">
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-    </android.support.v7.widget.Toolbar>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:layout_marginBottom="60dp"
-            android:id="@+id/swipeRefreshLayout"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_gravity="top"
+            app:titleTextAppearance="@style/toolbarTextAppearance"
+            android:layout_height="42dp"
+            android:background="@color/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            tools:ignore="HardcodedText,UnusedAttribute"
+            app:titleTextColor="@android:color/white">
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_weight="70"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <android.support.v7.widget.RecyclerView
                 android:overScrollMode="never"
-                android:layout_below="@+id/toolbar"
                 android:id="@+id/massagesRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
-        </android.support.v4.widget.SwipeRefreshLayout>
+        </RelativeLayout>
 
-        <RelativeLayout
+
+        <LinearLayout
+            android:background="@android:color/white"
+            android:orientation="vertical"
             android:layout_alignParentBottom="true"
-            android:orientation="horizontal"
-            android:id="@+id/edit_container"
             android:layout_width="match_parent"
-            android:layout_height="100dp">
+            android:layout_height="wrap_content">
+
+            <View
+                android:background="@color/greyColor"
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"/>
 
             <LinearLayout
-                android:background="@android:color/white"
-                android:orientation="vertical"
-                android:layout_alignParentBottom="true"
+                android:orientation="horizontal"
+                android:padding="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <View
-                    android:background="@color/greyColor"
-                    android:layout_width="match_parent"
-                    android:layout_height="0.3dp"/>
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_centerInParent="true"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        app:srcCompat="@drawable/ic_photo"
+                        android:tint="@color/grey_500"
+                        android:id="@+id/attachFilesImageView"
+                        android:layout_centerVertical="true"
+                        android:padding="5dp"/>
+
+                </RelativeLayout>
 
                 <RelativeLayout
+                    android:layout_marginStart="2dp"
+                    android:layout_marginLeft="2dp"
                     android:padding="5dp"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <EditText
+                        android:maxHeight="75dp"
                         android:background="@drawable/transparent_background"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textMultiLine"
                         android:id="@+id/sendMessageEditText"
                         android:hint="Write a message"
-                        android:padding="12dp"
+                        android:padding="5dp"
                         android:textSize="12sp"
-                        android:layout_toLeftOf="@+id/sendMessageButton"
-                        android:layout_toStartOf="@+id/sendMessageButton"
+                        android:layout_toLeftOf="@+id/sendMessageImageView"
+                        android:layout_toStartOf="@+id/sendMessageImageView"
                         android:layout_centerVertical="true" />
 
                     <ImageView
                         android:layout_gravity="left"
-                        android:background="@drawable/accent_color_background"
+                        android:background="@drawable/accent_color"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         app:srcCompat="@drawable/ic_send"
-                        android:id="@+id/sendMessageButton"
+                        android:id="@+id/sendMessageImageView"
                         android:tint="@android:color/white"
                         android:layout_centerVertical="true"
                         android:layout_alignParentRight="true"
-                        android:padding="7dp"
+                        android:padding="5dp"
                         android:layout_alignParentEnd="true" />
 
                 </RelativeLayout>
 
-
             </LinearLayout>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-    </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>

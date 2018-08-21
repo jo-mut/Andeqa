@@ -2,27 +2,26 @@ package com.andeqa.andeqa.comments;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.support.v7.widget.RecyclerView;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.TextPaint;
 import android.text.TextUtils;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.message.MessagesAccountActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Comment;
 import com.andeqa.andeqa.models.Relation;
+import com.andeqa.andeqa.models.Room;
 import com.andeqa.andeqa.models.Timeline;
+import com.andeqa.andeqa.people.FollowingAdapter;
 import com.andeqa.andeqa.profile.ProfileActivity;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -43,6 +42,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 /**
  * Created by J.EL on 3/23/2018.
  */
@@ -57,15 +58,19 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     private Query mQuery;
     private ListenerRegistration mRegistration;
     private CollectionReference usersCollection;
-    private CollectionReference relationsCollection;
+    private CollectionReference followersCollection;
     private CollectionReference timelineCollection;
+    private CollectionReference roomsCollection;
     private static final String COLLECTION_ID = "collection id";
     private static final String EXTRA_POST_ID = "post id";
     private static final String EXTRA_USER_UID = "uid";
+    private static final String EXTRA_ROOM_UID = "roomId";
     private static final String TAG = CommentsAdapter.class.getSimpleName();
+    private boolean processRoom = false;
     private boolean processFollow = false;
     private boolean showOnClick = false;
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
+    private String roomId;
 
 
     public CommentsAdapter(Context mContext) {
@@ -94,7 +99,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
     @Override
     public CommentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.comments_layout_list, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_comments, parent, false);
         return new CommentViewHolder(view);
 
     }
@@ -102,15 +107,16 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     @Override
     public void onBindViewHolder(final CommentViewHolder holder, int position) {
         final Comment comment = getSnapshot(holder.getAdapterPosition()).toObject(Comment.class);
-        final String uid = comment.getUser_id();
+        final String userId = comment.getUser_id();
 
         firebaseAuth = FirebaseAuth.getInstance();
 
         if (firebaseAuth.getCurrentUser() != null){
             //firestore
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            relationsCollection = FirebaseFirestore.getInstance().collection(Constants.RELATIONS);
+            followersCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
+            roomsCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
             //firebase
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
 
@@ -151,13 +157,13 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, ProfileActivity.class);
-                intent.putExtra(CommentsAdapter.EXTRA_USER_UID, uid);
+                intent.putExtra(CommentsAdapter.EXTRA_USER_UID, userId);
                 mContext.startActivity(intent);
             }
         });
 
         //get the profile of the user wh just commented
-        usersCollection.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        usersCollection.document(userId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -172,33 +178,155 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
                     final String username = andeqan.getUsername();
 
                     holder.usernameTextView.setText(username);
-                    Picasso.with(mContext)
+                    Glide.with(mContext.getApplicationContext())
                             .load(profileImage)
-                            .fit()
-                            .centerCrop()
-                            .placeholder(R.drawable.ic_user)
-                            .networkPolicy(NetworkPolicy.OFFLINE)
-                            .into(holder.profileImageView, new Callback() {
-                                @Override
-                                public void onSuccess() {
-
-                                }
-
-                                @Override
-                                public void onError() {
-                                    Picasso.with(mContext)
-                                            .load(profileImage)
-                                            .fit()
-                                            .centerCrop()
-                                            .placeholder(R.drawable.ic_user)
-                                            .into(holder.profileImageView);
-                                }
-                            });
+                            .apply(new RequestOptions()
+                                    .placeholder(R.drawable.ic_user)
+                                    .diskCacheStrategy(DiskCacheStrategy.DATA))
+                            .into(holder.profileImageView);
 
                 }
             }
         });
 
+        if (userId.equals(firebaseAuth.getCurrentUser().getUid())){
+            holder.sendMessageImageView.setVisibility(View.GONE);
+        }else {
+            holder.mSendMessageRelativeLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    processRoom = true;
+                    roomsCollection.document(userId).collection("last message")
+                            .document(firebaseAuth.getCurrentUser().getUid())
+                            .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                @Override
+                                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                                    if (e != null) {
+                                        Log.w(TAG, "Listen error", e);
+                                        return;
+                                    }
+
+                                    if (processRoom){
+                                        if (documentSnapshot.exists()){
+                                            Room room = documentSnapshot.toObject(Room.class);
+                                            roomId = room.getRoom_id();
+                                            Intent intent = new Intent(mContext, MessagesAccountActivity.class);
+                                            intent.putExtra(CommentsAdapter.EXTRA_ROOM_UID, roomId);
+                                            intent.putExtra(CommentsAdapter.EXTRA_USER_UID, userId);
+                                            mContext.startActivity(intent);
+
+                                            processRoom = false;
+                                        }else {
+                                            roomsCollection.document(firebaseAuth.getCurrentUser().getUid())
+                                                    .collection("last message")
+                                                    .document(userId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                                    if (e != null) {
+                                                        Log.w(TAG, "Listen error", e);
+                                                        return;
+                                                    }
+
+                                                    if (processRoom){
+                                                        if (documentSnapshot.exists()){
+                                                            Room room = documentSnapshot.toObject(Room.class);
+                                                            roomId = room.getRoom_id();
+                                                            Intent intent = new Intent(mContext, MessagesAccountActivity.class);
+                                                            intent.putExtra(CommentsAdapter.EXTRA_ROOM_UID, roomId);
+                                                            intent.putExtra(CommentsAdapter.EXTRA_USER_UID, userId);
+                                                            mContext.startActivity(intent);
+
+                                                            processRoom = false;
+
+                                                        }else {
+                                                            //start a chat with mUid since they have no chatting history
+                                                            roomId = databaseReference.push().getKey();
+                                                            Intent intent = new Intent(mContext, MessagesAccountActivity.class);
+                                                            intent.putExtra(CommentsAdapter.EXTRA_ROOM_UID, roomId);
+                                                            intent.putExtra(CommentsAdapter.EXTRA_USER_UID, userId);
+                                                            mContext.startActivity(intent);
+
+                                                            processRoom = false;
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }
+
+                                }
+                            });
+
+                }
+            });
+        }
+
+        //follow or unfollow
+        if (userId.equals(firebaseAuth.getCurrentUser().getUid())){
+            holder.followImageView.setVisibility(View.GONE);
+        }else {
+            holder.followImageView.setVisibility(View.VISIBLE);
+            holder.followImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    processFollow = true;
+                    followersCollection.document("followers")
+                            .collection(userId)
+                            .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
+                            .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                @Override
+                                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+
+                                    if (e != null) {
+                                        Log.w(TAG, "Listen error", e);
+                                        return;
+                                    }
+
+                                    if (processFollow){
+                                        if (documentSnapshots.isEmpty()){
+                                            //set followers and following
+                                            Relation follower = new Relation();
+                                            follower.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                            followersCollection.document("followers").collection(userId)
+                                                    .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            Timeline timeline = new Timeline();
+                                                            final long time = new Date().getTime();
+                                                            final String postid =  databaseReference.push().getKey();
+                                                            timeline.setPost_id(userId);
+                                                            timeline.setTime(time);
+                                                            timeline.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                            timeline.setType("followers");
+                                                            timeline.setActivity_id(postid);
+                                                            timeline.setStatus("un_read");
+
+                                                            timelineCollection.document(userId).collection("activities")
+                                                                    .document(firebaseAuth.getCurrentUser().getUid())
+                                                                    .set(timeline);
+                                                        }
+                                                    });
+                                            final Relation following = new Relation();
+                                            following.setUser_id(userId);
+                                            followersCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
+                                                    .document(userId).set(following);
+                                            processFollow = false;
+                                        }else {
+                                            followersCollection.document("followers").collection(userId)
+                                                    .document(firebaseAuth.getCurrentUser().getUid()).delete();
+                                            followersCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
+                                                    .document(userId).delete();
+                                            processFollow = false;
+                                        }
+                                    }
+                                }
+                            });
+
+                }
+            });
+        }
 
     }
 

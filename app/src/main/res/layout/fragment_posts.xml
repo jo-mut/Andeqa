@@ -4,14 +4,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/blue_grey_50"
     tools:context=".profile.PostsFragment">
 
-    <android.support.v7.widget.RecyclerView
-        android:clipToPadding="false"
-        android:padding="@dimen/item_off_set"
-        android:id="@+id/postsRecyclerView"
-        android:overScrollMode="never"
+    <LinearLayout
+        android:background="@drawable/border_rectangle"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:background="@color/blue_grey_50"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.v7.widget.RecyclerView
+                android:clipToPadding="false"
+                android:padding="@dimen/item_off_set"
+                android:id="@+id/postsRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </android.support.v7.widget.RecyclerView>
+
+        </RelativeLayout>
+
+    </LinearLayout>
 </FrameLayout>

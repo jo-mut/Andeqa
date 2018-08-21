@@ -25,8 +25,9 @@ import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.camera.GalleryActivity;
+import com.andeqa.andeqa.camera.PicturesActivity;
 import com.andeqa.andeqa.models.Collection;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -142,15 +143,10 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
     private void loadCoverImage(){
         collectionSettingsIntent = getIntent().getStringExtra(GALLERY_PATH);
         if (collectionSettingsIntent != null){
-            Picasso.with(this)
+            Glide.with(this)
+                    .asBitmap()
                     .load(new File(collectionSettingsIntent))
-                    .into(mCollectionCoverImageView,
-                            new Callback.EmptyCallback(){
-                                @Override
-                                public void onSuccess(){
-
-                                }
-                            });
+                    .into(mCollectionCoverImageView);
         }
     }
 
@@ -257,6 +253,7 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
            final StorageReference storageReference = FirebaseStorage
                    .getInstance().getReference()
                    .child(Constants.USER_COLLECTIONS)
+                   .child("collection_covers")
                    .child(collectionId);
 
 
@@ -336,15 +333,10 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
             if(requestCode == IMAGE_GALLERY_REQUEST && data != null){
                 photoUri = data.getData();
                 if (photoUri != null){
-                    Picasso.with(this)
+                    Glide.with(this)
+                            .asBitmap()
                             .load(photoUri)
-                            .into(mCollectionCoverImageView,
-                                    new Callback.EmptyCallback(){
-                                        @Override
-                                        public void onSuccess(){
-
-                                        }
-                                    });
+                            .into(mCollectionCoverImageView);
 
                 }
             }else {
@@ -357,7 +349,7 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
     @Override
     public void onClick(View v){
         if (v == mChangeCoverRelativeLayout){
-            Intent intent = new Intent(CollectionSettingsActivity.this, GalleryActivity.class);
+            Intent intent = new Intent(CollectionSettingsActivity.this, PicturesActivity.class);
             intent.putExtra(CollectionSettingsActivity.COLLECTION_SETTINGS_COVER, CollectionSettingsActivity.class.getSimpleName());
             intent.putExtra(CollectionSettingsActivity.COLLECTION_ID, collectionId);
             startActivity(intent);

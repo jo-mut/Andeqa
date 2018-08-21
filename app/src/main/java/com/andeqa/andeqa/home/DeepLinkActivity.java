@@ -24,14 +24,19 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.likes.LikesActivity;
+import com.andeqa.andeqa.main.MainActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
-import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.profile.ProfileActivity;
+import com.andeqa.andeqa.registration.SignInActivity;
+import com.andeqa.andeqa.settings.PostSettingsFragment;
 import com.andeqa.andeqa.utils.ProportionalImageView;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -54,7 +59,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.Date;
 
 import javax.annotation.Nullable;
@@ -72,14 +76,17 @@ public class DeepLinkActivity extends AppCompatActivity {
     @Bind(R.id.descriptionRelativeLayout)RelativeLayout mDescriptionRelativeLayout;
     @Bind(R.id.descriptionTextView)TextView mDescriptionTextView;
     @Bind(R.id.likesCountTextView)TextView mLikesCountTextView;
-    //    @Bind(R.id.dislikesCountTextView)TextView mDislikeCountTextView;
+    @Bind(R.id.dislikeCountTextView)TextView mDislikeCountTextView;
+    @Bind(R.id.likesLinearLayout)LinearLayout mLikesLinearLayout;
     @Bind(R.id.likesImageView)ImageView mLikesImageView;
-    //    @Bind(R.id.dislikesImageView)ImageView mDislikeImageView;
+    @Bind(R.id.dislikeImageView)ImageView mDislikesImageView;
+    @Bind(R.id.dislikeLinearLayout)LinearLayout mDislikeLinearLayout;
     @Bind(R.id.commentsImageView)ImageView mCommentImageView;
     @Bind(R.id.commentsCountTextView)TextView mCommentCountTextView;
-    @Bind(R.id.creditsTextView)TextView mCreditsTextView;
-    @Bind(R.id.likesLinearLayout)LinearLayout mLikesLinearLayout;
-    @Bind(R.id.settingsRelativeLayout)RelativeLayout mShareLinearLayout;
+//    @Bind(R.id.creditsTextView)TextView mCreditsTextView;
+    @Bind(R.id.settingsRelativeLayout)RelativeLayout mSettingsRelativeLayout;
+    @Bind(R.id.userLikesRelativeLayout)RelativeLayout mUserLikesRelativeLayout;
+    @Bind(R.id.userCountTextView)TextView mUserCountTextView;
 
 
     //firestore reference
@@ -95,7 +102,7 @@ public class DeepLinkActivity extends AppCompatActivity {
     private CollectionReference collectionsPosts;
     private CollectionReference marketCollections;
     private CollectionReference collectionsCollection;
-    private CollectionReference creditsCollection;
+//    private CollectionReference creditsCollection;
     private CollectionReference postCollection;
     private Query likesQuery;
     //firebase references
@@ -115,6 +122,8 @@ public class DeepLinkActivity extends AppCompatActivity {
     private static final String EXTRA_POST_ID = "post id";
     private static final String EXTRA_USER_UID = "uid";
     private static final String TYPE = "type";
+    private static final String EXTRA_URI = "uri";
+
     private static final String SOURCE = DeepLinkActivity.class.getSimpleName();
     private static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
@@ -132,7 +141,7 @@ public class DeepLinkActivity extends AppCompatActivity {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_black);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -152,9 +161,22 @@ public class DeepLinkActivity extends AppCompatActivity {
         likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
         postWalletReference = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-        creditsCollection  = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
+//        creditsCollection  = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
 
-        handleLinks();
+        checkIfUserIsLoggedIn();
+    }
+
+
+    private void checkIfUserIsLoggedIn(){
+        if (firebaseAuth.getCurrentUser() != null){
+            handleLinks();
+        }else {
+            Log.d("user is null", "user is present");
+            Intent intent = new Intent(DeepLinkActivity.this, SignInActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
     }
 
     private void handleLinks(){
@@ -184,14 +206,12 @@ public class DeepLinkActivity extends AppCompatActivity {
                                     final String type = post.getType();
 
                                     //firestore
-                                    if (type.equals("single")){
+                                    if (type.equals("single") || type.equals("single_image_post")){
                                         collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
                                                 .document("singles").collection(collectionId);
-                                        getSupportActionBar().setTitle("Single");
                                     }else{
                                         collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
                                                 .document("collections").collection(collectionId);
-                                        getSupportActionBar().setTitle("Post");
                                     }
 
                                     likesReference.document(postId).collection("likes")
@@ -255,6 +275,23 @@ public class DeepLinkActivity extends AppCompatActivity {
                                         }
                                     });
 //
+                                    mSettingsRelativeLayout.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            final Uri bmpUri = getLocalBitmapUri(mPostImageView);
+                                            if (bmpUri != null){
+                                                Bundle bundle = new Bundle();
+                                                bundle.putString(DeepLinkActivity.EXTRA_POST_ID, postId);
+                                                bundle.putString(DeepLinkActivity.COLLECTION_ID, collectionId);
+                                                bundle.putString(DeepLinkActivity.TYPE, type);
+                                                bundle.putString(DeepLinkActivity.EXTRA_URI, bmpUri.toString());
+                                                PostSettingsFragment postSettingsFragment = PostSettingsFragment.newInstance();
+                                                postSettingsFragment.setArguments(bundle);
+                                                postSettingsFragment.show(getSupportFragmentManager(), "share bottom fragment");
+                                            }
+                                        }
+                                    });
+
                                     likesReference.document(postId).collection("likes")
                                             .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                                 @Override
@@ -274,27 +311,85 @@ public class DeepLinkActivity extends AppCompatActivity {
                                                 }
                                             });
 
+                                    likesReference.document(postId).collection("dislikes")
+                                            .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                                @Override
+                                                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-                                    creditsCollection.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                                    if (e != null) {
+                                                        android.util.Log.w(TAG, "Listen error", e);
+                                                        return;
+                                                    }
+
+                                                    if (!documentSnapshots.isEmpty()){
+                                                        mDislikeCountTextView.setText(documentSnapshots.size() + " ");
+                                                    }else {
+                                                        mDislikeCountTextView.setText("0");
+                                                    }
+
+                                                }
+                                            });
+
+                                    mDislikeLinearLayout.setOnClickListener(new View.OnClickListener() {
                                         @Override
-                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                        public void onClick(View view) {
+                                            processDislikes = true;
+                                            likesReference.document(postId).collection("dislikes")
+                                                    .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
+                                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                                        @Override
+                                                        public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-                                            if (e != null) {
-                                                Log.w(TAG, "Listen error", e);
-                                                return;
-                                            }
+                                                            if (e != null) {
+                                                                android.util.Log.w(TAG, "Listen error", e);
+                                                                return;
+                                                            }
 
-                                            if (documentSnapshot.exists()){
-                                                Credit credit = documentSnapshot.toObject(Credit.class);
-                                                final double senseCredits = credit.getAmount();
-                                                DecimalFormat formatter = new DecimalFormat("0.00000000");
-                                                mCreditsTextView.setText("Credo" + " " + formatter.format(senseCredits));
 
-                                            }else {
-                                                mCreditsTextView.setText("Credo" + " " + "0.00000000");
-                                            }
+                                                            if (processDislikes){
+                                                                if (documentSnapshots.isEmpty()){
+                                                                    Like like = new Like();
+                                                                    like.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                                    likesReference.document(postId).collection("dislikes")
+                                                                            .document(firebaseAuth.getCurrentUser().getUid()).set(like);
+                                                                    processDislikes = false;
+                                                                    mDislikesImageView.setColorFilter(Color.RED);
+
+                                                                }else {
+                                                                    likesReference.document(postId).collection("dislikes")
+                                                                            .document(firebaseAuth.getCurrentUser().getUid()).delete();
+                                                                    processDislikes = false;
+                                                                    mDislikesImageView.setColorFilter(Color.BLACK);
+
+                                                                }
+                                                            }
+
+                                                        }
+                                                    });
                                         }
                                     });
+
+
+//                                    creditsCollection.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+//                                        @Override
+//                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+//
+//                                            if (e != null) {
+//                                                Log.w(TAG, "Listen error", e);
+//                                                return;
+//                                            }
+//
+//                                            if (documentSnapshot.exists()){
+//                                                Credit credit = documentSnapshot.toObject(Credit.class);
+//                                                final double senseCredits = credit.getAmount();
+//                                                DecimalFormat formatter = new DecimalFormat("0.00000000");
+//                                                mCreditsTextView.setText("Credo" + " " + formatter.format(senseCredits));
+//
+//                                            }else {
+//                                                mCreditsTextView.setText("Credo" + " " + "0.00000000");
+//                                            }
+//                                        }
+//                                    });
 
 
                                     //get the number of commments in a cingle
@@ -375,29 +470,12 @@ public class DeepLinkActivity extends AppCompatActivity {
                                                     mDescriptionRelativeLayout.setVisibility(View.GONE);
                                                 }
 
-
-                                                Log.d("post image", image);
-
-                                                //set the single image
-                                                Picasso.with(DeepLinkActivity.this)
+                                                Glide.with(getApplicationContext())
                                                         .load(Uri.parse(image))
-                                                        .networkPolicy(NetworkPolicy.OFFLINE)
-                                                        .placeholder(R.drawable.image_place_holder)
-                                                        .into(mPostImageView, new Callback() {
-                                                            @Override
-                                                            public void onSuccess() {
-
-                                                            }
-
-                                                            @Override
-                                                            public void onError() {
-                                                                Picasso.with(DeepLinkActivity.this)
-                                                                        .load(Uri.parse(image))
-                                                                        .placeholder(R.drawable.image_place_holder)
-                                                                        .into(mPostImageView);
-                                                            }
-                                                        });
-
+                                                        .apply(new RequestOptions()
+                                                                .placeholder(R.drawable.post_placeholder)
+                                                                .diskCacheStrategy(DiskCacheStrategy.DATA))
+                                                        .into(mPostImageView);
 
                                                 usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                                     @Override
@@ -408,59 +486,20 @@ public class DeepLinkActivity extends AppCompatActivity {
                                                         }
 
                                                         if (documentSnapshot.exists()){
-                                                            final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                                                            final String username = cinggulan.getUsername();
-                                                            final String profileImage = cinggulan.getProfile_image();
+                                                            final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                                                            final String username = andeqan.getUsername();
+                                                            final String profileImage = andeqan.getProfile_image();
 
                                                             mUsernameTextView.setText(username);
-                                                            Picasso.with(DeepLinkActivity.this)
+                                                            Glide.with(getApplicationContext())
                                                                     .load(profileImage)
-                                                                    .fit()
-                                                                    .centerCrop()
-                                                                    .placeholder(R.drawable.ic_user)
-                                                                    .networkPolicy(NetworkPolicy.OFFLINE)
-                                                                    .into(mProfileImageView, new Callback() {
-                                                                        @Override
-                                                                        public void onSuccess() {
-
-                                                                        }
-
-                                                                        @Override
-                                                                        public void onError() {
-                                                                            Picasso.with(DeepLinkActivity.this)
-                                                                                    .load(profileImage)
-                                                                                    .fit()
-                                                                                    .centerCrop()
-                                                                                    .placeholder(R.drawable.ic_user)
-                                                                                    .into(mProfileImageView);
-                                                                        }
-                                                                    });
+                                                                    .apply(new RequestOptions()
+                                                                            .placeholder(R.drawable.ic_user)
+                                                                            .diskCacheStrategy(DiskCacheStrategy.DATA))
+                                                                    .into(mProfileImageView);
                                                         }
                                                     }
                                                 });
-
-                                                if (collectionPost.getDeeplink() != null){
-                                                    mShareLinearLayout.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            final String text = "View this photo with Andeqa ";
-                                                            final Uri bmpUri = getLocalBitmapUri(mPostImageView);
-
-                                                            if (bmpUri != null){
-                                                                String linkedText = text + " " + collectionPost.getDeeplink();
-
-                                                                Intent shareIntent = new Intent();
-                                                                shareIntent.setAction(Intent.ACTION_SEND);
-                                                                shareIntent.putExtra(Intent.EXTRA_TEXT, linkedText);
-                                                                shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
-                                                                shareIntent.setType("image/*");
-                                                                shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                                                                startActivity(Intent.createChooser(shareIntent, "Share with your "));
-                                                            }
-
-                                                        }
-                                                    });
-                                                }
 
                                             }
                                         }
@@ -540,115 +579,6 @@ public class DeepLinkActivity extends AppCompatActivity {
 
                                                                 }
                                                             }
-
-                                                            likesReference.document(postId).collection("likes")
-                                                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                                                        @Override
-                                                                        public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                                                            if (e != null) {
-                                                                                Log.w(TAG, "Listen error", e);
-                                                                                return;
-                                                                            }
-
-                                                                            if (!documentSnapshots.isEmpty()){
-                                                                                int likesCount = documentSnapshots.size();
-                                                                                if ( likesCount > 0){
-                                                                                    //mille is a thousand likes
-                                                                                    double MILLE = 1000.0;
-                                                                                    //get the number of likes per a thousand likes
-                                                                                    double likesPerMille = likesCount/MILLE;
-                                                                                    //get the default rate of likes per unit time in seconds;
-                                                                                    double rateOfLike = 1000.0/1800.0;
-                                                                                    //get the current rate of likes per unit time in seconds;
-                                                                                    double currentRateOfLkes = likesCount * rateOfLike/MILLE;
-                                                                                    //get the current price of single
-                                                                                    final double currentPrice = currentRateOfLkes * DEFAULT_PRICE/rateOfLike;
-                                                                                    //get the perfection value of single's interactivity online
-                                                                                    double perfectionValue = GOLDEN_RATIO/likesCount;
-                                                                                    //get the new worth of Single price in Sen
-                                                                                    final double cingleWorth = perfectionValue * likesPerMille * currentPrice;
-                                                                                    //round of the worth of the single to 10 decimal number
-                                                                                    final double finalPoints = round( cingleWorth, 8);
-
-                                                                                    Log.d("finalpoints > 0", finalPoints + "");
-
-                                                                                    postWalletReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                                                                        @Override
-                                                                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                                                                            if (e != null) {
-                                                                                                Log.w(TAG, "Listen error", e);
-                                                                                                return;
-                                                                                            }
-
-
-                                                                                            if (documentSnapshot.exists()){
-                                                                                                final Credit credit = documentSnapshot.toObject(Credit.class);
-                                                                                                final double amountRedeemed =   credit.getAmount();
-                                                                                                Log.d(amountRedeemed + "", "amount redeemed");
-                                                                                                final  double amountDeposited = credit.getDeposited();
-                                                                                                Log.d(amountDeposited + "", "amount deposited");
-                                                                                                final double senseCredits = amountDeposited + finalPoints;
-                                                                                                Log.d("sense credit", senseCredits + "");
-                                                                                                final double totalSenseCredits = senseCredits - amountRedeemed;
-                                                                                                Log.d("total sense credit", totalSenseCredits + "");
-
-                                                                                                creditsCollection.document(postId).update("amount", totalSenseCredits);
-                                                                                            }else {
-                                                                                                Credit credit = new Credit();
-                                                                                                credit.setPost_id(postId);
-                                                                                                credit.setAmount(finalPoints);
-                                                                                                credit.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                                                credit.setDeposited(0.0);
-                                                                                                credit.setRedeemed(0.0);
-                                                                                                creditsCollection.document(postId).set(credit);
-                                                                                                Log.d("new sense credits", finalPoints + "");
-                                                                                            }
-                                                                                        }
-                                                                                    });
-
-                                                                                }
-                                                                            }else {
-                                                                                final double finalPoints = 0.00;
-                                                                                Log.d("finalpoints <= 0", finalPoints + "");
-                                                                                postWalletReference.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                                                                    @Override
-                                                                                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                                                                        if (e != null) {
-                                                                                            Log.w(TAG, "Listen error", e);
-                                                                                            return;
-                                                                                        }
-
-
-                                                                                        if (documentSnapshot.exists()){
-                                                                                            final Credit credit = documentSnapshot.toObject(Credit.class);
-                                                                                            final double amountRedeemed =   credit.getAmount();
-                                                                                            Log.d(amountRedeemed + "", "amount redeemed");
-                                                                                            final  double amountDeposited = credit.getDeposited();
-                                                                                            Log.d(amountDeposited + "", "amount deposited");
-                                                                                            final double senseCredits = amountDeposited + finalPoints;
-                                                                                            Log.d("sense credit", senseCredits + "");
-                                                                                            final double totalSenseCredits = senseCredits - amountRedeemed;
-                                                                                            Log.d("total sense credit", totalSenseCredits + "");
-
-                                                                                            creditsCollection.document(postId).update("amount", totalSenseCredits);
-                                                                                        }else {
-                                                                                            Credit credit = new Credit();
-                                                                                            credit.setPost_id(postId);
-                                                                                            credit.setAmount(finalPoints);
-                                                                                            credit.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                                            credit.setDeposited(0.0);
-                                                                                            credit.setRedeemed(0.0);
-                                                                                            creditsCollection.document(postId).set(credit);
-                                                                                            Log.d("new sense credits", finalPoints + "");
-                                                                                        }
-                                                                                    }
-                                                                                });
-
-                                                                            }
-                                                                        }
-                                                                    });
-
 
                                                         }
                                                     });

@@ -6,7 +6,6 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,13 +33,15 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.creation.CreateCollectionActivity;
+import com.andeqa.andeqa.creation.PreviewImagePostActivity;
+import com.andeqa.andeqa.creation.PreviewVideoPostActivity;
+import com.andeqa.andeqa.creation.CreateSingleActivity;
 import com.andeqa.andeqa.explore.ExploreFragment;
 
 import java.io.File;
@@ -57,25 +58,29 @@ public class CameraActivity extends AppCompatActivity  implements
     private static final String TAG = ExploreFragment.class.getSimpleName();
     private static final String CAMERA_PATH = "camera image";
     private static final String CAMERA_VIDEO = "camera video";
+    private static final String CAMERA_THUMB = "thumb";
+    private static final String PREVIEW_POST = "preview post";
     private SurfaceHolder surfaceHolder;
     private Camera camera;
     private Handler customHandler = new Handler();
     int flag = 0;
     private File tempFile = null;
     private Camera.PictureCallback jpegCallback;
-    private static  final int MAX_VIDEO_SIZE_UPLOAD = 25; //MB
+    private static  final int MAX_VIDEO_DURATION = 60000; //MB
     private MediaRecorder mediaRecorder;
     private RunTimePermissions runTimePermission;
 
     @Bind(R.id.changeCameraImageView)ImageView mChangeCameraImageView;
     @Bind(R.id.flashOnOffImageView)ImageView mFlashOnOffImageView;
-    @Bind({R.id.imageSurfaceView})SurfaceView mSurfaceImageView;
+    @Bind({R.id.imageSurfaceView})SurfaceView mSurfaceSurfaceView;
     @Bind(R.id.imageCaptureImageView)ImageView mImageCaptureImageView;
-//    @Bind(R.id.countTextView) TextView mCountTextView;
-    @Bind(R.id.galleryImageView)ImageView mGalleryImageView;
-    @Bind(R.id.createCollectionImageView)ImageView mCreateCollectionImageView;
+    @Bind(R.id.countTextView) TextView mCountTextView;
+    @Bind(R.id.recordVideoImageView)ImageView mRecordVideoImageView;
     @Bind(R.id.toolbar)Toolbar toolbar;
-//    @Bind(R.id.recordVideoImageView)ImageView mRecordVideoImageView;
+    @Bind(R.id.nextRelativeLayout)RelativeLayout mNextRelativeLayout;
+    @Bind(R.id.imageDisplayImageView)ImageView mImageDisplayImageView;
+    @Bind(R.id.nextTextView)TextView mNextTextView;
+    @Bind(R.id.captureOptionRelativeLayout)RelativeLayout mCaptureOptionsRelativeLayout;
 
     @Override
     public void onResume() {
@@ -108,17 +113,15 @@ public class CameraActivity extends AppCompatActivity  implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
         ButterKnife.bind(this);
-
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        toolbar.setNavigationIcon(R.drawable.ic_arrow);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         runTimePermission = new RunTimePermissions(this);
         runTimePermission.requestPermission(new String[]{Manifest.permission.CAMERA,
                 Manifest.permission.RECORD_AUDIO,
@@ -154,9 +157,7 @@ public class CameraActivity extends AppCompatActivity  implements
             }
         });
 
-
     }
-
 
     private void cancelSavePicTaskIfNeed() {
         if (savePicTask != null && savePicTask.getStatus() == AsyncTask.Status.RUNNING) {
@@ -198,14 +199,14 @@ public class CameraActivity extends AppCompatActivity  implements
 
         @Override
         protected void onPostExecute(String result) {
-
             activeCameraCapture();
-
             tempFile = new File(result);
+            if (tempFile != null){
+                Intent intent = new Intent(CameraActivity.this, PreviewImagePostActivity.class);
+                intent.putExtra(CameraActivity.CAMERA_PATH, tempFile.toString());
 
-            Intent intent = new Intent(CameraActivity.this, PreviewActivity.class);
-            intent.putExtra(CameraActivity.CAMERA_PATH, tempFile.toString());
-            startActivity(intent);
+                startActivity(intent);
+            }
 
         }
     }
@@ -286,8 +287,7 @@ public class CameraActivity extends AppCompatActivity  implements
     }
 
     private void captureImageCallback() {
-
-        surfaceHolder = mSurfaceImageView.getHolder();
+        surfaceHolder = mSurfaceSurfaceView.getHolder();
         surfaceHolder.addCallback(this);
         surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         jpegCallback = new Camera.PictureCallback() {
@@ -304,9 +304,7 @@ public class CameraActivity extends AppCompatActivity  implements
     }
 
     private class SaveVideoTask extends AsyncTask<Void, Void, Void> {
-
         File thumbFilename;
-
         ProgressDialog progressDialog = null;
 
         @Override
@@ -315,8 +313,7 @@ public class CameraActivity extends AppCompatActivity  implements
             progressDialog.setMessage("Processing a video...");
             progressDialog.show();
             super.onPreExecute();
-            mImageCaptureImageView.setOnTouchListener(null);
-//            mCountTextView.setVisibility(View.GONE);
+            mCountTextView.setVisibility(View.GONE);
             mChangeCameraImageView.setVisibility(View.VISIBLE);
             mFlashOnOffImageView.setVisibility(View.VISIBLE);
 
@@ -327,17 +324,11 @@ public class CameraActivity extends AppCompatActivity  implements
             try {
                 try {
                     myOrientationEventListener.enable();
-
                     customHandler.removeCallbacksAndMessages(null);
-
                     mediaRecorder.stop();
                     releaseMediaRecorder();
-
                     tempFile = new File(folder.getAbsolutePath() + "/" + mediaFileName + ".mp4");
-                    thumbFilename = new File(folder.getAbsolutePath(), "t_" + mediaFileName + ".jpeg");
-                    generateVideoThmb(tempFile.getPath(), thumbFilename);
-
-
+//                    generateVideoThmb(tempFile.getPath(), thumbFilename);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -358,8 +349,10 @@ public class CameraActivity extends AppCompatActivity  implements
                     progressDialog.dismiss();
                 }
             }
-            if (tempFile != null && thumbFilename != null)
-                onVideoSendDialog(tempFile.getAbsolutePath(), thumbFilename.getAbsolutePath());
+            if (tempFile != null ){
+                onVideoSendDialog(tempFile.getAbsolutePath());
+            }
+
         }
     }
 
@@ -400,16 +393,11 @@ public class CameraActivity extends AppCompatActivity  implements
     private void initControls() {
 
         mediaRecorder = new MediaRecorder();
-//        mCountTextView.setVisibility(View.GONE);
+        mCountTextView.setVisibility(View.GONE);
         mChangeCameraImageView.setOnClickListener(this);
         mFlashOnOffImageView.setOnClickListener(this);
-        mCreateCollectionImageView.setOnClickListener(this);
-//        mRecordVideoImageView.setOnClickListener(this);
-        mGalleryImageView.setOnClickListener(this);
-
+        mRecordVideoImageView.setOnClickListener(this);
         activeCameraCapture();
-
-
 
     }
 
@@ -425,14 +413,6 @@ public class CameraActivity extends AppCompatActivity  implements
         switch (v.getId()) {
             case R.id.flashOnOffImageView:
                 flashToggle();
-                break;
-            case R.id.galleryImageView:
-                intent = new Intent(CameraActivity.this, GalleryActivity.class);
-                startActivity(intent);
-                break;
-            case R.id.createCollectionImageView:
-                intent = new Intent(CameraActivity.this, CreateCollectionActivity.class);
-                startActivity(intent);
                 break;
             case R.id.changeCameraImageView:
                 camera.stopPreview();
@@ -471,8 +451,12 @@ public class CameraActivity extends AppCompatActivity  implements
     }
 
     private void captureImage() {
-        camera.takePicture(null, null, jpegCallback);
-        inActiveCameraCapture();
+       try {
+           camera.takePicture(null, null, jpegCallback);
+           inActiveCameraCapture();
+       }catch (Exception e){
+           
+       }
     }
 
     private void releaseMediaRecorder() {
@@ -709,7 +693,7 @@ public class CameraActivity extends AppCompatActivity  implements
             int hrs = mins / 60;
 
             secs = secs % 60;
-//            mCountTextView.setText(String.format("%02d", mins) + ":" + String.format("%02d", secs));
+            mCountTextView.setText(String.format("%02d", mins) + ":" + String.format("%02d", secs));
             customHandler.postDelayed(this, 0);
 
         }
@@ -756,14 +740,11 @@ public class CameraActivity extends AppCompatActivity  implements
     @Override
     protected void onPause() {
         super.onPause();
-
         try {
-
             if (customHandler != null)
                 customHandler.removeCallbacksAndMessages(null);
-
-            releaseMediaRecorder();       // if you are using MediaRecorder, release it first
-
+            // if you are using MediaRecorder, release it first
+            releaseMediaRecorder();
             if (myOrientationEventListener != null)
                 myOrientationEventListener.enable();
         } catch (Exception e) {
@@ -776,49 +757,49 @@ public class CameraActivity extends AppCompatActivity  implements
     private void activeCameraCapture() {
         if (mImageCaptureImageView != null) {
             mImageCaptureImageView.setAlpha(1.0f);
-//            mRecordVideoImageView.setOnLongClickListener(new View.OnLongClickListener() {
-//                @Override
-//                public boolean onLongClick(View v) {
-////                    hintTextView.setVisibility(View.INVISIBLE);
-//                    try {
-//                        if (prepareMediaRecorder()) {
-//                            myOrientationEventListener.disable();
-//                            mediaRecorder.start();
-//                            startTime = SystemClock.uptimeMillis();
-//                            customHandler.postDelayed(updateTimerThread, 0);
-//                        } else {
-//                            return false;
-//                        }
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                    mCountTextView.setVisibility(View.VISIBLE);
-//                    mChangeCameraImageView.setVisibility(View.GONE);
-//                    mFlashOnOffImageView.setVisibility(View.GONE);
-//
-//                    mRecordVideoImageView.setOnTouchListener(new View.OnTouchListener() {
-//                        @Override
-//                        public boolean onTouch(View v, MotionEvent event) {
-//                            if (event.getAction() == MotionEvent.ACTION_BUTTON_PRESS) {
-//                                return true;
-//                            }
-//                            if (event.getAction() == MotionEvent.ACTION_UP) {
-//
-//
-//                                cancelSaveVideoTaskIfNeed();
-//                                saveVideoTask = new SaveVideoTask();
-//                                saveVideoTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-//
-//                                return true;
-//                            }
-//                            return true;
-//
-//                        }
-//                    });
-//                    return true;
-//                }
-//
-//            });
+            mRecordVideoImageView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    try {
+                        if (prepareMediaRecorder()) {
+                            myOrientationEventListener.disable();
+                            mediaRecorder.start();
+                            startTime = SystemClock.uptimeMillis();
+                            customHandler.postDelayed(updateTimerThread, 0);
+                        } else {
+                            return false;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    mCountTextView.setVisibility(View.VISIBLE);
+                    mChangeCameraImageView.setVisibility(View.GONE);
+                    mFlashOnOffImageView.setVisibility(View.GONE);
+
+                    mRecordVideoImageView.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            if (event.getAction() == MotionEvent.ACTION_BUTTON_PRESS) {
+                                return true;
+                            }
+
+                            if (event.getAction() == MotionEvent.ACTION_UP) {
+
+                                cancelSaveVideoTaskIfNeed();
+                                saveVideoTask = new SaveVideoTask();
+                                saveVideoTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+
+                                return true;
+                            }
+                            return true;
+
+                        }
+                    });
+                    return true;
+                }
+
+            });
+
             mImageCaptureImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -834,35 +815,15 @@ public class CameraActivity extends AppCompatActivity  implements
 
     }
 
-    public void onVideoSendDialog(final String videopath, final String thumbPath) {
+    public void onVideoSendDialog(final String videopath) {
 
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (videopath != null) {
-                    File fileVideo = new File(videopath);
-                    long fileSizeInBytes = fileVideo.length();
-                    long fileSizeInKB = fileSizeInBytes / 1024;
-                    long fileSizeInMB = fileSizeInKB / 1024;
-                    if (fileSizeInMB > MAX_VIDEO_SIZE_UPLOAD) {
-                        new android.support.v7.app.AlertDialog.Builder(CameraActivity.this)
-                                .setMessage(getString(R.string.file_limit_size_upload_format, MAX_VIDEO_SIZE_UPLOAD))
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                })
-                                .show();
-                    } else {
-
-                        Intent mIntent = new Intent(CameraActivity.this, PreviewActivity.class);
-                        mIntent.putExtra("PATH", videopath.toString());
-                        mIntent.putExtra("THUMB", thumbPath.toString());
-                        mIntent.putExtra(CameraActivity.CAMERA_VIDEO, "video");
-                        startActivity(mIntent);
-
-                    }
+                    Intent intent = new Intent(CameraActivity.this, PreviewVideoPostActivity.class);
+                    intent.putExtra(CameraActivity.CAMERA_VIDEO, videopath.toString());
+                    startActivity(intent);
                 }
             }
         });
@@ -941,15 +902,13 @@ public class CameraActivity extends AppCompatActivity  implements
             mediaRecorder.setOrientationHint(mOrientation);
         }
         mediaFileName = "wc_vid_" + System.currentTimeMillis();
-        mediaRecorder.setOutputFile(folder.getAbsolutePath() + "/" + mediaFileName + ".mp4"); // Environment.getExternalStorageDirectory()
-
+        // Environment.getExternalStorageDirectory()
+        mediaRecorder.setOutputFile(folder.getAbsolutePath() + "/" + mediaFileName + ".mp4");
         mediaRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
 
             public void onInfo(MediaRecorder mr, int what, int extra) {
                 // TODO Auto-generated method stub
-
-                if (what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED) {
-
+                if (what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
                     long downTime = 0;
                     long eventTime = 0;
                     float x = 0.0f;
@@ -964,16 +923,15 @@ public class CameraActivity extends AppCompatActivity  implements
                             metaState
                     );
 
-                    mImageCaptureImageView.dispatchTouchEvent(motionEvent);
-
-                    Toast.makeText(CameraActivity.this, "You reached to Maximum(25MB) video size.", Toast.LENGTH_SHORT).show();
+                    saveVideoTask = new SaveVideoTask();
+                    saveVideoTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
                 }
 
 
             }
         });
 
-        mediaRecorder.setMaxFileSize(1000 * 25 * 1000);
+        mediaRecorder.setMaxDuration(60000);
 
         try {
             mediaRecorder.prepare();

@@ -15,6 +15,10 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -39,12 +43,6 @@
         android:name="android.hardware.camera.flash"
         android:required="false" />
 
-    <!-- To auto-complete the email text field in the login form with the user's emails -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_PROFILE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -61,8 +59,8 @@
             android:name=".registration.SignUpActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".creation.CreatePostActivity"
-            android:label="Share post"
+            android:name=".creation.CreateCollectionPostActivity"
+            android:label="Share"
             android:screenOrientation="portrait" />
         <activity
             android:name=".profile.UpdateProfileActivity"
@@ -110,12 +108,12 @@
         </receiver>
 
         <activity
-            android:name=".home.NavigationDrawerActivity"
-            android:label="Andeqa"
+            android:name=".main.HomeActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".home.ImageViewActivity"
+            android:label="Photo"
             android:screenOrientation="portrait" />
         <activity
             android:name=".wallet.WalletActivity"
@@ -129,14 +127,14 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".registration.CreateProfileActivity"
-            android:label="Share post"
             android:screenOrientation="portrait" />
         <activity
             android:name=".home.PostDetailActivity"
+            android:label="Post"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme" />
         <activity
-            android:name=".home.MainActivity"
+            android:name=".main.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -188,25 +186,13 @@
             android:name=".camera.CameraActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".camera.PreviewActivity"
-            android:label="Share single"
+            android:name=".creation.CreateSingleActivity"
+            android:label="Share"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="image/*" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".camera.CameraPermissionsActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".camera.GalleryActivity"
-            android:label="Gallery"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
         <activity
             android:name=".wallet.WalletPasswordActivity"
             android:screenOrientation="portrait" />
@@ -223,13 +209,13 @@
             android:label="Send credo"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".timeline.NotificationsActivity"
+            android:name=".notifications.NotificationsActivity"
             android:label="Notifications"
             android:screenOrientation="portrait" />
         <activity
-            android:screenOrientation="portrait"
-            android:name=".home.DeepLinkActivity">
-
+            android:name=".home.DeepLinkActivity"
+            android:label="Post"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -241,7 +227,6 @@
                 <data android:scheme="http" />
                 <data android:pathPattern=".*" />
             </intent-filter>
-
         </activity>
 
         <provider
@@ -254,6 +239,52 @@
                 android:resource="@xml/file_provider_paths" />
         </provider>
 
+        <activity
+            android:name=".message.ViewMessagePhoto"
+            android:label="Photo"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".profile.ProfileCollectionsActivity"
+            android:label="Collections"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".profile.ProfilePostsActivity"
+            android:label="Posts"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".camera.PicturesActivity"
+            android:label="Gallery"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".camera.AlbumActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".people.FollowersActivity"
+            android:label="Followers"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".people.FollowingActivity"
+            android:label="Following"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".creation.PreviewVideoPostActivity"
+            android:label="Video"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".creation.PreviewImagePostActivity"
+            android:label="Andeqa"
+            android:screenOrientation="portrait">
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="image/*" />
+            </intent-filter>
+
+        </activity>
+        <activity android:name=".home.VideoDetailActivity"></activity>
     </application>
 
 </manifest>

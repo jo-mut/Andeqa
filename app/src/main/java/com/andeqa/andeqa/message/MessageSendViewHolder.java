@@ -4,11 +4,11 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Message;
+import com.andeqa.andeqa.utils.ProportionalImageView;
 
 
 /**
@@ -21,10 +21,13 @@ public class MessageSendViewHolder extends RecyclerView.ViewHolder {
     Context mContext;
     public TextView messageTextView;
     public TextView timeTextView;
-//    public ImageView statusImageView;
+    public TextView statusTextView;
     public LinearLayout sendLinearLayout;
-    public RelativeLayout statusRelativeLayout;
-    public TextView dateTextView;
+    public LinearLayout statusLinearLayout;
+    public TextView photoTextView;
+    public ProportionalImageView photoImageView;
+    public LinearLayout messageLinearLayout;
+    public LinearLayout photoLinearLayout;
 
     public MessageSendViewHolder(View itemView) {
         super(itemView);
@@ -32,10 +35,13 @@ public class MessageSendViewHolder extends RecyclerView.ViewHolder {
         mContext = itemView.getContext();
         messageTextView = (TextView) mView.findViewById(R.id.messageTextView);
         timeTextView = (TextView) mView.findViewById(R.id.timeTextView);
-//        statusImageView = (ImageView) mView.findViewById(R.id.statusImageView);
+        statusTextView = (TextView) mView.findViewById(R.id.statusImageView);
         sendLinearLayout = (LinearLayout) mView.findViewById(R.id.sendLinearLayout);
-        statusRelativeLayout = (RelativeLayout) mView.findViewById(R.id.statusRelativeLayout);
-        dateTextView = (TextView) mView.findViewById(R.id.dateTextView);
+        statusLinearLayout = (LinearLayout) mView.findViewById(R.id.statusLinearLayout);
+        photoImageView = (ProportionalImageView) mView.findViewById(R.id.photoImageView);
+        messageLinearLayout = (LinearLayout) mView.findViewById(R.id.messageLinearLayout);
+        photoLinearLayout = (LinearLayout) mView.findViewById(R.id.photoLinearLayout);
+        photoTextView = (TextView) mView.findViewById(R.id.messageTextView);
 
     }
 

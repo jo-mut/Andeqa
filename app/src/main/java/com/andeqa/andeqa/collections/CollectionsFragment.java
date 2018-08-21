@@ -29,7 +29,6 @@ public class CollectionsFragment extends Fragment {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private CollectionsPagerAdapter collectionsPagerAdapter;
-    private CollectionReference allCollections;
 
 
 
@@ -52,25 +51,6 @@ public class CollectionsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_collections, container, false);
 
-        allCollections = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
-        allCollections.orderBy("time").addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (queryDocumentSnapshots.isEmpty()){
-                    Log.d("collections are absent", queryDocumentSnapshots.size() + "");
-                }else {
-                    Log.d("collections are present", queryDocumentSnapshots.size() + "");
-                }
-
-            }
-        });
-
         collectionsPagerAdapter = new CollectionsPagerAdapter(getChildFragmentManager());
         tabLayout = (TabLayout)view.findViewById(R.id.tabs);
         viewPager = (ViewPager)view.findViewById(R.id.container);
@@ -91,6 +71,7 @@ public class CollectionsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
     }
 
     @Override

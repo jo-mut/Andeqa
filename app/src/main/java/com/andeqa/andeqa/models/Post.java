@@ -13,6 +13,8 @@ public class Post {
     String type;
     String collection_id;
     String deeplink;
+    String width;
+    String height;
 
     public Post() {
     }
@@ -79,5 +81,21 @@ public class Post {
 
     public void setDeeplink(String deeplink) {
         this.deeplink = deeplink;
+    }
+
+    public String getWidth() {
+        return width;
+    }
+
+    public void setWidth(String width) {
+        this.width = width;
+    }
+
+    public String getHeight() {
+        return height;
+    }
+
+    public void setHeight(String height) {
+        this.height = height;
     }
 }

@@ -16,8 +16,9 @@ import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Market;
 import com.andeqa.andeqa.models.Post;
-import com.andeqa.andeqa.models.Wallet;
-import com.andeqa.andeqa.utils.RoundedTransform;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -82,7 +83,7 @@ public class ExplorePostAdapter extends RecyclerView.Adapter<ExploreViewHolder> 
     @NonNull
     @Override
     public ExploreViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.explore_layout, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_explore, parent, false);
         return new ExploreViewHolder(view);
     }
 
@@ -139,36 +140,12 @@ public class ExplorePostAdapter extends RecyclerView.Adapter<ExploreViewHolder> 
                             if (documentSnapshot.exists()){
                                 final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
 
-                                Picasso.with(mContext)
+                                Glide.with(mContext.getApplicationContext())
                                         .load(collectionPost.getImage())
-                                        .networkPolicy(NetworkPolicy.OFFLINE)
-                                        .placeholder(R.drawable.image_place_holder)
-                                        .into(holder.postImageView, new Callback() {
-                                            @Override
-                                            public void onSuccess() {
-
-                                            }
-
-                                            @Override
-                                            public void onError() {
-                                                Picasso.with(mContext)
-                                                        .load(collectionPost.getImage())
-                                                        .placeholder(R.drawable.image_place_holder)
-                                                        .into(holder.postImageView, new Callback() {
-                                                            @Override
-                                                            public void onSuccess() {
-
-                                                            }
-
-                                                            @Override
-                                                            public void onError() {
-                                                                Log.v("Picasso", "Could not fetch image");
-                                                            }
-                                                        });
-
-
-                                            }
-                                        });
+                                        .apply(new RequestOptions()
+                                                .placeholder(R.drawable.ic_user)
+                                                .diskCacheStrategy(DiskCacheStrategy.DATA))
+                                        .into(holder.postImageView);
 
 
                             }

@@ -124,62 +124,12 @@ public class RunTimePermissions extends Activity {
         {
             if (runTimePermissionListener != null)
             {
-//                if (deniedCount == arrayListPermission.size())
-//                {
-//                setAlertMessage();
 
-//                }
                 runTimePermissionListener.permissionDenied();
             }
         }
     }
 
-    public void setAlertMessage()
-    {
-        AlertDialog.Builder adb;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            adb = new AlertDialog.Builder(activity, android.R.style.Theme_Material_Light_Dialog_Alert);
-        } else {
-            adb = new AlertDialog.Builder(activity);
-        }
-
-        adb.setTitle(activity.getResources().getString(R.string.app_name));
-        String msg = "<p>Dear User, </p>" +
-                "<p>Seems like you have <b>\"Denied\"</b> the minimum requirement permission to access more features of application.</p>" +
-                "<p>You must have to <b>\"Allow\"</b> all permission. We will not share your data with anyone else.</p>" +
-                "<p>Do you want to enable all requirement permission ?</p>" +
-                "<p>Go To : Settings >> App > " + activity.getResources().getString(R.string.app_name) + " Permission : Allow ALL</p>";
-
-        adb.setMessage(Html.fromHtml(msg));
-        adb.setPositiveButton("Allow All", new AlertDialog.OnClickListener()
-        {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
-                callSettingActivity();
-                dialog.dismiss();
-            }
-        });
-
-        adb.setNegativeButton("Remind Me Later", new AlertDialog.OnClickListener()
-        {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
-                dialog.dismiss();
-            }
-        });
-        if (!((Activity) activity).isFinishing() && msg.length() > 0)
-        {
-            adb.show();
-        }
-        else
-        {
-            Log.v("log_tag", "either activity finish or message length is 0");
-        }
-    }
 
     private void updatePermissionResult(String permissions, int grantResults)
     {

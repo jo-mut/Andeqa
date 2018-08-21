@@ -15,16 +15,22 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.creation.CreatePostActivity;
+import com.andeqa.andeqa.creation.CreateCollectionPostActivity;
 import com.andeqa.andeqa.models.Collection;
+import com.andeqa.andeqa.models.CollectionPost;
+import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Transaction;
 import com.andeqa.andeqa.settings.CollectionSettingsActivity;
 import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -50,8 +56,10 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
     @Bind(R.id.createPostButton)FloatingActionButton mCreatePostButton;
     @Bind(R.id.collectionCoverImageView)ImageView mCollectionCoverImageView;
     @Bind(R.id.collectionNoteTextView)TextView mCollectionNoteTextView;
-    @Bind(R.id.collapsing_toolbar)CollapsingToolbarLayout collapsingToolbarLayout;
+    @Bind(R.id.collapsingToolbar)CollapsingToolbarLayout collapsingToolbarLayout;
     @Bind(R.id.collectionNameTextView)TextView mCollectionNameTextView;
+    @Bind(R.id.collectionSettingsRelativeLayout)RelativeLayout mCollectionSettingsRelativeLayout;
+
     private static final String TAG = CollectionPostsActivity.class.getSimpleName();
 
     //firestore reference
@@ -88,6 +96,7 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
         ButterKnife.bind(this);
         //initialize click listener
         mCreatePostButton.setOnClickListener(this);
+        mCollectionSettingsRelativeLayout.setOnClickListener(this);
 
         //FIREBASE AUTH
         firebaseAuth = FirebaseAuth.getInstance();
@@ -104,34 +113,27 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
         });
         collapsingToolbarLayout.setTitle("Posts");
 
+        collectionId = getIntent().getStringExtra(COLLECTION_ID);
+        mUid = getIntent().getStringExtra(EXTRA_USER_UID);
 
-        if (firebaseAuth.getCurrentUser()!= null){
 
-            collectionId = getIntent().getStringExtra(COLLECTION_ID);
-            mUid = getIntent().getStringExtra(EXTRA_USER_UID);
-
-            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                    .document("collections").collection(collectionId);
-            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
-            collectionPostsQuery = collectionsPosts.orderBy("time", Query.Direction.ASCENDING);
-            usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            collectionOwnersCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_OWNERS);
-
-            if (savedInstanceState != null){
-                recyclerViewState = savedInstanceState.getParcelable(KEY_LAYOUT_POSITION);
-                android.util.Log.d("Profile saved Instance", "Instance is not null");
-            }else {
-                android.util.Log.d("Saved Instance", "Instance is completely null");
-            }
-
-            mCollectionsPostsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
-                @Override
-                public void onLoadMore() {
-                    setNextCollectionPosts();
-                }
-            });
-
+        if (mUid.equals(firebaseAuth.getCurrentUser().getUid())){
+            mCollectionSettingsRelativeLayout.setVisibility(View.VISIBLE);
         }
+
+        collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                .document("collections").collection(collectionId);
+        collectionCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
+        collectionPostsQuery = collectionsPosts.orderBy("time", Query.Direction.ASCENDING);
+        usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+        collectionOwnersCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_OWNERS);
+
+        mCollectionsPostsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+            @Override
+            public void onLoadMore() {
+                setNextCollectionPosts();
+            }
+        });
     }
 
     @Override
@@ -159,52 +161,27 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
         super.onPause();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.colletion_settings, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_collections_settings){
-            Intent intent = new Intent(this,    CollectionSettingsActivity.class);
-            intent.putExtra(MinePostsActivity.COLLECTION_ID, collectionId);
-            startActivity(intent);
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(final Menu menu) {
-        collectionOwnersCollection.document(collectionId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    android.util.Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    Transaction transaction = documentSnapshot.toObject(Transaction.class);
-                    final String ownerUid = transaction.getUser_id();
-                    android.util.Log.d("owner uid", ownerUid);
-
-                    if (!firebaseAuth.getCurrentUser().getUid().equals(ownerUid)){
-                        menu.clear();
-                    }
-                }
-            }
-        });
-
-
-        return super.onPrepareOptionsMenu(menu);
-    }
-
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.colletion_settings, menu);
+//        return super.onCreateOptionsMenu(menu);
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        int id = item.getItemId();
+//
+//        return super.onOptionsItemSelected(item);
+//    }
+//
+//    @Override
+//    public boolean onPrepareOptionsMenu(final Menu menu) {
+//
+//
+//        return super.onPrepareOptionsMenu(menu);
+//    }
+//
 
 
     private void setRecyclerView(){
@@ -239,28 +216,11 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
 
                     mCollectionNameTextView.setText(name);
                     mCollectionNoteTextView.setText(note);
-                    Picasso.with(MinePostsActivity.this)
+                    Glide.with(getApplicationContext())
                             .load(cover)
-                            .resize(MAX_WIDTH, MAX_HEIGHT)
-                            .onlyScaleDown()
-                            .centerCrop()
-                            .networkPolicy(NetworkPolicy.OFFLINE)
-                            .into(mCollectionCoverImageView, new Callback() {
-                                @Override
-                                public void onSuccess() {
-
-                                }
-
-                                @Override
-                                public void onError() {
-                                    Picasso.with(MinePostsActivity.this)
-                                            .load(cover)
-                                            .resize(MAX_WIDTH, MAX_HEIGHT)
-                                            .onlyScaleDown()
-                                            .centerCrop()
-                                            .into(mCollectionCoverImageView);
-                                }
-                            });
+                            .apply(new RequestOptions()
+                                    .diskCacheStrategy(DiskCacheStrategy.DATA))
+                            .into(mCollectionCoverImageView);
 
                     if (firebaseAuth.getCurrentUser().getUid().equals(userId)){
                         mCreatePostButton.setVisibility(View.VISIBLE);
@@ -288,7 +248,12 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
                             for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
                                 switch (change.getType()) {
                                     case ADDED:
-                                        onDocumentAdded(change);
+                                        CollectionPost post = change.getDocument().toObject(CollectionPost.class);
+                                        final String type = post.getType();
+                                        if (!type.equals("collection_video_post")){
+                                            onDocumentAdded(change);
+
+                                        }
                                         break;
                                     case MODIFIED:
                                         onDocumentModified(change);
@@ -325,7 +290,12 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
                     for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
                         switch (change.getType()) {
                             case ADDED:
-                                onDocumentAdded(change);
+                                CollectionPost post = change.getDocument().toObject(CollectionPost.class);
+                                final String type = post.getType();
+                                if (!type.equals("collection_video_post")){
+                                    onDocumentAdded(change);
+
+                                }
                                 break;
                             case MODIFIED:
                                 onDocumentModified(change);
@@ -386,10 +356,16 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
     @Override
     public void onClick(View v){
         if (v == mCreatePostButton){
-            Intent intent = new Intent(MinePostsActivity.this, CreatePostActivity.class);
+            Intent intent = new Intent(MinePostsActivity.this, CreateCollectionPostActivity.class);
             intent.putExtra(MinePostsActivity.COLLECTION_ID, collectionId);
             startActivity(intent);
             finish();
+        }
+
+        if (v == mCollectionSettingsRelativeLayout){
+            Intent intent = new Intent(this, CollectionSettingsActivity.class);
+            intent.putExtra(MinePostsActivity.COLLECTION_ID, collectionId);
+            startActivity(intent);
         }
 
     }

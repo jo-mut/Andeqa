@@ -163,7 +163,6 @@ public class MessagesFragment extends Fragment{
                                 }
                             }
 
-                            Log.d("chats rooms size", documentSnapshots.size() + "");
                         }else {
                             mPlaceHolderRelativeLayout.setVisibility(View.VISIBLE);
                         }

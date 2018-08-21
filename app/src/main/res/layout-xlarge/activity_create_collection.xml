@@ -19,7 +19,7 @@
         app:popupTheme="@style/AppTheme.PopupOverlay">
 
         <ImageView
-            android:background="@drawable/accent_color_background"
+            android:background="@drawable/accent_color"
             app:srcCompat="@drawable/ic_check"
             android:layout_margin="5dp"
             android:layout_width="90dp"
