@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.message.MessagesAccountActivity;
+import com.andeqa.andeqa.message.MessagingActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Room;
@@ -29,9 +29,6 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -77,13 +74,10 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
     }
 
 
-
-
     @Override
     public void onBindViewHolder(final PeopleViewHolder holder, int position) {
         Relation relation = getSnapshot(position).toObject(Relation.class);
-        final String userId = relation.getUser_id();
-
+        final String userId = relation.getFollowed_id();
         firebaseAuth = FirebaseAuth.getInstance();
 
         if (firebaseAuth.getCurrentUser()!= null){
@@ -117,7 +111,7 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
                                         if (documentSnapshot.exists()){
                                             Room room = documentSnapshot.toObject(Room.class);
                                             roomId = room.getRoom_id();
-                                            Intent intent = new Intent(mContext, MessagesAccountActivity.class);
+                                            Intent intent = new Intent(mContext, MessagingActivity.class);
                                             intent.putExtra(FollowingAdapter.EXTRA_ROOM_UID, roomId);
                                             intent.putExtra(FollowingAdapter.EXTRA_USER_UID, userId);
                                             mContext.startActivity(intent);
@@ -138,7 +132,7 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
                                                         if (documentSnapshot.exists()){
                                                             Room room = documentSnapshot.toObject(Room.class);
                                                             roomId = room.getRoom_id();
-                                                            Intent intent = new Intent(mContext, MessagesAccountActivity.class);
+                                                            Intent intent = new Intent(mContext, MessagingActivity.class);
                                                             intent.putExtra(FollowingAdapter.EXTRA_ROOM_UID, roomId);
                                                             intent.putExtra(FollowingAdapter.EXTRA_USER_UID, userId);
                                                             mContext.startActivity(intent);
@@ -148,7 +142,7 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
                                                         }else {
                                                             //start a chat with mUid since they have no chatting history
                                                             roomId = databaseReference.push().getKey();
-                                                            Intent intent = new Intent(mContext, MessagesAccountActivity.class);
+                                                            Intent intent = new Intent(mContext, MessagingActivity.class);
                                                             intent.putExtra(FollowingAdapter.EXTRA_ROOM_UID, roomId);
                                                             intent.putExtra(FollowingAdapter.EXTRA_USER_UID, userId);
                                                             mContext.startActivity(intent);
@@ -207,7 +201,7 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
 
                     //show if following or not
                     followingCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
-                            .whereEqualTo("user_id", userId)
+                            .whereEqualTo("following_id", firebaseAuth.getCurrentUser().getUid())
                             .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                 @Override
                                 public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -243,7 +237,7 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
                                 processFollow = true;
                                 followingCollection.document("followers")
                                         .collection(userId)
-                                        .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
+                                        .whereEqualTo("following_id", firebaseAuth.getCurrentUser().getUid())
                                         .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                             @Override
                                             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -258,7 +252,10 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
                                                     if (documentSnapshots.isEmpty()){
                                                         //set followers and following
                                                         Relation follower = new Relation();
-                                                        follower.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                        follower.setFollowing_id(firebaseAuth.getCurrentUser().getUid());
+                                                        follower.setFollowed_id(userId);
+                                                        follower.setType("followed_user");
+                                                        follower.setTime(System.currentTimeMillis());
                                                         followingCollection.document("followers").collection(userId)
                                                                 .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
                                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -280,7 +277,10 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
                                                                     }
                                                                 });
                                                         final Relation following = new Relation();
-                                                        following.setUser_id(userId);
+                                                        following.setFollowing_id(firebaseAuth.getCurrentUser().getUid());
+                                                        following.setFollowed_id(userId);
+                                                        following.setType("following_user");
+                                                        following.setTime(System.currentTimeMillis());
                                                         followingCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
                                                                 .document(userId).set(following);
                                                         holder.followButton.setText("Following");
@@ -312,5 +312,9 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
         return documentSnapshots.size();
     }
 
+    public void cleanUp(){
+        documentSnapshots.clear();
+        notifyDataSetChanged();
+    }
 
 }

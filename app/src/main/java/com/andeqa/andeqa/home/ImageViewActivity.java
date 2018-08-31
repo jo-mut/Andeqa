@@ -9,7 +9,7 @@ import android.view.View;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.models.CollectionPost;
-import com.andeqa.andeqa.models.Impression;
+import com.andeqa.andeqa.models.ViewDuration;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.andeqa.andeqa.R;
 import com.bumptech.glide.Glide;
@@ -161,12 +161,14 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnClick
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (processOverallImpressions){
                                 if (dataSnapshot.exists()){
-                                    Impression impression = dataSnapshot.getValue(Impression.class);
-                                    final String type = impression.getType();
-                                    final long recentDuration = impression.getRecent_duration();
-                                    final long total_duration = impression.getCompiled_duration();
+                                    ViewDuration viewDuration = dataSnapshot.getValue(ViewDuration.class);
+                                    final String type = viewDuration.getType();
+                                    final long recentDuration = viewDuration.getRecent_duration();
+                                    final long total_duration = viewDuration.getCompiled_duration();
                                     final long newTotalDuration = total_duration + duration;
                                     final long newRecentDuration = recentDuration + duration;
+                                    Log.d("recent duration", recentDuration + "");
+                                    Log.d("total duration", total_duration + "");
                                     impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
                                             .child(mPostId).child("compiled_duration").setValue(newTotalDuration);
                                     impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
@@ -180,48 +182,26 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnClick
                                                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                                     if (processCompiledImpression){
                                                                         if (dataSnapshot.exists()){
-                                                                            Impression impress = dataSnapshot.getValue(Impression.class);
-                                                                            if (type.equals("liked")){
-                                                                                final long newDuration = impress.getCompiled_duration() + newRecentDuration;
-                                                                                impressionReference.child("compiled_views").child(mPostId)
-                                                                                        .child("compiled_duration").setValue(newDuration);
-                                                                                impressionReference.child("compiled_views").child(mPostId)
-                                                                                        .child("recent_duration").setValue(newRecentDuration);
-                                                                                impressionReference.child("compiled_views").child(mPostId)
-                                                                                        .child("un_compiled_duration").setValue(0);
-                                                                                impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
-                                                                                        .child(mPostId).child("recent_duration").setValue(0);
-                                                                            }else if (type.equals("disliked")){
-                                                                                final long newDuration = impress.getCompiled_duration() - newRecentDuration;
-                                                                                impressionReference.child("compiled_views").child(mPostId)
-                                                                                        .child("compiled_duration").setValue(newDuration);
-                                                                                impressionReference.child("compiled_views").child(mPostId)
-                                                                                        .child("recent_duration").setValue(newRecentDuration);
-                                                                                impressionReference.child("compiled_views").child(mPostId)
-                                                                                        .child("un_compiled_duration").setValue(0);
-                                                                                impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
-                                                                                        .child(mPostId).child("recent_duration").setValue(0);
-                                                                            }else {
-                                                                                final long newDuration = impress.getUn_compiled_duration() + newRecentDuration;
-                                                                                impressionReference.child("compiled_views").child(mPostId)
-                                                                                        .child("un_compiled_duration").setValue(newDuration);
-                                                                                impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
-                                                                                        .child(mPostId).child("recent_duration").setValue(newRecentDuration);
-                                                                            }
-
+                                                                            ViewDuration impress = dataSnapshot.getValue(ViewDuration.class);
+                                                                            final long newDuration = impress.getCompiled_duration() + newRecentDuration;
+                                                                            impressionReference.child("compiled_views").child(mPostId)
+                                                                                    .child("compiled_duration").setValue(newDuration);
+                                                                            impressionReference.child("compiled_views").child(mPostId)
+                                                                                    .child("recent_duration").setValue(newRecentDuration);
+                                                                            impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
+                                                                                    .child(mPostId).child("recent_duration").setValue(0);
                                                                             processCompiledImpression = false;
                                                                         }else {
-                                                                            Impression impression = new Impression();
-                                                                            impression.setCompiled_duration(newTotalDuration);
-                                                                            impression.setRecent_duration(newRecentDuration);
-                                                                            impression.setUn_compiled_duration(newTotalDuration);
-                                                                            impression.setPost_id(mPostId);
-                                                                            impression.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                            impression.setImpression_id(impressionId);
-                                                                            impression.setTime(time);
-                                                                            impression.setType("compiled");
+                                                                            ViewDuration viewDuration = new ViewDuration();
+                                                                            viewDuration.setCompiled_duration(newTotalDuration);
+                                                                            viewDuration.setRecent_duration(newRecentDuration);
+                                                                            viewDuration.setPost_id(mPostId);
+                                                                            viewDuration.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                                            viewDuration.setImpression_id(impressionId);
+                                                                            viewDuration.setTime(time);
+                                                                            viewDuration.setType("compiled");
                                                                             impressionReference.child("compiled_views").child(mPostId)
-                                                                                    .setValue(impression);
+                                                                                    .setValue(viewDuration);
                                                                             processCompiledImpression = false;
                                                                         }
                                                                     }
@@ -237,17 +217,16 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnClick
                                     processOverallImpressions = false;
 
                                 }else {
-                                    Impression impression = new Impression();
-                                    impression.setCompiled_duration(duration);
-                                    impression.setRecent_duration(duration);
-                                    impression.setUn_compiled_duration(duration);
-                                    impression.setPost_id(mPostId);
-                                    impression.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                    impression.setImpression_id(impressionId);
-                                    impression.setTime(time);
-                                    impression.setType("un_compiled");
+                                    ViewDuration viewDuration = new ViewDuration();
+                                    viewDuration.setCompiled_duration(duration);
+                                    viewDuration.setRecent_duration(duration);
+                                    viewDuration.setPost_id(mPostId);
+                                    viewDuration.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                    viewDuration.setImpression_id(impressionId);
+                                    viewDuration.setTime(time);
+                                    viewDuration.setType("un_compiled");
                                     impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
-                                            .child(mPostId).setValue(impression);
+                                            .child(mPostId).setValue(viewDuration);
                                     processOverallImpressions = false;
                                 }
                             }
@@ -259,7 +238,6 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnClick
 
                         }
                     });
-
                 }
 
                 processImpression = false;

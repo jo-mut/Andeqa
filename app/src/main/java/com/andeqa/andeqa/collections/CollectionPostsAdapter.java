@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintSet;
 import android.support.v7.widget.RecyclerView;
@@ -14,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
@@ -26,8 +23,6 @@ import com.andeqa.andeqa.impressions.ImpressionTracker;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.comments.CommentsActivity;
-import com.andeqa.andeqa.models.Credit;
-import com.andeqa.andeqa.models.Impression;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Timeline;
@@ -52,7 +47,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -144,16 +138,18 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private void initReferences(){
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
+            //firestore references
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-            //firebase
-            databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
-            //document reference
+            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
             commentsReference  = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
             commentsCountQuery= commentsReference;
             likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
             //firebase database references
             impressionReference = FirebaseDatabase.getInstance().getReference(Constants.VIEWS);
+            impressionReference.keepSynced(true);
+            databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
+
         }
 
     }
@@ -222,6 +218,7 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             holder.titleTextView.setText(videoPost.getTitle());
             holder.titleRelativeLayout.setVisibility(View.VISIBLE);
         }else {
+            holder.titleTextView.setText("");
             holder.titleRelativeLayout.setVisibility(View.GONE);
         }
 
@@ -256,6 +253,7 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 });
             }
         }else {
+            holder.descriptionTextView.setText("");
             holder.descriptionRelativeLayout.setVisibility(View.GONE);
         }
         holder.mCommentsLinearLayout.setOnClickListener(new View.OnClickListener() {
@@ -422,6 +420,8 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 });
 
 
+
+
         holder.dislikeLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -586,7 +586,8 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
         //calculate view visibility and add visible views to impression tracker
         mViewPositionMap.put(holder.itemView, position);
-        impressionTracker.addView(holder.itemView, 60, duration, postId);
+        impressionTracker.addView(holder.itemView, 100, postId);
+
         //firebase firestore references;
         collectionsPosts.document("collections").collection(collectionId);
         commentsReference.document("post_ids").collection(postId);
@@ -597,6 +598,7 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             holder.titleTextView.setText(collectionPost.getTitle());
             holder.titleRelativeLayout.setVisibility(View.VISIBLE);
         }else {
+            holder.titleTextView.setText("");
             holder.titleRelativeLayout.setVisibility(View.GONE);
         }
 
@@ -631,6 +633,7 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 });
             }
         }else {
+            holder.descriptionTextView.setText("");
             holder.descriptionRelativeLayout.setVisibility(View.GONE);
         }
         holder.mCommentsLinearLayout.setOnClickListener(new View.OnClickListener() {
@@ -683,27 +686,68 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             }
         });
 
-        //calculate the generated points from the compiled time
-        impressionReference.child("compiled_views").child(postId)
+//        //calculate the generated points from the compiled time
+//        impressionReference.child("compiled_views").child(postId)
+//                .addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                        if (dataSnapshot.exists()){
+//                            holder.mCreditsLinearLayout.setVisibility(View.VISIBLE);
+//                            ViewDuration impression = dataSnapshot.getValue(ViewDuration.class);
+//                            final long compiledDuration = impression.getCompiled_duration();
+//                            Log.d("compiled duration", compiledDuration + "");
+//                            //get seconds in milliseconds
+//                            final long durationInSeconds = compiledDuration / 1000;
+//                            //get the points generate
+//                            final double points = durationInSeconds * 0.000015;
+//                            DecimalFormat formatter = new DecimalFormat("0.000000");
+//                            final String pts = formatter.format(points);
+//                            holder.senseCreditsTextView.setText(pts + " points");
+//
+//                        }else {
+//                            holder.mCreditsLinearLayout.setVisibility(View.VISIBLE);
+//                            final double points = 0.00;
+//                            DecimalFormat formatter = new DecimalFormat("0.00");
+//                            final String pts = formatter.format(points);
+//                            holder.senseCreditsTextView.setText(pts + " points");
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                    }
+//                });
+
+
+        impressionReference.child("post_views").child(postId)
+                .addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    final long size = dataSnapshot.getChildrenCount();
+                    int childrenCount = (int) size;
+                    holder.viewsCountTextView.setText(childrenCount + "");
+                }else {
+                    holder.viewsCountTextView.setText("0");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        impressionReference.child("post_views").child(postId)
+                .child(firebaseAuth.getCurrentUser().getUid())
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()){
-                            holder.mCreditsLinearLayout.setVisibility(View.VISIBLE);
-                            Impression impression = dataSnapshot.getValue(Impression.class);
-                            final long compiledDuration = impression.getCompiled_duration();
-                            //get seconds in milliseconds
-                            final long durationInSeconds = compiledDuration / 1000;
-                            //get the points generate
-                            final double points = durationInSeconds * 0.00015;
-                            DecimalFormat formatter = new DecimalFormat("0.00");
-                            holder.senseCreditsTextView.setText(formatter.format(points));
-
+                            holder.viewsImageView.setBackgroundResource(R.drawable.ic_viewed);
                         }else {
-                            holder.mCreditsLinearLayout.setVisibility(View.VISIBLE);
-                            final double points = 0.00;
-                            DecimalFormat formatter = new DecimalFormat("0.00");
-                            holder.senseCreditsTextView.setText(formatter.format(points));
+                            holder.viewsImageView.setBackgroundResource(R.drawable.ic_views);
                         }
                     }
 
@@ -757,227 +801,8 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 });
 
 
-        likesReference.document(postId).collection("likes")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!documentSnapshots.isEmpty()){
-                            holder.likesCountTextView.setText(documentSnapshots.size() + " ");
-                        }else {
-                            holder.likesCountTextView.setText("0");
-                        }
-
-                    }
-                });
-
-        likesReference.document(postId).collection("dislikes")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!documentSnapshots.isEmpty()){
-                            holder.dislikeCountTextView.setText(documentSnapshots.size() + " ");
-                        }else {
-                            holder.dislikeCountTextView.setText("0");
-                        }
-
-                    }
-                });
-
-
-        //color the like image view if the user has liked
-        likesReference.document(postId).collection("likes")
-                .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (documentSnapshots.isEmpty()){
-                            //change the like image view backgroud color
-                            holder.likesImageView.setColorFilter(Color.BLACK);
-                        }else {
-                            //changed the like image view background color to show user has liked
-                            holder.likesImageView.setColorFilter(Color.RED);
-                        }
-
-                    }
-                });
-
-
-//      color the like image view if the user has dislikes
-        likesReference.document(postId).collection("dislikes")
-                .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (documentSnapshots.isEmpty()){
-                            //changed the dislike image view background color to show user has not disliked
-                            holder.dislikeImageView.setColorFilter(Color.BLACK);
-
-                        }else {
-                            //changed the dislike image view background color to show user has disliked
-                            holder.dislikeImageView.setColorFilter(Color.RED);
-
-                        }
-
-                    }
-                });
-
-
-        holder.dislikeLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                processDislikes = true;
-                likesReference.document(postId).collection("dislikes")
-                        .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
-                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                            @Override
-                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                if (e != null) {
-                                    Log.w(TAG, "Listen error", e);
-                                    return;
-                                }
-
-
-                                if (processDislikes){
-                                    if (documentSnapshots.isEmpty()){
-                                        Like like = new Like();
-                                        like.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                        likesReference.document(postId).collection("dislikes")
-                                                .document(firebaseAuth.getCurrentUser().getUid()).set(like);
-                                        processDislikes = false;
-                                        holder.dislikeImageView.setColorFilter(Color.RED);
-
-                                    }else {
-                                        likesReference.document(postId).collection("dislikes")
-                                                .document(firebaseAuth.getCurrentUser().getUid()).delete();
-                                        processDislikes = false;
-                                        holder.dislikeImageView.setColorFilter(Color.BLACK);
-
-                                    }
-                                }
-
-                            }
-                        });
-            }
-        });
-
-
-        holder.likesRelativeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                processLikes = true;
-                likesReference.document(postId).collection("likes")
-                        .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
-                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                            @Override
-                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                if (e != null) {
-                                    Log.w(TAG, "Listen error", e);
-                                    return;
-                                }
-
-
-                                if (processLikes){
-                                    if (documentSnapshots.isEmpty()){
-                                        final Like like = new Like();
-                                        like.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                        likesReference.document(postId).collection("likes")
-                                                .document(firebaseAuth.getCurrentUser().getUid()).set(like);
-
-                                        timelineCollection.document(uid).collection("activities")
-                                                .whereEqualTo("post_id", postId)
-                                                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                                    @Override
-                                                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                                        if (e != null) {
-                                                            Log.w(TAG, "Listen error", e);
-                                                            return;
-                                                        }
-
-
-                                                        if (documentSnapshots.isEmpty()){
-                                                            Log.d("timeline is empty", postId);
-                                                            final Timeline timeline = new Timeline();
-                                                            final long time = new Date().getTime();
-
-                                                            final String activityId = databaseReference.push().getKey();
-                                                            timeline.setPost_id(postId);
-                                                            timeline.setTime(time);
-                                                            timeline.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                            timeline.setType("like");
-                                                            timeline.setActivity_id(activityId);
-                                                            timeline.setStatus("un_read");
-                                                            timeline.setReceiver_id(uid);
-
-                                                            if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                                                //do nothing
-                                                            }else {
-                                                                timelineCollection.document(uid).collection("activities")
-                                                                        .document(postId).set(timeline);
-                                                            }
-                                                        }
-                                                    }
-                                                });
-
-
-
-                                        processLikes = false;
-                                        holder.likesImageView.setColorFilter(Color.RED);
-
-                                    }else {
-                                        likesReference.document(postId).collection("likes")
-                                                .document(firebaseAuth.getCurrentUser().getUid()).delete();
-                                        processLikes = false;
-                                        holder.likesImageView.setColorFilter(Color.BLACK);
-
-                                    }
-                                }
-
-                            }
-                        });
-            }
-        });
-
     }
 
-    @Override
-    public void onViewAttachedToWindow(@NonNull RecyclerView.ViewHolder holder) {
-        super.onViewAttachedToWindow(holder);
-        startTime = System.currentTimeMillis();
-    }
-
-    @Override
-    public void onViewDetachedFromWindow(@NonNull RecyclerView.ViewHolder holder) {
-        super.onViewDetachedFromWindow(holder);
-        stopTime = System.currentTimeMillis();
-        duration = stopTime - startTime;
-    }
 
 }
 

@@ -57,14 +57,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:visibility="gone"
+            <Button
+                android:text=""
+                android:textSize="24sp"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                android:background="@drawable/colour_btn_background"
                 android:id="@+id/followButton"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_centerInParent="true"
-                app:srcCompat="@drawable/ic_chat"
-                android:tint="@color/colorAccent" />
+                android:visibility="gone"
+                android:layout_width="140dp"
+                android:layout_height="60dp" />
 
         </RelativeLayout>
 

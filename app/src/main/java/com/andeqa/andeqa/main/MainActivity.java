@@ -8,6 +8,9 @@ import android.util.Log;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.collections.InitialCollectionsActivity;
+import com.andeqa.andeqa.people.FollowPeopleActivity;
+import com.andeqa.andeqa.people.FollowingActivity;
 import com.andeqa.andeqa.registration.SignInActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -24,12 +27,15 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private CollectionReference usersReference;
+    private CollectionReference followingCollection;
+    private CollectionReference queryOptionsCollectons;
     private FirebaseAuth firebaseAuth;
     private static final String EXTRA_POST_ID = "post id";
     private static final String COLLECTION_ID = "collection id";
     private static final String TYPE = "type";
     private static final String EXTRA_USER_UID =  "uid";
     private CollectionReference allCollections;
+    private boolean queryOptions = false;
 
 
     @Override
@@ -39,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         allCollections = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
+        followingCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE);
+        queryOptionsCollectons = FirebaseFirestore.getInstance().collection(Constants.QUERY_OPTIONS);
         allCollections.orderBy("time").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -57,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Log.d(TAG, "getInvitation: no data");
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -71,12 +78,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void authenticationListener(){
         firebaseAuth = FirebaseAuth.getInstance();
+        queryOptions = true;
         if (firebaseAuth.getCurrentUser() != null){
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             usersReference.document(firebaseAuth.getCurrentUser().getUid())
                     .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
-                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                        public void onEvent(final DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
                             if (e != null) {
                                 Log.w(TAG, "Listen error", e);
@@ -84,14 +92,39 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             if (documentSnapshot.exists()){
-                                Log.d("user snapshot", documentSnapshot.toString());
-                                Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                finish();
+                                queryOptionsCollectons.document("options")
+                                        .collection(firebaseAuth.getCurrentUser().getUid())
+                                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
+                                        if (e != null) {
+                                            Log.w(TAG, "Listen error", e);
+                                            return;
+                                        }
+
+                                        if (queryOptions){
+                                            if (documentSnapshots.isEmpty()){
+                                                Intent intent = new Intent(MainActivity.this, InitialCollectionsActivity.class);
+                                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                startActivity(intent);
+                                                finish();
+
+                                                queryOptions = false;
+
+                                            }else {
+                                                Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                startActivity(intent);
+                                                finish();
+
+                                                queryOptions = false;
+                                            }
+                                        }
+                                    }
+                                });
+
                             }else {
 
-                                Log.d("user snapshot", documentSnapshot.toString());
                                 Intent intent = new Intent(MainActivity.this, SignInActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);
@@ -103,7 +136,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         }else {
-            Log.d("user is null", "user is present");
             Intent intent = new Intent(MainActivity.this, SignInActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);

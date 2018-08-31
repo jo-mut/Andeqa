@@ -32,30 +32,16 @@ public class App extends Application {
     private static final String TAG = App.class.getSimpleName();
     private FirebaseRemoteConfig firebaseRemoteConfig;
     private Context context;
-//    public static Picasso picasso;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(true)
                 .build();
         FirebaseFirestore.getInstance().setFirestoreSettings(settings);
         FirebaseFirestore.setLoggingEnabled(true);
-
-//        Picasso.Builder builder = new Picasso.Builder(this).listener(new Picasso.Listener() {
-//            @Override
-//            public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
-//                exception.printStackTrace();
-//            }
-//        });
-//        builder.downloader(new OkHttpDownloader(this,Integer.MAX_VALUE));
-//        Picasso built = builder.build();
-//        built.setIndicatorsEnabled(false);
-//        built.setLoggingEnabled(true);
-//        Picasso.setSingletonInstance(built);
 
         firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
         // set in-app defaults

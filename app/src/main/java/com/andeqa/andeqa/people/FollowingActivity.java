@@ -4,13 +4,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.models.Andeqan;
+import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.utils.EndlessLinearRecyclerViewOnScrollListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,6 +44,7 @@ public class FollowingActivity extends AppCompatActivity {
     //firestore
     private CollectionReference peopleCollection;
     private CollectionReference usersCollection;
+    private Query usersQuery;
     private CollectionReference followersCollection;
     private CollectionReference timelineCollection;
     private Query followersQuery;
@@ -77,9 +83,10 @@ public class FollowingActivity extends AppCompatActivity {
 
         if (firebaseAuth.getCurrentUser()!= null){
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+            usersQuery = usersCollection;
             followersCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE);
             followersQuery = followersCollection.document("following")
-                    .collection(mUid).orderBy("user_id");
+                    .collection(mUid).orderBy("time");
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
 
@@ -152,6 +159,7 @@ public class FollowingActivity extends AppCompatActivity {
         followingRecyclerView.setLayoutManager(linearLayoutManager);
     }
 
+
     private void getFollowing() {
         followersQuery.limit(TOTAL_ITEMS)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -194,8 +202,7 @@ public class FollowingActivity extends AppCompatActivity {
 
             //retrieve the first bacth of documentSnapshots
             Query nextSellingQuery =  followersCollection.document("following")
-                    .collection(mUid).orderBy("user_id")
-                    .startAfter(lastVisible)
+                    .collection(mUid).orderBy("time").startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
 
             nextSellingQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {

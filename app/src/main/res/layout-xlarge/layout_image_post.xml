@@ -94,19 +94,20 @@
 
                     <LinearLayout
                         android:orientation="horizontal"
-                        android:id="@+id/likesLinearLayout"
+                        android:id="@+id/viewsLinearLayout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
 
                         <ImageView
-                            android:id="@+id/likesImageView"
+                            android:id="@+id/viewsImageView"
                             android:layout_width="30dp"
                             android:layout_height="30dp"
-                            app:srcCompat="@drawable/ic_thumb_up" />
+                            android:tint="@color/grey_700"
+                            app:srcCompat="@drawable/ic_views" />
 
 
                         <TextView
-                            android:id="@+id/likesCountTextView"
+                            android:id="@+id/viewsCountTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
@@ -117,29 +118,6 @@
 
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:id="@+id/dislikeLinearLayout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                        <ImageView
-                            android:id="@+id/dislikeImageView"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            app:srcCompat="@drawable/ic_thumb_down"/>
-
-
-                        <TextView
-                            android:id="@+id/dislikesCountTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textSize="20sp"
-                            android:padding="5dp"
-                            android:textStyle="normal"/>
-
-                    </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/commentsLinearLayout"

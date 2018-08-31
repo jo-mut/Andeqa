@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/blue_grey_50"
+    android:orientation="vertical"
+    tools:context=".collections.MineCollectionFragment">
+
+
+    <android.support.v7.widget.RecyclerView
+        android:clipToPadding="false"
+        android:padding="@dimen/item_off_set"
+        android:id="@+id/collectionsRecyclerView"
+        android:overScrollMode="never"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <RelativeLayout
+        android:id="@+id/createCollectionRelativeLayout"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            app:srcCompat="@drawable/ic_add_collection"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/addCoverImageView"
+            android:scaleType="centerCrop" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/addCollectionTextView"
+            android:textSize="21sp"
+            android:layout_below="@id/addCoverImageView"
+            android:text="Tap to create your first collection"
+            android:layout_centerHorizontal="true"
+            android:padding="20dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginEnd="5dp" />
+
+    </RelativeLayout>
+
+</LinearLayout>

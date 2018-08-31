@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.home.PostDetailActivity;
-import com.andeqa.andeqa.home.PostsAdapter;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Comment;
@@ -29,15 +28,13 @@ import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -76,7 +73,6 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
     private CollectionReference peopleCollection;
     private CollectionReference likesCollection;
     private CollectionReference timelineCollection;
-    private CollectionReference senseCreditCollection;
     private CollectionReference commentCollection;
     private DatabaseReference databaseReference;
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
@@ -89,8 +85,21 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
     protected void setTimelineActivities(List<DocumentSnapshot> mSnapshots){
         this.documentSnapshots = mSnapshots;
         notifyDataSetChanged();
+        initReferences();
     }
 
+    private void initReferences(){
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+        timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
+        postCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+        likesCollection = FirebaseFirestore.getInstance().collection(Constants.LIKES);
+        collectionsPostCollections = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
+        commentCollection = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
+        peopleCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE);
+        databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
+    }
 
     @Override
     public long getItemId(int position) {
@@ -165,14 +174,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
         final String uid = timeline.getUser_id();
         final String status = timeline.getStatus();
         final String postId = timeline.getPost_id();
-        firebaseAuth = FirebaseAuth.getInstance();
 
-        usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-        timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-        postCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-        collectionsPostCollections = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
-        senseCreditCollection = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
-        likesCollection = FirebaseFirestore.getInstance().collection(Constants.LIKES);
 
         postCollection.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -373,14 +375,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
         final String uid = timeline.getUser_id();
         final String status = timeline.getStatus();
         final String postId = timeline.getPost_id();
-        firebaseAuth = FirebaseAuth.getInstance();
 
-        usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-        postCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-        timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-        collectionsPostCollections = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
-        senseCreditCollection = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
-        commentCollection = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
 
         postCollection.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -560,12 +555,6 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
         final String activityId = timeline.getActivity_id();
         final String status = timeline.getStatus();
         final String userId = timeline.getUser_id();
-        firebaseAuth = FirebaseAuth.getInstance();
-        Log.d("user id", userId);
-
-        usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-        timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-        peopleCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE);
 
         holder.profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -578,7 +567,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         //show if following or not
         peopleCollection.document("followers").collection(userId)
-                .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
+                .whereEqualTo("following_id", firebaseAuth.getCurrentUser().getUid())
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -609,7 +598,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
                 processFollow = true;
                 peopleCollection.document("followers")
                         .collection(userId)
-                        .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
+                        .whereEqualTo("following_id", firebaseAuth.getCurrentUser().getUid())
                         .addSnapshotListener(new EventListener<QuerySnapshot>() {
                             @Override
                             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -623,10 +612,13 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
                                 if (processFollow){
                                     if (documentSnapshots.isEmpty()){
                                         //set followers and following
-                                        Relation follower = new Relation();
-                                        follower.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                        Relation follow = new Relation();
+                                        follow.setFollowing_id(firebaseAuth.getCurrentUser().getUid());
+                                        follow.setFollowed_id(userId);
+                                        follow.setType("followed_user");
+                                        follow.setTime(System.currentTimeMillis());
                                         peopleCollection.document("followers").collection(userId)
-                                                .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
+                                                .document(firebaseAuth.getCurrentUser().getUid()).set(follow)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
@@ -646,7 +638,10 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
                                                     }
                                                 });
                                         final Relation following = new Relation();
-                                        following.setUser_id(userId);
+                                        following.setFollowing_id(firebaseAuth.getCurrentUser().getUid());
+                                        following.setFollowed_id(userId);
+                                        following.setType("following_user");
+                                        following.setTime(System.currentTimeMillis());
                                         peopleCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
                                                 .document(userId).set(following);
                                         holder.followButton.setText("Following");

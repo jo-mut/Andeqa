@@ -184,8 +184,7 @@ public class ProfileCollectionFragment extends Fragment{
         // Get the last visible document
         final int snapshotSize = profileCollectionAdapter.getItemCount();
 
-        if (snapshotSize == 0){
-        }else {
+        if (snapshotSize != 0){
             DocumentSnapshot lastVisible = profileCollectionAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of posts

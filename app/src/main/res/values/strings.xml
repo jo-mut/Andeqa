@@ -118,6 +118,7 @@
     <!--camera-->
     <string name="file_limit_size_upload_format">Files must be less than %sMB</string>
     <string name="title_activity_main2">Main2Activity</string>
-
-
+    <string name="let_s_get_you_started_with_andeqa_follow_some_few_collections_to_see_interest_posts_from_other_user_s_collections">Let\'s get you started with Andeqa. Follow some few collections to see interest posts from other user\'s collections</string>
+    <!--follow collections-->
+    <string name="start_by_following_collections">Let\'s get you started. Follow some few collections to see posts from other user\'s collections</string>
 </resources>

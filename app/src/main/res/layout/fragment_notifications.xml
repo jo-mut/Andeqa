@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/blue_grey_50"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".notifications.NotificationsFragment">
+
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/timelineRecyclerView"
@@ -42,7 +41,7 @@
             android:textSize="14sp"
             android:layout_centerInParent="true" />
 
-
     </RelativeLayout>
 
-</LinearLayout>
+
+</FrameLayout>

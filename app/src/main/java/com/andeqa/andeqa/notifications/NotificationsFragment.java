@@ -36,10 +36,11 @@ import butterknife.ButterKnife;
  * A simple {@link Fragment} subclass.
  */
 public class NotificationsFragment extends Fragment {
+
     @Bind(R.id.timelineRecyclerView)RecyclerView mTimelineRecyclerView;
     @Bind(R.id.placeHolderRelativeLayout)RelativeLayout mPlaceHolderRelativeLayout;
 
-    private static final String TAG = NotificationsActivity.class.getSimpleName();
+    private static final String TAG = NotificationsFragment.class.getSimpleName();
     private static final String EXTRA_USER_UID = "uid";
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     private FirebaseAuth firebaseAuth;
@@ -93,7 +94,7 @@ public class NotificationsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-       loadData();
+        loadData();
     }
 
 
@@ -165,8 +166,7 @@ public class NotificationsFragment extends Fragment {
         // Get the last visible document
         final int snapshotSize = notificationsAdapter.getItemCount();
 
-        if (snapshotSize == 0){
-        }else {
+        if (snapshotSize > 0){
             DocumentSnapshot lastVisible = notificationsAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of timelineSnapshots
@@ -247,5 +247,4 @@ public class NotificationsFragment extends Fragment {
     public void onResume() {
         super.onResume();
     }
-
 }

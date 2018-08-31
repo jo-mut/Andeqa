@@ -24,7 +24,6 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
@@ -62,7 +61,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class CreateCollectionPostActivity extends AppCompatActivity implements View.OnClickListener{
-    @Bind(R.id.titleEditText)EditText mCingleTitleEditText;
+    @Bind(R.id.titleEditText)EditText mTitleEditText;
     @Bind(R.id.descriptionEditText)EditText mCingleDescriptionEditText;
     @Bind(R.id.postImageView)ImageView mPostImageView;
     @Bind(R.id.postPostImageView)ImageView mPostPostImageView;
@@ -146,7 +145,7 @@ public class CreateCollectionPostActivity extends AppCompatActivity implements V
         randomReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
         collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
 
-        mCingleTitleEditText.setFilters(new InputFilter[]{new InputFilter
+        mTitleEditText.setFilters(new InputFilter[]{new InputFilter
                 .LengthFilter(DEFAULT_TITLE_LENGTH_LIMIT)});
 
         textWatchers();
@@ -183,7 +182,7 @@ public class CreateCollectionPostActivity extends AppCompatActivity implements V
 
     private void textWatchers(){
         //TITLE TEXT WATCHER
-        mCingleTitleEditText.addTextChangedListener(new TextWatcher() {
+        mTitleEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -196,16 +195,20 @@ public class CreateCollectionPostActivity extends AppCompatActivity implements V
 
             @Override
             public void afterTextChanged(Editable editable) {
-                int count = DEFAULT_TITLE_LENGTH_LIMIT - editable.length();
-                mTitleCountTextView.setText(Integer.toString(count));
+                String s = editable.toString();
+                if (s.length() >0 && s.contains(" ")){
+                    mTitleEditText.setText(s.replaceAll(" ", ""));
+                    mTitleEditText.setSelection(mTitleEditText.getText().length());
+                    int count = DEFAULT_TITLE_LENGTH_LIMIT - mTitleEditText.getText().length();
+                    mTitleCountTextView.setText(Integer.toString(count));
 
-                if (count < 0){
-                }else if (count < 100){
-                    mTitleCountTextView.setTextColor(Color.GRAY);
-                }else {
-                    mTitleCountTextView.setTextColor(Color.BLACK);
+                    if (count < 0){
+                    }else if (count < 100){
+                        mTitleCountTextView.setTextColor(Color.GRAY);
+                    }else {
+                        mTitleCountTextView.setTextColor(Color.BLACK);
+                    }
                 }
-
             }
         });
 
@@ -320,7 +323,7 @@ public class CreateCollectionPostActivity extends AppCompatActivity implements V
                                                     collectionPost.setRandom_number(random);
                                                     collectionPost.setTime(timeStamp);
                                                     collectionPost.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                    collectionPost.setTitle(mCingleTitleEditText.getText().toString());
+                                                    collectionPost.setTitle(mTitleEditText.getText().toString());
                                                     collectionPost.setDescription(mCingleDescriptionEditText.getText().toString());
                                                     collectionPost.setImage(downloadUri.toString());
                                                     collectionPost.setPost_id(pushId);
@@ -496,7 +499,7 @@ public class CreateCollectionPostActivity extends AppCompatActivity implements V
                                                         videoPost.setRandom_number(random);
                                                         videoPost.setTime(timeStamp);
                                                         videoPost.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                        videoPost.setTitle(mCingleTitleEditText.getText().toString());
+                                                        videoPost.setTitle(mTitleEditText.getText().toString());
                                                         videoPost.setDescription(mCingleDescriptionEditText.getText().toString());
                                                         videoPost.setVideo(downloadUri.toString());
                                                         videoPost.setPost_id(pushId);

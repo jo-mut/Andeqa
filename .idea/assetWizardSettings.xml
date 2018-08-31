@@ -52,8 +52,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="ic_volume_on" />
-                            <entry key="sourceFile" value="C:\Users\J.EL\Downloads\icons\speaker.svg" />
+                            <entry key="outputName" value="ic_views" />
+                            <entry key="sourceFile" value="C:\Users\J.EL\Documents\icons\outline-visibility-24px.svg" />
                           </map>
                         </option>
                       </PersistentState>

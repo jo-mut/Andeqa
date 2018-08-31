@@ -72,8 +72,6 @@ public class ProfileCollectionAdapter extends RecyclerView.Adapter<ProfileCollec
         final String collectionId = collection.getCollection_id();
         final String uid = collection.getUser_id();
 
-        Log.d("collection name", collection.getName());
-
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
             collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);

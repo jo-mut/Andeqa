@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.MergeCursor;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,12 +22,10 @@ import com.andeqa.andeqa.creation.CreateCollectionActivity;
 import com.andeqa.andeqa.creation.CreateCollectionPostActivity;
 import com.andeqa.andeqa.creation.PreviewImagePostActivity;
 import com.andeqa.andeqa.creation.PreviewVideoPostActivity;
-import com.andeqa.andeqa.message.MessagesAccountActivity;
-import com.andeqa.andeqa.player.Player;
+import com.andeqa.andeqa.message.MessagingActivity;
 import com.andeqa.andeqa.profile.UpdateProfileActivity;
 import com.andeqa.andeqa.settings.CollectionSettingsActivity;
 import com.bumptech.glide.Glide;
-import com.google.android.exoplayer2.util.Util;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -261,7 +258,7 @@ public class PicturesFragment extends Fragment {
                         startActivity(intent);
                         getActivity().finish();
                     }else if (mRoomId != null){
-                        Intent intent = new Intent(getActivity(), MessagesAccountActivity.class);
+                        Intent intent = new Intent(getActivity(), MessagingActivity.class);
                         intent.putExtra(PicturesFragment.GALLERY_PATH, mediaFiles.get(position).get(Function.KEY_PATH));
                         intent.putExtra(PicturesFragment.EXTRA_ROOM_ID, mRoomId);
                         intent.putExtra(PicturesFragment.EXTRA_USER_UID, mUid);

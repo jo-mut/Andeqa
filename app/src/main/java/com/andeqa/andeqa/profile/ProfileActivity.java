@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -19,7 +20,7 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.creation.CreateCollectionActivity;
 import com.andeqa.andeqa.creation.CreateCollectionPostActivity;
-import com.andeqa.andeqa.message.MessagesAccountActivity;
+import com.andeqa.andeqa.message.MessagingActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Room;
@@ -41,9 +42,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.util.Date;
 
@@ -64,15 +62,19 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Bind(R.id.followingCountTextView)TextView mFollowingCountTextView;
     @Bind(R.id.followButton)Button followButton;
     @Bind(R.id.followRelativeLayout)RelativeLayout mFollowRelativeLayout;
-    @Bind(R.id.viewPostRelativelayout)RelativeLayout mViewPostsRelativeLayout;
     @Bind(R.id.postsCountTextView)TextView mPostCountTextView;
-    @Bind(R.id.viewCollectionsRelativeLayout)RelativeLayout mViewMoreCollectionsRelativeLayout;
     @Bind(R.id.collectionCountTextView)TextView mCollectionsCountTextView;
     @Bind(R.id.connectCardView)CardView mConnectCardView;
     @Bind(R.id.postCardView)CardView mPostsCardView;
     @Bind(R.id.collectionsCardView) CardView mCollectionsCardView;
     @Bind(R.id.addPostImageView)ImageView addPostImageView;
     @Bind(R.id.addCollectionImageView)ImageView addCollectionImageView;
+    @Bind(R.id.post_container)FrameLayout mPostContainerFrameLayout;
+    @Bind(R.id.collection_container) FrameLayout mCollectionsContainerFrameLayout;
+    @Bind(R.id.createPostRelativeLayout)RelativeLayout mCreatePostRelativeLayout;
+    @Bind(R.id.createCollectionsRelativeLayout)RelativeLayout mCreateCollectionRelativeLayout;
+    @Bind(R.id.viewPostRelativelayout)RelativeLayout mViewPostRelativeLayout;
+    @Bind(R.id.viewCollectionsRelativeLayout)RelativeLayout mViewCollectionsRelativeLayout;
 
     private static final String TAG = ProfileActivity.class.getSimpleName();
     //firestore reference
@@ -175,8 +177,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             /**initialize click listners*/
             mSendMessageButton.setOnClickListener(this);
             followButton.setOnClickListener(this);
-            mViewPostsRelativeLayout.setOnClickListener(this);
-            mViewMoreCollectionsRelativeLayout.setOnClickListener(this);
+            mViewPostRelativeLayout.setOnClickListener(this);
+            mViewCollectionsRelativeLayout.setOnClickListener(this);
             mFollowerCountTextView.setOnClickListener(this);
             mFollowingCountTextView.setOnClickListener(this);
             addCollectionImageView.setOnClickListener(this);
@@ -199,7 +201,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
 
     private void fetchData(){
-        followQuery.orderBy("user_id").whereEqualTo("user_id",
+        followQuery.orderBy("time").whereEqualTo("following_id",
                 firebaseAuth.getCurrentUser().getUid())
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -218,7 +220,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
 
-        followingQuery.orderBy("user_id").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        followingQuery.orderBy("time").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot documentSnapshots,
                                 @Nullable FirebaseFirestoreException e) {
@@ -238,7 +240,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
 
-        followersQuery.orderBy("user_id").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        followersQuery.orderBy("time").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
@@ -343,17 +345,18 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             sendMessage();
         }
 
-        if (v == mViewPostsRelativeLayout){
+        if (v == mViewPostRelativeLayout){
             Intent intent = new Intent(this, ProfilePostsActivity.class);
             intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
             startActivity(intent);
         }
 
-        if (v == mViewMoreCollectionsRelativeLayout){
+        if (v == mViewCollectionsRelativeLayout){
             Intent intent = new Intent(this, ProfileCollectionsActivity.class);
             intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
             startActivity(intent);
         }
+
 
         if (v == followButton){
             followProfile();
@@ -386,8 +389,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         //follow or unfollow
         processFollow = true;
         peopleCollection.document("followers")
-                .collection(mUid)
-                .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
+                .collection(mUid).whereEqualTo("following_id", firebaseAuth.getCurrentUser().getUid())
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -403,7 +405,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
                                 //set followers and following
                                 Relation follower = new Relation();
-                                follower.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                follower.setFollowing_id(firebaseAuth.getCurrentUser().getUid());
+                                follower.setFollowed_id(mUid);
+                                follower.setType("followed_user");
+                                follower.setTime(System.currentTimeMillis());
                                 peopleCollection.document("followers").collection(mUid)
                                         .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -425,7 +430,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                             }
                                         });
                                 final Relation following = new Relation();
-                                following.setUser_id(mUid);
+                                following.setFollowing_id(firebaseAuth.getCurrentUser().getUid());
+                                following.setFollowed_id(mUid);
+                                following.setType("following_user");
+                                following.setTime(System.currentTimeMillis());
                                 peopleCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
                                         .document(mUid).set(following);
                                 followButton.setText("Following");
@@ -457,10 +465,13 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
                         if (!documentSnapshots.isEmpty()){
                             final int collectionCount = documentSnapshots.size();
-                            mCollectionsCardView.setVisibility(View.VISIBLE);
+                            mCollectionsContainerFrameLayout.setVisibility(View.VISIBLE);
                             mCollectionsCountTextView.setText("Collections: " + collectionCount);
+                            mViewCollectionsRelativeLayout.setVisibility(View.VISIBLE);
                         }else {
                             mCollectionsCountTextView.setText("Collections: 0");
+                            mCreateCollectionRelativeLayout.setVisibility(View.VISIBLE);
+
                         }
                     }
                 });
@@ -481,13 +492,13 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                         }
 
                         if (!queryDocumentSnapshots.isEmpty()){
-                            mPostsCardView.setVisibility(View.VISIBLE);
+                            mPostContainerFrameLayout.setVisibility(View.VISIBLE);
+                            mViewPostRelativeLayout.setVisibility(View.VISIBLE);
                             final int count = queryDocumentSnapshots.size();
-                            if (count > 0){
-                                mPostCountTextView.setText("Posts: " + count);
-                            }
+                            mPostCountTextView.setText("Posts: " + count);
                         }else {
                             mPostCountTextView.setText("Posts: 0");
+                            mCreatePostRelativeLayout.setVisibility(View.VISIBLE);
                         }
 
                     }
@@ -512,7 +523,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                             if (documentSnapshot.exists()){
                                 Room room = documentSnapshot.toObject(Room.class);
                                 roomId = room.getRoom_id();
-                                Intent intent = new Intent(ProfileActivity.this, MessagesAccountActivity.class);
+                                Intent intent = new Intent(ProfileActivity.this, MessagingActivity.class);
                                 intent.putExtra(ProfileActivity.EXTRA_ROOM_UID, roomId);
                                 intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
                                 startActivity(intent);
@@ -533,7 +544,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                             if (documentSnapshot.exists()){
                                                 Room room = documentSnapshot.toObject(Room.class);
                                                 roomId = room.getRoom_id();
-                                                Intent intent = new Intent(ProfileActivity.this, MessagesAccountActivity.class);
+                                                Intent intent = new Intent(ProfileActivity.this, MessagingActivity.class);
                                                 intent.putExtra(ProfileActivity.EXTRA_ROOM_UID, roomId);
                                                 intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
                                                 startActivity(intent);
@@ -543,7 +554,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                             }else {
                                                 //start a chat with mUid since they have no chatting history
                                                 roomId = databaseReference.push().getKey();
-                                                Intent intent = new Intent(ProfileActivity.this, MessagesAccountActivity.class);
+                                                Intent intent = new Intent(ProfileActivity.this, MessagingActivity.class);
                                                 intent.putExtra(ProfileActivity.EXTRA_ROOM_UID, roomId);
                                                 intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
                                                 startActivity(intent);

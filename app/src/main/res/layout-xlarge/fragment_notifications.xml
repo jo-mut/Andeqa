@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/blue_grey_50"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".notifications.NotificationsFragment">
+
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/timelineRecyclerView"
@@ -27,8 +26,8 @@
             app:srcCompat="@drawable/ic_stopwatch"
             android:id="@+id/imagePlaceHolder"
             android:layout_centerInParent="true"
-            android:layout_width="200dp"
-            android:layout_height="200dp" />
+            android:layout_width="200sp"
+            android:layout_height="200sp" />
 
         <TextView
             android:layout_below="@+id/imagePlaceHolder"
@@ -39,11 +38,10 @@
             android:id="@+id/placeHolderTextView"
             android:textAlignment="center"
             android:padding="20dp"
-            android:textSize="28sp"
+            android:textSize="21sp"
             android:layout_centerInParent="true" />
-
 
     </RelativeLayout>
 
 
-</LinearLayout>
+</FrameLayout>

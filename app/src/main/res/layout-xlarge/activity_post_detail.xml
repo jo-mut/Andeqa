@@ -101,14 +101,6 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content">
 
-                                        <ImageView
-                                            android:layout_gravity="center_vertical"
-                                            android:id="@+id/creditsImageView"
-                                            android:layout_width="48dp"
-                                            android:layout_height="48dp"
-                                            android:tint="@color/grey_700"
-                                            app:srcCompat="@drawable/ic_credits" />
-
                                         <TextView
                                             android:layout_gravity="center_vertical"
                                             android:text=""
@@ -118,9 +110,7 @@
                                             android:textStyle="normal|bold"
                                             android:textSize="28sp"
                                             android:paddingTop="3dp"
-                                            android:paddingBottom="3dp"
-                                            android:layout_marginStart="10dp"
-                                            android:layout_marginLeft="10dp" />
+                                            android:paddingBottom="3dp" />
 
                                     </LinearLayout>
 
@@ -206,60 +196,31 @@
                                     android:layout_height="wrap_content">
 
                                     <LinearLayout
-                                        android:layout_gravity="center_vertical"
                                         android:orientation="horizontal"
-                                        android:id="@+id/likesLinearLayout"
+                                        android:id="@+id/viewsLinearLayout"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content">
 
                                         <ImageView
-                                            android:id="@+id/likesImageView"
+                                            android:id="@+id/viewsImageView"
                                             android:layout_width="48dp"
                                             android:layout_height="48dp"
-                                            android:layout_marginLeft="5dp"
-                                            android:layout_marginStart="5dp"
                                             android:tint="@color/grey_700"
-                                            app:srcCompat="@drawable/ic_thumb_up" />
+                                            app:srcCompat="@drawable/ic_views" />
 
 
                                         <TextView
-                                            android:layout_gravity="bottom"
-                                            android:id="@+id/likesCountTextView"
+                                            android:id="@+id/viewsCountTextView"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:padding="15dp"
                                             android:text="0"
+                                            android:padding="10dp"
                                             android:textSize="24sp"
-                                            android:textStyle="normal|bold" />
+                                            android:textStyle="normal" />
 
 
                                     </LinearLayout>
 
-                                    <LinearLayout
-                                        android:id="@+id/dislikeLinearLayout"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content">
-
-
-                                        <ImageView
-                                            android:id="@+id/dislikeImageView"
-                                            android:layout_width="48dp"
-                                            android:layout_height="48dp"
-                                            android:tint="@color/grey_700"
-                                            app:srcCompat="@drawable/ic_thumb_down"/>
-
-
-                                        <TextView
-                                            android:id="@+id/dislikeCountTextView"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:padding="15dp"
-                                            android:text="0"
-                                            android:textSize="24sp"
-                                            android:textStyle="normal|bold"/>
-
-
-                                    </LinearLayout>
 
                                     <LinearLayout
                                         android:id="@+id/commentsLinearLayout"

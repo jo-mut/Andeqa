@@ -38,11 +38,12 @@
              android:orientation="vertical">
 
             <TextView
+                android:textStyle="bold"
                 android:id="@+id/usernameTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/primary_text_light"
-                android:textSize="16sp" />
+                android:textSize="24sp" />
 
             <TextView
                 android:text=""
@@ -50,7 +51,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/primary_text_light"
-                android:textSize="14sp" />
+                android:textSize="21sp" />
 
          </LinearLayout>
 

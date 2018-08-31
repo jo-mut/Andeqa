@@ -33,7 +33,6 @@ import com.andeqa.andeqa.collections.CollectionPostsActivity;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
-import com.andeqa.andeqa.models.Transaction;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;

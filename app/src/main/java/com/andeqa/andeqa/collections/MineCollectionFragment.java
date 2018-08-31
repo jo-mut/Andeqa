@@ -1,6 +1,7 @@
 package com.andeqa.andeqa.collections;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,9 +11,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.creation.CreateCollectionActivity;
 import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -35,8 +38,9 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MineCollectionFragment extends Fragment {
+public class MineCollectionFragment extends Fragment implements View.OnClickListener {
     @Bind(R.id.collectionsRecyclerView)RecyclerView mCollectionsRecyclerView;
+    @Bind(R.id.createCollectionRelativeLayout)RelativeLayout mCreateCollectionRelativeLayout;
 
     private static final String TAG = FeaturedCollectionsFragment.class.getSimpleName();
 
@@ -76,25 +80,20 @@ public class MineCollectionFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_mine_collection, container, false);
         ButterKnife.bind(this, view);
         //initialize click listener
+        mCreateCollectionRelativeLayout.setOnClickListener(this);
         //FIREBASE AUTH
         firebaseAuth = FirebaseAuth.getInstance();
+        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
+        collectionsQuery = collectionsCollection.orderBy("time", Query.Direction.ASCENDING)
+                .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
+                .limit(TOTAL_ITEMS);
 
-        if (firebaseAuth.getCurrentUser()!= null){
-
-            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
-            collectionsQuery = collectionsCollection.orderBy("time", Query.Direction.ASCENDING)
-                    .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
-                    .limit(TOTAL_ITEMS);
-
-            mCollectionsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
-                @Override
-                public void onLoadMore() {
-                    setNextCollections();
-                }
-            });
-
-        }
-
+        mCollectionsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+            @Override
+            public void onLoadMore() {
+                setNextCollections();
+            }
+        });
         return view;
     }
 
@@ -133,6 +132,20 @@ public class MineCollectionFragment extends Fragment {
         setCollections();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    public void onClick(View v){
+        if (v == mCreateCollectionRelativeLayout){
+            Intent intent = new Intent(getActivity(), CreateCollectionActivity.class);
+            startActivity(intent);
+        }
+    }
+
     private void setRecyclerView(){
         // RecyclerView
         mineCollectionsAdapter = new MineCollectionsAdapter(getContext());
@@ -167,6 +180,9 @@ public class MineCollectionFragment extends Fragment {
                                 break;
                         }
                     }
+                }else {
+                    mCollectionsRecyclerView.setVisibility(View.GONE);
+                    mCreateCollectionRelativeLayout.setVisibility(View.VISIBLE);
                 }
 
             }
@@ -179,8 +195,7 @@ public class MineCollectionFragment extends Fragment {
         // Get the last visible document
         final int snapshotSize = mineCollectionsAdapter.getItemCount();
 
-        if (snapshotSize == 0){
-        }else {
+        if (snapshotSize != 0){
             DocumentSnapshot lastVisible = mineCollectionsAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of posts
@@ -243,13 +258,6 @@ public class MineCollectionFragment extends Fragment {
         }catch (Exception e){
             e.printStackTrace();
         }
-    }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
     }
 
 }

@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.message.MessagesAccountActivity;
+import com.andeqa.andeqa.message.MessagingActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Room;
@@ -29,9 +29,6 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -81,7 +78,7 @@ public class FollowersAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
     @Override
     public void onBindViewHolder(final PeopleViewHolder holder, int position) {
         Relation relation = getSnapshot(position).toObject(Relation.class);
-        final String userId = relation.getUser_id();
+        final String userId = relation.getFollowing_id();
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -132,7 +129,7 @@ public class FollowersAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
 
                     //show if following or not
                     followersCollection.document("followers").collection(userId)
-                            .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
+                            .whereEqualTo("following_id", firebaseAuth.getCurrentUser().getUid())
                             .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                 @Override
                                 public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -178,7 +175,7 @@ public class FollowersAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
                                                     if (documentSnapshot.exists()){
                                                         Room room = documentSnapshot.toObject(Room.class);
                                                         roomId = room.getRoom_id();
-                                                        Intent intent = new Intent(mContext, MessagesAccountActivity.class);
+                                                        Intent intent = new Intent(mContext, MessagingActivity.class);
                                                         intent.putExtra(FollowersAdapter.EXTRA_ROOM_UID, roomId);
                                                         intent.putExtra(FollowersAdapter.EXTRA_USER_UID, userId);
                                                         mContext.startActivity(intent);
@@ -199,7 +196,7 @@ public class FollowersAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
                                                                     if (documentSnapshot.exists()){
                                                                         Room room = documentSnapshot.toObject(Room.class);
                                                                         roomId = room.getRoom_id();
-                                                                        Intent intent = new Intent(mContext, MessagesAccountActivity.class);
+                                                                        Intent intent = new Intent(mContext, MessagingActivity.class);
                                                                         intent.putExtra(FollowersAdapter.EXTRA_ROOM_UID, roomId);
                                                                         intent.putExtra(FollowersAdapter.EXTRA_USER_UID, userId);
                                                                         mContext.startActivity(intent);
@@ -209,7 +206,7 @@ public class FollowersAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
                                                                     }else {
                                                                         //start a chat with mUid since they have no chatting history
                                                                         roomId = databaseReference.push().getKey();
-                                                                        Intent intent = new Intent(mContext, MessagesAccountActivity.class);
+                                                                        Intent intent = new Intent(mContext, MessagingActivity.class);
                                                                         intent.putExtra(FollowersAdapter.EXTRA_ROOM_UID, roomId);
                                                                         intent.putExtra(FollowersAdapter.EXTRA_USER_UID, userId);
                                                                         mContext.startActivity(intent);
@@ -240,8 +237,8 @@ public class FollowersAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
                             public void onClick(View view) {
                                 processFollow = true;
                                 followersCollection.document("followers")
-                                        .collection(userId)
-                                        .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
+                                        .collection(userId).whereEqualTo("following_id",
+                                        firebaseAuth.getCurrentUser().getUid())
                                         .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                             @Override
                                             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -256,7 +253,10 @@ public class FollowersAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
                                                     if (documentSnapshots.isEmpty()){
                                                         //set followers and following
                                                         Relation follower = new Relation();
-                                                        follower.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                        follower.setFollowing_id(firebaseAuth.getCurrentUser().getUid());
+                                                        follower.setFollowed_id(userId);
+                                                        follower.setType("followed_user");
+                                                        follower.setTime(System.currentTimeMillis());
                                                         followersCollection.document("followers").collection(userId)
                                                                 .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
                                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -278,7 +278,10 @@ public class FollowersAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
                                                                     }
                                                                 });
                                                         final Relation following = new Relation();
-                                                        following.setUser_id(userId);
+                                                        follower.setFollowing_id(firebaseAuth.getCurrentUser().getUid());
+                                                        following.setFollowed_id(userId);
+                                                        following.setType("following_user");;
+                                                        following.setTime(System.currentTimeMillis());
                                                         followersCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
                                                                 .document(userId).set(following);
                                                         holder.followButton.setText("Following");
@@ -309,6 +312,11 @@ public class FollowersAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
     @Override
     public int getItemCount() {
         return documentSnapshots.size();
+    }
+
+    public void cleanUp(){
+        documentSnapshots.clear();
+        notifyDataSetChanged();
     }
 
 

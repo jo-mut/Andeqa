@@ -49,7 +49,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     @Bind(R.id.privacyPolicyRelativeLayout)LinearLayout mPrivacyPolicyRelativeLayout;
     @Bind(R.id.updateProfileRelativeLayout)LinearLayout mUpdateProfileRelativeLayout;
 //    @Bind(R.id.deleteAccountRelativeLayout)RelativeLayout mDeleteAccountRelativeLayout;
-    @Bind(R.id.walletLinearLayout)LinearLayout mWalletLinearLayout;
     @Bind(R.id.signOutLinearLayout)LinearLayout mSignOutLinearLayout;
 
     private static final String TAG = SettingsActivity.class.getSimpleName();
@@ -71,7 +70,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         mSendFeedbackRelativeLayout.setOnClickListener(this);
         mUpdateProfileRelativeLayout.setOnClickListener(this);
         mSignOutLinearLayout.setOnClickListener(this);
-        mWalletLinearLayout.setOnClickListener(this);
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

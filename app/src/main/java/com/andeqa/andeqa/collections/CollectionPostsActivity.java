@@ -23,7 +23,6 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.creation.CreateCollectionPostActivity;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.CollectionPost;
-import com.andeqa.andeqa.models.Transaction;
 import com.andeqa.andeqa.settings.CollectionSettingsActivity;
 import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
@@ -278,9 +277,7 @@ public class CollectionPostsActivity extends AppCompatActivity
     private void setNextCollections(){
         // Get the last visible document
         final int snapshotSize = collectionPostsAdapter.getItemCount();
-        if (snapshotSize == 0){
-
-        }else {
+        if (snapshotSize !=0){
             DocumentSnapshot lastVisible = collectionPostsAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of mSnapshots

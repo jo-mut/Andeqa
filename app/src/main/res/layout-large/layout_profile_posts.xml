@@ -91,21 +91,20 @@
 
                     <LinearLayout
                         android:orientation="horizontal"
-                        android:layout_margin="2dp"
-                        android:id="@+id/likesLinearLayout"
+                        android:id="@+id/viewsLinearLayout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
 
                         <ImageView
-                            android:id="@+id/likesImageView"
+                            android:id="@+id/viewsImageView"
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:tint="@color/grey_700"
-                            app:srcCompat="@drawable/ic_thumb_up" />
+                            app:srcCompat="@drawable/ic_views" />
 
 
                         <TextView
-                            android:id="@+id/likesCountTextView"
+                            android:id="@+id/viewsCountTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
@@ -113,32 +112,6 @@
                             android:textSize="15sp"
                             android:textStyle="normal" />
 
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_margin="2dp"
-                        android:id="@+id/dislikeLinearLayout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                        <ImageView
-                            android:id="@+id/dislikeImageView"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:tint="@color/grey_700"
-                            app:srcCompat="@drawable/ic_thumb_down"/>
-
-
-                        <TextView
-                            android:id="@+id/dislikesCountTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textSize="15sp"
-                            android:padding="5dp"
-                            android:textStyle="normal"/>
 
                     </LinearLayout>
 

@@ -27,7 +27,6 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.main.HomeActivity;
 import com.andeqa.andeqa.models.Andeqan;
-import com.andeqa.andeqa.models.Wallet;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -330,27 +329,6 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
                         }
                     });
 
-                }else {
-                    final String address = walletReference.getId();
-                    final long time = new Date().getTime();
-                    Wallet wallet = new Wallet();
-                    wallet.setAddress(address);
-                    wallet.setBalance(0.0);
-                    wallet.setTime(time);
-                    wallet.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                    walletReference.document(firebaseAuth.getCurrentUser().getUid())
-                            .collection("account_addresses")
-                            .document(firebaseAuth.getCurrentUser().getUid())
-                            .set(address).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            //the user is already logged in so create profile and move to next activity
-                            Intent intent = new Intent(CreateProfileActivity.this, HomeActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
                 }
 
 

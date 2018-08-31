@@ -89,7 +89,7 @@ public class CreateSingleActivity extends AppCompatActivity implements View.OnCl
 
 
     @Bind(R.id.postImageView)ImageView mPostImageView;
-    @Bind(R.id.titleEditText)EditText mCingleTitleEditText;
+    @Bind(R.id.titleEditText)EditText mTitleEditText;
     @Bind(R.id.descriptionEditText)EditText mCingleDescriptionEditText;
     @Bind(R.id.postPostImageView)ImageView mPostPostImageView;
     @Bind(R.id.descriptionCountTextView)TextView mDescriptionCountTextView;
@@ -139,7 +139,7 @@ public class CreateSingleActivity extends AppCompatActivity implements View.OnCl
             collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
             postOwnersCollection = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
 
-            mCingleTitleEditText.setFilters(new InputFilter[]{new InputFilter
+            mTitleEditText.setFilters(new InputFilter[]{new InputFilter
                     .LengthFilter(DEFAULT_TITLE_LENGTH_LIMIT)});
 
             textWatchers();
@@ -165,7 +165,7 @@ public class CreateSingleActivity extends AppCompatActivity implements View.OnCl
 
     private void textWatchers(){
         //TITLE TEXT WATCHER
-        mCingleTitleEditText.addTextChangedListener(new TextWatcher() {
+        mTitleEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -178,14 +178,19 @@ public class CreateSingleActivity extends AppCompatActivity implements View.OnCl
 
             @Override
             public void afterTextChanged(Editable editable) {
-                int count = DEFAULT_TITLE_LENGTH_LIMIT - editable.length();
-                mTitleCountTextView.setText(Integer.toString(count));
+                String s = editable.toString();
+                if (s.length() >0 && s.contains(" ")){
+                    mTitleEditText.setText(s.replaceAll(" ", ""));
+                    mTitleEditText.setSelection(mTitleEditText.getText().length());
+                    int count = DEFAULT_TITLE_LENGTH_LIMIT - mTitleEditText.getText().length();
+                    mTitleCountTextView.setText(Integer.toString(count));
 
-                if (count < 0){
-                }else if (count < 100){
-                    mTitleCountTextView.setTextColor(Color.GRAY);
-                }else {
-                    mTitleCountTextView.setTextColor(Color.BLACK);
+                    if (count < 0){
+                    }else if (count < 100){
+                        mTitleCountTextView.setTextColor(Color.GRAY);
+                    }else {
+                        mTitleCountTextView.setTextColor(Color.BLACK);
+                    }
                 }
 
             }
@@ -331,7 +336,7 @@ public class CreateSingleActivity extends AppCompatActivity implements View.OnCl
                                                     collectionPost.setRandom_number(random);
                                                     collectionPost.setTime(timeStamp);
                                                     collectionPost.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                    collectionPost.setTitle(mCingleTitleEditText.getText().toString());
+                                                    collectionPost.setTitle(mTitleEditText.getText().toString());
                                                     collectionPost.setDescription(mCingleDescriptionEditText.getText().toString());
                                                     collectionPost.setImage(downloadUri.toString());
                                                     collectionPost.setPost_id(post_id);
@@ -369,7 +374,7 @@ public class CreateSingleActivity extends AppCompatActivity implements View.OnCl
                                                                                 @Override
                                                                                 public void onSuccess(Void aVoid) {
                                                                                     //reset input fields
-                                                                                    mCingleTitleEditText.setText("");
+                                                                                    mTitleEditText.setText("");
                                                                                     mCingleDescriptionEditText.setText("");
                                                                                     mPostImageView.setImageBitmap(null);
 
@@ -505,7 +510,7 @@ public class CreateSingleActivity extends AppCompatActivity implements View.OnCl
                                                         videoPost.setRandom_number(random);
                                                         videoPost.setTime(timeStamp);
                                                         videoPost.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                        videoPost.setTitle(mCingleTitleEditText.getText().toString());
+                                                        videoPost.setTitle(mTitleEditText.getText().toString());
                                                         videoPost.setDescription(mCingleDescriptionEditText.getText().toString());
                                                         videoPost.setVideo(downloadUri.toString());
                                                         videoPost.setPost_id(post_id);
@@ -539,7 +544,7 @@ public class CreateSingleActivity extends AppCompatActivity implements View.OnCl
                                                                                     @Override
                                                                                     public void onSuccess(Void aVoid) {
                                                                                         //reset input fields
-                                                                                        mCingleTitleEditText.setText("");
+                                                                                        mTitleEditText.setText("");
                                                                                         mCingleDescriptionEditText.setText("");
                                                                                         mPostImageView.setImageBitmap(null);
 

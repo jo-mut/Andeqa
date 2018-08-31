@@ -1,5 +1,6 @@
 package com.andeqa.andeqa.profile;
 
+import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -9,10 +10,12 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.collections.CollectionPostsActivity;
+import com.andeqa.andeqa.creation.CreateCollectionActivity;
 import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -32,7 +35,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class ProfileCollectionsActivity extends AppCompatActivity {
+public class ProfileCollectionsActivity extends AppCompatActivity{
     @Bind(R.id.collectionsRecyclerView)RecyclerView mCollectionsRecyclerView;
     private static final String TAG = ProfileCollectionsActivity.class.getSimpleName();
 
@@ -70,26 +73,19 @@ public class ProfileCollectionsActivity extends AppCompatActivity {
             }
         });
 
-        //FIREBASE AUTH
         firebaseAuth = FirebaseAuth.getInstance();
+        mUid = getIntent().getStringExtra(EXTRA_USER_UID);
+        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
+        collectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
+                .whereEqualTo("user_id", mUid)
+                .limit(TOTAL_ITEMS);
 
-        if (firebaseAuth.getCurrentUser()!= null){
-
-            mUid = getIntent().getStringExtra(EXTRA_USER_UID);
-
-            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
-            collectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
-                    .whereEqualTo("user_id", mUid)
-                    .limit(TOTAL_ITEMS);
-
-            mCollectionsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
-                @Override
-                public void onLoadMore() {
-                    setNextCollections();
-                }
-            });
-
-        }
+        mCollectionsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+            @Override
+            public void onLoadMore() {
+                setNextCollections();
+            }
+        });
     }
 
     @Override
@@ -169,8 +165,7 @@ public class ProfileCollectionsActivity extends AppCompatActivity {
         // Get the last visible document
         final int snapshotSize = profileCollectionsAdapter.getItemCount();
 
-        if (snapshotSize == 0){
-        }else {
+        if (snapshotSize!= 0){
             DocumentSnapshot lastVisible = profileCollectionsAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of posts
@@ -239,7 +234,7 @@ public class ProfileCollectionsActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-
     }
+
 
 }

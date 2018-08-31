@@ -11,6 +11,7 @@ import android.view.ViewTreeObserver;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.models.Impression;
+import com.andeqa.andeqa.models.ViewDuration;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -39,7 +40,7 @@ public class ImpressionTracker {
     private boolean processCompiledImpression = false;
     //all users impressions
     private boolean processOverallImpressions = false;
-    private boolean processOverallImpression = false;
+    private boolean processImpression = false;
 
     private DatabaseReference impressionReference;
     private DatabaseReference databaseReference;
@@ -52,7 +53,6 @@ public class ImpressionTracker {
     public static class TrackingInfo {
         View view;
         String post_id;
-        long duration;
         int minVisiblePercentage;
     }
 
@@ -91,7 +91,7 @@ public class ImpressionTracker {
         }
     }
 
-    public void addView(@NonNull View view, int minVisiblePercentageViewed, long duration, String postId) {
+    public void addView(@NonNull View view, int minVisiblePercentageViewed, String postId) {
 
         TrackingInfo trackingInfo = mTrackedViews.get(view);
         if (trackingInfo == null) {
@@ -104,7 +104,6 @@ public class ImpressionTracker {
         trackingInfo.view = view;
         trackingInfo.minVisiblePercentage = minVisiblePercentageViewed;
         trackingInfo.post_id = postId;
-        trackingInfo.duration = duration;
     }
 
     public void setVisibilityTrackerListener(VisibilityTrackerListener listener) {
@@ -162,115 +161,28 @@ public class ImpressionTracker {
             mIsVisibilityCheckScheduled = false;
             processOverallImpressions = true;
             processCompiledImpression = true;
-            processOverallImpression = true;
+            processImpression = true;
             for (final Map.Entry<View, TrackingInfo> entry : mTrackedViews.entrySet()) {
                 final View view = entry.getKey();
-                final int minPercentageViewed = entry.getValue().minVisiblePercentage;
                 final String postId = entry.getValue().post_id;
-                final long duration = entry.getValue().duration;
                 final long time = System.currentTimeMillis();
                 final String impressionId = databaseReference.child("generateId").push().getKey();
 
-                if (processOverallImpression){
-                    if (duration >= 5000){
-                        impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
-                                .child(postId).addValueEventListener(new ValueEventListener() {
+                impressionReference.child("post_views").child(postId)
+                        .child(firebaseAuth.getCurrentUser().getUid())
+                        .addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                if (processOverallImpressions){
-                                    if (dataSnapshot.exists()){
-                                        Impression impression = dataSnapshot.getValue(Impression.class);
-                                        final String type = impression.getType();
-                                        final long recentDuration = impression.getRecent_duration();
-                                        final long total_duration = impression.getCompiled_duration();
-                                        final long newTotalDuration = total_duration + duration;
-                                        final long newRecentDuration = recentDuration + duration;
-                                        Log.d("recent duration", recentDuration + "");
-                                        Log.d("total duration", total_duration + "");
-                                        Log.d("duration", duration + "");
-                                        impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
-                                                .child(postId).child("compiled_duration").setValue(newTotalDuration);
-                                        impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
-                                                .child(postId).child("recent_duration").setValue(newRecentDuration)
-                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                    @Override
-                                                    public void onSuccess(Void aVoid) {
-                                                        impressionReference.child("compiled_views").child(postId)
-                                                                .addValueEventListener(new ValueEventListener() {
-                                                                    @Override
-                                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                                        if (processCompiledImpression){
-                                                                            if (dataSnapshot.exists()){
-                                                                                Impression impress = dataSnapshot.getValue(Impression.class);
-                                                                                if (type.equals("liked")){
-                                                                                    final long newDuration = impress.getCompiled_duration() + newRecentDuration;
-                                                                                    impressionReference.child("compiled_views").child(postId)
-                                                                                            .child("compiled_duration").setValue(newDuration);
-                                                                                    impressionReference.child("compiled_views").child(postId)
-                                                                                            .child("recent_duration").setValue(newRecentDuration);
-                                                                                    impressionReference.child("compiled_views").child(postId)
-                                                                                            .child("un_compiled_duration").setValue(0);
-                                                                                    impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
-                                                                                            .child(postId).child("recent_duration").setValue(0);
-                                                                                }else if (type.equals("disliked")){
-                                                                                    final long newDuration = impress.getCompiled_duration() - newRecentDuration;
-                                                                                    impressionReference.child("compiled_views").child(postId)
-                                                                                            .child("compiled_duration").setValue(newDuration);
-                                                                                    impressionReference.child("compiled_views").child(postId)
-                                                                                            .child("recent_duration").setValue(newRecentDuration);
-                                                                                    impressionReference.child("compiled_views").child(postId)
-                                                                                            .child("un_compiled_duration").setValue(0);
-                                                                                    impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
-                                                                                            .child(postId).child("recent_duration").setValue(0);
-                                                                                }else {
-                                                                                    final long newDuration = impress.getUn_compiled_duration() + newRecentDuration;
-                                                                                    impressionReference.child("compiled_views").child(postId)
-                                                                                            .child("un_compiled_duration").setValue(newDuration);
-                                                                                    impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
-                                                                                            .child(postId).child("recent_duration").setValue(newRecentDuration);
-                                                                                }
 
-                                                                                processCompiledImpression = false;
-                                                                            }else {
-                                                                                Impression impression = new Impression();
-                                                                                impression.setCompiled_duration(newTotalDuration);
-                                                                                impression.setRecent_duration(newRecentDuration);
-                                                                                impression.setUn_compiled_duration(newTotalDuration);
-                                                                                impression.setPost_id(postId);
-                                                                                impression.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                                impression.setImpression_id(impressionId);
-                                                                                impression.setTime(time);
-                                                                                impression.setType("compiled");
-                                                                                impressionReference.child("compiled_views").child(postId)
-                                                                                        .setValue(impression);
-                                                                                processCompiledImpression = false;
-                                                                            }
-                                                                        }
-                                                                    }
-
-                                                                    @Override
-                                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                                                    }
-                                                                });
-                                                    }
-                                                });
-                                        processOverallImpressions = false;
-
-                                    }else {
-                                        Impression impression = new Impression();
-                                        impression.setCompiled_duration(duration);
-                                        impression.setRecent_duration(duration);
-                                        impression.setUn_compiled_duration(duration);
-                                        impression.setPost_id(postId);
-                                        impression.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                        impression.setImpression_id(impressionId);
-                                        impression.setTime(time);
-                                        impression.setType("un_compiled");
-                                        impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
-                                                .child(postId).setValue(impression);
-                                        processOverallImpressions = false;
-                                    }
+                                if (!dataSnapshot.exists()){
+                                    Impression impression = new Impression();
+                                    impression.setTime(time);
+                                    impression.setImpression_id(impressionId);
+                                    impression.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                    impression.setPost_id(postId);
+                                    impressionReference.child("post_views").child(postId)
+                                            .child(firebaseAuth.getCurrentUser().getUid())
+                                            .setValue(impression);
                                 }
 
                             }
@@ -280,11 +192,6 @@ public class ImpressionTracker {
 
                             }
                         });
-
-                    }
-
-                    processOverallImpression = false;
-                }
             }
 
             if (mVisibilityTrackerListener != null) {

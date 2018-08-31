@@ -26,11 +26,10 @@ import android.widget.TextView;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.comments.CommentsActivity;
-import com.andeqa.andeqa.likes.LikesActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
-import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Impression;
+import com.andeqa.andeqa.models.ViewDuration;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.settings.PostSettingsFragment;
@@ -58,7 +57,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.Date;
 
 import javax.annotation.Nullable;
@@ -71,7 +69,6 @@ import static android.util.Log.d;
 
 public class PostDetailActivity extends AppCompatActivity
         implements View.OnClickListener{
-
     @Bind(R.id.usernameTextView)TextView mUsernameTextView;
     @Bind(R.id.postImageView)ImageView postImageView;
     @Bind(R.id.topRelativeLayout)RelativeLayout topRelativeLayout;
@@ -82,17 +79,13 @@ public class PostDetailActivity extends AppCompatActivity
     @Bind(R.id.titleRelativeLayout)RelativeLayout mTitleRelativeLayout;
     @Bind(R.id.descriptionRelativeLayout)RelativeLayout mDescriptionRelativeLayout;
     @Bind(R.id.descriptionTextView)TextView mDescriptionTextView;
-    @Bind(R.id.likesCountTextView)TextView mLikesCountTextView;
-    @Bind(R.id.dislikeCountTextView)TextView mDislikeCountTextView;
-    @Bind(R.id.likesLinearLayout)LinearLayout mLikesLinearLayout;
-    @Bind(R.id.likesImageView)ImageView mLikesImageView;
-    @Bind(R.id.dislikeImageView)ImageView mDislikesImageView;
-    @Bind(R.id.dislikeLinearLayout)LinearLayout mDislikeLinearLayout;
+    @Bind(R.id.viewsCountTextView)TextView mViewsCountTextView;
+    @Bind(R.id.viewsLinearLayout)LinearLayout mViewsLinearLayout;
+    @Bind(R.id.viewsImageView)ImageView mViewsImageView;
     @Bind(R.id.commentsImageView)ImageView mCommentImageView;
     @Bind(R.id.commentsCountTextView)TextView mCommentCountTextView;
     @Bind(R.id.creditsTextView)TextView mCreditsTextView;
     @Bind(R.id.settingsRelativeLayout)RelativeLayout mSettingsRelativeLayout;
-    @Bind(R.id.userLikesRelativeLayout)RelativeLayout mUserLikesRelativeLayout;
     @Bind(R.id.userCountTextView)TextView mUserCountTextView;
     @Bind(R.id.creditsLinearLayout)LinearLayout mCreditLinearLayout;
     @Bind(R.id.itemLinearLayout)LinearLayout itemLinearLayout;
@@ -173,13 +166,9 @@ public class PostDetailActivity extends AppCompatActivity
         });
 
         //Initialise click listners
-        mLikesLinearLayout.setOnClickListener(this);
         mCommentImageView.setOnClickListener(this);
         postImageView.setOnClickListener(this);
-        mDislikeLinearLayout.setOnClickListener(this);
-        mLikesCountTextView.setOnClickListener(this);
         mSettingsRelativeLayout.setOnClickListener(this);
-        mUserLikesRelativeLayout.setOnClickListener(this);
 
         mPostId = getIntent().getStringExtra(EXTRA_POST_ID);
         mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
@@ -260,119 +249,121 @@ public class PostDetailActivity extends AppCompatActivity
         processCompiledImpression = true;
         processOverallImpressions = true;
         processImpression = true;
-        if (duration >= 5000){
-            if (processImpression){
-                if (duration >= 5000){
-                    impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
-                            .child(mPostId).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if (processOverallImpressions){
-                                if (dataSnapshot.exists()){
-                                    Impression impression = dataSnapshot.getValue(Impression.class);
-                                    final String type = impression.getType();
-                                    final long recentDuration = impression.getRecent_duration();
-                                    final long total_duration = impression.getCompiled_duration();
-                                    final long newTotalDuration = total_duration + duration;
-                                    final long newRecentDuration = recentDuration + duration;
-                                    impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
-                                            .child(mPostId).child("compiled_duration").setValue(newTotalDuration);
-                                    impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
-                                            .child(mPostId).child("recent_duration").setValue(newRecentDuration)
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    impressionReference.child("compiled_views").child(mPostId)
-                                                            .addValueEventListener(new ValueEventListener() {
-                                                                @Override
-                                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                                    if (processCompiledImpression){
-                                                                        if (dataSnapshot.exists()){
-                                                                            Impression impress = dataSnapshot.getValue(Impression.class);
-                                                                            if (type.equals("liked")){
-                                                                                final long newDuration = impress.getCompiled_duration() + newRecentDuration;
-                                                                                impressionReference.child("compiled_views").child(mPostId)
-                                                                                        .child("compiled_duration").setValue(newDuration);
-                                                                                impressionReference.child("compiled_views").child(mPostId)
-                                                                                        .child("recent_duration").setValue(newRecentDuration);
-                                                                                impressionReference.child("compiled_views").child(mPostId)
-                                                                                        .child("un_compiled_duration").setValue(0);
-                                                                                impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
-                                                                                        .child(mPostId).child("recent_duration").setValue(0);
-                                                                            }else if (type.equals("disliked")){
-                                                                                final long newDuration = impress.getCompiled_duration() - newRecentDuration;
-                                                                                impressionReference.child("compiled_views").child(mPostId)
-                                                                                        .child("compiled_duration").setValue(newDuration);
-                                                                                impressionReference.child("compiled_views").child(mPostId)
-                                                                                        .child("recent_duration").setValue(newRecentDuration);
-                                                                                impressionReference.child("compiled_views").child(mPostId)
-                                                                                        .child("un_compiled_duration").setValue(0);
-                                                                                impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
-                                                                                        .child(mPostId).child("recent_duration").setValue(0);
-                                                                            }else {
-                                                                                final long newDuration = impress.getUn_compiled_duration() + newRecentDuration;
-                                                                                impressionReference.child("compiled_views").child(mPostId)
-                                                                                        .child("un_compiled_duration").setValue(newDuration);
-                                                                                impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
-                                                                                        .child(mPostId).child("recent_duration").setValue(newRecentDuration);
-                                                                            }
-
-                                                                            processCompiledImpression = false;
-                                                                        }else {
-                                                                            Impression impression = new Impression();
-                                                                            impression.setCompiled_duration(newTotalDuration);
-                                                                            impression.setRecent_duration(newRecentDuration);
-                                                                            impression.setUn_compiled_duration(newTotalDuration);
-                                                                            impression.setPost_id(mPostId);
-                                                                            impression.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                            impression.setImpression_id(impressionId);
-                                                                            impression.setTime(time);
-                                                                            impression.setType("compiled");
-                                                                            impressionReference.child("compiled_views").child(mPostId)
-                                                                                    .setValue(impression);
-                                                                            processCompiledImpression = false;
-                                                                        }
+        if (processImpression){
+            if (duration >= 5000){
+                impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
+                        .child(mPostId).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (processOverallImpressions){
+                            if (dataSnapshot.exists()){
+                                ViewDuration viewDuration = dataSnapshot.getValue(ViewDuration.class);
+                                final String type = viewDuration.getType();
+                                final long recentDuration = viewDuration.getRecent_duration();
+                                final long total_duration = viewDuration.getCompiled_duration();
+                                final long newTotalDuration = total_duration + duration;
+                                final long newRecentDuration = recentDuration + duration;
+                                Log.d("recent duration", recentDuration + "");
+                                Log.d("total duration", total_duration + "");
+                                impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
+                                        .child(mPostId).child("compiled_duration").setValue(newTotalDuration);
+                                impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
+                                        .child(mPostId).child("recent_duration").setValue(newRecentDuration)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                impressionReference.child("compiled_views").child(mPostId)
+                                                        .addValueEventListener(new ValueEventListener() {
+                                                            @Override
+                                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                                if (processCompiledImpression){
+                                                                    if (dataSnapshot.exists()){
+                                                                        ViewDuration impress = dataSnapshot.getValue(ViewDuration.class);
+                                                                        final long newDuration = impress.getCompiled_duration() + newRecentDuration;
+                                                                        impressionReference.child("compiled_views").child(mPostId)
+                                                                                .child("compiled_duration").setValue(newDuration);
+                                                                        impressionReference.child("compiled_views").child(mPostId)
+                                                                                .child("recent_duration").setValue(newRecentDuration);
+                                                                        impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
+                                                                                .child(mPostId).child("recent_duration").setValue(0);
+                                                                        processCompiledImpression = false;
+                                                                    }else {
+                                                                        ViewDuration viewDuration = new ViewDuration();
+                                                                        viewDuration.setCompiled_duration(newTotalDuration);
+                                                                        viewDuration.setRecent_duration(newRecentDuration);
+                                                                        viewDuration.setPost_id(mPostId);
+                                                                        viewDuration.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                                        viewDuration.setImpression_id(impressionId);
+                                                                        viewDuration.setTime(time);
+                                                                        viewDuration.setType("compiled");
+                                                                        impressionReference.child("compiled_views").child(mPostId)
+                                                                                .setValue(viewDuration);
+                                                                        processCompiledImpression = false;
                                                                     }
                                                                 }
+                                                            }
 
-                                                                @Override
-                                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                            @Override
+                                                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                                                }
-                                                            });
-                                                }
-                                            });
-                                    processOverallImpressions = false;
+                                                            }
+                                                        });
+                                            }
+                                        });
+                                processOverallImpressions = false;
 
-                                }else {
-                                    Impression impression = new Impression();
-                                    impression.setCompiled_duration(duration);
-                                    impression.setRecent_duration(duration);
-                                    impression.setUn_compiled_duration(duration);
-                                    impression.setPost_id(mPostId);
-                                    impression.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                    impression.setImpression_id(impressionId);
-                                    impression.setTime(time);
-                                    impression.setType("un_compiled");
-                                    impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
-                                            .child(mPostId).setValue(impression);
-                                    processOverallImpressions = false;
-                                }
+                            }else {
+                                ViewDuration viewDuration = new ViewDuration();
+                                viewDuration.setCompiled_duration(duration);
+                                viewDuration.setRecent_duration(duration);
+                                viewDuration.setPost_id(mPostId);
+                                viewDuration.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                viewDuration.setImpression_id(impressionId);
+                                viewDuration.setTime(time);
+                                viewDuration.setType("un_compiled");
+                                impressionReference.child("user_views").child(firebaseAuth.getCurrentUser().getUid())
+                                        .child(mPostId).setValue(viewDuration);
+                                processOverallImpressions = false;
                             }
-
                         }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
 
-                        }
-                    });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                }
+                    }
+                });
 
-                processImpression = false;
             }
+
+            processImpression = false;
         }
+
+        impressionReference.child("post_views").child(mPostId)
+                .child(firebaseAuth.getCurrentUser().getUid())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        if (!dataSnapshot.exists()){
+                            Impression impression = new Impression();
+                            impression.setTime(time);
+                            impression.setImpression_id(impressionId);
+                            impression.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                            impression.setPost_id(mPostId);
+                            impressionReference.child("post_views").child(mPostId)
+                                    .child(firebaseAuth.getCurrentUser().getUid())
+                                    .setValue(impression);
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
     }
 
     @Override
@@ -410,130 +401,66 @@ public class PostDetailActivity extends AppCompatActivity
 
     /**display the price of the cingle*/
     private void setPostInfo() {
+//        //calculate the generated points from the compiled time
+//        impressionReference.child("compiled_views").child(mPostId)
+//                .addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                        if (dataSnapshot.exists()){
+//                            mCreditLinearLayout.setVisibility(View.VISIBLE);
+//                            ViewDuration impression = dataSnapshot.getValue(ViewDuration.class);
+//                            final long compiledDuration = impression.getCompiled_duration();
+//                            //get seconds in milliseconds
+//                            final long durationInSeconds = compiledDuration / 1000;
+//                            //get the points generate
+//                            final double points = durationInSeconds * 0.000015;
+//                            DecimalFormat formatter = new DecimalFormat("0.000000");
+//                            String pts = formatter.format(points);
+//                            mCreditsTextView.setText(pts + " points");
+//
+//                        }else {
+//                            mCreditLinearLayout.setVisibility(View.VISIBLE);
+//                            final double points = 0.00;
+//                            DecimalFormat formatter = new DecimalFormat("0.00");
+//                            String pts = formatter.format(points);
+//                            mCreditsTextView.setText(pts + " points");
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                    }
+//                });
 
-        likesReference.document(mPostId).collection("likes")
-                .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            android.util.Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!documentSnapshots.isEmpty()){
-                            mLikesImageView.setColorFilter(Color.RED);
-                        }else {
-                            mLikesImageView.setColorFilter(Color.BLACK);
-
-                        }
-
-                    }
-                });
-
-        likesReference.document(mPostId).collection("likes")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            android.util.Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!documentSnapshots.isEmpty()){
-                            mLikesCountTextView.setText(documentSnapshots.size() + " ");
-                            mUserLikesRelativeLayout.setVisibility(View.VISIBLE);
-                            mUserCountTextView.setText(documentSnapshots.size() + " Likes");
-                        }else {
-                            mLikesCountTextView.setText("0");
-                        }
-
-                    }
-                });
-
-        likesReference.document(mPostId).collection("dislikes")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            android.util.Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!documentSnapshots.isEmpty()){
-                            mDislikeCountTextView.setText(documentSnapshots.size() + " ");
-                        }else {
-                            mDislikeCountTextView.setText("0");
-                        }
-
-                    }
-                });
-
-
-
-        mDislikeLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                processDislikes = true;
-                likesReference.document(mPostId).collection("dislikes")
-                        .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
-                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                            @Override
-                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                if (e != null) {
-                                    android.util.Log.w(TAG, "Listen error", e);
-                                    return;
-                                }
-
-
-                                if (processDislikes){
-                                    if (documentSnapshots.isEmpty()){
-                                        Like like = new Like();
-                                        like.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                        likesReference.document(mPostId).collection("dislikes")
-                                                .document(firebaseAuth.getCurrentUser().getUid()).set(like);
-                                        processDislikes = false;
-                                        mDislikesImageView.setColorFilter(Color.RED);
-
-                                    }else {
-                                        likesReference.document(mPostId).collection("dislikes")
-                                                .document(firebaseAuth.getCurrentUser().getUid()).delete();
-                                        processDislikes = false;
-                                        mDislikesImageView.setColorFilter(Color.BLACK);
-
-                                    }
-                                }
-
-                            }
-                        });
-            }
-        });
-
-        //calculate the generated points from the compiled time
-        impressionReference.child("compiled_views").child(mPostId)
+        impressionReference.child("post_views").child(mPostId)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()){
-                            mCreditLinearLayout.setVisibility(View.VISIBLE);
-                            Impression impression = dataSnapshot.getValue(Impression.class);
-                            final long compiledDuration = impression.getCompiled_duration();
-                            //get seconds in milliseconds
-                            final long durationInSeconds = compiledDuration / 1000;
-                            //get the points generate
-                            final double points = durationInSeconds * 0.00015;
-                            DecimalFormat formatter = new DecimalFormat("0.00");
-                            mCreditsTextView.setText(formatter.format(points));
-
+                            final long size = dataSnapshot.getChildrenCount();
+                            int childrenCount = (int) size;
+                            mViewsCountTextView.setText(childrenCount + "");
                         }else {
-                            mCreditLinearLayout.setVisibility(View.VISIBLE);
-                            final double points = 0.00;
-                            DecimalFormat formatter = new DecimalFormat("0.00");
-                            mCreditsTextView.setText(formatter.format(points));
+                            mViewsCountTextView.setText("0");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+        impressionReference.child("post_views").child(mPostId)
+                .child(firebaseAuth.getCurrentUser().getUid())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()){
+                            mViewsImageView.setBackgroundResource(R.drawable.ic_viewed);
+                        }else {
+                            mViewsImageView.setBackgroundResource(R.drawable.ic_views);
                         }
                     }
 
@@ -685,9 +612,9 @@ public class PostDetailActivity extends AppCompatActivity
     }
 
     @Override
-    public void onClick(View v){
+    public void onClick(View v) {
 
-        if (v == mCommentImageView){
+        if (v == mCommentImageView) {
             Intent intent = new Intent(PostDetailActivity.this, CommentsActivity.class);
             intent.putExtra(PostDetailActivity.EXTRA_POST_ID, mPostId);
             intent.putExtra(PostDetailActivity.COLLECTION_ID, mCollectionId);
@@ -695,7 +622,7 @@ public class PostDetailActivity extends AppCompatActivity
             startActivity(intent);
         }
 
-        if (v == mCommentCountTextView){
+        if (v == mCommentCountTextView) {
             Intent intent = new Intent(PostDetailActivity.this, CommentsActivity.class);
             intent.putExtra(PostDetailActivity.EXTRA_POST_ID, mPostId);
             intent.putExtra(PostDetailActivity.COLLECTION_ID, mCollectionId);
@@ -703,13 +630,7 @@ public class PostDetailActivity extends AppCompatActivity
             startActivity(intent);
         }
 
-        if (v == mUserLikesRelativeLayout){
-            Intent intent = new Intent(PostDetailActivity.this, LikesActivity.class);
-            intent.putExtra(PostDetailActivity.EXTRA_POST_ID, mPostId);
-            startActivity(intent);
-        }
-
-        if (v == postImageView){
+        if (v == postImageView) {
             Intent intent = new Intent(PostDetailActivity.this, ImageViewActivity.class);
             intent.putExtra(PostDetailActivity.EXTRA_POST_ID, mPostId);
             intent.putExtra(PostDetailActivity.COLLECTION_ID, mCollectionId);
@@ -717,10 +638,10 @@ public class PostDetailActivity extends AppCompatActivity
             startActivity(intent);
         }
 
-        if (v == mSettingsRelativeLayout){
+        if (v == mSettingsRelativeLayout) {
 
             final Uri bmpUri = getLocalBitmapUri(postImageView);
-            if (bmpUri != null){
+            if (bmpUri != null) {
                 Bundle bundle = new Bundle();
                 bundle.putString(PostDetailActivity.EXTRA_POST_ID, mPostId);
                 bundle.putString(PostDetailActivity.COLLECTION_ID, mCollectionId);
@@ -732,136 +653,6 @@ public class PostDetailActivity extends AppCompatActivity
             }
 
         }
-
-
-        if (v == mLikesLinearLayout){
-            calculateValueOfLikes();
-        }
-
-        if (v == mDislikeLinearLayout){
-            calculateValueOfDislikes();
-        }
-    }
-
-
-
-    private void calculateValueOfDislikes(){
-        processDislikes = true;
-        likesReference.document(mPostId).collection("dislikes")
-                .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-
-                        if (processDislikes){
-                            if (documentSnapshots.isEmpty()){
-                                Like like = new Like();
-                                like.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                likesReference.document(mPostId).collection("dislikes")
-                                        .document(firebaseAuth.getCurrentUser().getUid()).set(like);
-                                processDislikes = false;
-                                mDislikesImageView.setColorFilter(Color.RED);
-
-                            }else {
-                                likesReference.document(mPostId).collection("dislikes")
-                                        .document(firebaseAuth.getCurrentUser().getUid()).delete();
-                                processDislikes = false;
-                                mDislikesImageView.setColorFilter(Color.BLACK);
-
-                            }
-                        }
-
-                    }
-                });
-
-
-    }
-
-    private void calculateValueOfLikes(){
-        processLikes = true;
-        processCredit = true;
-        likesReference.document(mPostId).collection("likes")
-                .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-
-                        if (processLikes){
-                            if (documentSnapshots.isEmpty()){
-                                final Like like = new Like();
-                                like.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                likesReference.document(mPostId).collection("likes")
-                                        .document(firebaseAuth.getCurrentUser().getUid()).set(like);
-
-                                timelineCollection.document(mUid).collection("activities")
-                                        .whereEqualTo("post_id", mPostId)
-                                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                            @Override
-                                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                                if (e != null) {
-                                                    Log.w(TAG, "Listen error", e);
-                                                    return;
-                                                }
-
-
-                                                if (documentSnapshots.isEmpty()){
-                                                    Log.d("timeline is empty", mPostId);
-                                                    final Timeline timeline = new Timeline();
-                                                    final long time = new Date().getTime();
-
-                                                    final String activityId = databaseReference.push().getKey();
-                                                    timeline.setPost_id(mPostId);
-                                                    timeline.setTime(time);
-                                                    timeline.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                    timeline.setType("like");
-                                                    timeline.setActivity_id(activityId);
-                                                    timeline.setStatus("un_read");
-                                                    timeline.setReceiver_id(mUid);
-
-
-                                                    if (mUid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                                        //do nothing
-                                                    }else {
-                                                        timelineCollection.document(mUid).collection("activities")
-                                                                .document(mPostId).set(timeline);
-                                                    }
-                                                }
-                                            }
-                                        });
-
-
-
-                                processLikes = false;
-                                mLikesImageView.setColorFilter(Color.RED);
-
-                            }else {
-                                likesReference.document(mPostId).collection("likes")
-                                        .document(firebaseAuth.getCurrentUser().getUid()).delete();
-                                processLikes = false;
-                                mLikesImageView.setColorFilter(Color.BLACK);
-
-                            }
-                        }
-
-                    }
-                });
-
-
-
-
     }
 
 

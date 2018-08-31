@@ -145,9 +145,6 @@ public class SignInActivity extends AppCompatActivity implements
     private void loginWithPassword() {
         String email = mEmailEditText.getText().toString().trim();
         String password = mPasswordEditText.getText().toString().trim();
-        int index = email.indexOf('@');
-        String identity = email.substring(0, index);
-        Log.d("identity", identity);
         mAuthProgressDialog.show();
 
         if (email.equals("")) {

@@ -4,13 +4,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.models.Andeqan;
+import com.andeqa.andeqa.models.Relation;
+import com.andeqa.andeqa.search.SearchAdapter;
 import com.andeqa.andeqa.utils.EndlessLinearRecyclerViewOnScrollListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,6 +46,7 @@ public class FollowersActivity extends AppCompatActivity {
     private CollectionReference peopleCollection;
     private CollectionReference usersCollection;
     private CollectionReference followersCollection;
+    private Query usersQuery;
     private CollectionReference timelineCollection;
     private Query followersQuery;
     //firebase
@@ -79,9 +86,10 @@ public class FollowersActivity extends AppCompatActivity {
 
         if (firebaseAuth.getCurrentUser()!= null){
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+            usersQuery = usersCollection;
             followersCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE);
             followersQuery = followersCollection.document("followers")
-                    .collection(mUid).orderBy("user_id");
+                    .collection(mUid).orderBy("time");
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
 
@@ -149,7 +157,6 @@ public class FollowersActivity extends AppCompatActivity {
 
 
     private void setRecyclerView(){
-
         followersAdapter = new FollowersAdapter(this);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         followersRecyclerView.setAdapter(followersAdapter);
@@ -158,9 +165,11 @@ public class FollowersActivity extends AppCompatActivity {
     }
 
     private void getFollowers() {
-        followersQuery.limit(TOTAL_ITEMS).addSnapshotListener(new EventListener<QuerySnapshot>() {
+        followersQuery.limit(TOTAL_ITEMS)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
+            public void onEvent(@Nullable QuerySnapshot documentSnapshots,
+                                @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
                     Log.w(TAG, "Listen error", e);
                     return;
@@ -197,7 +206,7 @@ public class FollowersActivity extends AppCompatActivity {
 
             //retrieve the first bacth of documentSnapshots
             Query nextSellingQuery =  followersCollection.document("followers")
-                    .collection(mUid).orderBy("user_id")
+                    .collection(mUid).orderBy("time")
                     .startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
 

@@ -8,6 +8,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -23,7 +24,6 @@ import android.widget.Toast;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.comments.CommentsActivity;
-import com.andeqa.andeqa.likes.LikesActivity;
 import com.andeqa.andeqa.main.MainActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
@@ -72,15 +72,12 @@ public class DeepLinkActivity extends AppCompatActivity {
     @Bind(R.id.postImageView)ProportionalImageView mPostImageView;
     @Bind(R.id.profileImageView)CircleImageView mProfileImageView;
     @Bind(R.id.titleTextView)TextView titleTextView;
+    @Bind(R.id.viewsCountTextView)TextView mViewsCountTextView;
+    @Bind(R.id.viewsLinearLayout)LinearLayout mViewsLinearLayout;
+    @Bind(R.id.viewsImageView)ImageView mViewsImageView;
     @Bind(R.id.titleRelativeLayout)RelativeLayout mTitleRelativeLayout;
     @Bind(R.id.descriptionRelativeLayout)RelativeLayout mDescriptionRelativeLayout;
     @Bind(R.id.descriptionTextView)TextView mDescriptionTextView;
-    @Bind(R.id.likesCountTextView)TextView mLikesCountTextView;
-    @Bind(R.id.dislikeCountTextView)TextView mDislikeCountTextView;
-    @Bind(R.id.likesLinearLayout)LinearLayout mLikesLinearLayout;
-    @Bind(R.id.likesImageView)ImageView mLikesImageView;
-    @Bind(R.id.dislikeImageView)ImageView mDislikesImageView;
-    @Bind(R.id.dislikeLinearLayout)LinearLayout mDislikeLinearLayout;
     @Bind(R.id.commentsImageView)ImageView mCommentImageView;
     @Bind(R.id.commentsCountTextView)TextView mCommentCountTextView;
 //    @Bind(R.id.creditsTextView)TextView mCreditsTextView;
@@ -214,26 +211,6 @@ public class DeepLinkActivity extends AppCompatActivity {
                                                 .document("collections").collection(collectionId);
                                     }
 
-                                    likesReference.document(postId).collection("likes")
-                                            .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
-                                            .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                                @Override
-                                                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                                    if (e != null) {
-                                                        android.util.Log.w(TAG, "Listen error", e);
-                                                        return;
-                                                    }
-
-                                                    if (!documentSnapshots.isEmpty()){
-                                                        mLikesImageView.setColorFilter(Color.RED);
-                                                    }else {
-                                                        mLikesImageView.setColorFilter(Color.BLACK);
-
-                                                    }
-
-                                                }
-                                            });
 
                                     mProfileImageView.setOnClickListener(new View.OnClickListener() {
                                         @Override
@@ -255,14 +232,6 @@ public class DeepLinkActivity extends AppCompatActivity {
                                         }
                                     });
 
-                                    mLikesLinearLayout.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            Intent intent = new Intent(DeepLinkActivity.this, LikesActivity.class);
-                                            intent.putExtra(DeepLinkActivity.EXTRA_POST_ID, postId);
-                                            startActivity(intent);
-                                        }
-                                    });
 
                                     mPostImageView.setOnClickListener(new View.OnClickListener() {
                                         @Override
@@ -291,105 +260,6 @@ public class DeepLinkActivity extends AppCompatActivity {
                                             }
                                         }
                                     });
-
-                                    likesReference.document(postId).collection("likes")
-                                            .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                                @Override
-                                                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                                    if (e != null) {
-                                                        android.util.Log.w(TAG, "Listen error", e);
-                                                        return;
-                                                    }
-
-                                                    if (!documentSnapshots.isEmpty()){
-                                                        mLikesCountTextView.setText(documentSnapshots.size() + " ");
-                                                    }else {
-                                                        mLikesCountTextView.setText("0");
-                                                    }
-
-                                                }
-                                            });
-
-                                    likesReference.document(postId).collection("dislikes")
-                                            .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                                @Override
-                                                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                                    if (e != null) {
-                                                        android.util.Log.w(TAG, "Listen error", e);
-                                                        return;
-                                                    }
-
-                                                    if (!documentSnapshots.isEmpty()){
-                                                        mDislikeCountTextView.setText(documentSnapshots.size() + " ");
-                                                    }else {
-                                                        mDislikeCountTextView.setText("0");
-                                                    }
-
-                                                }
-                                            });
-
-                                    mDislikeLinearLayout.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            processDislikes = true;
-                                            likesReference.document(postId).collection("dislikes")
-                                                    .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
-                                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                                        @Override
-                                                        public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                                            if (e != null) {
-                                                                android.util.Log.w(TAG, "Listen error", e);
-                                                                return;
-                                                            }
-
-
-                                                            if (processDislikes){
-                                                                if (documentSnapshots.isEmpty()){
-                                                                    Like like = new Like();
-                                                                    like.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                    likesReference.document(postId).collection("dislikes")
-                                                                            .document(firebaseAuth.getCurrentUser().getUid()).set(like);
-                                                                    processDislikes = false;
-                                                                    mDislikesImageView.setColorFilter(Color.RED);
-
-                                                                }else {
-                                                                    likesReference.document(postId).collection("dislikes")
-                                                                            .document(firebaseAuth.getCurrentUser().getUid()).delete();
-                                                                    processDislikes = false;
-                                                                    mDislikesImageView.setColorFilter(Color.BLACK);
-
-                                                                }
-                                                            }
-
-                                                        }
-                                                    });
-                                        }
-                                    });
-
-
-//                                    creditsCollection.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//                                        @Override
-//                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-//
-//                                            if (e != null) {
-//                                                Log.w(TAG, "Listen error", e);
-//                                                return;
-//                                            }
-//
-//                                            if (documentSnapshot.exists()){
-//                                                Credit credit = documentSnapshot.toObject(Credit.class);
-//                                                final double senseCredits = credit.getAmount();
-//                                                DecimalFormat formatter = new DecimalFormat("0.00000000");
-//                                                mCreditsTextView.setText("Credo" + " " + formatter.format(senseCredits));
-//
-//                                            }else {
-//                                                mCreditsTextView.setText("Credo" + " " + "0.00000000");
-//                                            }
-//                                        }
-//                                    });
 
 
                                     //get the number of commments in a cingle
@@ -504,89 +374,6 @@ public class DeepLinkActivity extends AppCompatActivity {
                                             }
                                         }
                                     });
-
-
-                                    mLikesImageView.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            processLikes = true;
-                                            likesReference.document(postId).collection("likes")
-                                                    .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
-                                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                                        @Override
-                                                        public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                                            if (e != null) {
-                                                                Log.w(TAG, "Listen error", e);
-                                                                return;
-                                                            }
-
-
-                                                            if (processLikes){
-                                                                if (documentSnapshots.isEmpty()){
-                                                                    final Like like = new Like();
-                                                                    like.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                    likesReference.document(postId).collection("likes")
-                                                                            .document(firebaseAuth.getCurrentUser().getUid()).set(like);
-
-                                                                    timelineCollection.document(uid).collection("activities")
-                                                                            .whereEqualTo("post_id", postId)
-                                                                            .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                                                                @Override
-                                                                                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                                                                    if (e != null) {
-                                                                                        Log.w(TAG, "Listen error", e);
-                                                                                        return;
-                                                                                    }
-
-
-                                                                                    if (documentSnapshots.isEmpty()){
-                                                                                        Log.d("timeline is empty", postId);
-                                                                                        final Timeline timeline = new Timeline();
-                                                                                        final long time = new Date().getTime();
-
-                                                                                        final String activityId = databaseReference.push().getKey();
-                                                                                        timeline.setPost_id(postId);
-                                                                                        timeline.setTime(time);
-                                                                                        timeline.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                                        timeline.setType("like");
-                                                                                        timeline.setActivity_id(activityId);
-                                                                                        timeline.setStatus("un_read");
-                                                                                        timeline.setReceiver_id(uid);
-
-
-                                                                                        if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                                                                            //do nothing
-                                                                                        }else {
-                                                                                            timelineCollection.document(uid).collection("activities")
-                                                                                                    .document(postId).set(timeline);
-                                                                                        }
-                                                                                    }
-                                                                                }
-                                                                            });
-
-
-
-                                                                    processLikes = false;
-                                                                    mLikesImageView.setColorFilter(Color.RED);
-
-                                                                }else {
-                                                                    likesReference.document(postId).collection("likes")
-                                                                            .document(firebaseAuth.getCurrentUser().getUid()).delete();
-                                                                    processLikes = false;
-                                                                    mLikesImageView.setColorFilter(Color.BLACK);
-
-                                                                }
-                                                            }
-
-                                                        }
-                                                    });
-                                        }
-                                    });
-
-
-
                                 }
                             }else {
                                 Toast.makeText(DeepLinkActivity.this, "This post has been deleted",

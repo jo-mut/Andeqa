@@ -3,21 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.andeqa.andeqa.home.TestActivity">
 
-    <item
-        android:id="@+id/action_search"
-        android:icon="@drawable/ic_search"
-        app:showAsAction="always"
-        android:title="Search">
-
-    </item>
-
     <!--<item-->
-        <!--android:id="@+id/action_chats"-->
-        <!--android:icon="@drawable/ic_chat_white"-->
+        <!--android:id="@+id/action_search"-->
+        <!--android:icon="@drawable/ic_search"-->
         <!--app:showAsAction="always"-->
-        <!--android:title="Chats">-->
+        <!--android:title="Search">-->
 
     <!--</item>-->
+
+    <item
+        android:id="@+id/action_chats"
+        android:icon="@drawable/message_notifications"
+        app:showAsAction="always"
+        android:title="Chats">
+
+    </item>
     <!--<item-->
         <!--android:id="@+id/action_notifications"-->
         <!--android:icon="@drawable/action_bar_group_icon"-->

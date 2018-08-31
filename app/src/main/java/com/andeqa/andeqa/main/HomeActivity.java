@@ -17,6 +17,7 @@ import android.util.Log;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,7 +28,9 @@ import com.andeqa.andeqa.collections.CollectionsFragment;
 import com.andeqa.andeqa.creation.ChooseCreationFragment;
 import com.andeqa.andeqa.explore.ExploreFragment;
 import com.andeqa.andeqa.home.HomeFragment;
-import com.andeqa.andeqa.message.MessagesFragment;
+import com.andeqa.andeqa.message.MessagesActivity;
+
+import com.andeqa.andeqa.models.Room;
 import com.andeqa.andeqa.notifications.NotificationsFragment;
 import com.andeqa.andeqa.settings.HomeSettingsFragment;
 import com.andeqa.andeqa.utils.BottomNavigationViewBehavior;
@@ -35,6 +38,7 @@ import com.andeqa.andeqa.utils.BottomNavigationViewHelper;
 import com.andeqa.andeqa.utils.CountDrawable;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -68,9 +72,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     //bottom navigation view
     final FragmentManager fragmentManager = getSupportFragmentManager();
     final Fragment homeFragment = new HomeFragment();
-    final Fragment notificationsFragment = new NotificationsFragment();
     final Fragment collectionFragment = new CollectionsFragment();
-    final Fragment messagesFragment = new MessagesFragment();
+    final Fragment timelineFragment = new NotificationsFragment();
     final Fragment exploreFragment = new ExploreFragment();
     private int count;
     private Menu bottomMenu;
@@ -85,13 +88,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         ButterKnife.bind(this);
-        //initialize force update checker
+        /**initialize force update checker***/
         ForceUpdateChecker.with(this).onUpdateNeeded(this).check();
-        //initialize firebase authentication
+        /***initialize firebase authentication**/
         firebaseAuth = FirebaseAuth.getInstance();
+        /****click listeners*/
         mFloatingActionButton.setOnClickListener(this);
         appLogoImageView.setOnClickListener(this);
-        //firestore references
+        /***firestore references***/
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
         timelineQuery = timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
@@ -101,8 +105,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 .collection(firebaseAuth.getCurrentUser().getUid()).whereEqualTo("status", "un_read");
         collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
         initializeCollections();
-        //bottom navigation
+        /***disable bottom navigation shifting mode**/
         BottomNavigationViewHelper.disableShiftMode(mBottomNavigationView);
+        /***bottom navigation click listeners**/
         mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView
                 .OnNavigationItemSelectedListener() {
             @Override
@@ -111,13 +116,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 return true;
             }
         });
-
-        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams)
-                mBottomNavigationView.getLayoutParams();
-        layoutParams.setBehavior(new BottomNavigationViewBehavior());
         MenuItem selectedItem;
         selectedItem = mBottomNavigationView.getMenu().getItem(0);
         selectFragment(selectedItem);
+
+        /***hide bottom navigation when user scrolls the home actvity***/
+        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams)
+                mBottomNavigationView.getLayoutParams();
+        layoutParams.setBehavior(new BottomNavigationViewBehavior());
 
     }
 
@@ -176,7 +182,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public void onStart() {
         super.onStart();
         timelineNotifications();
-        messageNotifications();
     }
 
     @Override
@@ -199,32 +204,37 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         super.onResume();
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.main_menu, menu);
-//
-//
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onPrepareOptionsMenu(Menu menu) {
-//        return super.onPrepareOptionsMenu(menu);
-//    }
-//
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        int id = item.getItemId();
-//
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        messageNotifications(menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
 //        if (id == R.id.action_search){
 //            Intent intent = new Intent(HomeActivity.this, SearchActivity.class);
 //            startActivity(intent);
 //        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
+
+        if (id == R.id.action_chats){
+            Intent intent =  new Intent(HomeActivity.this, MessagesActivity.class);
+            startActivity(intent);
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
 
 
@@ -260,8 +270,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void messageNotifications(){
-        MenuItem menuItem = mBottomNavigationView.getMenu().findItem(R.id.action_timeline);
+    private void messageNotifications(Menu menu){
+        MenuItem menuItem = menu.findItem(R.id.action_chats);
         final LayerDrawable icon = (LayerDrawable) menuItem.getIcon();
         menuItem.setIcon(icon);
 
@@ -273,19 +283,27 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         roomsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+            public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
                     Log.w(TAG, "Listen error", e);
                     return;
                 }
 
-                if (!queryDocumentSnapshots.isEmpty()){
-                    final int count = queryDocumentSnapshots.size();
-                    CountDrawable badge;
-                    badge = new CountDrawable(HomeActivity.this);
-                    badge.setCount(count + "");
-                    icon.mutate();
-                    icon.setDrawableByLayerId(R.id.ic_group_count, badge);
+                if (!documentSnapshots.isEmpty()){
+                    for (DocumentChange change : documentSnapshots.getDocumentChanges()){
+
+                        Room room = change.getDocument().toObject(Room.class);
+                        final String sender_id = room.getSender_id();
+                        if (!sender_id.equals(firebaseAuth.getCurrentUser().getUid())){
+                            final int count = documentSnapshots.size();
+                            CountDrawable badge;
+                            badge = new CountDrawable(HomeActivity.this);
+                            badge.setCount(count + "");
+                            icon.mutate();
+                            icon.setDrawableByLayerId(R.id.ic_group_count, badge);
+                        }
+                    }
+
                 }
             }
         });
@@ -297,9 +315,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         //initialize each corresponding fragment
         switch (item.getItemId()){
             case R.id.action_home:
-                FragmentTransaction ft = fragmentManager.beginTransaction();
-                ft.replace(R.id.container, homeFragment);
-                ft.commit();
+                FragmentTransaction homeTransaction = fragmentManager.beginTransaction();
+                homeTransaction.replace(R.id.container, homeFragment).commit();
                 break;
             case R.id.action_collection:
                 FragmentTransaction collectionTransaction = fragmentManager.beginTransaction();
@@ -309,13 +326,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 FragmentTransaction exploreTransaction = fragmentManager.beginTransaction();
                 exploreTransaction.replace(R.id.container, exploreFragment).commit();
                 break;
-            case R.id.action_chats:
-                FragmentTransaction timelineTransaction = fragmentManager.beginTransaction();
-                timelineTransaction.replace(R.id.container, messagesFragment).commit();
-                break;
             case R.id.action_timeline:
-                FragmentTransaction profileTransaction = fragmentManager.beginTransaction();
-                profileTransaction.replace(R.id.container, notificationsFragment).commit();
+                FragmentTransaction timelineTransaction = fragmentManager.beginTransaction();
+                timelineTransaction.replace(R.id.container, timelineFragment).commit();
                 break;
 
         }

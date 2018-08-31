@@ -27,8 +27,8 @@
 
             <ImageView
                 android:id="@+id/appLogoImageView"
-                android:layout_width="23dp"
-                android:layout_height="23dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 app:srcCompat="@drawable/ic_log" />
 
             <TextView
@@ -37,6 +37,8 @@
                 android:textStyle="bold"
                 android:text="Andeqa"
                 android:textSize="15sp"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 

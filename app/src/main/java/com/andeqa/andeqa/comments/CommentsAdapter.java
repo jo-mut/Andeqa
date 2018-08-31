@@ -11,13 +11,12 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.message.MessagesAccountActivity;
+import com.andeqa.andeqa.message.MessagingActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Comment;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Room;
 import com.andeqa.andeqa.models.Timeline;
-import com.andeqa.andeqa.people.FollowingAdapter;
 import com.andeqa.andeqa.profile.ProfileActivity;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -34,9 +33,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -210,7 +206,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
                                         if (documentSnapshot.exists()){
                                             Room room = documentSnapshot.toObject(Room.class);
                                             roomId = room.getRoom_id();
-                                            Intent intent = new Intent(mContext, MessagesAccountActivity.class);
+                                            Intent intent = new Intent(mContext, MessagingActivity.class);
                                             intent.putExtra(CommentsAdapter.EXTRA_ROOM_UID, roomId);
                                             intent.putExtra(CommentsAdapter.EXTRA_USER_UID, userId);
                                             mContext.startActivity(intent);
@@ -231,7 +227,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
                                                         if (documentSnapshot.exists()){
                                                             Room room = documentSnapshot.toObject(Room.class);
                                                             roomId = room.getRoom_id();
-                                                            Intent intent = new Intent(mContext, MessagesAccountActivity.class);
+                                                            Intent intent = new Intent(mContext, MessagingActivity.class);
                                                             intent.putExtra(CommentsAdapter.EXTRA_ROOM_UID, roomId);
                                                             intent.putExtra(CommentsAdapter.EXTRA_USER_UID, userId);
                                                             mContext.startActivity(intent);
@@ -241,7 +237,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
                                                         }else {
                                                             //start a chat with mUid since they have no chatting history
                                                             roomId = databaseReference.push().getKey();
-                                                            Intent intent = new Intent(mContext, MessagesAccountActivity.class);
+                                                            Intent intent = new Intent(mContext, MessagingActivity.class);
                                                             intent.putExtra(CommentsAdapter.EXTRA_ROOM_UID, roomId);
                                                             intent.putExtra(CommentsAdapter.EXTRA_USER_UID, userId);
                                                             mContext.startActivity(intent);
@@ -261,18 +257,46 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
             });
         }
 
+
+        //show if following or not
+        followersCollection.document("followers").collection(userId)
+                .whereEqualTo("following_id", firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (documentSnapshots.isEmpty()){
+                            if (!userId.equals(firebaseAuth.getCurrentUser().getUid())){
+                                holder.followButton.setVisibility(View.VISIBLE);
+                                holder.followButton.setText("Follow");
+                            }
+                        }else {
+                            if (!userId.equals(firebaseAuth.getCurrentUser().getUid())){
+                                holder.followButton.setVisibility(View.VISIBLE);
+                                holder.followButton.setText("Following");
+                            }
+                        }
+                    }
+                });
+
+
         //follow or unfollow
         if (userId.equals(firebaseAuth.getCurrentUser().getUid())){
-            holder.followImageView.setVisibility(View.GONE);
+            holder.followButton.setVisibility(View.GONE);
         }else {
-            holder.followImageView.setVisibility(View.VISIBLE);
-            holder.followImageView.setOnClickListener(new View.OnClickListener() {
+            holder.followButton.setVisibility(View.VISIBLE);
+            holder.followButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     processFollow = true;
                     followersCollection.document("followers")
                             .collection(userId)
-                            .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
+                            .whereEqualTo("following_id", firebaseAuth.getCurrentUser().getUid())
                             .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                 @Override
                                 public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -287,7 +311,10 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
                                         if (documentSnapshots.isEmpty()){
                                             //set followers and following
                                             Relation follower = new Relation();
-                                            follower.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                            follower.setFollowing_id(firebaseAuth.getCurrentUser().getUid());
+                                            follower.setFollowed_id(userId);
+                                            follower.setType("followed_user");
+                                            follower.setTime(System.currentTimeMillis());
                                             followersCollection.document("followers").collection(userId)
                                                     .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -309,7 +336,10 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
                                                         }
                                                     });
                                             final Relation following = new Relation();
-                                            following.setUser_id(userId);
+                                            following.setFollowing_id(firebaseAuth.getCurrentUser().getUid());
+                                            following.setFollowed_id(userId);
+                                            following.setType("following_user");
+                                            following.setTime(System.currentTimeMillis());
                                             followersCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
                                                     .document(userId).set(following);
                                             processFollow = false;

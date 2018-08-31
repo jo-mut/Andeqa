@@ -18,7 +18,6 @@
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
-
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -72,12 +71,6 @@
             android:label="Comments"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name=".likes.LikesActivity"
-            android:label="Andeqans who liked"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-
         <service android:name=".services.FirebaseMessaging">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -116,16 +109,6 @@
             android:label="Photo"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".wallet.WalletActivity"
-            android:label="Wallet"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".market.ListOnMarketActivity"
-            android:label="Set sale price"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
             android:name=".registration.CreateProfileActivity"
             android:screenOrientation="portrait" />
         <activity
@@ -144,7 +127,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".message.MessagesAccountActivity"
+            android:name=".message.MessagingActivity"
             android:label="Chats"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
@@ -173,11 +156,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".market.RedeemCreditsActivity"
-            android:label="Redeem Credo"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
             android:name=".collections.MinePostsActivity"
             android:label="Posts"
             android:screenOrientation="portrait"
@@ -188,29 +166,9 @@
         <activity
             android:name=".creation.CreateSingleActivity"
             android:label="Share"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".camera.CameraPermissionsActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".wallet.WalletPasswordActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".wallet.TransactionLogActivity"
-            android:label="Transaction log"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".wallet.RedeemActivity"
-            android:label="Redeem credo"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".wallet.SendCreditActivity"
-            android:label="Send credo"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".notifications.NotificationsActivity"
-            android:label="Notifications"
             android:screenOrientation="portrait" />
         <activity
             android:name=".home.DeepLinkActivity"
@@ -274,7 +232,6 @@
             android:name=".creation.PreviewImagePostActivity"
             android:label="Andeqa"
             android:screenOrientation="portrait">
-
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
 
@@ -282,9 +239,26 @@
 
                 <data android:mimeType="image/*" />
             </intent-filter>
-
         </activity>
-        <activity android:name=".home.VideoDetailActivity"></activity>
+        <activity
+            android:name=".home.VideoDetailActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".message.MessagesActivity"
+            android:label="Chats"
+            android:screenOrientation="portrait" />
+        <activity
+            android:screenOrientation="portrait"
+            android:label="Collections"
+            android:name=".collections.InitialCollectionsActivity" />
+        <activity
+            android:screenOrientation="portrait"
+            android:label="People"
+            android:name=".people.FollowPeopleActivity" />
+        <activity
+            android:screenOrientation="portrait"
+            android:label="Search"
+            android:name=".search.SearchActivity"/>
     </application>
 
 </manifest>

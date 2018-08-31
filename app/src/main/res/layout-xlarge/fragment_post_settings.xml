@@ -18,7 +18,7 @@
         <RelativeLayout
             android:background="@drawable/bottom_fragment_background"
             android:layout_width="match_parent"
-            android:layout_height="100dp">
+            android:layout_height="112dp">
 
             <TextView
                 android:layout_margin="20dp"
@@ -37,7 +37,7 @@
             android:visibility="gone"
             android:id="@+id/deleteLinearLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="100dp"
             android:orientation="horizontal"
             android:padding="20dp">
 
@@ -62,7 +62,7 @@
             android:visibility="gone"
             android:id="@+id/redeemLinearLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="100dp"
             android:orientation="horizontal"
             android:padding="20dp">
 
@@ -88,7 +88,7 @@
             android:visibility="gone"
             android:id="@+id/reportLinearLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="100dp"
             android:orientation="horizontal"
             android:padding="20dp">
 
@@ -113,7 +113,7 @@
             android:visibility="gone"
             android:id="@+id/shareViaLinearLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="100dp"
             android:orientation="horizontal"
             android:padding="20dp">
 

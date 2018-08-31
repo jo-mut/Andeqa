@@ -13,21 +13,16 @@ import android.view.ViewGroup;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Andeqan;
-import com.andeqa.andeqa.models.Message;
 import com.andeqa.andeqa.models.Room;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -146,21 +141,14 @@ public class RoomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             holder.roomRelativeLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(mContext, MessagesAccountActivity.class);
+                    Intent intent = new Intent(mContext, MessagingActivity.class);
                     intent.putExtra(RoomAdapter.EXTRA_ROOM_ID, roomId);
                     intent.putExtra(RoomAdapter.EXTRA_USER_UID, receiverUid);
                     mContext.startActivity(intent);
                 }
             });
 
-            final String[] strings = lastMessage.split("");
-            final int size = strings.length;
-            if (size <= 75) {
-                //setence will not have read more
-                holder.lastMessageTextView.setText(lastMessage);
-            } else {
-                holder.lastMessageTextView.setText(lastMessage.substring(0, 74) + "...");
-            }
+            holder.lastMessageTextView.setText(lastMessage);
             holder.timeTextView.setText(DateFormat.format("HH:mm", room.getTime()));
             usersCollection.document(receiverUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
@@ -196,7 +184,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         roomCollection.document("last messages")
                                 .collection(firebaseAuth.getCurrentUser().getUid())
                                 .document(roomId).update("status", "read");
-                        Intent intent = new Intent(mContext, MessagesAccountActivity.class);
+                        Intent intent = new Intent(mContext, MessagingActivity.class);
                         intent.putExtra(RoomAdapter.EXTRA_ROOM_ID, roomId);
                         intent.putExtra(RoomAdapter.EXTRA_USER_UID, senderUid);
                         mContext.startActivity(intent);
@@ -207,7 +195,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 holder.roomRelativeLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(mContext, MessagesAccountActivity.class);
+                        Intent intent = new Intent(mContext, MessagingActivity.class);
                         intent.putExtra(RoomAdapter.EXTRA_ROOM_ID, roomId);
                         intent.putExtra(RoomAdapter.EXTRA_USER_UID, senderUid);
                         mContext.startActivity(intent);
@@ -215,15 +203,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 });
             }
 
-            final String[] strings = lastMessage.split("");
-            final int size = strings.length;
-            if (size <= 75) {
-                //setence will not have read more
-                holder.lastMessageTextView.setText(lastMessage);
-            } else {
-                holder.lastMessageTextView.setText(lastMessage.substring(0, 74) + "...");
-            }
-
+            holder.lastMessageTextView.setText(lastMessage);
             holder.timeTextView.setText(DateFormat.format("HH:mm", room.getTime()));
             usersCollection.document(senderUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
@@ -269,7 +249,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             holder.roomRelativeLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(mContext, MessagesAccountActivity.class);
+                    Intent intent = new Intent(mContext, MessagingActivity.class);
                     intent.putExtra(RoomAdapter.EXTRA_ROOM_ID, roomId);
                     intent.putExtra(RoomAdapter.EXTRA_USER_UID, receiverUid);
                     mContext.startActivity(intent);
@@ -311,7 +291,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         roomCollection.document("last messages")
                                 .collection(firebaseAuth.getCurrentUser().getUid())
                                 .document(roomId).update("status", "read");
-                        Intent intent = new Intent(mContext, MessagesAccountActivity.class);
+                        Intent intent = new Intent(mContext, MessagingActivity.class);
                         intent.putExtra(RoomAdapter.EXTRA_ROOM_ID, roomId);
                         intent.putExtra(RoomAdapter.EXTRA_USER_UID, senderUid);
                         mContext.startActivity(intent);
@@ -322,7 +302,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 holder.roomRelativeLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(mContext, MessagesAccountActivity.class);
+                        Intent intent = new Intent(mContext, MessagingActivity.class);
                         intent.putExtra(RoomAdapter.EXTRA_ROOM_ID, roomId);
                         intent.putExtra(RoomAdapter.EXTRA_USER_UID, senderUid);
                         mContext.startActivity(intent);

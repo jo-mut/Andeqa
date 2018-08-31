@@ -183,10 +183,6 @@
                         android:layout_centerInParent="true"
                         android:text=""
                         android:textSize="12sp"
-                        android:paddingStart="40dp"
-                        android:paddingEnd="40dp"
-                        android:paddingRight="40dp"
-                        android:paddingLeft="40dp"
                         android:paddingBottom="5dp"
                         android:paddingTop="5dp"
                         android:textAlignment="center" />
@@ -262,7 +258,6 @@
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
-                android:visibility="gone"
                 android:id="@+id/postCardView"
                 android:layout_marginTop="15dp"
                 android:layout_width="match_parent"
@@ -290,7 +285,6 @@
                             android:textSize="12sp" />
 
                         <ImageView
-                            android:visibility="gone"
                             android:layout_centerVertical="true"
                             android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true"
@@ -303,6 +297,7 @@
                     </RelativeLayout>
 
                     <FrameLayout
+                        android:visibility="gone"
                         android:id="@+id/post_container"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
@@ -310,6 +305,24 @@
                     </FrameLayout>
 
                     <RelativeLayout
+                        android:visibility="gone"
+                        android:id="@+id/createPostRelativeLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/createPostTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="You have not create your first post. Create your first post"
+                            android:textColor="@color/colorPrimary"
+                            android:padding="5dp"
+                            android:textSize="12sp" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:visibility="gone"
                         android:id="@+id/viewPostRelativelayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
@@ -330,7 +343,6 @@
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
-                android:visibility="gone"
                 android:id="@+id/collectionsCardView"
                 android:layout_marginTop="15dp"
                 android:layout_width="match_parent"
@@ -358,7 +370,6 @@
 
                         <ImageView
                             android:layout_centerVertical="true"
-                            android:visibility="gone"
                             android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true"
                             android:id="@+id/addCollectionImageView"
@@ -370,6 +381,7 @@
                     </RelativeLayout>
 
                     <FrameLayout
+                        android:visibility="gone"
                         android:id="@+id/collection_container"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
@@ -377,6 +389,24 @@
                     </FrameLayout>
 
                     <RelativeLayout
+                        android:visibility="gone"
+                        android:id="@+id/createCollectionsRelativeLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/createCollectionsTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="You have not create your first collection. Create your first collection"
+                            android:textColor="@color/colorPrimary"
+                            android:padding="5dp"
+                            android:textSize="12sp" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:visibility="gone"
                         android:id="@+id/viewCollectionsRelativeLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">

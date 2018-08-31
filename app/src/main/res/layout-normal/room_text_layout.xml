@@ -24,7 +24,6 @@
             android:layout_height="50dp"
             android:layout_margin="5dp" />
 
-
         <RelativeLayout
             android:layout_marginRight="10dp"
             android:layout_marginEnd="10dp"
@@ -36,7 +35,7 @@
             android:layout_centerVertical="true">
 
             <TextView
-                android:text=""
+                android:text=" "
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/usernameTextView"
@@ -70,8 +69,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/lastMessageTextView"
                 android:textSize="14sp"
-                android:paddingRight="3dp"
-                android:paddingEnd="3dp"
+                android:singleLine="true"
+                android:ellipsize="end"
                 android:textColor="@android:color/black"
                 android:layout_below="@+id/usernameTextView"
                 android:layout_centerVertical="true" />

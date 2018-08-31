@@ -8,7 +8,6 @@
     android:fitsSystemWindows="false"
     tools:context="com.andeqa.andeqa.main.HomeActivity">
 
-
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
@@ -28,8 +27,8 @@
 
             <ImageView
                 android:id="@+id/appLogoImageView"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 app:srcCompat="@drawable/ic_log" />
 
             <TextView
@@ -38,19 +37,21 @@
                 android:textStyle="bold"
                 android:text="Andeqa"
                 android:textSize="20sp"
+                android:layout_marginStart="30dp"
+                android:layout_marginLeft="30dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
         </android.support.v7.widget.Toolbar>
 
-          </android.support.design.widget.AppBarLayout>
+
+    </android.support.design.widget.AppBarLayout>
 
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
 
 
     <android.support.design.widget.FloatingActionButton

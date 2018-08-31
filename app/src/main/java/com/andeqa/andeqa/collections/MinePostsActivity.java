@@ -24,7 +24,6 @@ import com.andeqa.andeqa.creation.CreateCollectionPostActivity;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
-import com.andeqa.andeqa.models.Transaction;
 import com.andeqa.andeqa.settings.CollectionSettingsActivity;
 import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
@@ -274,40 +273,41 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
     private void setNextCollectionPosts(){
         // Get the last visible document
         final int snapshotSize = minePostsAdapters.getItemCount();
+        if (snapshotSize != 0){
+            DocumentSnapshot lastVisible = minePostsAdapters.getSnapshot(snapshotSize - 1);
 
-        DocumentSnapshot lastVisible = minePostsAdapters.getSnapshot(snapshotSize - 1);
+            //retrieve the first bacth of mSnapshots
+            Query nextCollectionPostsQuery = collectionsPosts.orderBy("time", Query.Direction.ASCENDING)
+                    .startAfter(lastVisible)
+                    .limit(TOTAL_ITEMS);
 
-        //retrieve the first bacth of mSnapshots
-        Query nextCollectionPostsQuery = collectionsPosts.orderBy("time", Query.Direction.ASCENDING)
-                .startAfter(lastVisible)
-                .limit(TOTAL_ITEMS);
+            nextCollectionPostsQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot documentSnapshots) {
+                    if (!documentSnapshots.isEmpty()){
+                        //retrieve the first bacth of mSnapshots
+                        for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                            switch (change.getType()) {
+                                case ADDED:
+                                    CollectionPost post = change.getDocument().toObject(CollectionPost.class);
+                                    final String type = post.getType();
+                                    if (!type.equals("collection_video_post")){
+                                        onDocumentAdded(change);
 
-        nextCollectionPostsQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot documentSnapshots) {
-                if (!documentSnapshots.isEmpty()){
-                    //retrieve the first bacth of mSnapshots
-                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                        switch (change.getType()) {
-                            case ADDED:
-                                CollectionPost post = change.getDocument().toObject(CollectionPost.class);
-                                final String type = post.getType();
-                                if (!type.equals("collection_video_post")){
-                                    onDocumentAdded(change);
-
-                                }
-                                break;
-                            case MODIFIED:
-                                onDocumentModified(change);
-                                break;
-                            case REMOVED:
-                                onDocumentRemoved(change);
-                                break;
+                                    }
+                                    break;
+                                case MODIFIED:
+                                    onDocumentModified(change);
+                                    break;
+                                case REMOVED:
+                                    onDocumentRemoved(change);
+                                    break;
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     protected void onDocumentAdded(DocumentChange change) {

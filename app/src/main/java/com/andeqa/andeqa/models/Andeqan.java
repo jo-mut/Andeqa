@@ -15,6 +15,7 @@ public class Andeqan {
     String second_name;
     String device_id;
     String phone_number;
+    long time;
 
     public Andeqan(){
         //EMPTY CONSTRUCTOR REQUIRED
@@ -100,5 +101,13 @@ public class Andeqan {
 
     public void setPhone_number(String phone_number) {
         this.phone_number = phone_number;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
     }
 }
