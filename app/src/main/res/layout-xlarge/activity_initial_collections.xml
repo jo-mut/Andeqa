@@ -22,6 +22,7 @@
             android:layout_height="wrap_content">
 
             <TextView
+                android:textColor="@color/grey_700"
                 android:textSize="28sp"
                 android:padding="40dp"
                 android:textAllCaps="false"

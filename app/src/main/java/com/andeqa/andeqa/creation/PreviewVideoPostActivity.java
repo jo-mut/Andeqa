@@ -27,8 +27,10 @@ public class PreviewVideoPostActivity extends AppCompatActivity
     private static final String CAMERA_VIDEO = "camera video";
     private static final String CAMERA_THUMB = "thumb";
     private static final String GALLERY_VIDEO = "gallery video";
+    private static final String COLLECTION_ID = "collection id";
     private String video;
     private String thumb;
+    private String mCollectionId;
     private Player player;
 
 
@@ -61,6 +63,8 @@ public class PreviewVideoPostActivity extends AppCompatActivity
                 player = new Player(getApplicationContext(), exoPlayerView);
                 player.addMedia(video);
             }
+
+            mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
         }
 
     }
@@ -109,16 +113,21 @@ public class PreviewVideoPostActivity extends AppCompatActivity
             long fileMegaBytes = fileKiloBytes / 1024;
 
             if (fileMegaBytes <= 6){
-                if (video != null){
-                    Intent intent = new Intent(PreviewVideoPostActivity.this, CreateSingleActivity.class);
-                    intent.putExtra(PreviewVideoPostActivity.CAMERA_VIDEO, video);
-                    intent.putExtra(PreviewVideoPostActivity.CAMERA_THUMB, thumb);
-                    startActivity(intent);
+                if (mCollectionId != null){
+                    if (video != null){
+                        Intent intent = new Intent(PreviewVideoPostActivity.this, CreateSingleActivity.class);
+                        intent.putExtra(PreviewVideoPostActivity.CAMERA_VIDEO, video);
+                        intent.putExtra(PreviewVideoPostActivity.CAMERA_THUMB, thumb);
+                        intent.putExtra(PreviewVideoPostActivity.COLLECTION_ID, mCollectionId);
+                        startActivity(intent);
+                    }
                 }else {
-                    Intent intent = new Intent(PreviewVideoPostActivity.this, CreateSingleActivity.class);
-                    intent.putExtra(PreviewVideoPostActivity.CAMERA_VIDEO, video);
-                    intent.putExtra(PreviewVideoPostActivity.CAMERA_THUMB, thumb);
-                    startActivity(intent);
+                    if (video != null){
+                        Intent intent = new Intent(PreviewVideoPostActivity.this, CreateSingleActivity.class);
+                        intent.putExtra(PreviewVideoPostActivity.CAMERA_VIDEO, video);
+                        intent.putExtra(PreviewVideoPostActivity.CAMERA_THUMB, thumb);
+                        startActivity(intent);
+                    }
                 }
             }else {
                 Toast.makeText(PreviewVideoPostActivity.this, "Video must be less that 6Mbs", Toast.LENGTH_SHORT).show();

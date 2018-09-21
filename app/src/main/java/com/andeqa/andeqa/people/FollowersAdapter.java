@@ -10,8 +10,9 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.message.MessagingActivity;
+import com.andeqa.andeqa.chatting.MessagingActivity;
 import com.andeqa.andeqa.models.Andeqan;
+import com.andeqa.andeqa.models.QueryOptions;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Room;
 import com.andeqa.andeqa.models.Timeline;
@@ -36,12 +37,13 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-public class FollowersAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
+public class FollowersAdapter extends RecyclerView.Adapter<PeopleRelationsViewHolder> {
     private static final String TAG = FollowersAdapter.class.getSimpleName();
     private FirebaseAuth firebaseAuth;
     private Context mContext;
     private DatabaseReference databaseReference;
     private CollectionReference followersCollection;
+    private CollectionReference queryParamsCollection;
     private CollectionReference timelineCollection;
     private CollectionReference usersCollection;
     private CollectionReference roomsCollection;
@@ -63,9 +65,9 @@ public class FollowersAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
     }
 
     @Override
-    public PeopleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public PeopleRelationsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_people, parent, false);
-        return new PeopleViewHolder(view);
+        return new PeopleRelationsViewHolder(view);
     }
 
     protected DocumentSnapshot getSnapshot(int index) {
@@ -73,10 +75,8 @@ public class FollowersAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
     }
 
 
-
-
     @Override
-    public void onBindViewHolder(final PeopleViewHolder holder, int position) {
+    public void onBindViewHolder(final PeopleRelationsViewHolder holder, int position) {
         Relation relation = getSnapshot(position).toObject(Relation.class);
         final String userId = relation.getFollowing_id();
 
@@ -88,6 +88,8 @@ public class FollowersAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
             roomsCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
+            queryParamsCollection = FirebaseFirestore.getInstance().collection(Constants.QUERY_OPTIONS);
+
         }
 
         usersCollection.document(userId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -285,12 +287,29 @@ public class FollowersAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
                                                         followersCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
                                                                 .document(userId).set(following);
                                                         holder.followButton.setText("Following");
+
+                                                        if (!userId.equals(firebaseAuth.getCurrentUser().getUid())){
+                                                            final String id = queryParamsCollection.document().getId();
+                                                            QueryOptions queryOptions = new QueryOptions();
+                                                            queryOptions.setUser_id(userId);
+                                                            queryOptions.setFollowed_id(userId);
+                                                            queryOptions.setType("people");
+                                                            queryParamsCollection.document("options")
+                                                                    .collection(firebaseAuth.getCurrentUser().getUid()).document(userId)
+                                                                    .set(queryOptions);
+
+                                                        }
+
+
                                                         processFollow = false;
                                                     }else {
                                                         followersCollection.document("followers").collection(userId)
                                                                 .document(firebaseAuth.getCurrentUser().getUid()).delete();
                                                         followersCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
                                                                 .document(userId).delete();
+                                                        queryParamsCollection.document("options")
+                                                                .collection(firebaseAuth.getCurrentUser().getUid()).document(userId)
+                                                                .delete();
                                                         holder.followButton.setText("Follow");
                                                         processFollow = false;
                                                     }

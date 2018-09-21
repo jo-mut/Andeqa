@@ -29,6 +29,7 @@ import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Impression;
+import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.ViewDuration;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Timeline;
@@ -86,7 +87,6 @@ public class PostDetailActivity extends AppCompatActivity
     @Bind(R.id.commentsCountTextView)TextView mCommentCountTextView;
     @Bind(R.id.creditsTextView)TextView mCreditsTextView;
     @Bind(R.id.settingsRelativeLayout)RelativeLayout mSettingsRelativeLayout;
-    @Bind(R.id.userCountTextView)TextView mUserCountTextView;
     @Bind(R.id.creditsLinearLayout)LinearLayout mCreditLinearLayout;
     @Bind(R.id.itemLinearLayout)LinearLayout itemLinearLayout;
 
@@ -202,6 +202,7 @@ public class PostDetailActivity extends AppCompatActivity
                     .document("collections").collection(mCollectionId);
         }
 
+        postsCollections = FirebaseFirestore.getInstance().collection(Constants.POSTS);
         usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
         commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS)
                 .document("post_ids").collection(mPostId);
@@ -212,7 +213,6 @@ public class PostDetailActivity extends AppCompatActivity
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
         impressionReference.keepSynced(true);
         //firestore references
-        commentsCountQuery = commentsReference;
         likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
         postWalletReference = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
@@ -381,7 +381,7 @@ public class PostDetailActivity extends AppCompatActivity
 
     /**finish activity if the post does not exist*/
     private void finishActivity(){
-        collectionsPosts.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        postsCollections.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
 
@@ -452,26 +452,9 @@ public class PostDetailActivity extends AppCompatActivity
                     }
                 });
 
-        impressionReference.child("post_views").child(mPostId)
-                .child(firebaseAuth.getCurrentUser().getUid())
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()){
-                            mViewsImageView.setBackgroundResource(R.drawable.ic_viewed);
-                        }else {
-                            mViewsImageView.setBackgroundResource(R.drawable.ic_views);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
 
         //get the number of commments in a cingle
-        commentsCountQuery.orderBy("comment_id").whereEqualTo("push_id", mPostId)
+        commentsReference.orderBy("comment_id").whereEqualTo("post_id", mPostId)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -491,96 +474,184 @@ public class PostDetailActivity extends AppCompatActivity
                     }
                 });
 
-        collectionsPosts.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        postsCollections.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+
                 if (e != null) {
                     android.util.Log.w(TAG, "Listen error", e);
                     return;
                 }
 
                 if (documentSnapshot.exists()){
-                    final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
-                    final String image = collectionPost.getImage();
-                    final String uid = collectionPost.getUser_id();
-                    final String title = collectionPost.getTitle();
-
-                    Glide.with(getApplicationContext())
-                            .load(image)
-                            .apply(new RequestOptions()
-                                    .diskCacheStrategy(DiskCacheStrategy.DATA))
-                            .into(postImageView);
-
-                    //set the title of the single
-                    if (title.equals("")){
-                        mTitleRelativeLayout.setVisibility(View.GONE);
-                    }else {
-                        mTitleRelativeLayout.setVisibility(View.VISIBLE);
-                        titleTextView.setText(title);
-                    }
-
-                    if (!TextUtils.isEmpty(collectionPost.getDescription())){
-                        final String [] strings = collectionPost.getDescription().split("");
-
-                        final int size = strings.length;
-
-                        if (size <= 120){
-                            mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
-                            mDescriptionTextView.setText(collectionPost.getDescription());
-                        }else{
-
-                            mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
-                            final String boldMore = "...";
-                            final String boldLess = "";
-                            String normalText = collectionPost.getDescription().substring(0, 119);
-                            mDescriptionTextView.setText(normalText + boldMore);
-                            mDescriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    if (showOnClick){
-                                        String normalText = collectionPost.getDescription();
-                                        mDescriptionTextView.setText(normalText + boldLess);
-                                        showOnClick = false;
-                                    }else {
-                                        String normalText = collectionPost.getDescription().substring(0, 119);
-                                        mDescriptionTextView.setText(normalText + boldMore);
-                                        showOnClick = true;
-                                    }
+                    final Post post = documentSnapshot.toObject(Post.class);
+                    if (post.getUrl() == null){
+                        collectionsPosts.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                            @Override
+                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                if (e != null) {
+                                    android.util.Log.w(TAG, "Listen error", e);
+                                    return;
                                 }
-                            });
-                        }
+
+                                if (documentSnapshot.exists()){
+                                    final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                                    final String image = collectionPost.getImage();
+                                    final String uid = collectionPost.getUser_id();
+                                    final String title = collectionPost.getTitle();
+
+                                    Glide.with(getApplicationContext())
+                                            .load(image)
+                                            .apply(new RequestOptions()
+                                                    .diskCacheStrategy(DiskCacheStrategy.DATA))
+                                            .into(postImageView);
+
+                                    //set the title of the single
+                                    if (TextUtils.isEmpty(title)){
+                                        mTitleRelativeLayout.setVisibility(View.GONE);
+                                    }else {
+                                        mTitleRelativeLayout.setVisibility(View.VISIBLE);
+                                        titleTextView.setText(title);
+                                    }
+
+                                    if (!TextUtils.isEmpty(collectionPost.getDescription())){
+                                        final String [] strings = collectionPost.getDescription().split("");
+
+                                        final int size = strings.length;
+
+                                        if (size <= 150){
+                                            mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
+                                            mDescriptionTextView.setText(collectionPost.getDescription());
+                                        }else{
+
+                                            mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
+                                            final String boldMore = "...";
+                                            final String boldLess = "";
+                                            String normalText = collectionPost.getDescription().substring(0, 149);
+                                            mDescriptionTextView.setText(normalText + boldMore);
+                                            mDescriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    if (showOnClick){
+                                                        String normalText = collectionPost.getDescription();
+                                                        mDescriptionTextView.setText(normalText + boldLess);
+                                                        showOnClick = false;
+                                                    }else {
+                                                        String normalText = collectionPost.getDescription().substring(0, 149);
+                                                        mDescriptionTextView.setText(normalText + boldMore);
+                                                        showOnClick = true;
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }else {
+                                        mDescriptionRelativeLayout.setVisibility(View.GONE);
+                                    }
+
+                                    usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                            if (e != null) {
+                                                android.util.Log.w(TAG, "Listen error", e);
+                                                return;
+                                            }
+
+                                            if (documentSnapshot.exists()){
+                                                final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                                                final String username = cinggulan.getUsername();
+                                                final String profileImage = cinggulan.getProfile_image();
+
+                                                mUsernameTextView.setText(username);
+                                                Glide.with(getApplicationContext())
+                                                        .load(profileImage)
+                                                        .apply(new RequestOptions()
+                                                                .placeholder(R.drawable.ic_user)
+                                                                .diskCacheStrategy(DiskCacheStrategy.DATA))
+                                                        .into(mProfileImageView);
+                                            }
+                                        }
+                                    });
+
+                                }
+                            }
+                        });
                     }else {
-                        mDescriptionRelativeLayout.setVisibility(View.GONE);
-                    }
+                        Glide.with(getApplicationContext())
+                                .load(post.getUrl())
+                                .apply(new RequestOptions()
+                                        .diskCacheStrategy(DiskCacheStrategy.DATA))
+                                .into(postImageView);
 
-                    usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                            if (e != null) {
-                                android.util.Log.w(TAG, "Listen error", e);
-                                return;
-                            }
-
-                            if (documentSnapshot.exists()){
-                                final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                                final String username = cinggulan.getUsername();
-                                final String profileImage = cinggulan.getProfile_image();
-
-                                mUsernameTextView.setText(username);
-                                Glide.with(getApplicationContext())
-                                        .load(profileImage)
-                                        .apply(new RequestOptions()
-                                                .placeholder(R.drawable.ic_user)
-                                                .diskCacheStrategy(DiskCacheStrategy.DATA))
-                                        .into(mProfileImageView);
-                            }
+                        //set the title of the single
+                        if (TextUtils.isEmpty(post.getTitle())){
+                            mTitleRelativeLayout.setVisibility(View.GONE);
+                        }else {
+                            mTitleRelativeLayout.setVisibility(View.VISIBLE);
+                            titleTextView.setText(post.getTitle());
                         }
-                    });
 
+                        if (!TextUtils.isEmpty(post.getDescription())){
+                            final String [] strings = post.getDescription().split("");
+
+                            final int size = strings.length;
+
+                            if (size <= 150){
+                                mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
+                                mDescriptionTextView.setText(post.getDescription());
+                            }else{
+
+                                mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
+                                final String boldMore = "...";
+                                final String boldLess = "";
+                                String normalText = post.getDescription().substring(0, 149);
+                                mDescriptionTextView.setText(normalText + boldMore);
+                                mDescriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        if (showOnClick){
+                                            String normalText = post.getDescription();
+                                            mDescriptionTextView.setText(normalText + boldLess);
+                                            showOnClick = false;
+                                        }else {
+                                            String normalText = post.getDescription().substring(0, 149);
+                                            mDescriptionTextView.setText(normalText + boldMore);
+                                            showOnClick = true;
+                                        }
+                                    }
+                                });
+                            }
+                        }else {
+                            mDescriptionRelativeLayout.setVisibility(View.GONE);
+                        }
+
+                        usersReference.document(post.getUser_id())
+                                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                            @Override
+                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                if (e != null) {
+                                    android.util.Log.w(TAG, "Listen error", e);
+                                    return;
+                                }
+
+                                if (documentSnapshot.exists()){
+                                    final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                                    final String username = cinggulan.getUsername();
+                                    final String profileImage = cinggulan.getProfile_image();
+
+                                    mUsernameTextView.setText(username);
+                                    Glide.with(getApplicationContext())
+                                            .load(profileImage)
+                                            .apply(new RequestOptions()
+                                                    .placeholder(R.drawable.ic_user)
+                                                    .diskCacheStrategy(DiskCacheStrategy.DATA))
+                                            .into(mProfileImageView);
+                                }
+                            }
+                        });
+                    }
                 }
             }
         });
-
 
     }
 
@@ -664,24 +735,6 @@ public class PostDetailActivity extends AppCompatActivity
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
-//
-//    private void displayPopupWindow(View anchorView) {
-//        PopupWindow popup = new PopupWindow(PostDetailActivity.this);
-//        View layout = getLayoutInflater().inflate(R.layout.popup_layout, null);
-//
-//        TextView textView = (TextView) layout.findViewById(R.id.popupTextView);
-//        textView.setText("Like this post");
-//
-//        popup.setContentView(layout);
-//        // Set content width and height
-//        popup.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-//        popup.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
-//        // Closes the popup window when touch outside of it - when looses focus
-//        popup.setOutsideTouchable(true);
-//        popup.setFocusable(true);
-//        // Show anchored to button
-//        popup.setBackgroundDrawable(new BitmapDrawable());
-//        popup.showAsDropDown(anchorView);
-//    }
+
 
 }

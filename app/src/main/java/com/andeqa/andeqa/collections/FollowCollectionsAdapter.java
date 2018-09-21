@@ -64,7 +64,6 @@ public class FollowCollectionsAdapter extends RecyclerView.Adapter<CollectionVie
 
     protected void setFeaturedCollections(List<DocumentSnapshot> mSnapshots){
         this.featuredCollections = mSnapshots;
-        notifyDataSetChanged();
     }
 
     @Override
@@ -245,9 +244,9 @@ public class FollowCollectionsAdapter extends RecyclerView.Adapter<CollectionVie
 
                                             final String id = queryParamsCollection.document().getId();
                                             QueryOptions queryOptions = new QueryOptions();
-                                            queryOptions.setUser_id(userId);
-                                            queryOptions.setQuery_option(collectionId);
-                                            queryOptions.setOption_id(id);
+                                            queryOptions.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                            queryOptions.setFollowed_id(collectionId);
+                                            queryOptions.setType("collection");
                                             queryParamsCollection.document("options")
                                                     .collection(firebaseAuth.getCurrentUser().getUid()).document(collectionId)
                                                     .set(queryOptions);

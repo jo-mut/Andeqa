@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.CollectionPost;
+import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.models.Comment;
 import com.andeqa.andeqa.utils.EndlessLinearRecyclerViewOnScrollListener;
@@ -56,7 +57,7 @@ public class CommentsActivity extends AppCompatActivity implements
     private DatabaseReference databaseReference;
     //firestore
     private CollectionReference commentsCollection;
-    private CollectionReference collectionsCollection;
+    private CollectionReference postsCollection;
     private Query commentQuery;
     private CollectionReference usersCollection;
     private CollectionReference timelineCollection;
@@ -108,27 +109,7 @@ public class CommentsActivity extends AppCompatActivity implements
             mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
             mType = getIntent().getStringExtra(TYPE);
 
-            //firestore
-            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                    .document("collections").collection(mCollectionId);
-
-            //firestore
-            if (mType.equals("single")){
-                collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                        .document("singles").collection(mCollectionId);
-            }else if (mType.equals("post")){
-                collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                        .document("collections").collection(mCollectionId);
-            }else if (mType.equals("photo_post")){
-                collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                        .document("collections").collection(mCollectionId);
-            }else if (mType.equals("video_post")){
-                collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                        .document("collections").collection(mCollectionId);
-            }else {
-                //do noghting
-            }
-
+            postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             commentsCollection = FirebaseFirestore.getInstance().collection(Constants.COMMENTS)
                     .document("post_ids").collection(mPostId);
             commentQuery = commentsCollection.orderBy("time", Query.Direction.DESCENDING);
@@ -325,7 +306,7 @@ public class CommentsActivity extends AppCompatActivity implements
 
 
                 //record the comment on the timeline
-                collectionsCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                postsCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -335,8 +316,8 @@ public class CommentsActivity extends AppCompatActivity implements
                         }
 
                         if (documentSnapshot.exists()){
-                            CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
-                            final String creatorUid = collectionPost.getUser_id();
+                            Post post = documentSnapshot.toObject(Post.class);
+                            final String creatorUid = post.getUser_id();
 
                             final Timeline timeline = new Timeline();
                             timeline.setActivity_id(commentId);

@@ -9,7 +9,6 @@ import android.util.Log;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.collections.InitialCollectionsActivity;
-import com.andeqa.andeqa.people.FollowPeopleActivity;
 import com.andeqa.andeqa.people.FollowingActivity;
 import com.andeqa.andeqa.registration.SignInActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -104,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
 
                                         if (queryOptions){
                                             if (documentSnapshots.isEmpty()){
-                                                Intent intent = new Intent(MainActivity.this, InitialCollectionsActivity.class);
+                                                Intent intent = new Intent(MainActivity.this, HomeActivity.class);
                                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                                 startActivity(intent);
                                                 finish();

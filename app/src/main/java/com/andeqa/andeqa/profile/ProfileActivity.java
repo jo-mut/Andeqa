@@ -9,6 +9,9 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -20,14 +23,17 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.creation.CreateCollectionActivity;
 import com.andeqa.andeqa.creation.CreateCollectionPostActivity;
-import com.andeqa.andeqa.message.MessagingActivity;
+import com.andeqa.andeqa.chatting.MessagingActivity;
 import com.andeqa.andeqa.models.Andeqan;
+import com.andeqa.andeqa.models.QueryOptions;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Room;
 
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.people.FollowersActivity;
 import com.andeqa.andeqa.people.FollowingActivity;
+import com.andeqa.andeqa.people.PeopleActivity;
+import com.andeqa.andeqa.settings.SettingsActivity;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
@@ -85,6 +91,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private CollectionReference peopleCollection;
     private CollectionReference followingCollection;
     private CollectionReference timelineCollection;
+    private CollectionReference queryParamsCollection;
     private Query followersQuery;
     private Query followingQuery;
     private Query followQuery;
@@ -113,7 +120,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         //FIREBASE AUTH
         firebaseAuth = FirebaseAuth.getInstance();
-
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -133,6 +139,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             roomsCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             peopleCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE);
+            queryParamsCollection = FirebaseFirestore.getInstance().collection(Constants.QUERY_OPTIONS);
+
             followersQuery = peopleCollection.document("followers")
                     .collection(mUid);
             followingQuery = peopleCollection.document("following")
@@ -199,6 +207,45 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.profile_menu, menu);
+        MenuItem item = menu.findItem(R.id.action_people);
+        item.setVisible(false);
+        if (!mUid.equals(firebaseAuth.getCurrentUser().getUid())){
+            menu.clear();
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_settings){
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+        }
+
+
+        if (id == R.id.action_people){
+            Intent intent = new Intent(this, PeopleActivity.class);
+            startActivity(intent);
+        }
+
+
+
+        return super.onOptionsItemSelected(item);
+    }
 
     private void fetchData(){
         followQuery.orderBy("time").whereEqualTo("following_id",
@@ -402,7 +449,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
                         if (processFollow){
                             if (documentSnapshots.isEmpty()){
-
                                 //set followers and following
                                 Relation follower = new Relation();
                                 follower.setFollowing_id(firebaseAuth.getCurrentUser().getUid());
@@ -437,12 +483,29 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                 peopleCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
                                         .document(mUid).set(following);
                                 followButton.setText("Following");
+
+                                if (!mUid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                    final String id = queryParamsCollection.document().getId();
+                                    QueryOptions queryOptions = new QueryOptions();
+                                    queryOptions.setUser_id(mUid);
+                                    queryOptions.setFollowed_id(mUid);
+                                    queryOptions.setType("people");
+                                    queryParamsCollection.document("options")
+                                            .collection(firebaseAuth.getCurrentUser().getUid()).document(mUid)
+                                            .set(queryOptions);
+
+                                }
+
+
                                 processFollow = false;
                             }else {
                                 peopleCollection.document("followers").collection(mUid)
                                         .document(firebaseAuth.getCurrentUser().getUid()).delete();
                                 peopleCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
                                         .document(mUid).delete();
+                                queryParamsCollection.document("options")
+                                        .collection(firebaseAuth.getCurrentUser().getUid()).document(mUid)
+                                        .delete();
                                 followButton.setText("Follow");
                                 processFollow = false;
                             }
@@ -469,8 +532,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                             mCollectionsCountTextView.setText("Collections: " + collectionCount);
                             mViewCollectionsRelativeLayout.setVisibility(View.VISIBLE);
                         }else {
-                            mCollectionsCountTextView.setText("Collections: 0");
-                            mCreateCollectionRelativeLayout.setVisibility(View.VISIBLE);
+                            if (firebaseAuth.getCurrentUser().getUid().equals(mUid)){
+                                mCollectionsCountTextView.setText("Collections: 0");
+                                mCreateCollectionRelativeLayout.setVisibility(View.VISIBLE);
+                            }else {
+                                mCollectionsCardView.setVisibility(View.GONE);
+                            }
 
                         }
                     }
@@ -497,8 +564,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                             final int count = queryDocumentSnapshots.size();
                             mPostCountTextView.setText("Posts: " + count);
                         }else {
-                            mPostCountTextView.setText("Posts: 0");
-                            mCreatePostRelativeLayout.setVisibility(View.VISIBLE);
+                           if (firebaseAuth.getCurrentUser().getUid().equals(mUid)){
+                               mPostCountTextView.setText("Posts: 0");
+                               mCreatePostRelativeLayout.setVisibility(View.VISIBLE);
+                           }else {
+                               mPostsCardView.setVisibility(View.GONE);
+                           }
                         }
 
                     }

@@ -8,7 +8,7 @@
     android:fitsSystemWindows="false"
     android:background="#000000"
     android:orientation="vertical"
-    tools:context="com.andeqa.andeqa.message.SendPhotoActivity">
+    tools:context="com.andeqa.andeqa.chatting.SendPhotoActivity">
 
     <ScrollView
         android:layout_centerVertical="true"

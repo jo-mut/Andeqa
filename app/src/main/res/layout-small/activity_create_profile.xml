@@ -29,6 +29,7 @@
                 android:layout_gravity="bottom">
 
                 <TextView
+                    android:textColor="@color/grey_700"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
@@ -62,6 +63,7 @@
                         android:layout_height="100dp" />
                 
                     <ImageButton
+                        android:tint="@color/grey_700"
                         android:layout_height="30dp"
                         android:src="@drawable/ic_menu_camera"
                         android:layout_width="30dp"
@@ -71,6 +73,7 @@
                         android:id="@+id/profilePhotoImageButton" />
 
                     <TextView
+                        android:textColor="@color/grey_700"
                         android:text="Create your profile to have a better experience with other Andeqans"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -98,6 +101,7 @@
                     android:paddingBottom="5dp">
 
                     <EditText
+                        android:textColor="@color/grey_700"
                         android:id="@+id/fisrtNameEditText"
                         android:layout_width="150sp"
                         android:layout_height="wrap_content"
@@ -113,7 +117,6 @@
                         android:inputType="textCapWords"
                         android:nextFocusDown="@+id/passwordEditText"
                         android:padding="10dp"
-                        android:textColor="@android:color/black"
                         android:textSize="10sp" />
 
                     <View
@@ -128,6 +131,7 @@
 
 
                     <EditText
+                        android:textColor="@color/grey_700"
                         android:id="@+id/secondNameEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -142,7 +146,6 @@
                         android:inputType="textCapWords"
                         android:nextFocusDown="@+id/passwordEditText"
                         android:padding="10dp"
-                        android:textColor="@android:color/black"
                         android:textSize="10sp" />
 
 
@@ -164,6 +167,7 @@
                         android:layout_alignParentTop="false"
                         android:layout_centerInParent="true"
                         android:ems="10"
+                        android:textColor="@color/grey_700"
                         android:freezesText="true"
                         android:hint="Username"
                         android:inputType="textMultiLine"
@@ -209,11 +213,11 @@
                         android:layout_height="wrap_content"
                         android:paddingTop="15dp"
                         android:paddingBottom="15dp"
-                        android:textColor="@color/colorPrimary"
                         android:id="@+id/resendLinkTextView"
                         android:textAllCaps="true"
                         android:textStyle="normal|bold"
                         android:textSize="10sp"
+                        android:textColor="@color/grey_700"
                         android:layout_centerVertical="true"
                         android:layout_alignParentLeft="false"
                         android:layout_alignParentStart="false" />

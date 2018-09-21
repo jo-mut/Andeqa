@@ -20,6 +20,7 @@
         android:visibility="gone"
         android:id="@+id/dateTextView"
         android:layout_width="wrap_content"
+        android:textColor="@color/grey_700"
         android:layout_height="wrap_content"
         android:gravity="center_vertical|end"
         android:textSize="9sp"
@@ -50,7 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:gravity="center_vertical|start"
-            android:textColor="@android:color/black"
+            android:textColor="@color/grey_700"
             android:textSize="12sp"
             tools:text="" />
 
@@ -68,6 +69,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_vertical|end"
+            android:textColor="@color/grey_700"
             android:textSize="9sp"
             tools:text="06:00a.m." />
 

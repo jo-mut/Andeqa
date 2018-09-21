@@ -74,7 +74,6 @@ public class MineCollectionsAdapter extends RecyclerView.Adapter<CollectionViewH
 
     protected void setProfileCollections(List<DocumentSnapshot> mSnapshots){
         this.profileCollections = mSnapshots;
-        notifyDataSetChanged();
     }
 
     protected DocumentSnapshot getSnapshot(int index) {
@@ -236,6 +235,7 @@ public class MineCollectionsAdapter extends RecyclerView.Adapter<CollectionViewH
                     }
                 });
 
+
         /**follow or un follow collection*/
         if (userId.equals(firebaseAuth.getCurrentUser().getUid())){
             holder.followButton.setVisibility(View.GONE);
@@ -246,8 +246,8 @@ public class MineCollectionsAdapter extends RecyclerView.Adapter<CollectionViewH
                 public void onClick(View v) {
                     processFollow = true;
                     followingCollection.document("following")
-                            .collection(collectionId)
-                            .whereEqualTo("following_id", firebaseAuth.getCurrentUser().getUid())
+                            .collection(firebaseAuth.getCurrentUser().getUid())
+                            .whereEqualTo("followed_id", collectionId)
                             .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                 @Override
                                 public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -264,25 +264,17 @@ public class MineCollectionsAdapter extends RecyclerView.Adapter<CollectionViewH
                                             following.setFollowed_id(collectionId);
                                             following.setType("followed_collection");
                                             following.setTime(System.currentTimeMillis());
-                                            followingCollection.document("following").collection(collectionId)
+                                            followingCollection.document("following")
+                                                    .collection(collectionId)
                                                     .document(firebaseAuth.getCurrentUser().getUid()).set(following);
-
-                                            final String id = queryParamsCollection.document().getId();
-                                            QueryOptions queryOptions = new QueryOptions();
-                                            queryOptions.setUser_id(userId);
-                                            queryOptions.setQuery_option(collectionId);
-                                            queryOptions.setOption_id(id);
-                                            queryParamsCollection.document("options")
-                                                    .collection(firebaseAuth.getCurrentUser().getUid()).document(collectionId)
-                                                    .set(queryOptions);
-
                                             holder.followButton.setText("FOLLOWING");
                                             processFollow = false;
                                         }else {
-                                            followingCollection.document("following").collection(collectionId)
-                                                    .document(firebaseAuth.getCurrentUser().getUid()).delete();
-                                            queryParamsCollection.document("options").collection(firebaseAuth.getCurrentUser().getUid())
-                                                    .document(collectionId).delete();
+                                            followingCollection.document("following")
+                                                    .collection(collectionId)
+                                                    .document(firebaseAuth.getCurrentUser().getUid())
+                                                    .delete();
+
                                             holder.followButton.setText("FOLLOW");
                                             processFollow = false;
                                         }
@@ -292,7 +284,6 @@ public class MineCollectionsAdapter extends RecyclerView.Adapter<CollectionViewH
                 }
             });
         }
-
 
     }
 

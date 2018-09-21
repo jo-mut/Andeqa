@@ -66,6 +66,7 @@
                 </ViewAnimator>
 
                 <ImageButton
+                    android:tint="@color/grey_1000"
                     android:src="@drawable/ic_menu_camera"
                     android:layout_marginLeft="120dp"
                     android:layout_marginStart="120dp"
@@ -77,6 +78,7 @@
                     android:layout_width="60dp" />
 
                 <TextView
+                    android:visibility="gone"
                     android:text="Update Cover"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -107,6 +109,7 @@
                     android:layout_height="match_parent">
 
                     <ImageView
+                        android:tint="@color/grey_700"
                         android:layout_alignParentRight="true"
                         android:layout_alignParentEnd="true"
                         android:layout_width="60dp"
@@ -151,6 +154,7 @@
                         android:padding="40dp">
 
                         <ImageView
+                            android:tint="@color/grey_700"
                             app:srcCompat="@drawable/ic_person"
                             android:id="@+id/imageView"
                             android:layout_centerVertical="false"
@@ -203,6 +207,7 @@
                         android:padding="40dp">
 
                         <ImageView
+                            android:tint="@color/grey_700"
                             app:srcCompat="@drawable/ic_description_black_24dp"
                             android:id="@+id/imageView3"
                             android:layout_alignParentTop="false"
@@ -268,6 +273,7 @@
                         android:padding="40dp">
 
                         <ImageView
+                            android:tint="@color/grey_700"
                             app:srcCompat="@drawable/ic_account"
                             android:layout_centerVertical="false"
                             android:layout_alignParentLeft="true"
@@ -321,6 +327,7 @@
                         android:padding="40dp">
 
                         <ImageView
+                            android:tint="@color/grey_700"
                             app:srcCompat="@drawable/ic_account"
                             android:layout_centerVertical="false"
                             android:layout_alignParentLeft="true"

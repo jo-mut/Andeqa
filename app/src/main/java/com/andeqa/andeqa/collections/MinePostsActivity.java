@@ -10,9 +10,7 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -23,7 +21,7 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.creation.CreateCollectionPostActivity;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.CollectionPost;
-import com.andeqa.andeqa.models.Post;
+import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.settings.CollectionSettingsActivity;
 import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
@@ -40,12 +38,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -58,16 +55,22 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
     @Bind(R.id.collapsingToolbar)CollapsingToolbarLayout collapsingToolbarLayout;
     @Bind(R.id.collectionNameTextView)TextView mCollectionNameTextView;
     @Bind(R.id.collectionSettingsRelativeLayout)RelativeLayout mCollectionSettingsRelativeLayout;
+    @Bind(R.id.followersCountTextView) TextView mFollowersCountTextView;
+    @Bind(R.id.followersTextView)TextView mFollowersTextView;
+    @Bind(R.id.postsTextView)TextView mPostsTextView;
+    @Bind(R.id.postsCountTextView)TextView mPostsCountTextView;
+    @Bind(R.id.followTextView)TextView mFollowTextView;
 
     private static final String TAG = CollectionPostsActivity.class.getSimpleName();
 
     //firestore reference
-    private CollectionReference collectionsPosts;
+    private CollectionReference postsCollection;
     private CollectionReference collectionCollection;
     private CollectionReference usersCollection;
     private CollectionReference collectionOwnersCollection;
+    private CollectionReference collectionsRelations;
 
-    private Query collectionPostsQuery;
+    private Query postsQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore adapters
@@ -80,13 +83,14 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
     private StaggeredGridLayoutManager layoutManager;
     private static final String EXTRA_USER_UID = "uid";
 
-    private String collectionId;
+    private String mCollectionId;
     private String mUid;
     private String mSource;
     private static final String COLLECTION_ID = "collection id";
     private List<String> mSnapshotsIds = new ArrayList<>();
     private List<DocumentSnapshot> mSnapshots = new ArrayList<>();
     private ItemOffsetDecoration itemOffsetDecoration;
+    private boolean processFollow = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +116,7 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
         });
         collapsingToolbarLayout.setTitle("Posts");
 
-        collectionId = getIntent().getStringExtra(COLLECTION_ID);
+        mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
         mUid = getIntent().getStringExtra(EXTRA_USER_UID);
 
 
@@ -120,10 +124,10 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
             mCollectionSettingsRelativeLayout.setVisibility(View.VISIBLE);
         }
 
-        collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                .document("collections").collection(collectionId);
+        postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
         collectionCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
-        collectionPostsQuery = collectionsPosts.orderBy("time", Query.Direction.ASCENDING);
+        collectionsRelations = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_RELATIONS);
+        postsQuery = postsCollection.orderBy("time", Query.Direction.ASCENDING);
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
         collectionOwnersCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_OWNERS);
 
@@ -142,6 +146,10 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
         setRecyclerView();
         setCollectionPosts();
         setCollectionsInfo();
+        followCollection();
+        getCountOfCollectionFollowers();
+        getCountOfCollectionsPosts();
+        getCountOfFollowers();
     }
 
     @Override
@@ -163,7 +171,7 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
 //        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.colletion_settings, menu);
+//        inflater.inflate(R.menu.collection_settings, menu);
 //        return super.onCreateOptionsMenu(menu);
 //    }
 //
@@ -195,9 +203,138 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
         ViewCompat.setNestedScrollingEnabled(mCollectionsPostsRecyclerView,false);
     }
 
+    private void getCountOfFollowers(){
+        /**show the number of peopl following collection**/
+        collectionsRelations.document("following")
+                .collection(mCollectionId).whereEqualTo("following_id",
+                firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot documentSnapshots,
+                                        @Nullable FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!documentSnapshots.isEmpty()){
+                            int following = documentSnapshots.size();
+                            mFollowersCountTextView.setText(following);
+                            mFollowersTextView.setText("Following");
+                        }else {
+                            mFollowersCountTextView.setText("0");
+                            mFollowersTextView.setText("Following");
+                        }
+
+                    }
+                });
+
+    }
+
+    private void getCountOfCollectionFollowers(){
+        /**show the number of peopl following collection**/
+        collectionsRelations.document("following")
+                .collection(mCollectionId).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot documentSnapshots,
+                                @Nullable FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (!documentSnapshots.isEmpty()){
+                    int following = documentSnapshots.size();
+                    mFollowersCountTextView.setText(following);
+                }else {
+                    mFollowersCountTextView.setText("0");
+                }
+
+            }
+        });
+    }
+
+    private void getCountOfCollectionsPosts(){
+        postsQuery.whereEqualTo("collection_id", mCollectionId)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            android.util.Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+
+                        if (!documentSnapshots.isEmpty()){
+                            final int count = documentSnapshots.size();
+                            mPostsCountTextView.setText(count + "");
+                            mPostsTextView.setText("Posts");
+                        }else {
+                            mPostsCountTextView.setText("0");
+                            mPostsTextView.setText("Posts");
+                        }
+
+                    }
+                });
+    }
+
+
+    private void followCollection(){
+        /**follow or un follow collection*/
+        if (mUid.equals(firebaseAuth.getCurrentUser().getUid())){
+            mFollowTextView.setVisibility(View.GONE);
+        }else {
+            mFollowTextView.setVisibility(View.VISIBLE);
+            mFollowTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    processFollow = true;
+                    collectionsRelations.document("following")
+                            .collection(firebaseAuth.getCurrentUser().getUid())
+                            .whereEqualTo("followed_id", mCollectionId)
+                            .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                @Override
+                                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                                    if (e != null) {
+                                        Log.w(TAG, "Listen error", e);
+                                        return;
+                                    }
+
+                                    if (processFollow){
+                                        if (documentSnapshots.isEmpty()){
+                                            final Relation following = new Relation();
+                                            following.setFollowing_id(firebaseAuth.getCurrentUser().getUid());
+                                            following.setFollowed_id(mCollectionId);
+                                            following.setType("followed_collection");
+                                            following.setTime(System.currentTimeMillis());
+                                            collectionsRelations.document("following").collection(firebaseAuth
+                                                    .getCurrentUser().getUid()).document(mCollectionId).set(following);
+
+                                            mFollowTextView.setText("FOLLOWING");
+                                            processFollow = false;
+                                        }else {
+                                            collectionsRelations.document("following").collection(firebaseAuth.getCurrentUser().getUid())
+                                                    .document(mCollectionId).delete();
+                                            mFollowTextView.setText("FOLLOW");
+                                            processFollow = false;
+                                        }
+                                    }
+                                }
+                            });
+                }
+            });
+        }
+
+    }
+
+
     private void setCollectionsInfo(){
 
-        collectionCollection.document(collectionId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        collectionCollection.document(mCollectionId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
@@ -221,17 +358,13 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
                                     .diskCacheStrategy(DiskCacheStrategy.DATA))
                             .into(mCollectionCoverImageView);
 
-                    if (firebaseAuth.getCurrentUser().getUid().equals(userId)){
-                        mCreatePostButton.setVisibility(View.VISIBLE);
-                    }
-
                 }
             }
         });
     }
 
     private void setCollectionPosts(){
-        collectionPostsQuery.limit(TOTAL_ITEMS)
+        postsQuery.whereEqualTo("collection_id", mCollectionId).limit(TOTAL_ITEMS)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -249,7 +382,7 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
                                     case ADDED:
                                         CollectionPost post = change.getDocument().toObject(CollectionPost.class);
                                         final String type = post.getType();
-                                        if (!type.equals("collection_video_post")){
+                                        if (!type.equals("collection_video_post") || !type.equals("single_video_post")){
                                             onDocumentAdded(change);
 
                                         }
@@ -277,7 +410,8 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
             DocumentSnapshot lastVisible = minePostsAdapters.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of mSnapshots
-            Query nextCollectionPostsQuery = collectionsPosts.orderBy("time", Query.Direction.ASCENDING)
+            Query nextCollectionPostsQuery = postsCollection.orderBy("time", Query.Direction.ASCENDING)
+                    .whereEqualTo("collection_id", mCollectionId)
                     .startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
 
@@ -291,7 +425,7 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
                                 case ADDED:
                                     CollectionPost post = change.getDocument().toObject(CollectionPost.class);
                                     final String type = post.getType();
-                                    if (!type.equals("collection_video_post")){
+                                    if (!type.equals("collection_video_post") || !type.equals("single_video_post")){
                                         onDocumentAdded(change);
 
                                     }
@@ -357,14 +491,14 @@ public class MinePostsActivity extends AppCompatActivity implements View.OnClick
     public void onClick(View v){
         if (v == mCreatePostButton){
             Intent intent = new Intent(MinePostsActivity.this, CreateCollectionPostActivity.class);
-            intent.putExtra(MinePostsActivity.COLLECTION_ID, collectionId);
+            intent.putExtra(MinePostsActivity.COLLECTION_ID, mCollectionId);
             startActivity(intent);
             finish();
         }
 
         if (v == mCollectionSettingsRelativeLayout){
             Intent intent = new Intent(this, CollectionSettingsActivity.class);
-            intent.putExtra(MinePostsActivity.COLLECTION_ID, collectionId);
+            intent.putExtra(MinePostsActivity.COLLECTION_ID, mCollectionId);
             startActivity(intent);
         }
 

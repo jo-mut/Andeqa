@@ -31,7 +31,6 @@ import com.andeqa.andeqa.camera.PicturesActivity;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.collections.CollectionPostsActivity;
-import com.andeqa.andeqa.models.VideoPost;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -195,19 +194,14 @@ public class CreateCollectionPostActivity extends AppCompatActivity implements V
 
             @Override
             public void afterTextChanged(Editable editable) {
-                String s = editable.toString();
-                if (s.length() >0 && s.contains(" ")){
-                    mTitleEditText.setText(s.replaceAll(" ", ""));
-                    mTitleEditText.setSelection(mTitleEditText.getText().length());
-                    int count = DEFAULT_TITLE_LENGTH_LIMIT - mTitleEditText.getText().length();
-                    mTitleCountTextView.setText(Integer.toString(count));
+                int count = DEFAULT_TITLE_LENGTH_LIMIT - mTitleEditText.getText().length();
+                mTitleCountTextView.setText(Integer.toString(count));
 
-                    if (count < 0){
-                    }else if (count < 100){
-                        mTitleCountTextView.setTextColor(Color.GRAY);
-                    }else {
-                        mTitleCountTextView.setTextColor(Color.BLACK);
-                    }
+                if (count < 0){
+                }else if (count < 100){
+                    mTitleCountTextView.setTextColor(Color.GRAY);
+                }else {
+                    mTitleCountTextView.setTextColor(Color.BLACK);
                 }
             }
         });
@@ -232,9 +226,7 @@ public class CreateCollectionPostActivity extends AppCompatActivity implements V
         }
 
         if (v == mAddRelativeLayout){
-            Intent intent = new Intent(CreateCollectionPostActivity.this, PicturesActivity.class);
-            intent.putExtra(CreateCollectionPostActivity.POST_TAG, CreateCollectionPostActivity.class.getSimpleName());
-            intent.putExtra(CreateCollectionPostActivity.COLLECTION_ID, collectionId);
+            Intent intent = new Intent(CreateCollectionPostActivity.this, PicturesActivity.class);intent.putExtra(CreateCollectionPostActivity.COLLECTION_ID, collectionId);
             startActivity(intent);
             finish();
 
@@ -291,99 +283,72 @@ public class CreateCollectionPostActivity extends AppCompatActivity implements V
                 public void onComplete(@NonNull Task<Uri> task) {
                     if (task.isSuccessful()) {
                         final Uri downloadUri = task.getResult();
+                        Post post = new Post();
+                        Task<ShortDynamicLink> shortLinkTask = FirebaseDynamicLinks.getInstance().createDynamicLink()
+                                .setLink(Uri.parse("https://andeqa.com/"))
+                                .setDynamicLinkDomain("andeqa.page.link")
+                                .setSocialMetaTagParameters(new DynamicLink.SocialMetaTagParameters.Builder()
+                                        .setTitle(post.getTitle())
+                                        .setDescription(post.getDescription())
+                                        .setImageUrl(downloadUri)
+                                        .build())
+                                // Set parameters
+                                .buildShortDynamicLink()
+                                .addOnCompleteListener(CreateCollectionPostActivity.this, new OnCompleteListener<ShortDynamicLink>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<ShortDynamicLink> task) {
+                                        if (task.isSuccessful()) {
+                                            // Short link created
+                                            final Uri shortLink = task.getResult().getShortLink();
+                                            final Uri flowchartLink = task.getResult().getPreviewLink();
 
-                        CollectionReference cl = collectionsCollection;
-                        cl.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                            @Override
-                            public void onSuccess(QuerySnapshot documentSnapshots) {
-                                final CollectionPost collectionPost = new CollectionPost();
-                                final int size = documentSnapshots.size();
-                                final int number = size + 1;
-                                final double random = new Random().nextDouble();
+                                            postsCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                                @Override
+                                                public void onSuccess(QuerySnapshot snapshots) {
+                                                    final int size = snapshots.size();
+                                                    final int number = size + 1;
+                                                    final double random = new Random().nextDouble();
 
-                                Task<ShortDynamicLink> shortLinkTask = FirebaseDynamicLinks.getInstance().createDynamicLink()
-                                        .setLink(Uri.parse("https://andeqa.com/"))
-                                        .setDynamicLinkDomain("andeqa.page.link")
-                                        .setSocialMetaTagParameters(new DynamicLink.SocialMetaTagParameters.Builder()
-                                                .setTitle(collectionPost.getTitle())
-                                                .setDescription(collectionPost.getDescription())
-                                                .setImageUrl(downloadUri)
-                                                .build())
-                                        // Set parameters
-                                        .buildShortDynamicLink()
-                                        .addOnCompleteListener(CreateCollectionPostActivity.this, new OnCompleteListener<ShortDynamicLink>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<ShortDynamicLink> task) {
-                                                if (task.isSuccessful()) {
-                                                    // Short link created
-                                                    final Uri shortLink = task.getResult().getShortLink();
-                                                    final Uri flowchartLink = task.getResult().getPreviewLink();
-                                                    //record all the collectionPost data
-                                                    collectionPost.setNumber(number);
-                                                    collectionPost.setRandom_number(random);
-                                                    collectionPost.setTime(timeStamp);
-                                                    collectionPost.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                    collectionPost.setTitle(mTitleEditText.getText().toString());
-                                                    collectionPost.setDescription(mCingleDescriptionEditText.getText().toString());
-                                                    collectionPost.setImage(downloadUri.toString());
-                                                    collectionPost.setPost_id(pushId);
-                                                    collectionPost.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                    collectionPost.setType("collection_post");
-                                                    collectionPost.setCollection_id(collectionId);
-                                                    collectionPost.setHeight(height);
-                                                    collectionPost.setWidth(width);
-                                                    collectionPost.setDeeplink(shortLink.toString());
-                                                    collectionsCollection.document("collections").collection(collectionId)
-                                                            .document(pushId).set(collectionPost)
+                                                    Post post = new Post();
+                                                    post.setCollection_id(collectionId);
+                                                    post.setType("collection_image_post");
+                                                    post.setPost_id(pushId);
+                                                    post.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                    post.setRandom_number(random);
+                                                    post.setNumber(number);
+                                                    post.setTime(timeStamp);
+                                                    post.setDeeplink(shortLink.toString());
+                                                    post.setHeight(height);
+                                                    post.setWidth(width);
+                                                    post.setTitle(mTitleEditText.getText().toString());
+                                                    post.setDescription(mCingleDescriptionEditText.getText().toString());
+                                                    post.setUrl(downloadUri.toString());
+
+
+                                                    postsCollection.document(pushId)
+                                                            .set(post)
                                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                 @Override
                                                                 public void onSuccess(Void aVoid) {
-                                                                    postsCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                                                        @Override
-                                                                        public void onSuccess(QuerySnapshot snapshots) {
-                                                                            final int size = snapshots.size();
-                                                                            final int number = size + 1;
-                                                                            final double random = new Random().nextDouble();
 
-                                                                            Post post = new Post();
-                                                                            post.setCollection_id(collectionId);
-                                                                            post.setType("collection_image_post");
-                                                                            post.setPost_id(pushId);
-                                                                            post.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                            post.setRandom_number(random);
-                                                                            post.setNumber(number);
-                                                                            post.setTime(timeStamp);
-                                                                            post.setDeeplink(shortLink.toString());
-                                                                            post.setHeight(height);
-                                                                            post.setWidth(width);
-
-                                                                            postsCollection.document(pushId)
-                                                                                    .set(post)
-                                                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                                        @Override
-                                                                                        public void onSuccess(Void aVoid) {
-
-                                                                                            //launch the collections activity
-                                                                                            Intent intent = new Intent(CreateCollectionPostActivity.this, CollectionPostsActivity.class);
-                                                                                            intent.putExtra(CreateCollectionPostActivity.COLLECTION_ID, collectionId);
-                                                                                            intent.putExtra(CreateCollectionPostActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
-                                                                                            startActivity(intent);
-                                                                                            finish();
-                                                                                        }
-                                                                                    });
-                                                                        }
-                                                                    });
+                                                                    //launch the collections activity
+                                                                    Intent intent = new Intent(CreateCollectionPostActivity.this, CollectionPostsActivity.class);
+                                                                    intent.putExtra(CreateCollectionPostActivity.COLLECTION_ID, collectionId);
+                                                                    intent.putExtra(CreateCollectionPostActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
+                                                                    startActivity(intent);
+                                                                    finish();
                                                                 }
                                                             });
-                                                } else {
-                                                    // Error
-                                                    // ...
                                                 }
-                                            }
-                                        });
+                                            });
 
-                            }
-                        });
+                                        } else {
+                                            // Error
+                                            // ...
+                                        }
+                                    }
+                                });
+
 
 
                     } else {
@@ -472,7 +437,7 @@ public class CreateCollectionPostActivity extends AppCompatActivity implements V
                             cl.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                 @Override
                                 public void onSuccess(QuerySnapshot documentSnapshots) {
-                                    final VideoPost videoPost = new VideoPost();
+                                    final Post post = new Post();
                                     final int size = documentSnapshots.size();
                                     final int number = size + 1;
                                     final double random = new Random().nextDouble();
@@ -481,8 +446,8 @@ public class CreateCollectionPostActivity extends AppCompatActivity implements V
                                             .setLink(Uri.parse("https://andeqa.com/"))
                                             .setDynamicLinkDomain("andeqa.page.link")
                                             .setSocialMetaTagParameters(new DynamicLink.SocialMetaTagParameters.Builder()
-                                                    .setTitle(videoPost.getTitle())
-                                                    .setDescription(videoPost.getDescription())
+                                                    .setTitle(post.getTitle())
+                                                    .setDescription(post.getDescription())
                                                     .setImageUrl(downloadUri)
                                                     .build())
                                             // Set parameters
@@ -494,59 +459,45 @@ public class CreateCollectionPostActivity extends AppCompatActivity implements V
                                                         // Short link created
                                                         final Uri shortLink = task.getResult().getShortLink();
                                                         final Uri flowchartLink = task.getResult().getPreviewLink();
-                                                        //record all the collectionPost data
-                                                        videoPost.setNumber(number);
-                                                        videoPost.setRandom_number(random);
-                                                        videoPost.setTime(timeStamp);
-                                                        videoPost.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                        videoPost.setTitle(mTitleEditText.getText().toString());
-                                                        videoPost.setDescription(mCingleDescriptionEditText.getText().toString());
-                                                        videoPost.setVideo(downloadUri.toString());
-                                                        videoPost.setPost_id(pushId);
-                                                        videoPost.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                        videoPost.setType("collection_post");
-                                                        videoPost.setCollection_id(collectionId);
-                                                        videoPost.setDeeplink(shortLink.toString());
-                                                        collectionsCollection.document("collections").collection(collectionId)
-                                                                .document(pushId).set(videoPost)
-                                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                    @Override
-                                                                    public void onSuccess(Void aVoid) {
-                                                                        postsCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+
+                                                        postsCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                                            @Override
+                                                            public void onSuccess(QuerySnapshot snapshots) {
+                                                                final int size = snapshots.size();
+                                                                final int number = size + 1;
+                                                                final double random = new Random().nextDouble();
+
+                                                                post.setCollection_id(collectionId);
+                                                                post.setType("collection_video_post");
+                                                                post.setPost_id(pushId);
+                                                                post.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                                post.setRandom_number(random);
+                                                                post.setNumber(number);
+                                                                post.setTime(timeStamp);
+                                                                post.setDeeplink(shortLink.toString());
+                                                                post.setTitle(mTitleEditText.getText().toString());
+                                                                post.setDescription(mCingleDescriptionEditText.getText().toString());
+                                                                post.setUrl(downloadUri.toString());
+
+
+                                                                postsCollection.document(pushId)
+                                                                        .set(post)
+                                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                             @Override
-                                                                            public void onSuccess(QuerySnapshot snapshots) {
-                                                                                final int size = snapshots.size();
-                                                                                final int number = size + 1;
-                                                                                final double random = new Random().nextDouble();
+                                                                            public void onSuccess(Void aVoid) {
 
-                                                                                Post post = new Post();
-                                                                                post.setCollection_id(collectionId);
-                                                                                post.setType("collection_video_post");
-                                                                                post.setPost_id(pushId);
-                                                                                post.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                                post.setRandom_number(random);
-                                                                                post.setNumber(number);
-                                                                                post.setTime(timeStamp);
-                                                                                post.setDeeplink(shortLink.toString());
-
-                                                                                postsCollection.document(pushId)
-                                                                                        .set(post)
-                                                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                                            @Override
-                                                                                            public void onSuccess(Void aVoid) {
-
-                                                                                                //launch the collections activity
-                                                                                                Intent intent = new Intent(CreateCollectionPostActivity.this, CollectionPostsActivity.class);
-                                                                                                intent.putExtra(CreateCollectionPostActivity.COLLECTION_ID, collectionId);
-                                                                                                intent.putExtra(CreateCollectionPostActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
-                                                                                                startActivity(intent);
-                                                                                                finish();
-                                                                                            }
-                                                                                        });
+                                                                                //launch the collections activity
+                                                                                Intent intent = new Intent(CreateCollectionPostActivity.this, CollectionPostsActivity.class);
+                                                                                intent.putExtra(CreateCollectionPostActivity.COLLECTION_ID, collectionId);
+                                                                                intent.putExtra(CreateCollectionPostActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
+                                                                                startActivity(intent);
+                                                                                finish();
                                                                             }
                                                                         });
-                                                                    }
-                                                                });
+                                                            }
+                                                        });
+
+
                                                     } else {
                                                         // Error
                                                         // ...

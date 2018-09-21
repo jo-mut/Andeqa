@@ -45,7 +45,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/usernameTextView"
                         android:textSize="12sp"
-                        android:textColor="@android:color/black"
+                        android:textColor="@color/grey_700"
                         android:textStyle="normal"
                         android:text="" />
 
@@ -184,7 +184,7 @@
                             android:layout_width="15dp"
                             android:layout_height="15dp"
                             android:tint="@color/grey_700"
-                            app:srcCompat="@drawable/ic_chat" />
+                            app:srcCompat="@drawable/ic_comment" />
 
                         <TextView
                             android:id="@+id/commentsCountTextView"
@@ -253,7 +253,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="The Cool Thing"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/grey_700"
                             android:textSize="14sp"
                             android:textStyle="normal" />
 
@@ -270,7 +270,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="this is just so awesome"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/grey_700"
                             android:textSize="12sp" />
 
                     </RelativeLayout>

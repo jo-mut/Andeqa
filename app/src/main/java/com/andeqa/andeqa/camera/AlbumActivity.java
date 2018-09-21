@@ -18,11 +18,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.chatting.MessagingActivity;
 import com.andeqa.andeqa.creation.CreateCollectionActivity;
 import com.andeqa.andeqa.creation.CreateCollectionPostActivity;
 import com.andeqa.andeqa.creation.PreviewImagePostActivity;
 import com.andeqa.andeqa.creation.PreviewVideoPostActivity;
-import com.andeqa.andeqa.message.MessagingActivity;
 import com.andeqa.andeqa.profile.UpdateProfileActivity;
 import com.andeqa.andeqa.settings.CollectionSettingsActivity;
 import com.bumptech.glide.Glide;
@@ -239,13 +239,13 @@ public class AlbumActivity extends AppCompatActivity {
                     if (postIntent != null) {
                         Intent intent = new Intent(AlbumActivity.this, PreviewImagePostActivity.class);
                         intent.putExtra(AlbumActivity.GALLERY_PATH, mediaFiles.get(position).get(Function.KEY_PATH));
-                        intent.putExtra(AlbumActivity.COLLECTION_ID, collectionId);
                         intent.putExtra(AlbumActivity.POST_TAG, postIntent);
                         startActivity(intent);
                         finish();
-                    } else if (collectionIntent != null) {
+                    } else if (collectionId != null) {
                         Intent intent = new Intent(AlbumActivity.this, CreateCollectionActivity.class);
                         intent.putExtra(AlbumActivity.GALLERY_PATH, mediaFiles.get(position).get(Function.KEY_PATH));
+                        intent.putExtra(AlbumActivity.COLLECTION_ID, collectionId);
                         startActivity(intent);
                         finish();
                     } else if (collectionSettingsIntent != null) {
@@ -296,7 +296,7 @@ public class AlbumActivity extends AppCompatActivity {
             holder.view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (postIntent != null) {
+                    if (collectionId != null) {
                         Intent intent = new Intent(AlbumActivity.this, PreviewVideoPostActivity.class);
                         intent.putExtra(AlbumActivity.GALLERY_VIDEO, mediaFiles.get(position).get(Function.KEY_PATH));
                         intent.putExtra(AlbumActivity.COLLECTION_ID, collectionId);

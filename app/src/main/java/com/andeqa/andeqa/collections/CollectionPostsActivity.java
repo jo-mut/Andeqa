@@ -10,9 +10,7 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -22,7 +20,9 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.creation.CreateCollectionPostActivity;
 import com.andeqa.andeqa.models.Collection;
-import com.andeqa.andeqa.models.CollectionPost;
+import com.andeqa.andeqa.models.Post;
+import com.andeqa.andeqa.models.QueryOptions;
+import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.settings.CollectionSettingsActivity;
 import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
@@ -39,12 +39,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -58,14 +57,20 @@ public class CollectionPostsActivity extends AppCompatActivity
     @Bind(R.id.collapsingToolbar)CollapsingToolbarLayout collapsingToolbarLayout;
     @Bind(R.id.collectionNameTextView)TextView mCollectionNameTextView;
     @Bind(R.id.collectionSettingsRelativeLayout)RelativeLayout mCollectionSettingsRelativeLayout;
+    @Bind(R.id.followersCountTextView) TextView mFollowersCountTextView;
+    @Bind(R.id.followersTextView)TextView mFollowersTextView;
+    @Bind(R.id.postsTextView)TextView mPostsTextView;
+    @Bind(R.id.postsCountTextView)TextView mPostsCountTextView;
+    @Bind(R.id.followTextView)TextView mFollowTextView;
 
     private static final String TAG = CollectionPostsActivity.class.getSimpleName();
     //firestore reference
-    private CollectionReference collectionsPosts;
+    private CollectionReference postsCollection;
     private CollectionReference collectionCollection;
     private CollectionReference usersCollection;
     private CollectionReference collectionOwnersCollection;
-    private Query collectionPostsQuery;
+    private CollectionReference collectionsRelations;
+    private Query postsQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore adapters
@@ -86,6 +91,7 @@ public class CollectionPostsActivity extends AppCompatActivity
     int spanCount = 2; //
     int spacing = 10; //
     boolean includeEdge = false;
+    private boolean processFollow = false;
     private ItemOffsetDecoration itemOffsetDecoration;
 
 
@@ -121,10 +127,10 @@ public class CollectionPostsActivity extends AppCompatActivity
             mCollectionSettingsRelativeLayout.setVisibility(View.VISIBLE);
         }
 
-        collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                .document("collections").collection(collectionId);
+        collectionsRelations = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_RELATIONS);
         collectionCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
-        collectionPostsQuery = collectionsPosts.orderBy("time", Query.Direction.ASCENDING);
+        postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+        postsQuery = postsCollection.orderBy("time", Query.Direction.ASCENDING);
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
         collectionOwnersCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_OWNERS);
 
@@ -149,6 +155,10 @@ public class CollectionPostsActivity extends AppCompatActivity
         setRecyclerView();
         setCollectionPosts();
         setCollectionsInfo();
+        followCollection();
+        getCountOfCollectionFollowers();
+        getCountOfCollectionsPosts();
+        getCountOfFollowers();
     }
 
     @Override
@@ -168,7 +178,7 @@ public class CollectionPostsActivity extends AppCompatActivity
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
 //        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.colletion_settings, menu);
+//        inflater.inflate(R.menu.collection_settings, menu);
 //        return super.onCreateOptionsMenu(menu);
 //    }
 //
@@ -201,6 +211,134 @@ public class CollectionPostsActivity extends AppCompatActivity
         ViewCompat.setNestedScrollingEnabled(mCollectionsPostsRecyclerView,false);
     }
 
+    private void getCountOfFollowers(){
+        /**show the number of peopl following collection**/
+        collectionsRelations.document("following")
+                .collection(collectionId).whereEqualTo("following_id",
+                firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot documentSnapshots,
+                                        @Nullable FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!documentSnapshots.isEmpty()){
+                            int following = documentSnapshots.size();
+                            mFollowersCountTextView.setText(following);
+                            mFollowersTextView.setText("Following");
+                        }else {
+                            mFollowersCountTextView.setText("0");
+                            mFollowersTextView.setText("Following");
+                        }
+
+                    }
+                });
+
+    }
+
+    private void getCountOfCollectionFollowers(){
+        /**show the number of peopl following collection**/
+        collectionsRelations.document("following")
+                .collection(collectionId).addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot documentSnapshots,
+                                        @Nullable FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!documentSnapshots.isEmpty()){
+                            int following = documentSnapshots.size();
+                            mFollowersCountTextView.setText(following);
+                        }else {
+                            mFollowersCountTextView.setText("0");
+                        }
+
+                    }
+                });
+    }
+
+    private void getCountOfCollectionsPosts(){
+        postsQuery.whereEqualTo("collection_id", collectionId)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            android.util.Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+
+                        if (!documentSnapshots.isEmpty()){
+                            final int count = documentSnapshots.size();
+                            mPostsCountTextView.setText(count + "");
+                            mPostsTextView.setText("Posts");
+                        }else {
+                            mPostsCountTextView.setText("0");
+                            mPostsTextView.setText("Posts");
+                        }
+
+                    }
+                });
+
+    }
+
+    private void followCollection(){
+        /**follow or un follow collection*/
+        if (mUid.equals(firebaseAuth.getCurrentUser().getUid())){
+            mFollowTextView.setVisibility(View.GONE);
+        }else {
+            mFollowTextView.setVisibility(View.VISIBLE);
+            mFollowTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    processFollow = true;
+                    collectionsRelations.document("following")
+                            .collection(firebaseAuth.getCurrentUser().getUid())
+                            .whereEqualTo("followed_id", collectionId)
+                            .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                @Override
+                                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                                    if (e != null) {
+                                        Log.w(TAG, "Listen error", e);
+                                        return;
+                                    }
+
+                                    if (processFollow){
+                                        if (documentSnapshots.isEmpty()){
+                                            final Relation following = new Relation();
+                                            following.setFollowing_id(firebaseAuth.getCurrentUser().getUid());
+                                            following.setFollowed_id(collectionId);
+                                            following.setType("followed_collection");
+                                            following.setTime(System.currentTimeMillis());
+                                            collectionsRelations.document("following").collection(firebaseAuth
+                                                    .getCurrentUser().getUid()).document(collectionId).set(following);
+
+                                            mFollowTextView.setText("FOLLOWING");
+                                            processFollow = false;
+                                        }else {
+                                            collectionsRelations.document("following").collection(firebaseAuth.getCurrentUser().getUid())
+                                                    .document(collectionId).delete();
+                                            mFollowTextView.setText("FOLLOW");
+                                            processFollow = false;
+                                        }
+                                    }
+                                }
+                            });
+                }
+            });
+        }
+
+    }
+
     private void setCollectionsInfo(){
 
         collectionCollection.document(collectionId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -227,17 +365,13 @@ public class CollectionPostsActivity extends AppCompatActivity
                             .diskCacheStrategy(DiskCacheStrategy.DATA))
                             .into(mCollectionCoverImageView);
 
-                    if (firebaseAuth.getCurrentUser().getUid().equals(userId)){
-                        mCreatePostButton.setVisibility(View.VISIBLE);
-                    }
-
                 }
             }
         });
     }
 
     private void setCollectionPosts(){
-        collectionPostsQuery.limit(TOTAL_ITEMS)
+        postsQuery.whereEqualTo("collection_id", collectionId).limit(TOTAL_ITEMS)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -253,10 +387,11 @@ public class CollectionPostsActivity extends AppCompatActivity
                             for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
                                 switch (change.getType()) {
                                     case ADDED:
-                                        CollectionPost post = change.getDocument().toObject(CollectionPost.class);
+                                        Post post = change.getDocument().toObject(Post.class);
                                         final String type = post.getType();
-                                        if (!type.equals("collection_video_post")){
+                                        if (!type.equals("collection_video_post") || !type.equals("single_video_post")){
                                             onDocumentAdded(change);
+
                                         }
                                         break;
                                     case MODIFIED:
@@ -274,15 +409,15 @@ public class CollectionPostsActivity extends AppCompatActivity
 
     }
 
+
     private void setNextCollections(){
         // Get the last visible document
         final int snapshotSize = collectionPostsAdapter.getItemCount();
         if (snapshotSize !=0){
             DocumentSnapshot lastVisible = collectionPostsAdapter.getSnapshot(snapshotSize - 1);
-
             //retrieve the first bacth of mSnapshots
-            Query nextCollectionPostsQuery = collectionsPosts.orderBy("time", Query.Direction.ASCENDING)
-                    .startAfter(lastVisible)
+            Query nextCollectionPostsQuery = postsCollection.orderBy("time", Query.Direction.ASCENDING)
+                    .whereEqualTo("collection_id", collectionId).startAfter(lastVisible)
                     .limit(TOTAL_ITEMS);
 
             nextCollectionPostsQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -293,9 +428,9 @@ public class CollectionPostsActivity extends AppCompatActivity
                         for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
                             switch (change.getType()) {
                                 case ADDED:
-                                    CollectionPost post = change.getDocument().toObject(CollectionPost.class);
+                                    Post post = change.getDocument().toObject(Post.class);
                                     final String type = post.getType();
-                                    if (!type.equals("collection_video_post")){
+                                    if (!type.equals("collection_video_post") || !type.equals("single_video_post")){
                                     onDocumentAdded(change);
 
                                     }

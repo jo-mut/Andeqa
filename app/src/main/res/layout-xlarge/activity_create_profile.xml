@@ -68,6 +68,7 @@
                         android:layout_marginLeft="150dp"
                         android:layout_marginStart="150dp"
                         android:layout_marginTop="210dp"
+                        android:tint="@color/grey_700"
                         android:id="@+id/profilePhotoImageButton"
                         android:layout_height="80dp" />
 
@@ -81,6 +82,7 @@
                         android:layout_toRightOf="@+id/profileImageView"
                         android:id="@+id/createProfileTextView"
                         android:textSize="28sp"
+                        android:textColor="@color/grey_700"
                         android:layout_margin="30dp" />
 
                 </RelativeLayout>
@@ -117,7 +119,7 @@
                         android:paddingLeft="15dp"
                         android:paddingRight="15dp"
                         android:paddingTop="30dp"
-                        android:textColor="@android:color/black"
+                        android:textColor="@color/grey_700"
                         android:textSize="28sp" />
 
                     <View
@@ -149,7 +151,7 @@
                         android:paddingLeft="15dp"
                         android:paddingRight="15dp"
                         android:paddingTop="30dp"
-                        android:textColor="@android:color/black"
+                        android:textColor="@color/grey_700"
                         android:textSize="28sp" />
 
 
@@ -171,6 +173,7 @@
                         android:layout_alignParentTop="false"
                         android:layout_centerInParent="true"
                         android:ems="10"
+                        android:textColor="@color/grey_700"
                         android:freezesText="true"
                         android:hint="Username"
                         android:inputType="textMultiLine"
@@ -218,7 +221,7 @@
                         android:layout_height="wrap_content"
                         android:paddingTop="15dp"
                         android:paddingBottom="15dp"
-                        android:textColor="@color/colorPrimary"
+                        android:textColor="@color/grey_700"
                         android:id="@+id/resendLinkTextView"
                         android:textAllCaps="true"
                         android:textStyle="normal|bold"

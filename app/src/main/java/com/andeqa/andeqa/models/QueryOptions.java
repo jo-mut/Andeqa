@@ -2,8 +2,8 @@ package com.andeqa.andeqa.models;
 
 public class QueryOptions {
     String user_id;
-    String query_option;
-    String option_id;
+    String followed_id;
+    String type;
 
     public QueryOptions() {
     }
@@ -17,19 +17,20 @@ public class QueryOptions {
         this.user_id = user_id;
     }
 
-    public String getQuery_option() {
-        return query_option;
+    public String getFollowed_id() {
+        return followed_id;
     }
 
-    public void setQuery_option(String query_option) {
-        this.query_option = query_option;
+    public void setFollowed_id(String followed_id) {
+        this.followed_id = followed_id;
     }
 
-    public String getOption_id() {
-        return option_id;
+    public String getType() {
+        return type;
     }
 
-    public void setOption_id(String option_id) {
-        this.option_id = option_id;
+    public void setType(String type) {
+        this.type = type;
     }
+
 }

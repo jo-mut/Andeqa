@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         app:layout_scrollFlags="scroll|enterAlways"
-        app:titleTextColor="@android:color/black"
+        app:titleTextColor="@color/grey_700"
         android:background="@android:color/white"
         app:titleTextAppearance="@style/toolbarTextAppearance"
         app:popupTheme="@style/AppTheme.PopupOverlay"
@@ -26,7 +26,7 @@
 
         <ImageView
             android:background="@drawable/accent_color"
-            app:srcCompat="@drawable/ic_send"
+            app:srcCompat="@drawable/ic_check"
             android:textColor="@android:color/white"
             android:layout_width="45dp"
             android:layout_height="45dp"
@@ -100,6 +100,7 @@
                             android:freezesText="true"
                             android:layout_width="match_parent"
                             android:textStyle="normal|bold"
+                            android:textColor="@color/grey_700"
                             android:layout_alignParentTop="false"
                             android:layout_alignParentLeft="false"
                             android:layout_alignParentStart="false"
@@ -118,12 +119,58 @@
                             android:layout_alignParentEnd="true"
                             android:layout_marginRight="5dp"
                             android:layout_marginTop="5dp"
+                            android:textColor="@color/grey_700"
                             android:layout_below="@+id/titleEditText"
                             android:layout_centerVertical="true" />
 
                     </RelativeLayout>
 
                 </LinearLayout>
+
+                <View
+                    android:background="@android:color/darker_gray"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.1dp"/>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/descriptionCountTextView"
+                        android:textSize="9sp"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginTop="10dp"
+                        android:textColor="@color/grey_700"
+                        android:layout_below="@+id/descriptionEditText"/>
+
+                    <EditText
+                        android:layout_height="wrap_content"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:ems="10"
+                        android:background="@drawable/edit_text_background"
+                        android:id="@+id/descriptionEditText"
+                        android:hint="Write a description note (optional)"
+                        android:textSize="16sp"
+                        android:freezesText="true"
+                        android:layout_width="match_parent"
+                        android:paddingTop="20dp"
+                        android:paddingBottom="20dp"
+                        android:paddingLeft="15dp"
+                        android:paddingRight="10dp"
+                        android:paddingStart="15dp"
+                        android:paddingEnd="10dp"
+                        android:textColor="@color/grey_700"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true" />
+
+                </RelativeLayout>
 
                 <View
                     android:background="@android:color/darker_gray"
@@ -149,6 +196,7 @@
                         android:layout_height="50dp" />
 
                     <TextView
+                        android:textColor="@color/grey_700"
                         android:textSize="12sp"
                         android:id="@+id/progressTextView"
                         android:layout_centerInParent="true"
@@ -157,50 +205,6 @@
                         android:layout_height="wrap_content" />
 
                 </RelativeLayout>
-
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/descriptionCountTextView"
-                        android:textSize="9sp"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginRight="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_below="@+id/descriptionEditText"/>
-
-                    <EditText
-                        android:layout_height="wrap_content"
-                        android:inputType="textMultiLine|textCapSentences"
-                        android:ems="10"
-                        android:background="@drawable/edit_text_background"
-                        android:id="@+id/descriptionEditText"
-                        android:hint="Write a description note (optional)"
-                        android:textSize="16sp"
-                        android:freezesText="true"
-                        android:layout_width="match_parent"
-                        android:paddingTop="20dp"
-                        android:paddingBottom="20dp"
-                        android:paddingLeft="15dp"
-                        android:paddingRight="10dp"
-                        android:paddingStart="15dp"
-                        android:paddingEnd="10dp"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true" />
-
-                </RelativeLayout>
-
-                <View
-                    android:background="@android:color/darker_gray"
-                    android:layout_width="match_parent"
-                    android:layout_height="0.1dp"/>
 
 
                 <RelativeLayout
@@ -218,6 +222,7 @@
                         app:srcCompat="@drawable/ic_plus" />
 
                     <TextView
+                        android:textColor="@color/grey_700"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/addPostTextView"

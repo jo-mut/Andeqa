@@ -1,30 +1,30 @@
 package com.andeqa.andeqa.home;
 
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.creation.ChooseCreationActivity;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.QueryOptions;
 import com.andeqa.andeqa.models.Relation;
-import com.andeqa.andeqa.people.FollowFragment;
 import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -41,27 +41,20 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-import static android.media.CamcorderProfile.get;
-
 /**
  * A simple {@link Fragment} subclass.
  */
 public class HomeFragment extends Fragment{
-    @Bind(R.id.postsRecyclerView)RecyclerView postsRecyclerView;
+    @Bind(R.id.homeRecyclerView)RecyclerView homeRecyclerView;
     @Bind(R.id.placeHolderRelativeLayout)RelativeLayout mPlaceHolderRelativeLayout;
-    @Bind(R.id.progressBarRelativeLayout)RelativeLayout mProgressBarRelativeLayout;
-    @Bind(R.id.peopleRelativeLayout)RelativeLayout peopleRelativeView;
-    @Bind(R.id.postRelativeLayout)RelativeLayout postRelativeLayout;
-
     private static final String TAG = HomeFragment.class.getSimpleName();
     //firestore reference
     private CollectionReference postsCollection;
     private CollectionReference followingCollection;
+    private CollectionReference collectionsPosts;
     private CollectionReference queryOptionsCollections;
-    private Query randomPostsQuery;
     private Query nextRandomQuery;
     private CollectionReference usersReference;
-
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //adapters
@@ -69,14 +62,17 @@ public class HomeFragment extends Fragment{
     private StaggeredGridLayoutManager layoutManager;
     private int TOTAL_ITEMS = 10;
     private List<String> postsIds = new ArrayList<>();
-    private List<DocumentSnapshot> posts = new ArrayList<>();
-    private ArrayList<Parcelable> snapshots = new ArrayList<>();
+    private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
+    private List<Post> postOfFollowingCollections = new ArrayList<>();
+    private List<Post> postOfFollowingPeople = new ArrayList<>();
     int spanCount = 2; // 3 columns
     int spacing = 5; // 50px
     boolean includeEdge = true;
+    private static final String EXTRA_USER_UID = "uid";
     private ItemOffsetDecoration itemOffsetDecoration;
     private FragmentManager fragmentManager;
     private boolean processPosts =  false;
+    private boolean processOptions = false;
 
 
 
@@ -96,13 +92,13 @@ public class HomeFragment extends Fragment{
             //firestore
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            randomPostsQuery = postsCollection;
             followingCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE);
             queryOptionsCollections = FirebaseFirestore.getInstance().collection(Constants.QUERY_OPTIONS);
-            postsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
+            homeRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
                 @Override
                 public void onLoadMore() {
-                    setNextCollections();
+                  getNextPosts();
                 }
             });
 
@@ -113,16 +109,46 @@ public class HomeFragment extends Fragment{
 
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        loadData();
     }
+
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.home_menu, menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_create){
+            Intent intent =  new Intent(getActivity(), ChooseCreationActivity.class);
+            startActivity(intent);
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 
 
     @Override
     public void onStart() {
         super.onStart();
-        postsRecyclerView.addItemDecoration(itemOffsetDecoration);
+        documentSnapshots.clear();
+        setRecyclerView();
+        getFirstPosts();
+        homeRecyclerView.addItemDecoration(itemOffsetDecoration);
 
     }
 
@@ -151,45 +177,160 @@ public class HomeFragment extends Fragment{
     @Override
     public void onStop() {
         super.onStop();
-        postsRecyclerView.removeItemDecoration(itemOffsetDecoration);
+        homeRecyclerView.removeItemDecoration(itemOffsetDecoration);
     }
 
-    public void loadData(){
-        posts.clear();
-        setRecyclerView();
-        setCollections();
-    }
 
     private void setRecyclerView(){
         postsAdapter = new PostsAdapter(getActivity());
-        postsRecyclerView.setAdapter(postsAdapter);
-        postsRecyclerView.setHasFixedSize(false);
+        postsAdapter.setHasStableIds(true);
+        homeRecyclerView.setHasFixedSize(false);
+        homeRecyclerView.setAdapter(postsAdapter);
         layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
         itemOffsetDecoration = new ItemOffsetDecoration(getContext(), R.dimen.item_off_set);
-        postsRecyclerView.setLayoutManager(layoutManager);
-        ViewCompat.setNestedScrollingEnabled(postsRecyclerView,false);
+        homeRecyclerView.setLayoutManager(layoutManager);
 
     }
 
-    private void showUsersToFollow(){
-        try {
-            FragmentManager fragmentManager = getChildFragmentManager();
-            FollowFragment followFragment = new FollowFragment();
-            FragmentTransaction ft = fragmentManager.beginTransaction();
-            ft.replace(R.id.follow_container, followFragment);
-            ft.commit();
-        }catch (Exception e1){
-
-        }
-    }
-
-    private void setCollections(){
-        processPosts = true;
+    private void getQueryOptionsPosts(){
         queryOptionsCollections.document("options")
                 .collection(firebaseAuth.getCurrentUser().getUid())
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@javax.annotation.Nullable QuerySnapshot documentSnapshots,
+                                @javax.annotation.Nullable FirebaseFirestoreException e) {
+
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (!documentSnapshots.isEmpty()){
+                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                        QueryOptions queryOptions = change.getDocument().toObject(QueryOptions.class);
+                        final String userId = queryOptions.getUser_id();
+                        final String followingId = queryOptions.getFollowed_id();
+                        final String type = queryOptions.getType();
+
+                        postsCollection.orderBy("time", Query.Direction.DESCENDING)
+                                .whereEqualTo("user_id", userId)
+                                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onEvent(@Nullable QuerySnapshot documentSnapshots,
+                                                        @Nullable FirebaseFirestoreException e) {
+
+                                        if (e != null) {
+                                            Log.w(TAG, "Listen error", e);
+                                            return;
+                                        }
+
+                                        if (!documentSnapshots.isEmpty()) {
+                                            for (final DocumentChange documentChange : documentSnapshots.getDocumentChanges()) {
+                                                switch (documentChange.getType()) {
+                                                    case ADDED:
+                                                        onDocumentAdded(documentChange);
+                                                        break;
+                                                    case MODIFIED:
+                                                        onDocumentModified(documentChange);
+                                                        break;
+                                                    case REMOVED:
+                                                        onDocumentRemoved(documentChange);
+                                                        break;
+                                                }
+                                            }
+
+                                        }
+                                    }
+                                });
+
+                    }
+                }
+
+            }
+        });
+    }
+
+
+    private void getFirstPosts(){
+        postsCollection.orderBy("time", Query.Direction.DESCENDING)
+                .limit(TOTAL_ITEMS)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
-                    public void onEvent(@javax.annotation.Nullable QuerySnapshot documentSnapshots,
+                    public void onEvent(@Nullable QuerySnapshot documentSnapshots,
+                                        @Nullable FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!documentSnapshots.isEmpty()) {
+                            for (final DocumentChange documentChange : documentSnapshots.getDocumentChanges()) {
+                                switch (documentChange.getType()) {
+                                    case ADDED:
+                                        onDocumentAdded(documentChange);
+                                        break;
+                                    case MODIFIED:
+                                        onDocumentModified(documentChange);
+                                        break;
+                                    case REMOVED:
+                                        onDocumentRemoved(documentChange);
+                                        break;
+                                }
+                            }
+
+                        }
+                    }
+                });
+    }
+
+
+    private void getNextPosts(){
+        final int snapshotSize = postsAdapter.getItemCount();
+        if (snapshotSize != 0){
+            final DocumentSnapshot lastVisible = postsAdapter.getSnapshot(snapshotSize - 1);
+            postsCollection.orderBy("time", Query.Direction.DESCENDING)
+                    .startAfter(lastVisible).limit(TOTAL_ITEMS)
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable QuerySnapshot documentSnapshots,
+                                            @Nullable FirebaseFirestoreException e) {
+
+                            if (e != null) {
+                                Log.w(TAG, "Listen error", e);
+                                return;
+                            }
+
+                            if (!documentSnapshots.isEmpty()) {
+                                for (final DocumentChange documentChange : documentSnapshots.getDocumentChanges()) {
+                                    switch (documentChange.getType()) {
+                                        case ADDED:
+                                            onDocumentAdded(documentChange);
+                                            break;
+                                        case MODIFIED:
+                                            onDocumentModified(documentChange);
+                                            break;
+                                        case REMOVED:
+                                            onDocumentRemoved(documentChange);
+                                            break;
+                                    }
+                                }
+
+                            }
+                        }
+                    });
+        }
+
+    }
+
+    private void getPostsOfFollowingPoeple(){
+        followingCollection.document("following")
+                .collection(firebaseAuth.getCurrentUser().getUid())
+                .whereEqualTo("type", "following_user")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@javax.annotation.Nullable QuerySnapshot snapshots,
                                         @javax.annotation.Nullable FirebaseFirestoreException e) {
 
                         if (e != null) {
@@ -197,20 +338,72 @@ public class HomeFragment extends Fragment{
                             return;
                         }
 
+                        if (!snapshots.isEmpty()){
+                            for (final DocumentChange change : snapshots.getDocumentChanges()) {
+                                Relation relation = change.getDocument().toObject(Relation.class);
+                                final String userId = relation.getFollowed_id();
+                                postsCollection.orderBy("time", Query.Direction.DESCENDING)
+                                        .whereEqualTo("user_id", userId).limit(TOTAL_ITEMS)
+                                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onEvent(@Nullable QuerySnapshot documentSnapshots,
+                                                        @Nullable FirebaseFirestoreException e) {
 
-                        if (processPosts){
-                            if (!documentSnapshots.isEmpty()){
-                                for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                                    QueryOptions relation = change.getDocument().toObject(QueryOptions.class);
-                                    final String collectionId = relation.getQuery_option();
-//                                    final String queryOptions = collectionId + " " + firebaseAuth.getCurrentUser().getUid();
-//                                    final String [] words = queryOptions.split(" ");
-//                                    for (String word : words){
-//
-//                                    }
+                                        if (e != null) {
+                                            Log.w(TAG, "Listen error", e);
+                                            return;
+                                        }
 
-                                    randomPostsQuery.orderBy("time", Query.Direction.DESCENDING)
-                                            .whereEqualTo("collection_id", collectionId).limit(TOTAL_ITEMS)
+                                        if (!documentSnapshots.isEmpty()) {
+                                            for (final DocumentChange documentChange : documentSnapshots.getDocumentChanges()) {
+                                                switch (documentChange.getType()) {
+                                                    case ADDED:
+                                                        onDocumentAdded(documentChange);
+                                                        break;
+                                                    case MODIFIED:
+                                                        onDocumentModified(documentChange);
+                                                        break;
+                                                    case REMOVED:
+                                                        onDocumentRemoved(documentChange);
+                                                        break;
+                                                }
+                                            }
+
+                                        }
+                                    }
+                                });
+                            }
+                        }
+
+                    }
+                });
+    }
+
+    private void getNextPostsOfFollowingPoeple(){
+        final int snapshotSize = postsAdapter.getItemCount();
+        if (snapshotSize != 0){
+            final DocumentSnapshot lastVisible = postsAdapter.getSnapshot(snapshotSize - 1);
+            followingCollection.document("following")
+                    .collection(firebaseAuth.getCurrentUser().getUid())
+                    .whereEqualTo("type", "following_user")
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                        @Override
+                        public void onEvent(@javax.annotation.Nullable QuerySnapshot snapshots,
+                                            @javax.annotation.Nullable FirebaseFirestoreException e) {
+
+                            if (e != null) {
+                                Log.w(TAG, "Listen error", e);
+                                return;
+                            }
+
+                            if (!snapshots.isEmpty()){
+                                for (final DocumentChange change : snapshots.getDocumentChanges()) {
+                                    Relation relation = change.getDocument().toObject(Relation.class);
+                                    final String userId = relation.getFollowed_id();
+                                    Log.d("next user id", userId);
+                                    postsCollection.orderBy("time", Query.Direction.DESCENDING)
+                                            .whereEqualTo("user_id", userId)
+                                            .startAfter(lastVisible).limit(TOTAL_ITEMS)
                                             .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                                 @Override
                                                 public void onEvent(@Nullable QuerySnapshot documentSnapshots,
@@ -222,133 +415,53 @@ public class HomeFragment extends Fragment{
                                                     }
 
                                                     if (!documentSnapshots.isEmpty()) {
-                                                        for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                                                            switch (change.getType()) {
+                                                        for (final DocumentChange documentChange : documentSnapshots.getDocumentChanges()) {
+                                                            switch (documentChange.getType()) {
                                                                 case ADDED:
-                                                                    Post post = change.getDocument().toObject(Post.class);
-                                                                    String type = post.getType();
-                                                                    if (type.equals("single_video_post") || type.equals("collection_video_post")){
-                                                                        //do not add to the adapter
-                                                                    }else {
-                                                                        onDocumentAdded(change);
-                                                                    }
+                                                                    onDocumentAdded(documentChange);
                                                                     break;
                                                                 case MODIFIED:
-                                                                    onDocumentModified(change);
+                                                                    onDocumentModified(documentChange);
                                                                     break;
                                                                 case REMOVED:
-                                                                    onDocumentRemoved(change);
+                                                                    onDocumentRemoved(documentChange);
                                                                     break;
                                                             }
                                                         }
+
                                                     }
                                                 }
                                             });
-
-                                    processPosts = false;
                                 }
                             }
-                        }
 
-                    }
-                });
-
-    }
-
-    private void setNextCollections(){
-        processPosts = false;
-        // Get the last visible document
-        final int snapshotSize = postsAdapter.getItemCount();
-        if (snapshotSize != 0){
-            final DocumentSnapshot lastVisible = postsAdapter.getSnapshot(snapshotSize - 1);
-            queryOptionsCollections.document("options")
-                    .collection(firebaseAuth.getCurrentUser().getUid())
-                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                        @Override
-                        public void onEvent(@javax.annotation.Nullable QuerySnapshot documentSnapshots,
-                                            @javax.annotation.Nullable FirebaseFirestoreException e) {
-
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
-
-                            if (processPosts){
-                                if (!documentSnapshots.isEmpty()){
-                                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                                        QueryOptions relation = change.getDocument().toObject(QueryOptions.class);
-                                        final String collectionId = relation.getQuery_option();
-
-//                                        final String queryOptions = userId + " " + firebaseAuth.getCurrentUser().getUid();
-//                                        final String [] words = queryOptions.split("");
-//                                        for (String word : words){
-//
-//                                        }
-
-                                        Query nextSellingQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
-                                                .whereEqualTo("collection_id", collectionId).startAfter(lastVisible).limit(TOTAL_ITEMS);
-
-                                        nextSellingQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                            @Override
-                                            public void onSuccess(QuerySnapshot documentSnapshots) {
-                                                if (!documentSnapshots.isEmpty()){
-                                                    //retrieve the first bacth of documentSnapshots
-                                                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                                                        switch (change.getType()) {
-                                                            case ADDED:
-                                                                Post post = change.getDocument().toObject(Post.class);
-                                                                String type = post.getType();
-                                                                if (type.equals("single_video_post") || type.equals("collection_video_post")){
-                                                                    //do not add to the adapter
-                                                                }else {
-                                                                    onDocumentAdded(change);
-                                                                }
-                                                                break;
-                                                            case MODIFIED:
-                                                                onDocumentModified(change);
-                                                                break;
-                                                            case REMOVED:
-                                                                onDocumentRemoved(change);
-                                                                break;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        });
-                                    }
-
-                                }
-
-                                processPosts = false;
-
-                            }
                         }
                     });
-
         }
+
     }
 
 
     protected void onDocumentAdded(DocumentChange change) {
         postsIds.add(change.getDocument().getId());
-        posts.add(change.getDocument());
-        postsAdapter.setRandomPosts(posts);
-        postsAdapter.notifyItemInserted(posts.size() -1);
+        documentSnapshots.add(change.getDocument());
+        postsAdapter.notifyItemInserted(documentSnapshots.size() - 1);
         postsAdapter.getItemCount();
-
+        postsAdapter.setRandomPosts(documentSnapshots);
+        Log.d("document snapshots", documentSnapshots.size() + "");
     }
 
     protected void onDocumentModified(DocumentChange change) {
         try {
             if (change.getOldIndex() == change.getNewIndex()) {
                 // Item changed but remained in same position
-                posts.set(change.getOldIndex(), change.getDocument());
+                documentSnapshots.set(change.getOldIndex(), change.getDocument());
                 postsAdapter.notifyItemChanged(change.getOldIndex());
             } else {
                 // Item changed and changed position
-                posts.remove(change.getOldIndex());
-                posts.add(change.getNewIndex(), change.getDocument());
-                postsAdapter.notifyItemRangeChanged(0, posts.size());
+                documentSnapshots.remove(change.getOldIndex());
+                documentSnapshots.add(change.getNewIndex(), change.getDocument());
+                postsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -357,9 +470,9 @@ public class HomeFragment extends Fragment{
 
     protected void onDocumentRemoved(DocumentChange change) {
        try {
-           posts.remove(change.getOldIndex());
+           documentSnapshots.remove(change.getOldIndex());
            postsAdapter.notifyItemRemoved(change.getOldIndex());
-           postsAdapter.notifyItemRangeChanged(0, posts.size());
+           postsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
        }catch (Exception e) {
            e.printStackTrace();
        }

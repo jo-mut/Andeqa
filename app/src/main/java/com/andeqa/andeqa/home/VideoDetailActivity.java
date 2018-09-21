@@ -28,8 +28,8 @@ import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Like;
+import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Timeline;
-import com.andeqa.andeqa.models.VideoPost;
 import com.andeqa.andeqa.player.Player;
 import com.andeqa.andeqa.settings.PostSettingsFragment;
 import com.bumptech.glide.Glide;
@@ -78,8 +78,6 @@ public class VideoDetailActivity extends AppCompatActivity implements View.OnCli
     @Bind(R.id.commentsCountTextView)TextView mCommentCountTextView;
     @Bind(R.id.creditsTextView)TextView mCreditsTextView;
     @Bind(R.id.settingsRelativeLayout)RelativeLayout mSettingsRelativeLayout;
-    @Bind(R.id.userLikesRelativeLayout)RelativeLayout mUserLikesRelativeLayout;
-    @Bind(R.id.userCountTextView)TextView mUserCountTextView;
     @Bind(R.id.creditsLinearLayout)LinearLayout mCreditLinearLayout;
 
     //firestore reference
@@ -152,7 +150,6 @@ public class VideoDetailActivity extends AppCompatActivity implements View.OnCli
         //Initialise click listners
         mCommentImageView.setOnClickListener(this);
         mSettingsRelativeLayout.setOnClickListener(this);
-        mUserLikesRelativeLayout.setOnClickListener(this);
 
         mPostId = getIntent().getStringExtra(EXTRA_POST_ID);
         mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
@@ -271,7 +268,7 @@ public class VideoDetailActivity extends AppCompatActivity implements View.OnCli
 
 
         //get the number of commments in a cingle
-        commentsCountQuery.orderBy("comment_id").whereEqualTo("push_id", mPostId)
+        commentsCountQuery.orderBy("comment_id").whereEqualTo("post_id", mPostId)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -300,13 +297,13 @@ public class VideoDetailActivity extends AppCompatActivity implements View.OnCli
                 }
 
                 if (documentSnapshot.exists()){
-                    final VideoPost videoPost = documentSnapshot.toObject(VideoPost.class);
-                    final String video = videoPost.getVideo();
-                    final String uid = videoPost.getUser_id();
-                    final String title = videoPost.getTitle();
+                    final Post post = documentSnapshot.toObject(Post.class);
+                    final String video = post.getUrl();
+                    final String uid = post.getUser_id();
+                    final String title = post.getTitle();
 
                     player = new Player(getApplicationContext(), postVideoView);
-                    player.addMedia(videoPost.getVideo());
+                    player.addMedia(post.getUrl());
                     postVideoView.getPlayer().setPlayWhenReady(true);
 
                     //set the title of the single
@@ -317,30 +314,30 @@ public class VideoDetailActivity extends AppCompatActivity implements View.OnCli
                         titleTextView.setText(title);
                     }
 
-                    if (!TextUtils.isEmpty(videoPost.getDescription())){
-                        final String [] strings = videoPost.getDescription().split("");
+                    if (!TextUtils.isEmpty(post.getDescription())){
+                        final String [] strings = post.getDescription().split("");
 
                         final int size = strings.length;
 
                         if (size <= 120){
                             mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
-                            mDescriptionTextView.setText(videoPost.getDescription());
+                            mDescriptionTextView.setText(post.getDescription());
                         }else{
 
                             mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
                             final String boldMore = "...";
                             final String boldLess = "";
-                            String normalText = videoPost.getDescription().substring(0, 119);
+                            String normalText = post.getDescription().substring(0, 119);
                             mDescriptionTextView.setText(normalText + boldMore);
                             mDescriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     if (showOnClick){
-                                        String normalText = videoPost.getDescription();
+                                        String normalText = post.getDescription();
                                         mDescriptionTextView.setText(normalText + boldLess);
                                         showOnClick = false;
                                     }else {
-                                        String normalText = videoPost.getDescription().substring(0, 119);
+                                        String normalText = post.getDescription().substring(0, 119);
                                         mDescriptionTextView.setText(normalText + boldMore);
                                         showOnClick = true;
                                     }
@@ -382,32 +379,6 @@ public class VideoDetailActivity extends AppCompatActivity implements View.OnCli
 
     }
 
-
-    public Uri getLocalBitmapUri(ImageView imageView) {
-        // Extract Bitmap from ImageView drawable
-        Drawable drawable = imageView.getDrawable();
-        Bitmap bmp = null;
-        if (drawable instanceof BitmapDrawable){
-            bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-        } else {
-            return null;
-        }
-        // Store image to default external storage directory
-        Uri bmpUri = null;
-        try {
-
-            File file =  new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
-            FileOutputStream out = new FileOutputStream(file);
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
-            out.close();
-            // wrap File object into a content provider. NOTE: authority here should match authority in manifest declaration
-            bmpUri = FileProvider.getUriForFile(VideoDetailActivity.this, "com.andeqa.andeqa", file);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return bmpUri;
-    }
 
     @Override
     public void onClick(View v){

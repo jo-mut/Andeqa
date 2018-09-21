@@ -31,8 +31,6 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.camera.PicturesActivity;
 import com.andeqa.andeqa.collections.CollectionPostsActivity;
 import com.andeqa.andeqa.models.Collection;
-import com.andeqa.andeqa.models.CollectionPost;
-import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
@@ -43,9 +41,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.dynamiclinks.DynamicLink;
-import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
-import com.google.firebase.dynamiclinks.ShortDynamicLink;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -53,12 +48,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Date;
-import java.util.Random;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -70,7 +63,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
     @Bind(R.id.noteCountTextView)TextView mNoteCountTextView;
     @Bind(R.id.nameCountTextView)TextView mNameCountTextView;
     @Bind(R.id.collectionCoverImageView)ProportionalImageView mCollectionCoverImageView;
-    @Bind(R.id.collectionRelativeLayout)RelativeLayout mCollectionRelativeLayout;
+    @Bind(R.id.collectionLinearLayout)RelativeLayout mCollectionRelativeLayout;
     @Bind(R.id.addRelativeLayout)RelativeLayout mAddRelativeLayout;
 
 

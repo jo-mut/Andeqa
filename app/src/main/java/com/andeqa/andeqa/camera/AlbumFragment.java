@@ -47,7 +47,6 @@ public class AlbumFragment extends Fragment {
 
     private static final String GALLERY_PATH ="gallery image";
     private static final String POST_TAG = CreateCollectionPostActivity.class.getSimpleName();
-    private static final String COLLECTION_TAG = CreateCollectionActivity.class.getSimpleName();
     private static final String COLLECTION_SETTINGS_COVER = CollectionSettingsActivity.class.getSimpleName();
     private static final String PROFILE_PHOTO_PATH = "profile photo path";
     private static final String PROFILE_COVER_PATH = "profile cover path";
@@ -58,7 +57,6 @@ public class AlbumFragment extends Fragment {
     private String mUid;
     private String mRoomId;
     private String postIntent;
-    private String collectionIntent;
     private String collectionId;
     private String profileCoverIntent;
     private String profilePhotoIntent;
@@ -83,7 +81,6 @@ public class AlbumFragment extends Fragment {
 
         postIntent = getActivity().getIntent().getStringExtra(POST_TAG);
         collectionId = getActivity().getIntent().getStringExtra(COLLECTION_ID);
-        collectionIntent = getActivity().getIntent().getStringExtra(COLLECTION_TAG);
         collectionSettingsIntent  = getActivity().getIntent().getStringExtra(COLLECTION_SETTINGS_COVER);
         profileCoverIntent = getActivity().getIntent().getStringExtra(PROFILE_COVER_PATH);
         profilePhotoIntent = getActivity().getIntent().getStringExtra(PROFILE_PHOTO_PATH);
@@ -273,10 +270,10 @@ public class AlbumFragment extends Fragment {
                         intent.putExtra("name", albumList.get(position).get(Function.KEY_ALBUM));
                         intent.putExtra(AlbumFragment.COLLECTION_ID, collectionId);
                         intent.putExtra(AlbumFragment.POST_TAG, CreateCollectionPostActivity.class.getSimpleName());
-                    } else if (collectionIntent != null) {
+                    } else if (collectionId != null) {
                         Intent intent = new Intent(getActivity(), AlbumActivity.class);
                         intent.putExtra("name", albumList.get(position).get(Function.KEY_ALBUM));
-                        intent.putExtra(AlbumFragment.COLLECTION_TAG, CreateCollectionActivity.class.getSimpleName());
+                        intent.putExtra(AlbumFragment.COLLECTION_ID, CreateCollectionActivity.class.getSimpleName());
                         startActivity(intent);
                     } else if (collectionSettingsIntent != null) {
                         Intent intent = new Intent(getActivity(), AlbumActivity.class);
@@ -330,12 +327,11 @@ public class AlbumFragment extends Fragment {
                     if (postIntent != null) {
                         Intent intent = new Intent(getActivity(), AlbumActivity.class);
                         intent.putExtra("name", albumList.get(position).get(Function.KEY_ALBUM));
-                        intent.putExtra(AlbumFragment.COLLECTION_ID, collectionId);
                         startActivity(intent);
-                    } else if (collectionIntent != null) {
+                    } else if (collectionId != null) {
                         Intent intent = new Intent(getActivity(), AlbumActivity.class);
                         intent.putExtra("name", albumList.get(position).get(Function.KEY_ALBUM));
-                        intent.putExtra(AlbumFragment.COLLECTION_TAG, CreateCollectionActivity.class.getSimpleName());
+                        intent.putExtra(AlbumFragment.COLLECTION_ID, CreateCollectionActivity.class.getSimpleName());
                         startActivity(intent);
                     } else if (collectionSettingsIntent != null) {
                         Intent intent = new Intent(getActivity(), AlbumActivity.class);

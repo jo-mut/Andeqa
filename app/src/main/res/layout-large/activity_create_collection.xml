@@ -13,7 +13,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="84dp"
-        app:titleTextColor="@android:color/black"
+        app:titleTextColor="@color/grey_700"
         app:layout_scrollFlags="scroll|enterAlways"
         app:titleTextAppearance="@style/toolbarTextAppearance"
         app:popupTheme="@style/AppTheme.PopupOverlay">
@@ -37,6 +37,7 @@
         android:id="@+id/collectionNameRelativeLayout">
 
         <EditText
+            android:textColor="@color/grey_700"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine|textCapWords"
@@ -56,6 +57,7 @@
             android:background="@drawable/edit_text_background" />
 
         <TextView
+            android:textColor="@color/grey_700"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/nameCountTextView"
@@ -78,6 +80,7 @@
         android:id="@+id/collectionNoteRelativeLayout">
 
         <EditText
+            android:textColor="@color/grey_700"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
@@ -97,6 +100,7 @@
             android:textSize="24sp" />
 
         <TextView
+            android:textColor="@color/grey_700"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/noteCountTextView"
@@ -115,7 +119,7 @@
         android:layout_height="0.1dp"/>
 
     <RelativeLayout
-        android:id="@+id/collectionRelativeLayout"
+        android:id="@+id/collectionLinearLayout"
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -146,6 +150,7 @@
             android:scaleType="centerCrop" />
 
         <TextView
+            android:textColor="@color/grey_700"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/addCollectionTextView"

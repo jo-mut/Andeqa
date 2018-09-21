@@ -1,19 +1,35 @@
 package com.andeqa.andeqa.explore;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.collections.CollectionPostsAdapter;
+import com.andeqa.andeqa.creation.ChooseCreationActivity;
+import com.andeqa.andeqa.home.HomeFragment;
+import com.andeqa.andeqa.home.PostsAdapter;
+import com.andeqa.andeqa.models.Andeqan;
+import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
+import com.andeqa.andeqa.profile.ProfileActivity;
+import com.andeqa.andeqa.search.SearchActivity;
 import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -36,7 +52,7 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ExploreFragment extends Fragment {
+public class ExploreFragment extends Fragment{
     @Bind(R.id.bestPostsRecyclerView)RecyclerView exploreRecyclerView;
     private StaggeredGridLayoutManager layoutManager;
     //firestore
@@ -44,21 +60,17 @@ public class ExploreFragment extends Fragment {
     private CollectionReference exploreQuery;
     //adapters
     private ExplorePostAdapter explorePostAdapter;
+    private CollectionPostsAdapter collectionPostsAdapter;
     private FirebaseAuth firebaseAuth;
     private int TOTAL_ITEMS = 20;
     private DocumentSnapshot lastVisible;
+    private SearchView searchView;
     private List<String> snapshotsIds = new ArrayList<>();
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
     private ItemOffsetDecoration itemOffsetDecoration;
     private static final String TAG = ExploreFragment.class.getSimpleName();
-
-    public static ExploreFragment newInstance(int sectionNumber) {
-        ExploreFragment fragment = new ExploreFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
+    private static final String EXTRA_USER_UID = "uid";
+    private boolean processPosts = false;
 
     public ExploreFragment() {
         // Required empty public constructor
@@ -87,17 +99,45 @@ public class ExploreFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        loadData();
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.explore_menu, menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_create){
+            Intent intent =  new Intent(getActivity(), ChooseCreationActivity.class);
+            startActivity(intent);
+        }
+
+
+        return super.onOptionsItemSelected(item);
+    }
+
 
     @Override
     public void onStart() {
         super.onStart();
+        documentSnapshots.clear();
+        setRecyclerView();
         exploreRecyclerView.addItemDecoration(itemOffsetDecoration);
+        setCollections();
 
     }
 
@@ -128,24 +168,20 @@ public class ExploreFragment extends Fragment {
     }
 
 
-    private void loadData(){
-        documentSnapshots.clear();
-        setRecyclerView();
-        setPosts();
-    }
-
     private void setRecyclerView(){
         explorePostAdapter = new ExplorePostAdapter(getActivity());
-        exploreRecyclerView.setAdapter(explorePostAdapter);
+        explorePostAdapter.setHasStableIds(true);
         exploreRecyclerView.setHasFixedSize(false);
+        exploreRecyclerView.setAdapter(explorePostAdapter);
         layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         itemOffsetDecoration = new ItemOffsetDecoration(getContext(), R.dimen.item_off_set);
         exploreRecyclerView.setLayoutManager(layoutManager);
+
     }
 
-    private void setPosts(){
-        exploreQuery.orderBy("random_number", Query.Direction.DESCENDING).limit(TOTAL_ITEMS)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+    private void setCollections(){
+        exploreQuery.orderBy("random_number", Query.Direction.DESCENDING)
+                .limit(TOTAL_ITEMS).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot documentSnapshots,
                                 @Nullable FirebaseFirestoreException e) {
@@ -157,11 +193,11 @@ public class ExploreFragment extends Fragment {
 
                 if (!documentSnapshots.isEmpty()) {
                     for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                        Post post = change.getDocument().toObject(Post.class);
+                        String type = post.getType();
+                        String userId = post.getUser_id();
                         switch (change.getType()) {
                             case ADDED:
-                                Post post = change.getDocument().toObject(Post.class);
-                                String type = post.getType();
-                                String userId = post.getUser_id();
                                 if (type.equals("single_video_post") || type.equals("collection_video_post") ||
                                         userId.equals(firebaseAuth.getCurrentUser().getUid())){
                                     //do not add to the adapter
@@ -177,7 +213,6 @@ public class ExploreFragment extends Fragment {
                                 break;
                         }
                     }
-
                 }
             }
         });
@@ -186,7 +221,7 @@ public class ExploreFragment extends Fragment {
     private void setNextPosts(){
         // Get the last visible document
         final int snapshotSize = explorePostAdapter.getItemCount();
-        if (snapshotSize != 0){
+        if (snapshotSize > 0){
             DocumentSnapshot lastVisible = explorePostAdapter.getSnapshot(snapshotSize - 1);
             //retrieve the first bacth of posts
             Query nextRandomQuery = postsCollection.orderBy("random_number", Query.Direction.DESCENDING)
@@ -200,11 +235,11 @@ public class ExploreFragment extends Fragment {
                     if (!documentSnapshots.isEmpty()){
                         //retrieve the first bacth of posts
                         for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                            Post post = change.getDocument().toObject(Post.class);
+                            String type = post.getType();
+                            String userId = post.getUser_id();
                             switch (change.getType()) {
                                 case ADDED:
-                                    Post post = change.getDocument().toObject(Post.class);
-                                    String type = post.getType();
-                                    String userId = post.getUser_id();
                                     if (type.equals("single_video_post") || type.equals("collection_video_post") ||
                                             userId.equals(firebaseAuth.getCurrentUser().getUid())){
                                         //do not add to the adapter
@@ -221,7 +256,6 @@ public class ExploreFragment extends Fragment {
                             }
                         }
                     }
-
                 }
             });
 
@@ -231,7 +265,7 @@ public class ExploreFragment extends Fragment {
     protected void onDocumentAdded(DocumentChange change) {
         snapshotsIds.add(change.getDocument().getId());
         documentSnapshots.add(change.getDocument());
-        explorePostAdapter.setRandomPosts(documentSnapshots);
+        explorePostAdapter.setExplorePosts(documentSnapshots);
         explorePostAdapter.notifyItemInserted(documentSnapshots.size() -1);
         explorePostAdapter.getItemCount();
 

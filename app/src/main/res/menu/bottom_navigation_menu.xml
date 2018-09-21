@@ -11,14 +11,6 @@
     </item>
 
     <item
-        android:id="@+id/action_explore"
-        android:icon="@drawable/ic_explore"
-        app:showAsAction="ifRoom"
-        android:enabled="true"
-        android:title="Explore">
-    </item>
-
-    <item
         android:id="@+id/action_collection"
         android:icon="@drawable/ic_collection"
         app:showAsAction="ifRoom"
@@ -31,7 +23,15 @@
         android:icon="@drawable/timeline_notifications"
         app:showAsAction="ifRoom"
         android:enabled="true"
-        android:title="Timeline">
+        android:title="Activities">
+    </item>
+
+    <item
+        android:id="@+id/action_chat"
+        android:icon="@drawable/message_notifications"
+        app:showAsAction="ifRoom"
+        android:enabled="true"
+        android:title="Chats">
     </item>
 
 </menu>

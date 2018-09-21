@@ -90,6 +90,7 @@
                 </ViewAnimator>
 
                 <ImageButton
+                    android:tint="@color/grey_1000"
                     android:id="@+id/profilePhotoImageButton"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
@@ -99,6 +100,7 @@
                     android:src="@drawable/ic_menu_camera" />
 
                 <TextView
+                    android:visibility="gone"
                     android:id="@+id/updateCoverTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -144,6 +146,7 @@
                         android:padding="15dp">
 
                         <ImageView
+                            android:tint="@color/grey_700"
                             app:srcCompat="@drawable/ic_person"
                             android:id="@+id/imageView"
                             android:layout_centerVertical="false"
@@ -199,6 +202,7 @@
                         android:padding="15dp">
 
                         <ImageView
+                            android:tint="@color/grey_700"
                             app:srcCompat="@drawable/ic_description_black_24dp"
                             android:id="@+id/imageView3"
                             android:layout_alignParentTop="false"
@@ -262,6 +266,7 @@
                         android:padding="15dp">
 
                         <ImageView
+                            android:tint="@color/grey_700"
                             app:srcCompat="@drawable/ic_account"
                             android:layout_centerVertical="false"
                             android:layout_alignParentLeft="true"
@@ -315,6 +320,7 @@
                         android:padding="15dp">
 
                         <ImageView
+                            android:tint="@color/grey_700"
                             app:srcCompat="@drawable/ic_account"
                             android:layout_centerVertical="false"
                             android:layout_alignParentLeft="true"

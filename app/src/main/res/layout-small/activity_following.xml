@@ -29,7 +29,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="42dp"
-                android:background="@color/colorPrimary"
+                android:background="@drawable/default_gradient_color"
                 app:titleTextColor="@android:color/white"
                 app:titleTextAppearance="@style/toolbarTextAppearance"
                 app:popupTheme="@style/AppTheme.PopupOverlay"

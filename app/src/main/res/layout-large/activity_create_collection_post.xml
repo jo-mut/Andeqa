@@ -17,7 +17,7 @@
         android:layout_height="84dp"
         app:layout_scrollFlags="scroll|enterAlways"
         android:background="@android:color/white"
-        app:titleTextColor="@android:color/black"
+        app:titleTextColor="@color/grey_700"
         app:titleTextAppearance="@style/toolbarTextAppearance"
         app:popupTheme="@style/AppTheme.PopupOverlay"
         app:titleMargin="15dp"
@@ -26,7 +26,7 @@
 
         <ImageView
             android:background="@drawable/accent_color"
-            app:srcCompat="@drawable/ic_send"
+            app:srcCompat="@drawable/ic_check"
             android:textColor="@android:color/white"
             android:layout_width="60dp"
             android:layout_height="60dp"
@@ -89,6 +89,7 @@
                         android:layout_height="120dp">
 
                         <EditText
+                            android:textColor="@color/grey_700"
                             android:layout_height="match_parent"
                             android:inputType="textMultiLine|textCapWords"
                             android:background="@drawable/edit_text_background"
@@ -149,6 +150,7 @@
                         android:layout_height="75dp" />
 
                     <TextView
+                        android:textColor="@color/grey_700"
                         android:textSize="12sp"
                         android:id="@+id/progressTextView"
                         android:layout_centerInParent="true"
@@ -164,6 +166,7 @@
                     android:layout_height="120dp">
 
                     <TextView
+                        android:textColor="@color/grey_700"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/descriptionCountTextView"
@@ -176,6 +179,7 @@
                         android:layout_below="@+id/descriptionEditText"/>
 
                     <EditText
+                        android:textColor="@color/grey_700"
                         android:layout_height="match_parent"
                         android:inputType="textMultiLine|textCapSentences"
                         android:ems="10"
@@ -218,6 +222,7 @@
                         app:srcCompat="@drawable/ic_plus" />
 
                     <TextView
+                        android:textColor="@color/grey_700"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/addPostTextView"

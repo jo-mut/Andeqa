@@ -47,7 +47,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_toLeftOf="@+id/timeTextView"
                     android:layout_toStartOf="@+id/timeTextView"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/grey_700"
                     android:textStyle="normal|bold"
                     android:textSize="16sp"
                     android:layout_alignParentTop="false" />
@@ -61,7 +61,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/timeTextView"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/grey_700"
                     android:textSize="12sp"/>
 
             </RelativeLayout>
@@ -80,7 +80,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/lastMessageTextView"
                     android:textSize="14sp"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@color/grey_700" />
 
 
             </LinearLayout>

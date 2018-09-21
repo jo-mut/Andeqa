@@ -27,7 +27,7 @@
                 android:layout_gravity="top"
                 app:titleTextAppearance="@style/toolbarTextAppearance"
                 android:layout_height="84dp"
-                android:background="@color/colorPrimary"
+                android:background="@drawable/default_gradient_color"
                 app:layout_scrollFlags="scroll|enterAlways"
                 app:popupTheme="@style/AppTheme.PopupOverlay"
                 app:titleTextColor="@android:color/white">
@@ -80,7 +80,7 @@
                                 android:layout_height="wrap_content"
                                 android:id="@+id/usernameTextView"
                                 android:textSize="21sp"
-                                android:textColor="@android:color/black"
+                                android:textColor="@color/grey_700"
                                 android:textStyle="normal|bold"
                                 android:text="" />
 
@@ -193,7 +193,7 @@
                                         android:layout_width="36dp"
                                         android:layout_height="36dp"
                                         android:tint="@color/grey_700"
-                                        app:srcCompat="@drawable/ic_chat" />
+                                        app:srcCompat="@drawable/ic_comment" />
 
                                     <TextView
                                         android:id="@+id/commentsCountTextView"
@@ -203,7 +203,7 @@
                                         android:textSize="18sp"
                                         android:padding="15dp"
                                         android:layout_gravity="bottom"
-                                        android:textStyle="normal|bold" />
+                                        android:textStyle="normal" />
 
                                 </LinearLayout>
 
@@ -228,7 +228,7 @@
                                 android:padding="10dp"
                                 android:text=""
                                 android:textSize="18sp"
-                                android:textColor="@android:color/black"
+                                android:textColor="@color/grey_700"
                                 android:textStyle="normal|bold" />
 
                         </RelativeLayout>
@@ -245,7 +245,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text=""
-                                android:textColor="@android:color/black"
+                                android:textColor="@color/grey_700"
                                 android:textSize="24sp"
                                 android:textStyle="normal" />
 
@@ -262,7 +262,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text=""
-                                android:textColor="@android:color/black"
+                                android:textColor="@color/grey_700"
                                 android:textSize="21sp" />
 
                         </RelativeLayout>

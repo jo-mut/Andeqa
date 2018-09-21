@@ -42,7 +42,7 @@
                 android:id="@+id/usernameTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/primary_text_light"
+                android:textColor="@color/grey_700"
                 android:textSize="24sp" />
 
             <TextView
@@ -50,7 +50,7 @@
                 android:id="@+id/fullNameTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/primary_text_light"
+                android:textColor="@color/grey_700"
                 android:textSize="21sp" />
 
          </LinearLayout>
@@ -93,7 +93,7 @@
                 android:id="@+id/sendMessageImageView"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                app:srcCompat="@drawable/ic_chat"
+                app:srcCompat="@drawable/ic_comment"
                 android:tint="@color/colorAccent" />
 
          </RelativeLayout>

@@ -6,22 +6,25 @@
     android:id="@+id/activity_sign_in_with_google"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/default_gradient_color"
     tools:context="com.andeqa.andeqa.registration.SignInWithGoogle">
 
-    <TextView
-        android:layout_centerInParent="true"
-        android:textSize="40sp"
-        android:paddingTop="60dp"
-        android:paddingBottom="60dp"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:id="@+id/appLogoTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Andeqa"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
+
+        <TextView
+            android:layout_centerInParent="true"
+            android:layout_below="@+id/appLogoImageView"
+            android:text="Andeqa"
+            android:textColor="@android:color/white"
+            android:textSize="40sp"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
 
 </RelativeLayout>
 

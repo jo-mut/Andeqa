@@ -47,7 +47,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/usernameTextView"
                         android:textSize="24sp"
-                        android:textColor="@android:color/black"
+                        android:textColor="@color/grey_700"
                         android:textStyle="normal"
                         android:text="" />
 
@@ -107,6 +107,7 @@
 
 
                         <TextView
+                            android:textColor="@color/grey_700"
                             android:id="@+id/viewsCountTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -129,10 +130,10 @@
                             android:id="@+id/commentsImageView"
                             android:layout_width="30dp"
                             android:layout_height="30dp"
-                            android:tint="@color/grey_700"
-                            app:srcCompat="@drawable/ic_chat" />
+                            app:srcCompat="@drawable/ic_comment" />
 
                         <TextView
+                            android:textColor="@color/grey_700"
                             android:id="@+id/commentsCountTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -154,6 +155,7 @@
 
 
                     <TextView
+                        android:textColor="@color/grey_700"
                         android:layout_gravity="center_vertical"
                         android:text=""
                         android:layout_width="wrap_content"
@@ -190,7 +192,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="The Cool Thing"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/grey_700"
                             android:textSize="24sp"
                             android:textStyle="normal|bold" />
 
@@ -207,7 +209,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="this is just so awesome"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/grey_700"
                             android:textSize="24sp" />
 
                     </RelativeLayout>

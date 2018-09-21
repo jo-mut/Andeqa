@@ -178,6 +178,7 @@
                     android:layout_height="wrap_content">
 
                     <TextView
+                        android:textColor="@color/grey_700"
                         android:id="@+id/bioTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -277,12 +278,12 @@
                         android:layout_height="wrap_content">
 
                         <TextView
+                            android:textColor="@color/grey_700"
                             android:layout_centerVertical="true"
                             android:id="@+id/postsCountTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text=""
-                            android:textColor="@android:color/black"
                             android:padding="5dp"
                             android:textSize="24sp" />
 
@@ -367,7 +368,7 @@
                             android:layout_height="wrap_content"
                             android:text=""
                             android:padding="5dp"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/grey_700"
                             android:textSize="24sp" />
 
                         <ImageView

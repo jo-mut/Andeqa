@@ -8,6 +8,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -40,8 +41,11 @@ import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -104,6 +108,7 @@ public class DeepLinkActivity extends AppCompatActivity {
     private Query likesQuery;
     //firebase references
     private DatabaseReference databaseReference;
+    private DatabaseReference impressionReference;
     //firebase auth
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -158,7 +163,9 @@ public class DeepLinkActivity extends AppCompatActivity {
         likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
         postWalletReference = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-//        creditsCollection  = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
+      //firebase references
+        impressionReference = FirebaseDatabase.getInstance().getReference(Constants.VIEWS);
+        impressionReference.keepSynced(true);
 
         checkIfUserIsLoggedIn();
     }
@@ -196,11 +203,11 @@ public class DeepLinkActivity extends AppCompatActivity {
 
                                 for (DocumentChange change : documentSnapshots.getDocumentChanges()){
                                     final Post post = change.getDocument().toObject(Post.class);
-
                                     final String postId = post.getPost_id();
                                     final String uid = post.getUser_id();
                                     final String collectionId = post.getCollection_id();
                                     final String type = post.getType();
+                                    final String url = post.getUrl();
 
                                     //firestore
                                     if (type.equals("single") || type.equals("single_image_post")){
@@ -211,6 +218,172 @@ public class DeepLinkActivity extends AppCompatActivity {
                                                 .document("collections").collection(collectionId);
                                     }
 
+                                    if (post.getUrl() != null){
+                                        //set the title of the single
+                                        if (!TextUtils.isEmpty(post.getTitle())){
+                                            mTitleRelativeLayout.setVisibility(View.GONE);
+                                        }else {
+                                            mTitleRelativeLayout.setVisibility(View.VISIBLE);
+                                            titleTextView.setText(post.getTitle());
+                                        }
+
+                                        if (!TextUtils.isEmpty(post.getDescription())){
+                                            final String [] strings = post.getDescription().split("");
+
+                                            final int size = strings.length;
+
+                                            if (size <= 150){
+                                                mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
+                                                mDescriptionTextView.setText(post.getDescription());
+                                            }else{
+
+                                                mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
+                                                final String boldMore = "...";
+                                                final String boldLess = "";
+                                                String normalText = post.getDescription().substring(0, 149);
+                                                mDescriptionTextView.setText(normalText + boldMore);
+                                                mDescriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        if (showOnClick){
+                                                            String normalText = post.getDescription();
+                                                            mDescriptionTextView.setText(normalText + boldLess);
+                                                            showOnClick = false;
+                                                        }else {
+                                                            String normalText = post.getDescription().substring(0, 149);
+                                                            mDescriptionTextView.setText(normalText + boldMore);
+                                                            showOnClick = true;
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        }else {
+                                            mDescriptionRelativeLayout.setVisibility(View.GONE);
+                                        }
+
+                                        Glide.with(getApplicationContext())
+                                                .load(Uri.parse(url))
+                                                .apply(new RequestOptions()
+                                                        .placeholder(R.drawable.post_placeholder)
+                                                        .diskCacheStrategy(DiskCacheStrategy.DATA))
+                                                .into(mPostImageView);
+
+                                        usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                                if (e != null) {
+                                                    android.util.Log.w(TAG, "Listen error", e);
+                                                    return;
+                                                }
+
+                                                if (documentSnapshot.exists()){
+                                                    final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                                                    final String username = andeqan.getUsername();
+                                                    final String profileImage = andeqan.getProfile_image();
+
+                                                    mUsernameTextView.setText(username);
+                                                    Glide.with(getApplicationContext())
+                                                            .load(profileImage)
+                                                            .apply(new RequestOptions()
+                                                                    .placeholder(R.drawable.ic_user)
+                                                                    .diskCacheStrategy(DiskCacheStrategy.DATA))
+                                                            .into(mProfileImageView);
+                                                }
+                                            }
+                                        });
+
+                                    }else {
+                                        collectionsPosts.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                                if (e != null) {
+                                                    android.util.Log.w(TAG, "Listen error", e);
+                                                    return;
+                                                }
+
+                                                if (documentSnapshot.exists()){
+                                                    final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                                                    final String image = collectionPost.getImage();
+                                                    final String uid = collectionPost.getUser_id();
+                                                    final String title = collectionPost.getTitle();
+
+                                                    //set the title of the single
+                                                    if (title.equals("")){
+                                                        mTitleRelativeLayout.setVisibility(View.GONE);
+                                                    }else {
+                                                        mTitleRelativeLayout.setVisibility(View.VISIBLE);
+                                                        titleTextView.setText(title);
+                                                    }
+
+                                                    if (!TextUtils.isEmpty(collectionPost.getDescription())){
+                                                        final String [] strings = collectionPost.getDescription().split("");
+
+                                                        final int size = strings.length;
+
+                                                        if (size <= 150){
+                                                            mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
+                                                            mDescriptionTextView.setText(collectionPost.getDescription());
+                                                        }else{
+
+                                                            mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
+                                                            final String boldMore = "...";
+                                                            final String boldLess = "";
+                                                            String normalText = collectionPost.getDescription().substring(0, 149);
+                                                            mDescriptionTextView.setText(normalText + boldMore);
+                                                            mDescriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(View v) {
+                                                                    if (showOnClick){
+                                                                        String normalText = collectionPost.getDescription();
+                                                                        mDescriptionTextView.setText(normalText + boldLess);
+                                                                        showOnClick = false;
+                                                                    }else {
+                                                                        String normalText = collectionPost.getDescription().substring(0, 149);
+                                                                        mDescriptionTextView.setText(normalText + boldMore);
+                                                                        showOnClick = true;
+                                                                    }
+                                                                }
+                                                            });
+                                                        }
+                                                    }else {
+                                                        mDescriptionRelativeLayout.setVisibility(View.GONE);
+                                                    }
+
+                                                    Glide.with(getApplicationContext())
+                                                            .load(Uri.parse(image))
+                                                            .apply(new RequestOptions()
+                                                                    .placeholder(R.drawable.post_placeholder)
+                                                                    .diskCacheStrategy(DiskCacheStrategy.DATA))
+                                                            .into(mPostImageView);
+
+                                                    usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                                        @Override
+                                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                                            if (e != null) {
+                                                                android.util.Log.w(TAG, "Listen error", e);
+                                                                return;
+                                                            }
+
+                                                            if (documentSnapshot.exists()){
+                                                                final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                                                                final String username = andeqan.getUsername();
+                                                                final String profileImage = andeqan.getProfile_image();
+
+                                                                mUsernameTextView.setText(username);
+                                                                Glide.with(getApplicationContext())
+                                                                        .load(profileImage)
+                                                                        .apply(new RequestOptions()
+                                                                                .placeholder(R.drawable.ic_user)
+                                                                                .diskCacheStrategy(DiskCacheStrategy.DATA))
+                                                                        .into(mProfileImageView);
+                                                            }
+                                                        }
+                                                    });
+
+                                                }
+                                            }
+                                        });
+                                    }
 
                                     mProfileImageView.setOnClickListener(new View.OnClickListener() {
                                         @Override
@@ -264,7 +437,7 @@ public class DeepLinkActivity extends AppCompatActivity {
 
                                     //get the number of commments in a cingle
                                     commentsReference .document("post_ids").collection(postId)
-                                            .orderBy("comment_id").whereEqualTo("push_id", postId)
+                                            .orderBy("comment_id").whereEqualTo("post_id", postId)
                                             .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                                 @Override
                                                 public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -284,96 +457,25 @@ public class DeepLinkActivity extends AppCompatActivity {
                                                 }
                                             });
 
-                                    collectionsPosts.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                            if (e != null) {
-                                                android.util.Log.w(TAG, "Listen error", e);
-                                                return;
-                                            }
-
-                                            if (documentSnapshot.exists()){
-                                                final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
-                                                final String image = collectionPost.getImage();
-                                                final String uid = collectionPost.getUser_id();
-                                                final String title = collectionPost.getTitle();
-
-                                                //set the title of the single
-                                                if (title.equals("")){
-                                                    mTitleRelativeLayout.setVisibility(View.GONE);
-                                                }else {
-                                                    mTitleRelativeLayout.setVisibility(View.VISIBLE);
-                                                    titleTextView.setText(title);
+                                    impressionReference.child("post_views").child(postId)
+                                            .addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    if (dataSnapshot.exists()){
+                                                        final long size = dataSnapshot.getChildrenCount();
+                                                        int childrenCount = (int) size;
+                                                        mViewsCountTextView.setText(childrenCount + "");
+                                                    }else {
+                                                        mViewsCountTextView.setText("0");
+                                                    }
                                                 }
 
-                                                if (!TextUtils.isEmpty(collectionPost.getDescription())){
-                                                    final String [] strings = collectionPost.getDescription().split("");
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                                    final int size = strings.length;
-
-                                                    if (size <= 120){
-                                                        mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
-                                                        mDescriptionTextView.setText(collectionPost.getDescription());
-                                                    }else{
-
-                                                        mDescriptionRelativeLayout.setVisibility(View.VISIBLE);
-                                                        final String boldMore = "...";
-                                                        final String boldLess = "";
-                                                        String normalText = collectionPost.getDescription().substring(0, 119);
-                                                        mDescriptionTextView.setText(normalText + boldMore);
-                                                        mDescriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                if (showOnClick){
-                                                                    String normalText = collectionPost.getDescription();
-                                                                    mDescriptionTextView.setText(normalText + boldLess);
-                                                                    showOnClick = false;
-                                                                }else {
-                                                                    String normalText = collectionPost.getDescription().substring(0, 119);
-                                                                    mDescriptionTextView.setText(normalText + boldMore);
-                                                                    showOnClick = true;
-                                                                }
-                                                            }
-                                                        });
-                                                    }
-                                                }else {
-                                                    mDescriptionRelativeLayout.setVisibility(View.GONE);
                                                 }
+                                            });
 
-                                                Glide.with(getApplicationContext())
-                                                        .load(Uri.parse(image))
-                                                        .apply(new RequestOptions()
-                                                                .placeholder(R.drawable.post_placeholder)
-                                                                .diskCacheStrategy(DiskCacheStrategy.DATA))
-                                                        .into(mPostImageView);
-
-                                                usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                                    @Override
-                                                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                                        if (e != null) {
-                                                            android.util.Log.w(TAG, "Listen error", e);
-                                                            return;
-                                                        }
-
-                                                        if (documentSnapshot.exists()){
-                                                            final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                                                            final String username = andeqan.getUsername();
-                                                            final String profileImage = andeqan.getProfile_image();
-
-                                                            mUsernameTextView.setText(username);
-                                                            Glide.with(getApplicationContext())
-                                                                    .load(profileImage)
-                                                                    .apply(new RequestOptions()
-                                                                            .placeholder(R.drawable.ic_user)
-                                                                            .diskCacheStrategy(DiskCacheStrategy.DATA))
-                                                                    .into(mProfileImageView);
-                                                        }
-                                                    }
-                                                });
-
-                                            }
-                                        }
-                                    });
                                 }
                             }else {
                                 Toast.makeText(DeepLinkActivity.this, "This post has been deleted",

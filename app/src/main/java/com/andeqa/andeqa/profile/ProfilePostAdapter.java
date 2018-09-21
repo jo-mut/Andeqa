@@ -28,15 +28,17 @@ import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Timeline;
-import com.andeqa.andeqa.models.VideoPost;
 import com.andeqa.andeqa.player.Player;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -112,7 +114,6 @@ public class ProfilePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     protected void setCollectionPosts(List<DocumentSnapshot> mSnapshots){
         this.documentSnapshots = mSnapshots;
-        notifyDataSetChanged();
     }
 
     public DocumentSnapshot getSnapshot(int index) {
@@ -189,83 +190,17 @@ public class ProfilePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser()!= null){
             //firestore
-
-            if (type.equals("single") || type.equals("single_video_post")){
-                collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                        .document("singles").collection(collectionId);
-            }else {
-                collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                        .document("collections").collection(collectionId);
-            }
-
-
         }
 
-        commentsReference.document("post_ids").collection(postId);
-        collectionsPosts.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        player = new Player(mContext.getApplicationContext(), holder.postVideoView);
+        player.addMedia(post.getUrl());
+        holder.playImageView.setVisibility(View.VISIBLE);
+        holder.puaseImageView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-                if (documentSnapshot.exists()){
-                    final VideoPost videoPost = documentSnapshot.toObject(VideoPost.class);
-                    Log.d("video post url", videoPost.getVideo());
-                    player = new Player(mContext.getApplicationContext(), holder.postVideoView);
-                    player.addMedia(videoPost.getVideo());
-                    holder.playImageView.setVisibility(View.VISIBLE);
-                    holder.puaseImageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (holder.postVideoView.getPlayer() == null){
-                                holder.postVideoView.getPlayer().setPlayWhenReady(true);
-                                holder.puaseImageView.setVisibility(View.VISIBLE);
-                            }
-                        }
-                    });
-
-                    if (!TextUtils.isEmpty(videoPost.getTitle())){
-                        holder.bottomLinearLayout.setVisibility(View.VISIBLE);
-                        holder.titleTextView.setText(videoPost.getTitle());
-                        holder.titleRelativeLayout.setVisibility(View.VISIBLE);
-                    }else {
-                        holder.titleRelativeLayout.setVisibility(View.GONE);
-                    }
-
-                    if (!TextUtils.isEmpty(videoPost.getDescription())){
-                        //prevent collection note from overlapping other layouts
-                        final String [] strings = videoPost.getDescription().split("");
-                        final int size = strings.length;
-                        if (size <= 120){
-                            holder.bottomLinearLayout.setVisibility(View.VISIBLE);
-                            holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
-                            holder.descriptionTextView.setText(videoPost.getDescription());
-                        }else{
-                            holder.bottomLinearLayout.setVisibility(View.VISIBLE);
-                            holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
-                            final String boldMore = "...";
-                            final String boldLess = "";
-                            String normalText = videoPost.getDescription().substring(0, 119);
-                            holder.descriptionTextView.setText(normalText + boldMore);
-                            holder.descriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    if (showOnClick){
-                                        String normalText = videoPost.getDescription();
-                                        holder.descriptionTextView.setText(normalText + boldLess);
-                                        showOnClick = false;
-                                    }else {
-                                        String normalText = videoPost.getDescription().substring(0, 119);
-                                        holder.descriptionTextView.setText(normalText + boldMore);
-                                        showOnClick = true;
-                                    }
-                                }
-                            });
-                        }
-                    }else {
-                        holder.descriptionRelativeLayout.setVisibility(View.GONE);
-                    }
+            public void onClick(View v) {
+                if (holder.postVideoView.getPlayer() == null){
+                    holder.postVideoView.getPlayer().setPlayWhenReady(true);
+                    holder.puaseImageView.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -326,7 +261,8 @@ public class ProfilePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         });
 
         //get the number of commments in a single
-        commentsCountQuery.orderBy("comment_id").whereEqualTo("post_id", postId)
+        commentsReference.document("post_ids").collection(postId)
+                .orderBy("comment_id").whereEqualTo("post_id", postId)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -345,214 +281,6 @@ public class ProfilePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     }
                 });
 
-
-        likesReference.document(postId).collection("likes")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!documentSnapshots.isEmpty()){
-                            holder.likesCountTextView.setText(documentSnapshots.size() + " ");
-                        }else {
-                            holder.likesCountTextView.setText("0");
-                        }
-
-                    }
-                });
-
-        likesReference.document(postId).collection("dislikes")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!documentSnapshots.isEmpty()){
-                            holder.dislikeCountTextView.setText(documentSnapshots.size() + " ");
-                        }else {
-                            holder.dislikeCountTextView.setText("0");
-                        }
-
-                    }
-                });
-
-
-        //color the like image view if the user has liked
-        likesReference.document(postId).collection("likes")
-                .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (documentSnapshots.isEmpty()){
-                            //change the like image view backgroud color
-                            holder.likesImageView.setColorFilter(Color.BLACK);
-                        }else {
-                            //changed the like image view background color to show user has liked
-                            holder.likesImageView.setColorFilter(Color.RED);
-                        }
-
-                    }
-                });
-
-
-//      color the like image view if the user has dislikes
-        likesReference.document(postId).collection("dislikes")
-                .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (documentSnapshots.isEmpty()){
-                            //changed the dislike image view background color to show user has not disliked
-                            holder.dislikeImageView.setColorFilter(Color.BLACK);
-
-                        }else {
-                            //changed the dislike image view background color to show user has disliked
-                            holder.dislikeImageView.setColorFilter(Color.RED);
-
-                        }
-
-                    }
-                });
-
-
-        holder.dislikeLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                processDislikes = true;
-                likesReference.document(postId).collection("dislikes")
-                        .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
-                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                            @Override
-                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                if (e != null) {
-                                    Log.w(TAG, "Listen error", e);
-                                    return;
-                                }
-
-
-                                if (processDislikes){
-                                    if (documentSnapshots.isEmpty()){
-                                        Like like = new Like();
-                                        like.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                        likesReference.document(postId).collection("dislikes")
-                                                .document(firebaseAuth.getCurrentUser().getUid()).set(like);
-                                        processDislikes = false;
-                                        holder.dislikeImageView.setColorFilter(Color.RED);
-
-                                    }else {
-                                        likesReference.document(postId).collection("dislikes")
-                                                .document(firebaseAuth.getCurrentUser().getUid()).delete();
-                                        processDislikes = false;
-                                        holder.dislikeImageView.setColorFilter(Color.BLACK);
-
-                                    }
-                                }
-
-                            }
-                        });
-            }
-        });
-
-
-        holder.likesRelativeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                processLikes = true;
-                processCredit = true;
-                likesReference.document(postId).collection("likes")
-                        .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
-                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                            @Override
-                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                if (e != null) {
-                                    Log.w(TAG, "Listen error", e);
-                                    return;
-                                }
-
-
-                                if (processLikes){
-                                    if (documentSnapshots.isEmpty()){
-                                        final Like like = new Like();
-                                        like.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                        likesReference.document(postId).collection("likes")
-                                                .document(firebaseAuth.getCurrentUser().getUid()).set(like);
-
-                                        timelineCollection.document(uid).collection("activities")
-                                                .whereEqualTo("post_id", postId)
-                                                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                                    @Override
-                                                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                                        if (e != null) {
-                                                            Log.w(TAG, "Listen error", e);
-                                                            return;
-                                                        }
-
-
-                                                        if (documentSnapshots.isEmpty()){
-                                                            Log.d("timeline is empty", postId);
-                                                            final Timeline timeline = new Timeline();
-                                                            final long time = new Date().getTime();
-
-                                                            final String activityId = databaseReference.push().getKey();
-                                                            timeline.setPost_id(postId);
-                                                            timeline.setTime(time);
-                                                            timeline.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                            timeline.setType("like");
-                                                            timeline.setActivity_id(activityId);
-                                                            timeline.setStatus("un_read");
-                                                            timeline.setReceiver_id(uid);
-
-                                                            if (uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                                                //do nothing
-                                                            }else {
-                                                                timelineCollection.document(uid).collection("activities")
-                                                                        .document(postId).set(timeline);
-                                                            }
-                                                        }
-                                                    }
-                                                });
-
-
-
-                                        processLikes = false;
-                                        holder.likesImageView.setColorFilter(Color.RED);
-
-                                    }else {
-                                        likesReference.document(postId).collection("likes")
-                                                .document(firebaseAuth.getCurrentUser().getUid()).delete();
-                                        processLikes = false;
-                                        holder.likesImageView.setColorFilter(Color.BLACK);
-
-                                    }
-                                }
-
-                            }
-                        });
-            }
-        });
 
 
     }
@@ -573,30 +301,39 @@ public class ProfilePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     .document("collections").collection(collectionId);
         }
 
-        commentsReference.document("post_ids").collection(postId);
-        collectionsPosts.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+        if (post.getUrl() == null){
+            collectionsPosts.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
+                    if (e != null) {
+                        Log.w(TAG, "Listen error", e);
+                        return;
+                    }
+
+                    if (documentSnapshot.exists()){
+                        final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+
+                        Glide.with(mContext.getApplicationContext())
+                                .load(collectionPost.getImage())
+                                .apply(new RequestOptions()
+                                        .placeholder(R.drawable.post_placeholder)
+                                        .diskCacheStrategy(DiskCacheStrategy.DATA))
+                                .into(holder.postImageView);
+
+                    }
                 }
+            });
 
-                if (documentSnapshot.exists()){
-                    final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+        }else {
+            Glide.with(mContext.getApplicationContext())
+                    .load(post.getUrl())
+                    .apply(new RequestOptions()
+                            .placeholder(R.drawable.post_placeholder)
+                            .diskCacheStrategy(DiskCacheStrategy.DATA))
+                    .into(holder.postImageView);
 
-                    Glide.with(mContext.getApplicationContext())
-                            .load(collectionPost.getImage())
-                            .apply(new RequestOptions()
-                                    .placeholder(R.drawable.post_placeholder)
-                                    .diskCacheStrategy(DiskCacheStrategy.DATA))
-                            .into(holder.postImageView);
-
-                }
-            }
-        });
-
+        }
 
         holder.mCommentsLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -664,9 +401,9 @@ public class ProfilePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         });
 
 
-
         //get the number of commments in a single
-        commentsCountQuery.orderBy("comment_id").whereEqualTo("post_id", postId)
+        commentsReference.document("post_ids").collection(postId)
+                .orderBy("comment_id").whereEqualTo("post_id", postId)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -684,6 +421,27 @@ public class ProfilePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         }
                     }
                 });
+
+
+        impressionReference.child("post_views").child(postId)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()){
+                            final long size = dataSnapshot.getChildrenCount();
+                            int childrenCount = (int) size;
+                            holder.viewsCountTextView.setText(childrenCount + "");
+                        }else {
+                            holder.viewsCountTextView.setText("0");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
 
     }
 

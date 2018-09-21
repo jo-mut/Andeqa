@@ -18,11 +18,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.chatting.MessagingActivity;
 import com.andeqa.andeqa.creation.CreateCollectionActivity;
 import com.andeqa.andeqa.creation.CreateCollectionPostActivity;
 import com.andeqa.andeqa.creation.PreviewImagePostActivity;
 import com.andeqa.andeqa.creation.PreviewVideoPostActivity;
-import com.andeqa.andeqa.message.MessagingActivity;
 import com.andeqa.andeqa.profile.UpdateProfileActivity;
 import com.andeqa.andeqa.settings.CollectionSettingsActivity;
 import com.bumptech.glide.Glide;
@@ -45,7 +45,6 @@ public class PicturesFragment extends Fragment {
     private static final String GALLERY_PATH ="gallery image";
     private static final String GALLERY_VIDEO ="gallery video";
     private static final String POST_TAG = CreateCollectionPostActivity.class.getSimpleName();
-    private static final String COLLECTION_TAG = CreateCollectionActivity.class.getSimpleName();
     private static final String COLLECTION_SETTINGS_COVER = CollectionSettingsActivity.class.getSimpleName();
     private static final String PROFILE_PHOTO_PATH = "profile photo path";
     private static final String PROFILE_COVER_PATH = "profile cover path";
@@ -57,7 +56,6 @@ public class PicturesFragment extends Fragment {
     private String mUid;
     private String mRoomId;
     private String postIntent;
-    private String collectionIntent;
     private String collectionId;
     private String profileCoverIntent;
     private String profilePhotoIntent;
@@ -82,7 +80,6 @@ public class PicturesFragment extends Fragment {
 
         postIntent = getActivity().getIntent().getStringExtra(POST_TAG);
         collectionId = getActivity().getIntent().getStringExtra(COLLECTION_ID);
-        collectionIntent = getActivity().getIntent().getStringExtra(COLLECTION_TAG);
         collectionSettingsIntent  = getActivity().getIntent().getStringExtra(COLLECTION_SETTINGS_COVER);
         profileCoverIntent = getActivity().getIntent().getStringExtra(PROFILE_COVER_PATH);
         profilePhotoIntent = getActivity().getIntent().getStringExtra(PROFILE_PHOTO_PATH);
@@ -232,13 +229,13 @@ public class PicturesFragment extends Fragment {
                     if (postIntent != null) {
                         Intent intent = new Intent(getActivity(), PreviewImagePostActivity.class);
                         intent.putExtra(PicturesFragment.GALLERY_PATH, mediaFiles.get(position).get(Function.KEY_PATH));
-                        intent.putExtra(PicturesFragment.COLLECTION_ID, collectionId);
                         intent.putExtra(PicturesFragment.POST_TAG, postIntent);
                         startActivity(intent);
                         getActivity().finish();
-                    } else if (collectionIntent != null) {
+                    } else if (collectionId != null) {
                         Intent intent = new Intent(getActivity(), CreateCollectionActivity.class);
                         intent.putExtra(PicturesFragment.GALLERY_PATH, mediaFiles.get(position).get(Function.KEY_PATH));
+                        intent.putExtra(PicturesFragment.COLLECTION_ID, collectionId);
                         startActivity(intent);
                         getActivity().finish();
                     } else if (collectionSettingsIntent != null) {
@@ -287,7 +284,7 @@ public class PicturesFragment extends Fragment {
             holder.view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (postIntent != null) {
+                    if (collectionId != null) {
                         Intent intent = new Intent(getActivity(), PreviewVideoPostActivity.class);
                         intent.putExtra(PicturesFragment.GALLERY_VIDEO, mediaFiles.get(position).get(Function.KEY_PATH));
                         intent.putExtra(PicturesFragment.COLLECTION_ID, collectionId);

@@ -8,6 +8,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
@@ -183,10 +184,14 @@ public class InitialCollectionsActivity extends AppCompatActivity implements Vie
                         }
 
                         if (!documentSnapshots.isEmpty()){
-                            Intent intent = new Intent(InitialCollectionsActivity.this, HomeActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(intent);
-                            finish();
+                            if (documentSnapshots.size() >=5){
+                                Intent intent = new Intent(InitialCollectionsActivity.this, HomeActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                                finish();
+                            }else {
+                                Toast.makeText(InitialCollectionsActivity.this, "Follow at least 5 collections", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                 });

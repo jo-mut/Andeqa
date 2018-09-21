@@ -71,6 +71,7 @@
             android:label="Comments"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
+
         <service android:name=".services.FirebaseMessaging">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -127,7 +128,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".message.MessagingActivity"
+            android:name=".chatting.MessagingActivity"
             android:label="Chats"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
@@ -198,7 +199,7 @@
         </provider>
 
         <activity
-            android:name=".message.ViewMessagePhoto"
+            android:name=".chatting.ViewMessagePhoto"
             android:label="Photo"
             android:screenOrientation="portrait" />
         <activity
@@ -244,21 +245,20 @@
             android:name=".home.VideoDetailActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".message.MessagesActivity"
-            android:label="Chats"
+            android:name=".collections.InitialCollectionsActivity"
+            android:label="Collections"
             android:screenOrientation="portrait" />
         <activity
-            android:screenOrientation="portrait"
-            android:label="Collections"
-            android:name=".collections.InitialCollectionsActivity" />
-        <activity
-            android:screenOrientation="portrait"
-            android:label="People"
-            android:name=".people.FollowPeopleActivity" />
-        <activity
-            android:screenOrientation="portrait"
+            android:name=".search.SearchActivity"
             android:label="Search"
-            android:name=".search.SearchActivity"/>
+            android:screenOrientation="portrait" />
+        <activity android:name=".people.PeopleActivity" />
+        <activity
+            android:name=".creation.ChooseCreationActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Translucent" />
+        <activity android:name=".search.SearchedPostsActivity" />
+        <activity android:name=".search.SearchedCollectionsActivity"></activity>
     </application>
 
 </manifest>

@@ -26,7 +26,6 @@ import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Timeline;
-import com.andeqa.andeqa.models.VideoPost;
 import com.andeqa.andeqa.player.Player;
 import com.andeqa.andeqa.profile.ProfileActivity;
 import com.bumptech.glide.Glide;
@@ -185,18 +184,15 @@ public class MinePostsAdapters extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     private void populateVideo(final VideoPostViewHolder holder, final int position){
-        final VideoPost videoPost = getSnapshot(position).toObject(VideoPost.class);
-        final String postId = videoPost.getPost_id();
-        final String uid = videoPost.getUser_id();
-        final String collectionId = videoPost.getCollection_id();
-        final String type = videoPost.getType();
+        final Post post = getSnapshot(position).toObject(Post.class);
+        final String postId = post.getPost_id();
+        final String uid = post.getUser_id();
+        final String collectionId = post.getCollection_id();
+        final String type = post.getType();
 
-
-        collectionsPosts.document("collections").collection(collectionId);
-        commentsReference.document("post_ids").collection(postId);
 
         player = new Player(mContext.getApplicationContext(), holder.postVideoView);
-        player.addMedia(videoPost.getVideo());
+        player.addMedia(post.getUrl());
         holder.playImageView.setVisibility(View.VISIBLE);
         holder.puaseImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -208,38 +204,38 @@ public class MinePostsAdapters extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
         });
 
-        if (!TextUtils.isEmpty(videoPost.getTitle())){
+        if (!TextUtils.isEmpty(post.getTitle())){
             holder.bottomLinearLayout.setVisibility(View.VISIBLE);
-            holder.titleTextView.setText(videoPost.getTitle());
+            holder.titleTextView.setText(post.getTitle());
             holder.titleRelativeLayout.setVisibility(View.VISIBLE);
         }else {
             holder.titleRelativeLayout.setVisibility(View.GONE);
         }
 
-        if (!TextUtils.isEmpty(videoPost.getDescription())){
+        if (!TextUtils.isEmpty(post.getDescription())){
             //prevent collection note from overlapping other layouts
-            final String [] strings = videoPost.getDescription().split("");
+            final String [] strings = post.getDescription().split("");
             final int size = strings.length;
-            if (size <= 75){
+            if (size <= 50){
                 holder.bottomLinearLayout.setVisibility(View.VISIBLE);
                 holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
-                holder.descriptionTextView.setText(videoPost.getDescription());
+                holder.descriptionTextView.setText(post.getDescription());
             }else{
                 holder.bottomLinearLayout.setVisibility(View.VISIBLE);
                 holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
                 final String boldMore = "...";
                 final String boldLess = "";
-                String normalText = videoPost.getDescription().substring(0, 74);
+                String normalText = post.getDescription().substring(0, 49);
                 holder.descriptionTextView.setText(normalText + boldMore);
                 holder.descriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if (showOnClick){
-                            String normalText = videoPost.getDescription();
+                            String normalText = post.getDescription();
                             holder.descriptionTextView.setText(normalText + boldLess);
                             showOnClick = false;
                         }else {
-                            String normalText = videoPost.getDescription().substring(0, 74);
+                            String normalText = post.getDescription().substring(0, 49);
                             holder.descriptionTextView.setText(normalText + boldMore);
                             showOnClick = true;
                         }
@@ -306,7 +302,8 @@ public class MinePostsAdapters extends RecyclerView.Adapter<RecyclerView.ViewHol
         });
 
         //get the number of commments in a single
-        commentsCountQuery.orderBy("comment_id").whereEqualTo("post_id", postId)
+        commentsReference.document("post_ids").collection(postId)
+                .orderBy("comment_id").whereEqualTo("post_id", postId)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -537,15 +534,15 @@ public class MinePostsAdapters extends RecyclerView.Adapter<RecyclerView.ViewHol
 
 
     private void populateImage(final PhotoPostViewHolder holder, int position){
-        final CollectionPost collectionPost = getSnapshot(position).toObject(CollectionPost.class);
-        final String postId = collectionPost.getPost_id();
-        final String uid = collectionPost.getUser_id();
-        final String collectionId = collectionPost.getCollection_id();
-        final String type = collectionPost.getType();
+        final Post post = getSnapshot(position).toObject(Post.class);
+        final String postId = post.getPost_id();
+        final String uid = post.getUser_id();
+        final String collectionId = post.getCollection_id();
+        final String type = post.getType();
 
-        if (collectionPost.getHeight() != null && collectionPost.getWidth() != null){
-            final float width = (float) Integer.parseInt(collectionPost.getWidth());
-            final float height = (float) Integer.parseInt(collectionPost.getHeight());
+        if (post.getHeight() != null && post.getWidth() != null){
+            final float width = (float) Integer.parseInt(post.getWidth());
+            final float height = (float) Integer.parseInt(post.getHeight());
             float ratio = height/width;
 
             constraintSet = new ConstraintSet();
@@ -554,13 +551,6 @@ public class MinePostsAdapters extends RecyclerView.Adapter<RecyclerView.ViewHol
             holder.postImageView.setImageResource(R.drawable.post_placeholder);
             constraintSet.applyTo(holder.postConstraintLayout);
 
-            Glide.with(mContext.getApplicationContext())
-                    .load(collectionPost.getImage())
-                    .apply(new RequestOptions()
-                            .placeholder(R.drawable.post_placeholder)
-                            .diskCacheStrategy(DiskCacheStrategy.DATA))
-                    .into(holder.postImageView);
-
         }else {
             constraintSet = new ConstraintSet();
             constraintSet.clone(holder.postConstraintLayout);
@@ -568,61 +558,129 @@ public class MinePostsAdapters extends RecyclerView.Adapter<RecyclerView.ViewHol
             holder.postImageView.setImageResource(R.drawable.post_placeholder);
             constraintSet.applyTo(holder.postConstraintLayout);
 
-            Glide.with(mContext.getApplicationContext())
-                    .load(collectionPost.getImage())
-                    .apply(new RequestOptions()
-                            .placeholder(R.drawable.post_placeholder)
-                            .diskCacheStrategy(DiskCacheStrategy.DATA))
-                    .into(holder.postImageView);
-
         }
-
-        //firebase firestore references
-        collectionsPosts.document("collections").collection(collectionId);
-        commentsReference.document("post_ids").collection(postId);
 
         //calculate view visibility and add visible views to impression tracker
         mViewPositionMap.put(holder.itemView, position);
         impressionTracker.addView(holder.itemView, 100, postId);
 
+        if (post.getUrl() == null){
+            //firebase firestore references
+            if (type.equals("single")|| type.equals("single_image_post")){
+                collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("singles").collection(collectionId);
+            }else{
+                collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("collections").collection(collectionId);
+            }
+            collectionsPosts.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                    if (e != null) {
+                        Log.w(TAG, "Listen error", e);
+                        return;
+                    }
 
-        if (!TextUtils.isEmpty(collectionPost.getTitle())){
-            holder.titleTextView.setText(collectionPost.getTitle());
+                    if (documentSnapshot.exists()){
+                        final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                        //set the image on the image view
+                        Glide.with(mContext.getApplicationContext())
+                                .load(collectionPost.getImage())
+                                .apply(new RequestOptions()
+                                        .placeholder(R.drawable.post_placeholder)
+                                        .diskCacheStrategy(DiskCacheStrategy.DATA))
+                                .into(holder.postImageView);
+
+                        if (!TextUtils.isEmpty(collectionPost.getTitle())){
+                            holder.captionLinearLayout.setVisibility(View.VISIBLE);
+                            holder.titleTextView.setText(collectionPost.getTitle());
+                            holder.titleRelativeLayout.setVisibility(View.VISIBLE);
+                        }else {
+                            holder.titleRelativeLayout.setVisibility(View.GONE);
+                        }
+
+                        if (!TextUtils.isEmpty(collectionPost.getDescription())){
+                            //prevent collection note from overlapping other layouts
+                            final String [] strings = collectionPost.getDescription().split("");
+                            final int size = strings.length;
+                            if (size <= 50){
+                                holder.captionLinearLayout.setVisibility(View.VISIBLE);
+                                holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                                holder.descriptionTextView.setText(collectionPost.getDescription());
+                            }else{
+                                holder.captionLinearLayout.setVisibility(View.VISIBLE);
+                                holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                                final String boldMore = "...";
+                                String normalText = collectionPost.getDescription().substring(0, 49);
+                                holder.descriptionTextView.setText(normalText + boldMore);
+                            }
+                        }else {
+                            holder.captionLinearLayout.setVisibility(View.GONE);
+                        }
+                    }else {
+                        //post does not exist
+                    }
+                }
+            });
+        }else {
+            Glide.with(mContext.getApplicationContext())
+                    .load(post.getUrl())
+                    .apply(new RequestOptions()
+                            .placeholder(R.drawable.post_placeholder)
+                            .diskCacheStrategy(DiskCacheStrategy.DATA))
+                    .into(holder.postImageView);
+
+            if (!TextUtils.isEmpty(post.getTitle())){
+                holder.captionLinearLayout.setVisibility(View.VISIBLE);
+                holder.titleTextView.setText(post.getTitle());
+                holder.titleRelativeLayout.setVisibility(View.VISIBLE);
+            }else {
+                holder.titleRelativeLayout.setVisibility(View.GONE);
+            }
+
+            if (!TextUtils.isEmpty(post.getDescription())){
+                //prevent collection note from overlapping other layouts
+                final String [] strings = post.getDescription().split("");
+                final int size = strings.length;
+                if (size <= 50){
+                    holder.captionLinearLayout.setVisibility(View.VISIBLE);
+                    holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                    holder.descriptionTextView.setText(post.getDescription());
+                }else{
+                    holder.captionLinearLayout.setVisibility(View.VISIBLE);
+                    holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                    final String boldMore = "...";
+                    String normalText = post.getDescription().substring(0, 49);
+                    holder.descriptionTextView.setText(normalText + boldMore);
+                }
+            }else {
+                holder.captionLinearLayout.setVisibility(View.GONE);
+            }
+        }
+
+        if (!TextUtils.isEmpty(post.getTitle())){
+            holder.titleTextView.setText(post.getTitle());
             holder.titleRelativeLayout.setVisibility(View.GONE);
         }else {
             holder.titleTextView.setText("");
             holder.titleRelativeLayout.setVisibility(View.GONE);
         }
 
-        if (!TextUtils.isEmpty(collectionPost.getDescription())){
-            final String [] strings = collectionPost.getDescription().split("");
+        if (!TextUtils.isEmpty(post.getDescription())){
+            final String [] strings = post.getDescription().split("");
 
             final int size = strings.length;
 
             if (size <= 120){
                 holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
-                holder.descriptionTextView.setText(collectionPost.getDescription());
+                holder.descriptionTextView.setText(post.getDescription());
             }else{
 
                 holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
                 final String boldMore = "...";
                 final String boldLess = "";
-                String normalText = collectionPost.getDescription().substring(0, 119);
+                String normalText = post.getDescription().substring(0, 119);
                 holder.descriptionTextView.setText(normalText + boldMore);
-                holder.descriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (showOnClick){
-                            String normalText = collectionPost.getDescription();
-                            holder.descriptionTextView.setText(normalText + boldLess);
-                            showOnClick = false;
-                        }else {
-                            String normalText = collectionPost.getDescription().substring(0, 119);
-                            holder.descriptionTextView.setText(normalText + boldMore);
-                            showOnClick = true;
-                        }
-                    }
-                });
             }
 
         }else {
@@ -641,7 +699,7 @@ public class MinePostsAdapters extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
         });
 
-        if (collectionPost.getWidth() != null && collectionPost.getHeight() != null){
+        if (post.getWidth() != null && post.getHeight() != null){
             holder.postImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -650,8 +708,8 @@ public class MinePostsAdapters extends RecyclerView.Adapter<RecyclerView.ViewHol
                     intent.putExtra(MinePostsAdapters.COLLECTION_ID, collectionId);
                     intent.putExtra(MinePostsAdapters.EXTRA_USER_UID, uid);
                     intent.putExtra(MinePostsAdapters.TYPE, type);
-                    intent.putExtra(MinePostsAdapters.POST_HEIGHT, collectionPost.getHeight());
-                    intent.putExtra(MinePostsAdapters.POST_WIDTH, collectionPost.getWidth());
+                    intent.putExtra(MinePostsAdapters.POST_HEIGHT, post.getHeight());
+                    intent.putExtra(MinePostsAdapters.POST_WIDTH, post.getWidth());
                     mContext.startActivity(intent);
                 }
             });
@@ -750,26 +808,10 @@ public class MinePostsAdapters extends RecyclerView.Adapter<RecyclerView.ViewHol
                     }
                 });
 
-        impressionReference.child("post_views").child(postId)
-                .child(firebaseAuth.getCurrentUser().getUid())
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()){
-                            holder.viewsImageView.setBackgroundResource(R.drawable.ic_viewed);
-                        }else {
-                            holder.viewsImageView.setBackgroundResource(R.drawable.ic_views);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
 
         //get the number of commments in a single
-        commentsCountQuery.orderBy("comment_id").whereEqualTo("post_id", postId)
+        commentsReference.document("post_ids").collection(postId)
+                .orderBy("comment_id").whereEqualTo("post_id", postId)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -787,6 +829,7 @@ public class MinePostsAdapters extends RecyclerView.Adapter<RecyclerView.ViewHol
                         }
                     }
                 });
+
 
 
     }

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/blue_grey_50"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".more.ActivitiesFragment">
+
+    <android.support.v7.widget.RecyclerView
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:id="@+id/timelineRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <RelativeLayout
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/placeHolderRelativeLayout">
+
+
+        <ImageView
+            android:tint="@color/grey_700"
+            app:srcCompat="@drawable/ic_stopwatch"
+            android:id="@+id/imagePlaceHolder"
+            android:layout_centerInParent="true"
+            android:layout_width="100sp"
+            android:layout_height="100sp" />
+
+        <TextView
+            android:textColor="@color/grey_700"
+            android:layout_below="@+id/imagePlaceHolder"
+            android:text="@string/timeline_holder_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="false"
+            android:id="@+id/placeHolderTextView"
+            android:textAlignment="center"
+            android:padding="20dp"
+            android:textSize="14sp"
+            android:layout_centerInParent="true" />
+
+    </RelativeLayout>
+
+
+</LinearLayout>

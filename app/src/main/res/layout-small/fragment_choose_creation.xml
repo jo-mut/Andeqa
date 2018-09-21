@@ -46,19 +46,20 @@
                 android:layout_height="75dp">
 
                 <RelativeLayout
-                    android:id="@+id/galleryRelativeLayout"
+                    android:id="@+id/galleryLinearLayout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
                     <ImageView
                         android:layout_centerInParent="true"
-                        android:tint="@color/grey_500"
+                        android:tint="@color/grey_700"
                         app:srcCompat="@drawable/ic_gallery"
                         android:id="@+id/galleryImageView"
                         android:layout_width="40dp"
                         android:layout_height="40dp" />
 
                     <TextView
+                        android:textColor="@color/grey_700"
                         android:layout_below="@+id/galleryImageView"
                         android:layout_centerHorizontal="true"
                         android:text="Gallery"
@@ -76,19 +77,20 @@
                 android:layout_height="75dp">
 
                 <RelativeLayout
-                    android:id="@+id/cameraRelativeLayout"
+                    android:id="@+id/cameraLinearLayout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
                     <ImageView
                         android:layout_centerInParent="true"
-                        android:tint="@color/grey_500"
+                        android:tint="@color/grey_700"
                         app:srcCompat="@drawable/ic_camera"
                         android:id="@+id/cameraImageView"
                         android:layout_width="40dp"
                         android:layout_height="40dp" />
 
                     <TextView
+                        android:textColor="@color/grey_700"
                         android:layout_below="@+id/cameraImageView"
                         android:layout_centerHorizontal="true"
                         android:text="Camera"
@@ -107,19 +109,20 @@
 
 
                 <RelativeLayout
-                    android:id="@+id/collectionRelativeLayout"
+                    android:id="@+id/collectionLinearLayout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
                     <ImageView
                         android:layout_centerInParent="true"
-                        android:tint="@color/grey_500"
+                        android:tint="@color/grey_700"
                         app:srcCompat="@drawable/ic_collection"
                         android:id="@+id/collectionImageView"
                         android:layout_width="40dp"
                         android:layout_height="40dp" />
 
                     <TextView
+                        android:textColor="@color/grey_700"
                         android:layout_below="@+id/collectionImageView"
                         android:layout_centerHorizontal="true"
                         android:text="Collection"

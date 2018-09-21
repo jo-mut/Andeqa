@@ -1,17 +1,23 @@
 package com.andeqa.andeqa.profile;
 
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.collections.CollectionPostsActivity;
+import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
@@ -38,7 +44,8 @@ public class ProfilePostsActivity extends AppCompatActivity {
 
     //firestore reference
     private CollectionReference postsCollection;
-    private Query profileSinglesQuery;
+    private CollectionReference collectionsPosts;
+    private Query profilePostsQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore adapters
@@ -56,7 +63,7 @@ public class ProfilePostsActivity extends AppCompatActivity {
     private String mSource;
     private static final String COLLECTION_ID = "collection id";
     private List<String> mSnapshotsIds = new ArrayList<>();
-    private List<DocumentSnapshot> mSnapshots = new ArrayList<>();
+    private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
     int spanCount = 2; // 3 columns
     int spacing = 10; // 50px
     boolean includeEdge = false;
@@ -85,8 +92,9 @@ public class ProfilePostsActivity extends AppCompatActivity {
             mUid = getIntent().getStringExtra(EXTRA_USER_UID);
 
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            profileSinglesQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
+            profilePostsQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
                     .whereEqualTo("user_id", mUid).limit(TOTAL_ITEMS);
+            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
 
             mPostssRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
                 @Override
@@ -98,6 +106,7 @@ public class ProfilePostsActivity extends AppCompatActivity {
         }
 
     }
+
 
     @Override
     public void onPause() {
@@ -124,7 +133,7 @@ public class ProfilePostsActivity extends AppCompatActivity {
     }
 
     private void loadData(){
-        mSnapshots.clear();
+        documentSnapshots.clear();
         setRecyclerView();
         setPosts();
     }
@@ -141,7 +150,7 @@ public class ProfilePostsActivity extends AppCompatActivity {
     }
 
     private void setPosts(){
-        profileSinglesQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        profilePostsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
@@ -216,9 +225,9 @@ public class ProfilePostsActivity extends AppCompatActivity {
 
     protected void onDocumentAdded(DocumentChange change) {
         mSnapshotsIds.add(change.getDocument().getId());
-        mSnapshots.add(change.getDocument());
-        profilePostsAdapter.setCollectionPosts(mSnapshots);
-        profilePostsAdapter.notifyItemInserted(mSnapshots.size() -1);
+        documentSnapshots.add(change.getDocument());
+        profilePostsAdapter.setCollectionPosts(documentSnapshots);
+        profilePostsAdapter.notifyItemInserted(documentSnapshots.size() -1);
         profilePostsAdapter.getItemCount();
 
     }
@@ -226,21 +235,21 @@ public class ProfilePostsActivity extends AppCompatActivity {
     protected void onDocumentModified(DocumentChange change) {
         if (change.getOldIndex() == change.getNewIndex()) {
             // Item changed but remained in same position
-            mSnapshots.set(change.getOldIndex(), change.getDocument());
+            documentSnapshots.set(change.getOldIndex(), change.getDocument());
             profilePostsAdapter.notifyItemChanged(change.getOldIndex());
         } else {
             // Item changed and changed position
-            mSnapshots.remove(change.getOldIndex());
-            mSnapshots.add(change.getNewIndex(), change.getDocument());
-            profilePostsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+            documentSnapshots.remove(change.getOldIndex());
+            documentSnapshots.add(change.getNewIndex(), change.getDocument());
+            profilePostsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
         }
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
         try{
-            mSnapshots.remove(change.getOldIndex());
+            documentSnapshots.remove(change.getOldIndex());
             profilePostsAdapter.notifyItemRemoved(change.getOldIndex());
-            profilePostsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+            profilePostsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
         }catch (Exception e){
             e.printStackTrace();
         }

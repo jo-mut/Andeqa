@@ -17,6 +17,7 @@ public class SearchPeopleViewHolder extends RecyclerView.ViewHolder{
     public CircleImageView profileImageView;
     public ImageView followImageView;
     public TextView usernameTextView;
+
     public ImageView sendMessageImageView;
 
     public SearchPeopleViewHolder(View itemView) {

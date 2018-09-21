@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@android:color/white"
     tools:context=".creation.CreateSingleActivity">
 
     <android.support.v7.widget.Toolbar
@@ -13,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="42dp"
         app:layout_scrollFlags="scroll|enterAlways"
-        app:titleTextColor="@android:color/black"
+        android:textColor="@color/grey_700"
         android:background="@android:color/white"
         app:titleTextAppearance="@style/toolbarTextAppearance"
         app:popupTheme="@style/AppTheme.PopupOverlay"
@@ -87,6 +88,7 @@
                         android:layout_height="wrap_content">
 
                         <EditText
+                            android:textColor="@color/grey_700"
                             android:layout_height="wrap_content"
                             android:inputType="textMultiLine|textCapWords"
                             android:background="@drawable/edit_text_background"
@@ -108,6 +110,7 @@
                             android:paddingStart="10dp" />
 
                         <TextView
+                            android:textColor="@color/grey_700"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/titleCountTextView"
@@ -133,6 +136,7 @@
                     android:layout_height="60dp">
 
                     <TextView
+                        android:textColor="@color/grey_700"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/descriptionCountTextView"
@@ -145,6 +149,7 @@
                         android:layout_below="@+id/descriptionEditText"/>
 
                     <EditText
+                        android:textColor="@color/grey_700"
                         android:layout_height="match_parent"
                         android:inputType="textMultiLine|textCapSentences"
                         android:ems="10"
@@ -189,6 +194,7 @@
                         android:layout_height="40dp" />
 
                     <TextView
+                        android:textColor="@color/grey_700"
                         android:textSize="9sp"
                         android:id="@+id/progressTextView"
                         android:layout_centerInParent="true"

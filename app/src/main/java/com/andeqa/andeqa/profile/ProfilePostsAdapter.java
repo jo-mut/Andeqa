@@ -25,7 +25,6 @@ import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Timeline;
-import com.andeqa.andeqa.models.VideoPost;
 import com.andeqa.andeqa.player.Player;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -110,7 +109,6 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     protected void setCollectionPosts(List<DocumentSnapshot> mSnapshots){
         this.documentSnapshots = mSnapshots;
-        notifyDataSetChanged();
     }
 
     public DocumentSnapshot getSnapshot(int index) {
@@ -200,26 +198,16 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     .document("collections").collection(collectionId);
         }
 
-        commentsReference.document("post_ids").collection(postId);
-        collectionsPosts.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        player = new Player(mContext.getApplicationContext(), holder.postVideoView);
+        player.addMedia(post.getUrl());
+        holder.playImageView.setVisibility(View.VISIBLE);
+        holder.puaseImageView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-                if (documentSnapshot.exists()){
-                    final VideoPost videoPost = documentSnapshot.toObject(VideoPost.class);
-                    player = new Player(mContext.getApplicationContext(), holder.postVideoView);
-                    player.addMedia(videoPost.getVideo());
-                    holder.playImageView.setVisibility(View.VISIBLE);
-                    holder.puaseImageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (holder.postVideoView.getPlayer() == null){
-                                holder.postVideoView.getPlayer().setPlayWhenReady(true);
-                                holder.puaseImageView.setVisibility(View.VISIBLE);
-                            }else {
+            public void onClick(View v) {
+                if (holder.postVideoView.getPlayer() == null){
+                    holder.postVideoView.getPlayer().setPlayWhenReady(true);
+                    holder.puaseImageView.setVisibility(View.VISIBLE);
+                }else {
 //                   //clear the exoplayer player
 //                   holder.postVideoView.getPlayer().setPlayWhenReady(false);
 //                   holder.postVideoView.getPlayer().release();
@@ -227,56 +215,51 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 //                   //play the video after the previous player has been cleared
 //                   holder.postVideoView.getPlayer().setPlayWhenReady(true);
 //                   holder.puaseImageView.setVisibility(View.VISIBLE);
-                            }
-                        }
-                    });
-
-                    if (!TextUtils.isEmpty(videoPost.getTitle())){
-                        holder.bottomLinearLayout.setVisibility(View.VISIBLE);
-                        holder.titleTextView.setText(videoPost.getTitle());
-                        holder.titleRelativeLayout.setVisibility(View.VISIBLE);
-                    }else {
-                        holder.titleRelativeLayout.setVisibility(View.GONE);
-                    }
-
-                    if (!TextUtils.isEmpty(videoPost.getDescription())){
-                        //prevent collection note from overlapping other layouts
-                        final String [] strings = videoPost.getDescription().split("");
-                        final int size = strings.length;
-                        if (size <= 75){
-                            holder.bottomLinearLayout.setVisibility(View.VISIBLE);
-                            holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
-                            holder.descriptionTextView.setText(videoPost.getDescription());
-                        }else{
-                            holder.bottomLinearLayout.setVisibility(View.VISIBLE);
-                            holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
-                            final String boldMore = "...";
-                            final String boldLess = "";
-                            String normalText = videoPost.getDescription().substring(0, 75);
-                            holder.descriptionTextView.setText(normalText + boldMore);
-                            holder.descriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    if (showOnClick){
-                                        String normalText = videoPost.getDescription();
-                                        holder.descriptionTextView.setText(normalText + boldLess);
-                                        showOnClick = false;
-                                    }else {
-                                        String normalText = videoPost.getDescription().substring(0, 75);
-                                        holder.descriptionTextView.setText(normalText + boldMore);
-                                        showOnClick = true;
-                                    }
-                                }
-                            });
-                        }
-                    }else {
-                        holder.descriptionRelativeLayout.setVisibility(View.GONE);
-                    }
-                }else {
-                    //post does not exist
                 }
             }
         });
+
+        if (!TextUtils.isEmpty(post.getTitle())){
+            holder.bottomLinearLayout.setVisibility(View.VISIBLE);
+            holder.titleTextView.setText(post.getTitle());
+            holder.titleRelativeLayout.setVisibility(View.VISIBLE);
+        }else {
+            holder.titleRelativeLayout.setVisibility(View.GONE);
+        }
+
+        if (!TextUtils.isEmpty(post.getDescription())){
+            //prevent collection note from overlapping other layouts
+            final String [] strings = post.getDescription().split("");
+            final int size = strings.length;
+            if (size <= 50){
+                holder.bottomLinearLayout.setVisibility(View.VISIBLE);
+                holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                holder.descriptionTextView.setText(post.getDescription());
+            }else{
+                holder.bottomLinearLayout.setVisibility(View.VISIBLE);
+                holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                final String boldMore = "...";
+                final String boldLess = "";
+                String normalText = post.getDescription().substring(0, 50);
+                holder.descriptionTextView.setText(normalText + boldMore);
+                holder.descriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (showOnClick){
+                            String normalText = post.getDescription();
+                            holder.descriptionTextView.setText(normalText + boldLess);
+                            showOnClick = false;
+                        }else {
+                            String normalText = post.getDescription().substring(0, 50);
+                            holder.descriptionTextView.setText(normalText + boldMore);
+                            showOnClick = true;
+                        }
+                    }
+                });
+            }
+        }else {
+            holder.descriptionRelativeLayout.setVisibility(View.GONE);
+        }
 
         holder.mCommentsLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -332,7 +315,8 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         });
 
         //get the number of commments in a single
-        commentsCountQuery.orderBy("comment_id").whereEqualTo("post_id", postId)
+        commentsReference.document("post_ids").collection(postId)
+                .orderBy("comment_id").whereEqualTo("post_id", postId)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -569,6 +553,7 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         final String uid = post.getUser_id();
         final String collectionId = post.getCollection_id();
         final String type = post.getType();
+
         if (post.getHeight() != null && post.getWidth() != null){
             final float width = (float) Integer.parseInt(post.getWidth());
             final float height = (float) Integer.parseInt(post.getHeight());
@@ -579,12 +564,35 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             constraintSet.setDimensionRatio(holder.postImageView.getId(), "H," + ratio);
             holder.postImageView.setImageResource(R.drawable.post_placeholder);
             constraintSet.applyTo(holder.postConstraintLayout);
+
+
+            if (post.getUrl() != null){
+                Glide.with(mContext.getApplicationContext())
+                        .load(post.getUrl())
+                        .apply(new RequestOptions()
+                                .placeholder(R.drawable.post_placeholder)
+                                .diskCacheStrategy(DiskCacheStrategy.DATA))
+                        .into(holder.postImageView);
+            }
+
+
         }else {
             constraintSet = new ConstraintSet();
             constraintSet.clone(holder.postConstraintLayout);
             constraintSet.setDimensionRatio(holder.postImageView.getId(), "H," + 1);
             holder.postImageView.setImageResource(R.drawable.post_placeholder);
             constraintSet.applyTo(holder.postConstraintLayout);
+
+            if (post.getUrl() != null){
+                Glide.with(mContext.getApplicationContext())
+                        .load(post.getUrl())
+                        .apply(new RequestOptions()
+                                .placeholder(R.drawable.post_placeholder)
+                                .diskCacheStrategy(DiskCacheStrategy.DATA))
+                        .into(holder.postImageView);
+            }
+
+
         }
 
         //calculate view visibility and add visible views to impression tracker
@@ -592,84 +600,108 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         impressionTracker.addView(holder.itemView, 100, postId);
 
 
-        //firestore
-        if (type.equals("single") || type.equals("single_image_post")){
+        //firebase firestore references
+        if (type.equals("single")|| type.equals("single_image_post")){
             collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
                     .document("singles").collection(collectionId);
-        }else {
+        }else{
             collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
                     .document("collections").collection(collectionId);
         }
 
-        commentsReference.document("post_ids").collection(postId);
-        collectionsPosts.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
-                    Glide.with(mContext.getApplicationContext())
-                            .load(collectionPost.getImage())
-                            .apply(new RequestOptions()
-                                    .placeholder(R.drawable.post_placeholder)
-                                    .diskCacheStrategy(DiskCacheStrategy.DATA))
-                            .into(holder.postImageView);
-
-                    if (!TextUtils.isEmpty(collectionPost.getTitle())){
-                        holder.captionLinearLayout.setVisibility(View.VISIBLE);
-                        holder.titleTextView.setText(collectionPost.getTitle());
-                        holder.titleRelativeLayout.setVisibility(View.VISIBLE);
-                    }else {
-                        holder.titleRelativeLayout.setVisibility(View.GONE);
+        if (post.getUrl() == null){
+            //firebase firestore references
+            if (type.equals("single")|| type.equals("single_image_post")){
+                collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("singles").collection(collectionId);
+            }else{
+                collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("collections").collection(collectionId);
+            }
+            collectionsPosts.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                    if (e != null) {
+                        Log.w(TAG, "Listen error", e);
+                        return;
                     }
 
-                    if (!TextUtils.isEmpty(collectionPost.getDescription())){
-                        //prevent collection note from overlapping other layouts
-                        final String [] strings = collectionPost.getDescription().split("");
+                    if (documentSnapshot.exists()){
+                        final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                        //set the image on the image view
+                        Glide.with(mContext.getApplicationContext())
+                                .load(collectionPost.getImage())
+                                .apply(new RequestOptions()
+                                        .placeholder(R.drawable.post_placeholder)
+                                        .diskCacheStrategy(DiskCacheStrategy.DATA))
+                                .into(holder.postImageView);
 
-                        final int size = strings.length;
-
-                        if (size <= 120){
+                        if (!TextUtils.isEmpty(collectionPost.getTitle())){
                             holder.captionLinearLayout.setVisibility(View.VISIBLE);
-                            holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
-                            holder.descriptionTextView.setText(collectionPost.getDescription());
-                        }else{
-                            holder.captionLinearLayout.setVisibility(View.VISIBLE);
-                            holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
-                            final String boldMore = "...";
-                            final String boldLess = "";
-                            String normalText = collectionPost.getDescription().substring(0, 119);
-                            holder.descriptionTextView.setText(normalText + boldMore);
-                            holder.descriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    if (showOnClick){
-                                        String normalText = collectionPost.getDescription();
-                                        holder.descriptionTextView.setText(normalText + boldLess);
-                                        showOnClick = false;
-                                    }else {
-                                        String normalText = collectionPost.getDescription().substring(0, 119);
-                                        holder.descriptionTextView.setText(normalText + boldMore);
-                                        showOnClick = true;
-                                    }
-                                }
-                            });
+                            holder.titleTextView.setText(collectionPost.getTitle());
+                            holder.titleRelativeLayout.setVisibility(View.VISIBLE);
+                        }else {
+                            holder.titleRelativeLayout.setVisibility(View.GONE);
                         }
 
+                        if (!TextUtils.isEmpty(collectionPost.getDescription())){
+                            //prevent collection note from overlapping other layouts
+                            final String [] strings = collectionPost.getDescription().split("");
+                            final int size = strings.length;
+                            if (size <= 50){
+                                holder.captionLinearLayout.setVisibility(View.VISIBLE);
+                                holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                                holder.descriptionTextView.setText(collectionPost.getDescription());
+                            }else{
+                                holder.captionLinearLayout.setVisibility(View.VISIBLE);
+                                holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                                final String boldMore = "...";
+                                String normalText = collectionPost.getDescription().substring(0, 49);
+                                holder.descriptionTextView.setText(normalText + boldMore);
+                            }
+                        }else {
+                            holder.captionLinearLayout.setVisibility(View.GONE);
+                        }
                     }else {
-                        holder.descriptionRelativeLayout.setVisibility(View.GONE);
+                        //post does not exist
                     }
-
-                }else {
-                    // post does not exist
                 }
+            });
+        }else {
+            Glide.with(mContext.getApplicationContext())
+                    .load(post.getUrl())
+                    .apply(new RequestOptions()
+                            .placeholder(R.drawable.post_placeholder)
+                            .diskCacheStrategy(DiskCacheStrategy.DATA))
+                    .into(holder.postImageView);
+
+            if (!TextUtils.isEmpty(post.getTitle())){
+                holder.captionLinearLayout.setVisibility(View.VISIBLE);
+                holder.titleTextView.setText(post.getTitle());
+                holder.titleRelativeLayout.setVisibility(View.VISIBLE);
+            }else {
+                holder.titleRelativeLayout.setVisibility(View.GONE);
             }
-        });
+
+            if (!TextUtils.isEmpty(post.getDescription())){
+                //prevent collection note from overlapping other layouts
+                final String [] strings = post.getDescription().split("");
+                final int size = strings.length;
+                if (size <= 50){
+                    holder.captionLinearLayout.setVisibility(View.VISIBLE);
+                    holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                    holder.descriptionTextView.setText(post.getDescription());
+                }else{
+                    holder.captionLinearLayout.setVisibility(View.VISIBLE);
+                    holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                    final String boldMore = "...";
+                    String normalText = post.getDescription().substring(0, 49);
+                    holder.descriptionTextView.setText(normalText + boldMore);
+                }
+            }else {
+                holder.captionLinearLayout.setVisibility(View.GONE);
+            }
+        }
 
         holder.mCommentsLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -808,7 +840,8 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 });
 
         //get the number of commments in a single
-        commentsCountQuery.orderBy("comment_id").whereEqualTo("post_id", postId)
+        commentsReference.document("post_ids").collection(postId)
+                .orderBy("comment_id").whereEqualTo("post_id", postId)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -828,6 +861,11 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 });
 
 
+    }
+
+    public void cleanUp(){
+        documentSnapshots.clear();
+        notifyDataSetChanged();
     }
 
 }

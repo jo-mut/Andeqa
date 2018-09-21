@@ -48,7 +48,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/usernameTextView"
                         android:textSize="10sp"
-                        android:textColor="@android:color/black"
+                        android:textColor="@color/grey_700"
                         android:textStyle="normal"
                         android:text="" />
 

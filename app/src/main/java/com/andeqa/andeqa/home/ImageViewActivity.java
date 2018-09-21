@@ -4,11 +4,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.models.CollectionPost;
+import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.ViewDuration;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.andeqa.andeqa.R;
@@ -29,6 +31,8 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
+import javax.annotation.Nullable;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -39,6 +43,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnClick
     private FirebaseAuth firebaseAuth;
     //firestore
     private CollectionReference collectionPost;
+    private CollectionReference postCollection;
     private CollectionReference likesReference;
     private DatabaseReference impressionReference;
     private DatabaseReference databaseReference;
@@ -88,6 +93,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnClick
                     .document("collections").collection(mCollectionId);
         }
 
+        postCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
         likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
         setUpCingleDetails();
         //firebase references
@@ -98,27 +104,51 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnClick
 
     private void setUpCingleDetails(){
 
-        collectionPost.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
+       postCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+           @Override
+           public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
 
-                if (documentSnapshot.exists()){
-                    final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
-                    final String image = collectionPost.getImage();
-                    //set the single image
-                    Glide.with(getApplicationContext())
-                            .load(image)
-                            .apply(new RequestOptions()
-                                    .diskCacheStrategy(DiskCacheStrategy.DATA))
-                            .into(mPostImageView);
+               if (e != null) {
+                   android.util.Log.w(TAG, "Listen error", e);
+                   return;
+               }
 
-                }
-            }
-        });
+               if (documentSnapshot.exists()){
+                   Post post = documentSnapshot.toObject(Post.class);
+                   if (post.getUrl() == null){
+                       collectionPost.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                           @Override
+                           public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                               if (e != null) {
+                                   Log.w(TAG, "Listen error", e);
+                                   return;
+                               }
+
+                               if (documentSnapshot.exists()){
+                                   final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                                   final String image = collectionPost.getImage();
+                                   //set the single image
+                                   Glide.with(getApplicationContext())
+                                           .load(image)
+                                           .apply(new RequestOptions()
+                                                   .diskCacheStrategy(DiskCacheStrategy.DATA))
+                                           .into(mPostImageView);
+
+                               }
+                           }
+                       });
+                   }else {
+                       Glide.with(getApplicationContext())
+                               .load(post.getUrl())
+                               .apply(new RequestOptions()
+                                       .placeholder(R.drawable.post_placeholder)
+                                       .diskCacheStrategy(DiskCacheStrategy.DATA))
+                               .into(mPostImageView);
+
+                   }
+               }
+           }
+       });
 
     }
 

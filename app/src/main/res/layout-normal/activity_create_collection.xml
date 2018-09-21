@@ -13,7 +13,8 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        app:titleTextColor="@android:color/black"
+        android:background="@android:color/white"
+        app:titleTextColor="@color/grey_700"
         app:layout_scrollFlags="scroll|enterAlways"
         app:titleTextAppearance="@style/toolbarTextAppearance"
         app:popupTheme="@style/AppTheme.PopupOverlay">
@@ -37,6 +38,7 @@
         android:id="@+id/collectionNameRelativeLayout">
 
         <EditText
+            android:textColor="@color/grey_700"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine|textCapWords"
@@ -44,11 +46,11 @@
             android:layout_alignParentStart="true"
             android:id="@+id/collectionNameEditText"
             android:textSize="18sp"
-            android:freezesText="true"
             android:paddingLeft="16dp"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:paddingRight="16dp"
+            android:freezesText="true"
             android:paddingTop="30dp"
             android:paddingBottom="30dp"
             android:hint="Enter your collection's name"
@@ -56,6 +58,7 @@
             android:background="@drawable/edit_text_background" />
 
         <TextView
+            android:textColor="@color/grey_700"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/nameCountTextView"
@@ -78,6 +81,7 @@
         android:id="@+id/collectionNoteRelativeLayout">
 
         <EditText
+            android:textColor="@color/grey_700"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
@@ -97,6 +101,7 @@
             android:textSize="16sp" />
 
         <TextView
+            android:textColor="@color/grey_700"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/noteCountTextView"
@@ -115,7 +120,7 @@
         android:layout_height="0.1dp"/>
 
     <RelativeLayout
-        android:id="@+id/collectionRelativeLayout"
+        android:id="@+id/collectionLinearLayout"
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -137,6 +142,7 @@
         android:id="@+id/addRelativeLayout">
 
         <ImageView
+            android:textColor="@color/grey_700"
             android:layout_width="100dp"
             android:layout_height="100dp"
             app:srcCompat="@drawable/ic_add_collection"
@@ -147,6 +153,7 @@
 
 
         <TextView
+            android:textColor="@color/grey_700"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/addCollectionTextView"

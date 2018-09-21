@@ -22,7 +22,7 @@ import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Timeline;
-import com.andeqa.andeqa.models.VideoPost;
+import com.andeqa.andeqa.models.ViewDuration;
 import com.andeqa.andeqa.player.Player;
 import com.andeqa.andeqa.profile.ProfileActivity;
 import com.bumptech.glide.Glide;
@@ -115,7 +115,6 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     public void setRandomPosts(List<DocumentSnapshot> posts){
         this.documentSnapshots = posts;
-        notifyDataSetChanged();
     }
 
 
@@ -197,6 +196,20 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     }
 
+
+
+    @Override
+    public long getItemId(int position) {
+        final Post post = getSnapshot(position).toObject(Post.class);
+        return post.getNumber();
+    }
+
+
+    @Override
+    public void setHasStableIds(boolean hasStableIds) {
+        super.setHasStableIds(hasStableIds);
+    }
+
     private void populateVideo(final VideoPostViewHolder holder, final int position){
         final Post post = getSnapshot(holder.getAdapterPosition()).toObject(Post.class);
         final String postId = post.getPost_id();
@@ -205,99 +218,78 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         final String type = post.getType();
 
         //firestore references
-        if (type.equals("single_video_post")){
-            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                    .document("singles").collection(collectionId);
-        }else{
-            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                    .document("collections").collection(collectionId);
-        }
-
-        commentsReference.document("post_ids").collection(postId);
-        collectionsPosts.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        player = new Player(mContext.getApplicationContext(), holder.postVideoView);
+        player.addMedia(post.getUrl());
+        holder.playImageView.setVisibility(View.VISIBLE);
+        holder.playImageView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-                if (documentSnapshot.exists()){
-                    final VideoPost videoPost = documentSnapshot.toObject(VideoPost.class);
-                    player = new Player(mContext.getApplicationContext(), holder.postVideoView);
-                    player.addMedia(videoPost.getVideo());
-                    holder.playImageView.setVisibility(View.VISIBLE);
-                    holder.playImageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (holder.postVideoView.getPlayer() == null){
-                                holder.postVideoView.getPlayer().setPlayWhenReady(true);
-                                holder.puaseImageView.setVisibility(View.VISIBLE);
-                                holder.playImageView.setVisibility(View.GONE);
-                            }else {
-                                player.releasePlayer();
-                                holder.postVideoView.getPlayer().setPlayWhenReady(true);
-                                holder.puaseImageView.setVisibility(View.VISIBLE);
-                                holder.playImageView.setVisibility(View.GONE);
-                            }
-                        }
-                    });
-
-                    holder.puaseImageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            holder.postVideoView.getPlayer().setPlayWhenReady(false);
-                            holder.puaseImageView.setVisibility(View.GONE);
-                            holder.playImageView.setVisibility(View.VISIBLE);
-
-                        }
-                    });
-
-                    if (!TextUtils.isEmpty(videoPost.getTitle())){
-                        holder.bottomLinearLayout.setVisibility(View.VISIBLE);
-                        holder.titleTextView.setText(videoPost.getTitle());
-                        holder.titleRelativeLayout.setVisibility(View.VISIBLE);
-                    }else {
-                        holder.titleTextView.setText("");
-                        holder.titleRelativeLayout.setVisibility(View.GONE);
-                    }
-
-                    if (!TextUtils.isEmpty(videoPost.getDescription())){
-                        //prevent collection note from overlapping other layouts
-                        final String [] strings = videoPost.getDescription().split("");
-                        final int size = strings.length;
-                        if (size <= 75){
-                            holder.bottomLinearLayout.setVisibility(View.VISIBLE);
-                            holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
-                            holder.descriptionTextView.setText(videoPost.getDescription());
-                        }else{
-                            holder.bottomLinearLayout.setVisibility(View.VISIBLE);
-                            holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
-                            final String boldMore = "...";
-                            final String boldLess = "";
-                            String normalText = videoPost.getDescription().substring(0, 74);
-                            holder.descriptionTextView.setText(normalText + boldMore);
-                            holder.descriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    if (showOnClick){
-                                        String normalText = videoPost.getDescription();
-                                        holder.descriptionTextView.setText(normalText + boldLess);
-                                        showOnClick = false;
-                                    }else {
-                                        String normalText = videoPost.getDescription().substring(0, 74);
-                                        holder.descriptionTextView.setText(normalText + boldMore);
-                                        showOnClick = true;
-                                    }
-                                }
-                            });
-                        }
-                    }else {
-                        holder.descriptionTextView.setText("");
-                        holder.descriptionRelativeLayout.setVisibility(View.GONE);
-                    }
+            public void onClick(View v) {
+                if (holder.postVideoView.getPlayer() == null){
+                    holder.postVideoView.getPlayer().setPlayWhenReady(true);
+                    holder.puaseImageView.setVisibility(View.VISIBLE);
+                    holder.playImageView.setVisibility(View.GONE);
+                }else {
+                    player.releasePlayer();
+                    holder.postVideoView.getPlayer().setPlayWhenReady(true);
+                    holder.puaseImageView.setVisibility(View.VISIBLE);
+                    holder.playImageView.setVisibility(View.GONE);
                 }
             }
         });
+
+        holder.puaseImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                holder.postVideoView.getPlayer().setPlayWhenReady(false);
+                holder.puaseImageView.setVisibility(View.GONE);
+                holder.playImageView.setVisibility(View.VISIBLE);
+
+            }
+        });
+
+        if (!TextUtils.isEmpty(post.getTitle())){
+            holder.bottomLinearLayout.setVisibility(View.VISIBLE);
+            holder.titleTextView.setText(post.getTitle());
+            holder.titleRelativeLayout.setVisibility(View.VISIBLE);
+        }else {
+            holder.titleTextView.setText("");
+            holder.titleRelativeLayout.setVisibility(View.GONE);
+        }
+
+        if (!TextUtils.isEmpty(post.getDescription())){
+            //prevent collection note from overlapping other layouts
+            final String [] strings = post.getDescription().split("");
+            final int size = strings.length;
+            if (size <= 50){
+                holder.bottomLinearLayout.setVisibility(View.VISIBLE);
+                holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                holder.descriptionTextView.setText(post.getDescription());
+            }else{
+                holder.bottomLinearLayout.setVisibility(View.VISIBLE);
+                holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                final String boldMore = "...";
+                final String boldLess = "";
+                String normalText = post.getDescription().substring(0, 49);
+                holder.descriptionTextView.setText(normalText + boldMore);
+                holder.descriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (showOnClick){
+                            String normalText = post.getDescription();
+                            holder.descriptionTextView.setText(normalText + boldLess);
+                            showOnClick = false;
+                        }else {
+                            String normalText = post.getDescription().substring(0, 49);
+                            holder.descriptionTextView.setText(normalText + boldMore);
+                            showOnClick = true;
+                        }
+                    }
+                });
+            }
+        }else {
+            holder.descriptionTextView.setText("");
+            holder.descriptionRelativeLayout.setVisibility(View.GONE);
+        }
 
         holder.mCommentsLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -353,7 +345,8 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         });
 
         //get the number of commments in a single
-        commentsCountQuery.orderBy("comment_id").whereEqualTo("post_id", postId)
+        commentsReference.document("post_ids").collection(postId)
+                .orderBy("comment_id").whereEqualTo("post_id", postId)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -601,92 +594,113 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             constraintSet.setDimensionRatio(holder.postImageView.getId(), "H," + ratio);
             holder.postImageView.setImageResource(R.drawable.post_placeholder);
             constraintSet.applyTo(holder.postConstraintLayout);
+
         }else {
             constraintSet = new ConstraintSet();
             constraintSet.clone(holder.postConstraintLayout);
             constraintSet.setDimensionRatio(holder.postImageView.getId(), "H," + 1);
             holder.postImageView.setImageResource(R.drawable.post_placeholder);
             constraintSet.applyTo(holder.postConstraintLayout);
+
         }
 
         //calculate view visibility and add visible views to impression tracker
         mViewPositionMap.put(holder.itemView, position);
         impressionTracker.addView(holder.itemView, 100, postId);
 
-
-        //firebase firestore references
-        if (type.equals("single")|| type.equals("single_image_post")){
-            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                    .document("singles").collection(collectionId);
-        }else{
-            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
-                    .document("collections").collection(collectionId);
-        }
-        commentsReference.document("post_ids").collection(postId);
-        collectionsPosts.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
-                    //set the image on the image view
-                    Glide.with(mContext.getApplicationContext())
-                            .load(collectionPost.getImage())
-                            .apply(new RequestOptions()
-                                    .placeholder(R.drawable.post_placeholder)
-                                    .diskCacheStrategy(DiskCacheStrategy.DATA))
-                            .into(holder.postImageView);
-
-                    if (!TextUtils.isEmpty(collectionPost.getTitle())){
-                        holder.captionLinearLayout.setVisibility(View.VISIBLE);
-                        holder.titleTextView.setText(collectionPost.getTitle());
-                        holder.titleRelativeLayout.setVisibility(View.VISIBLE);
-                    }else {
-                        holder.titleRelativeLayout.setVisibility(View.GONE);
+        if (post.getUrl() == null){
+            //firebase firestore references
+            if (type.equals("single")|| type.equals("single_image_post")){
+                collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("singles").collection(collectionId);
+            }else{
+                collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        .document("collections").collection(collectionId);
+            }
+            collectionsPosts.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                    if (e != null) {
+                        Log.w(TAG, "Listen error", e);
+                        return;
                     }
 
-                    if (!TextUtils.isEmpty(collectionPost.getDescription())){
-                        //prevent collection note from overlapping other layouts
-                        final String [] strings = collectionPost.getDescription().split("");
-                        final int size = strings.length;
-                        if (size <= 120){
+                    if (documentSnapshot.exists()){
+                        final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                        //set the image on the image view
+                        Glide.with(mContext.getApplicationContext())
+                                .load(collectionPost.getImage())
+                                .apply(new RequestOptions()
+                                        .placeholder(R.drawable.post_placeholder)
+                                        .diskCacheStrategy(DiskCacheStrategy.DATA))
+                                .into(holder.postImageView);
+
+                        if (!TextUtils.isEmpty(collectionPost.getTitle())){
                             holder.captionLinearLayout.setVisibility(View.VISIBLE);
-                            holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
-                            holder.descriptionTextView.setText(collectionPost.getDescription());
-                        }else{
-                            holder.captionLinearLayout.setVisibility(View.VISIBLE);
-                            holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
-                            final String boldMore = "...";
-                            final String boldLess = "";
-                            String normalText = collectionPost.getDescription().substring(0, 119);
-                            holder.descriptionTextView.setText(normalText + boldMore);
-                            holder.descriptionRelativeLayout.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    if (showOnClick){
-                                        String normalText = collectionPost.getDescription();
-                                        holder.descriptionTextView.setText(normalText + boldLess);
-                                        showOnClick = false;
-                                    }else {
-                                        String normalText = collectionPost.getDescription().substring(0, 119);
-                                        holder.descriptionTextView.setText(normalText + boldMore);
-                                        showOnClick = true;
-                                    }
-                                }
-                            });
+                            holder.titleTextView.setText(collectionPost.getTitle());
+                            holder.titleRelativeLayout.setVisibility(View.VISIBLE);
+                        }else {
+                            holder.titleRelativeLayout.setVisibility(View.GONE);
+                        }
+
+                        if (!TextUtils.isEmpty(collectionPost.getDescription())){
+                            //prevent collection note from overlapping other layouts
+                            final String [] strings = collectionPost.getDescription().split("");
+                            final int size = strings.length;
+                            if (size <= 50){
+                                holder.captionLinearLayout.setVisibility(View.VISIBLE);
+                                holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                                holder.descriptionTextView.setText(collectionPost.getDescription());
+                            }else{
+                                holder.captionLinearLayout.setVisibility(View.VISIBLE);
+                                holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                                final String boldMore = "...";
+                                String normalText = collectionPost.getDescription().substring(0, 49);
+                                holder.descriptionTextView.setText(normalText + boldMore);
+                            }
+                        }else {
+                            holder.captionLinearLayout.setVisibility(View.GONE);
                         }
                     }else {
-                        holder.captionLinearLayout.setVisibility(View.GONE);
+                        //post does not exist
                     }
-                }else {
-                    //post does not exist
                 }
+            });
+        }else {
+            Glide.with(mContext.getApplicationContext())
+                    .load(post.getUrl())
+                    .apply(new RequestOptions()
+                            .placeholder(R.drawable.post_placeholder)
+                            .diskCacheStrategy(DiskCacheStrategy.DATA))
+                    .into(holder.postImageView);
+
+            if (!TextUtils.isEmpty(post.getTitle())){
+                holder.captionLinearLayout.setVisibility(View.VISIBLE);
+                holder.titleTextView.setText(post.getTitle());
+                holder.titleRelativeLayout.setVisibility(View.VISIBLE);
+            }else {
+                holder.titleRelativeLayout.setVisibility(View.GONE);
             }
-        });
+
+            if (!TextUtils.isEmpty(post.getDescription())){
+                //prevent collection note from overlapping other layouts
+                final String [] strings = post.getDescription().split("");
+                final int size = strings.length;
+                if (size <= 50){
+                    holder.captionLinearLayout.setVisibility(View.VISIBLE);
+                    holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                    holder.descriptionTextView.setText(post.getDescription());
+                }else{
+                    holder.captionLinearLayout.setVisibility(View.VISIBLE);
+                    holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                    final String boldMore = "...";
+                    String normalText = post.getDescription().substring(0, 49);
+                    holder.descriptionTextView.setText(normalText + boldMore);
+                }
+            }else {
+                holder.captionLinearLayout.setVisibility(View.GONE);
+            }
+        }
 
         holder.mCommentsLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -751,8 +765,8 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 //                    //get seconds in milliseconds
 //                    final long durationInSeconds = compiledDuration / 1000;
 //                    //get the points generate
-//                    final double points = durationInSeconds * 0.000015;
-//                    DecimalFormat formatter = new DecimalFormat("0.000000");
+//                    final double points = durationInSeconds * 0.000001;
+//                    DecimalFormat formatter = new DecimalFormat("0.0000");
 //                    final String pts = formatter.format(points);
 //                    holder.senseCreditsTextView.setText(pts + " points");
 //
@@ -790,23 +804,6 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     }
                 });
 
-        impressionReference.child("post_views").child(postId)
-                .child(firebaseAuth.getCurrentUser().getUid())
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()){
-                            holder.viewsImageView.setBackgroundResource(R.drawable.ic_viewed);
-                        }else {
-                            holder.viewsImageView.setBackgroundResource(R.drawable.ic_views);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
 
         usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -830,7 +827,8 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         });
 
         //get the number of commments in a single
-        commentsCountQuery.orderBy("comment_id").whereEqualTo("post_id", postId)
+        commentsReference.document("post_ids").collection(postId)
+                .orderBy("comment_id").whereEqualTo("post_id", postId)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -848,6 +846,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         }
                     }
                 });
+
 
     }
 

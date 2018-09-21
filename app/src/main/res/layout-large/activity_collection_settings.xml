@@ -17,6 +17,7 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.design.widget.CollapsingToolbarLayout
+            android:background="@drawable/default_gradient_color"
             android:id="@+id/collapsingToolbar"
             android:layout_width="match_parent"
             android:layout_height="600dp"
@@ -37,6 +38,7 @@
                     android:scaleType="centerCrop"
                     android:src="@color/transparentColor" />
                 <TextView
+                    android:textColor="@color/grey_700"
                     android:id="@+id/collectionNameTextView"
                     android:layout_above="@+id/collectionNoteTextView"
                     android:layout_width="wrap_content"
@@ -44,13 +46,14 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_marginTop="10dp"
-                    android:layout_marginLeft="35dp"
-                    android:layout_marginRight="35dp"
-                    android:layout_marginEnd="35dp"
-                    android:layout_marginStart="35dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginStart="30dp"
                     android:textSize="38sp" />
 
                 <TextView
+                    android:textColor="@color/grey_700"
                     android:id="@+id/collectionNoteTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -59,10 +62,10 @@
                     android:layout_alignParentBottom="true"
                     android:layout_marginBottom="100dp"
                     android:textSize="21sp"
-                    android:layout_marginLeft="35dp"
-                    android:layout_marginRight="35dp"
-                    android:layout_marginEnd="35dp"
-                    android:layout_marginStart="35dp" />
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginStart="30dp" />
 
             </RelativeLayout>
 
@@ -116,22 +119,28 @@
 
 
                 <TextView
+                    android:textColor="@color/grey_700"
                     android:text="Collection cover"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="12dp"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginStart="30dp"
                     android:id="@+id/changeCoverTextView"
                     android:textSize="21sp"
                     android:textStyle="normal|bold" />
 
                 <TextView
+                    android:textColor="@color/grey_700"
                     android:text="Change your the cover photo of your collection"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="21sp"
-                    android:layout_marginLeft="12dp"
-                    android:layout_marginStart="12dp" />
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginStart="30dp" />
             </LinearLayout>
 
             <View
@@ -140,12 +149,17 @@
                 android:layout_height="0.3dp"/>
 
             <RelativeLayout
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
                 android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/collectionNameRelativeLayout">
 
                 <EditText
+                    android:textColor="@color/grey_700"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:inputType="textMultiLine|textCapWords"
@@ -160,6 +174,7 @@
                     android:background="@drawable/input_background" />
 
                 <TextView
+                    android:textColor="@color/grey_700"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/nameCountTextView"
@@ -180,22 +195,28 @@
                 android:layout_height="wrap_content">
 
                 <TextView
+                    android:textColor="@color/grey_700"
                     android:text="Collection name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="12dp"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginStart="30dp"
                     android:textSize="21sp"
                     android:id="@+id/changeNameTextView"
                     android:textStyle="normal|bold" />
 
                 <TextView
+                    android:textColor="@color/grey_700"
                     android:text="Rename this collection with a more suitable name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="21sp"
-                    android:layout_marginLeft="12dp"
-                    android:layout_marginStart="12dp" />
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginStart="30dp" />
             </LinearLayout>
 
             <View
@@ -205,12 +226,17 @@
                 android:layout_height="0.3dp"/>
 
             <RelativeLayout
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
                 android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/collectionNoteRelativeLayout">
 
                 <EditText
+                    android:textColor="@color/grey_700"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:inputType="textMultiLine"
@@ -225,6 +251,7 @@
                     android:textSize="24sp" />
 
                 <TextView
+                    android:textColor="@color/grey_700"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/noteCountTextView"
@@ -246,22 +273,28 @@
                 android:layout_height="wrap_content">
 
                 <TextView
+                    android:textColor="@color/grey_700"
                     android:text="Collection note"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="12dp"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginStart="30dp"
                     android:textSize="21sp"
                     android:id="@+id/changeNoteTextView"
                     android:textStyle="normal|bold" />
 
                 <TextView
+                    android:textColor="@color/grey_700"
                     android:text="Describe your collection to let other know more about it"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="21sp"
-                    android:layout_marginLeft="12dp"
-                    android:layout_marginStart="12dp" />
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginStart="30dp" />
 
             </LinearLayout>
 

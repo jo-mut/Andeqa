@@ -24,10 +24,10 @@ import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.collections.CollectionPostsActivity;
 import com.andeqa.andeqa.main.HomeActivity;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
-import com.andeqa.andeqa.models.VideoPost;
 import com.andeqa.andeqa.profile.ProfileActivity;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
@@ -178,19 +178,14 @@ public class CreateSingleActivity extends AppCompatActivity implements View.OnCl
 
             @Override
             public void afterTextChanged(Editable editable) {
-                String s = editable.toString();
-                if (s.length() >0 && s.contains(" ")){
-                    mTitleEditText.setText(s.replaceAll(" ", ""));
-                    mTitleEditText.setSelection(mTitleEditText.getText().length());
-                    int count = DEFAULT_TITLE_LENGTH_LIMIT - mTitleEditText.getText().length();
-                    mTitleCountTextView.setText(Integer.toString(count));
+                int count = DEFAULT_TITLE_LENGTH_LIMIT - mTitleEditText.getText().length();
+                mTitleCountTextView.setText(Integer.toString(count));
 
-                    if (count < 0){
-                    }else if (count < 100){
-                        mTitleCountTextView.setTextColor(Color.GRAY);
-                    }else {
-                        mTitleCountTextView.setTextColor(Color.BLACK);
-                    }
+                if (count < 0){
+                }else if (count < 100){
+                    mTitleCountTextView.setTextColor(Color.GRAY);
+                }else {
+                    mTitleCountTextView.setTextColor(Color.BLACK);
                 }
 
             }
@@ -286,158 +281,146 @@ public class CreateSingleActivity extends AppCompatActivity implements View.OnCl
                     .child("single_images")
                     .child(post_id);
 
-            final Task<ShortDynamicLink> shortLinkTask = FirebaseDynamicLinks.getInstance().createDynamicLink()
-                    .setLink(Uri.parse("https://andeqa.com/"))
-                    .setDynamicLinkDomain("andeqa.page.link")
-                    .setAndroidParameters(
-                            new DynamicLink.AndroidParameters.Builder("com.andeqa.andeqa")
-                                    .setMinimumVersion(48)
-                                    .build())
-                    // Set parameters
-                    // ...
-                    .buildShortDynamicLink(ShortDynamicLink.Suffix.SHORT)
-                    .addOnCompleteListener(this, new OnCompleteListener<ShortDynamicLink>() {
-                        @Override
-                        public void onComplete(@NonNull Task<ShortDynamicLink> task) {
-                            if (task.isSuccessful()) {
-                                // Short link created
-                                final Uri shortLink = task.getResult().getShortLink();
-                                final Uri flowchartLink = task.getResult().getPreviewLink();
+            UploadTask uploadTask = storageReference.putFile(uri);
+            Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
 
-                                UploadTask uploadTask = storageReference.putFile(uri);
-                                Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                    // Continue with the task to get the download URL
+                    return storageReference.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        final Uri downloadUri = task.getResult();
+                        Post post = new Post();
+                        Task<ShortDynamicLink> shortLinkTask = FirebaseDynamicLinks.getInstance().createDynamicLink()
+                                .setLink(Uri.parse("https://andeqa.com/"))
+                                .setDynamicLinkDomain("andeqa.page.link")
+                                .setSocialMetaTagParameters(new DynamicLink.SocialMetaTagParameters.Builder()
+                                        .setTitle(post.getTitle())
+                                        .setDescription(post.getDescription())
+                                        .setImageUrl(downloadUri)
+                                        .build())
+                                // Set parameters
+                                .buildShortDynamicLink()
+                                .addOnCompleteListener(CreateSingleActivity.this, new OnCompleteListener<ShortDynamicLink>() {
                                     @Override
-                                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                                        if (!task.isSuccessful()) {
-                                            throw task.getException();
-                                        }
-
-                                        // Continue with the task to get the download URL
-                                        return storageReference.getDownloadUrl();
-                                    }
-                                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Uri> task) {
+                                    public void onComplete(@NonNull Task<ShortDynamicLink> task) {
                                         if (task.isSuccessful()) {
-                                            final Uri downloadUri = task.getResult();
+                                            // Short link created
+                                            final Uri shortLink = task.getResult().getShortLink();
+                                            final Uri flowchartLink = task.getResult().getPreviewLink();
 
-                                            CollectionReference cl = collectionsCollection;
-                                            cl.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                            postsCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                                 @Override
-                                                public void onSuccess(QuerySnapshot documentSnapshots) {
-                                                    final int index = documentSnapshots.getDocuments().size();
-                                                    CollectionPost collectionPost = new CollectionPost();
-                                                    final int size = documentSnapshots.size();
+                                                public void onSuccess(QuerySnapshot snapshots) {
+                                                    final int size = snapshots.size();
                                                     final int number = size + 1;
                                                     final double random = new Random().nextDouble();
 
-                                                    //record all the collectionPost data
-                                                    collectionPost.setNumber(number);
-                                                    collectionPost.setRandom_number(random);
-                                                    collectionPost.setTime(timeStamp);
-                                                    collectionPost.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                    collectionPost.setTitle(mTitleEditText.getText().toString());
-                                                    collectionPost.setDescription(mCingleDescriptionEditText.getText().toString());
-                                                    collectionPost.setImage(downloadUri.toString());
-                                                    collectionPost.setPost_id(post_id);
-                                                    collectionPost.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                    collectionPost.setType("single");
-                                                    collectionPost.setWidth(width);
-                                                    collectionPost.setHeight(height);
-                                                    collectionPost.setCollection_id(pushId);
-                                                    collectionPost.setDeeplink(flowchartLink.toString());
-                                                    collectionsCollection.document("singles").collection(pushId)
-                                                            .document(post_id).set(collectionPost).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    postsCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                                         @Override
-                                                        public void onSuccess(Void aVoid) {
-                                                            postsCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                                                @Override
-                                                                public void onSuccess(QuerySnapshot snapshots) {
-                                                                    final int size = snapshots.size();
-                                                                    final int number = size + 1;
-                                                                    final double random = new Random().nextDouble();
+                                                        public void onSuccess(QuerySnapshot snapshots) {
+                                                            final int size = snapshots.size();
+                                                            final int number = size + 1;
+                                                            final double random = new Random().nextDouble();
 
-                                                                    Post post = new Post();
-                                                                    post.setCollection_id(pushId);
-                                                                    post.setType("single_image_post");
-                                                                    post.setPost_id(post_id);
-                                                                    post.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                    post.setRandom_number(random);
-                                                                    post.setNumber(number);
-                                                                    post.setDeeplink(flowchartLink.toString());
-                                                                    post.setTime(timeStamp);
-                                                                    post.setWidth(width);
-                                                                    post.setHeight(height);
+                                                            Post post = new Post();
+                                                            post.setCollection_id(pushId);
+                                                            post.setType("single_image_post");
+                                                            post.setPost_id(post_id);
+                                                            post.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                            post.setRandom_number(random);
+                                                            post.setNumber(number);
+                                                            post.setDeeplink(shortLink.toString());
+                                                            post.setTime(timeStamp);
+                                                            post.setWidth(width);
+                                                            post.setHeight(height);
+                                                            post.setTitle(mTitleEditText.getText().toString());
+                                                            post.setDescription(mCingleDescriptionEditText.getText().toString());
+                                                            post.setUrl(downloadUri.toString());
 
-                                                                    postsCollection.document(post_id).set(post)
-                                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                                @Override
-                                                                                public void onSuccess(Void aVoid) {
-                                                                                    //reset input fields
-                                                                                    mTitleEditText.setText("");
-                                                                                    mCingleDescriptionEditText.setText("");
-                                                                                    mPostImageView.setImageBitmap(null);
 
-                                                                                    //launch the collections activity
-                                                                                    Intent intent = new Intent(CreateSingleActivity.this, HomeActivity.class);
-                                                                                    intent.putExtra(CreateSingleActivity.EXTRA_USER_UID, ProfileActivity.class);
-                                                                                    intent.putExtra(CreateSingleActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
-                                                                                    startActivity(intent);
-                                                                                    finish();
-                                                                                }
-                                                                            });
-                                                                }
-                                                            });
+
+                                                            postsCollection.document(post_id).set(post)
+                                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                        @Override
+                                                                        public void onSuccess(Void aVoid) {
+                                                                            //reset input fields
+                                                                            mTitleEditText.setText("");
+                                                                            mCingleDescriptionEditText.setText("");
+                                                                            mPostImageView.setImageBitmap(null);
+
+                                                                            //launch the collections activity
+                                                                            Intent intent = new Intent(CreateSingleActivity.this, HomeActivity.class);
+                                                                            intent.putExtra(CreateSingleActivity.EXTRA_USER_UID, ProfileActivity.class);
+                                                                            intent.putExtra(CreateSingleActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
+                                                                            startActivity(intent);
+                                                                            finish();
+
+
+                                                                        }
+                                                                    });
                                                         }
                                                     });
-
-
                                                 }
                                             });
 
                                         } else {
-                                            // Handle failures
+                                            // Error
                                             // ...
                                         }
                                     }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                    }
                                 });
 
-                                uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                                    @Override
-                                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                                        final double progression = (100 * taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
-                                        progress = (int) progression;
-                                        new Thread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                while (progress < 100){
-                                                    progress += 1;
-                                                    handler.post(new Runnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            progressBar.setProgress(progress);
-                                                            progressTextView.setText(progress + " %");
-                                                        }
-                                                    });
-                                                    try {
-                                                        Thread.sleep(100);
-                                                    }catch (InterruptedException ex){
-                                                        ex.printStackTrace();
-                                                    }
-                                                }
-                                            }
-                                        }).start();
 
+
+                    } else {
+                        // Handle failures
+                        // ...
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(CreateSingleActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                    final double progression = (100 * taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
+                    progress = (int) progression;
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            while (progress < 100){
+                                progress += 1;
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressBar.setProgress(progress);
+                                        progressTextView.setText(progress + " %");
                                     }
                                 });
-
+                                try {
+                                    Thread.sleep(100);
+                                }catch (InterruptedException ex){
+                                    ex.printStackTrace();
+                                }
                             }
                         }
-                    });
+                    }).start();
+
+                }
+            });
+
         }
     }
 
@@ -452,6 +435,7 @@ public class CreateSingleActivity extends AppCompatActivity implements View.OnCl
             //this push id is to add new single to the same reference
             final DatabaseReference singleRef = randomReference.push();
             final String post_id = singleRef.getKey();
+
             storageReference = FirebaseStorage
                     .getInstance().getReference()
                     .child(Constants.USER_COLLECTIONS)
@@ -460,156 +444,144 @@ public class CreateSingleActivity extends AppCompatActivity implements View.OnCl
 
             if (videoUri != null){
 
-                final Task<ShortDynamicLink> shortLinkTask = FirebaseDynamicLinks.getInstance().createDynamicLink()
-                        .setLink(Uri.parse("https://andeqa.com/"))
-                        .setDynamicLinkDomain("andeqa.page.link")
-                        .setAndroidParameters(
-                                new DynamicLink.AndroidParameters.Builder("com.andeqa.andeqa")
-                                        .setMinimumVersion(48)
-                                        .build())
-                        // Set parameters
-                        // ...
-                        .buildShortDynamicLink(ShortDynamicLink.Suffix.SHORT)
-                        .addOnCompleteListener(this, new OnCompleteListener<ShortDynamicLink>() {
-                            @Override
-                            public void onComplete(@NonNull Task<ShortDynamicLink> task) {
-                                if (task.isSuccessful()) {
-                                    // Short link created
-                                    final Uri shortLink = task.getResult().getShortLink();
-                                    final Uri flowchartLink = task.getResult().getPreviewLink();
+                UploadTask uploadTask = storageReference.putFile(videoUri);
+                Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                    @Override
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()) {
+                            throw task.getException();
+                        }
 
-                                    UploadTask uploadTask = storageReference.putFile(videoUri);
-                                    Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                        // Continue with the task to get the download URL
+                        return storageReference.getDownloadUrl();
+                    }
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()) {
+                            final Uri downloadUri = task.getResult();
+                            Post post = new Post();
+                            Task<ShortDynamicLink> shortLinkTask = FirebaseDynamicLinks.getInstance().createDynamicLink()
+                                    .setLink(Uri.parse("https://andeqa.com/"))
+                                    .setDynamicLinkDomain("andeqa.page.link")
+                                    .setSocialMetaTagParameters(new DynamicLink.SocialMetaTagParameters.Builder()
+                                            .setTitle(post.getTitle())
+                                            .setDescription(post.getDescription())
+                                            .setImageUrl(downloadUri)
+                                            .build())
+                                    // Set parameters
+                                    .buildShortDynamicLink()
+                                    .addOnCompleteListener(CreateSingleActivity.this, new OnCompleteListener<ShortDynamicLink>() {
                                         @Override
-                                        public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                                            if (!task.isSuccessful()) {
-                                                throw task.getException();
-                                            }
-
-                                            // Continue with the task to get the download URL
-                                            return storageReference.getDownloadUrl();
-                                        }
-                                    }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Uri> task) {
+                                        public void onComplete(@NonNull Task<ShortDynamicLink> task) {
                                             if (task.isSuccessful()) {
-                                                final Uri downloadUri = task.getResult();
+                                                // Short link created
+                                                final Uri shortLink = task.getResult().getShortLink();
+                                                final Uri flowchartLink = task.getResult().getPreviewLink();
 
-                                                CollectionReference cl = collectionsCollection;
-                                                cl.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                                postsCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                                     @Override
-                                                    public void onSuccess(QuerySnapshot documentSnapshots) {
-                                                        final int index = documentSnapshots.getDocuments().size();
-                                                        VideoPost videoPost = new VideoPost();
-                                                        final int size = documentSnapshots.size();
+                                                    public void onSuccess(QuerySnapshot snapshots) {
+                                                        final int size = snapshots.size();
                                                         final int number = size + 1;
                                                         final double random = new Random().nextDouble();
 
-                                                        //record all the collectionPost data
-                                                        videoPost.setNumber(number);
-                                                        videoPost.setRandom_number(random);
-                                                        videoPost.setTime(timeStamp);
-                                                        videoPost.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                        videoPost.setTitle(mTitleEditText.getText().toString());
-                                                        videoPost.setDescription(mCingleDescriptionEditText.getText().toString());
-                                                        videoPost.setVideo(downloadUri.toString());
-                                                        videoPost.setPost_id(post_id);
-                                                        videoPost.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                        videoPost.setType("single");
-                                                        videoPost.setCollection_id(pushId);
-                                                        videoPost.setDeeplink(flowchartLink.toString());
-                                                        collectionsCollection.document("singles").collection(pushId)
-                                                                .document(post_id).set(videoPost).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        postsCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                                             @Override
-                                                            public void onSuccess(Void aVoid) {
-                                                                postsCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                                                    @Override
-                                                                    public void onSuccess(QuerySnapshot snapshots) {
-                                                                        final int size = snapshots.size();
-                                                                        final int number = size + 1;
-                                                                        final double random = new Random().nextDouble();
+                                                            public void onSuccess(QuerySnapshot snapshots) {
+                                                                final int size = snapshots.size();
+                                                                final int number = size + 1;
+                                                                final double random = new Random().nextDouble();
 
-                                                                        Post post = new Post();
-                                                                        post.setCollection_id(pushId);
-                                                                        post.setType("single_video_post");
-                                                                        post.setPost_id(post_id);
-                                                                        post.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                        post.setRandom_number(random);
-                                                                        post.setNumber(number);
-                                                                        post.setDeeplink(flowchartLink.toString());
-                                                                        post.setTime(timeStamp);
+                                                                Post post = new Post();
+                                                                post.setCollection_id(pushId);
+                                                                post.setType("single_video_post");
+                                                                post.setPost_id(post_id);
+                                                                post.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                                post.setRandom_number(random);
+                                                                post.setNumber(number);
+                                                                post.setDeeplink(shortLink.toString());
+                                                                post.setTime(timeStamp);
+                                                                post.setWidth(width);
+                                                                post.setHeight(height);
+                                                                post.setTitle(mTitleEditText.getText().toString());
+                                                                post.setDescription(mCingleDescriptionEditText.getText().toString());
+                                                                post.setUrl(downloadUri.toString());
 
-                                                                        postsCollection.document(post_id).set(post)
-                                                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                                    @Override
-                                                                                    public void onSuccess(Void aVoid) {
-                                                                                        //reset input fields
-                                                                                        mTitleEditText.setText("");
-                                                                                        mCingleDescriptionEditText.setText("");
-                                                                                        mPostImageView.setImageBitmap(null);
 
-                                                                                        //launch the collections activity
-                                                                                        Intent intent = new Intent(CreateSingleActivity.this, HomeActivity.class);
-                                                                                        intent.putExtra(CreateSingleActivity.EXTRA_USER_UID, ProfileActivity.class);
-                                                                                        intent.putExtra(CreateSingleActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
-                                                                                        startActivity(intent);
-                                                                                        finish();
-                                                                                    }
-                                                                                });
-                                                                    }
-                                                                });
+                                                                postsCollection.document(post_id).set(post)
+                                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                            @Override
+                                                                            public void onSuccess(Void aVoid) {
+                                                                                //reset input fields
+                                                                                mTitleEditText.setText("");
+                                                                                mCingleDescriptionEditText.setText("");
+                                                                                mPostImageView.setImageBitmap(null);
+
+                                                                                //launch the collections activity
+                                                                                Intent intent = new Intent(CreateSingleActivity.this, HomeActivity.class);
+                                                                                intent.putExtra(CreateSingleActivity.EXTRA_USER_UID, ProfileActivity.class);
+                                                                                intent.putExtra(CreateSingleActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
+                                                                                startActivity(intent);
+                                                                                finish();
+
+
+                                                                            }
+                                                                        });
                                                             }
                                                         });
-
-
                                                     }
                                                 });
 
                                             } else {
-                                                // Handle failures
+                                                // Error
                                                 // ...
                                             }
                                         }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Toast.makeText(CreateSingleActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                                        }
                                     });
 
-                                    uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                                        @Override
-                                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                                            final double progression = (100 * taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
-                                            progress = (int) progression;
-                                            new Thread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    while (progress < 100){
-                                                        progress += 1;
-                                                        handler.post(new Runnable() {
-                                                            @Override
-                                                            public void run() {
-                                                                progressBar.setProgress(progress);
-                                                                progressTextView.setText(progress + " %");
-                                                            }
-                                                        });
-                                                        try {
-                                                            Thread.sleep(100);
-                                                        }catch (InterruptedException ex){
-                                                            ex.printStackTrace();
-                                                        }
-                                                    }
-                                                }
-                                            }).start();
 
+
+                        } else {
+                            // Handle failures
+                            // ...
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(CreateSingleActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                        final double progression = (100 * taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
+                        progress = (int) progression;
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                while (progress < 100){
+                                    progress += 1;
+                                    handler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            progressBar.setProgress(progress);
+                                            progressTextView.setText(progress + " %");
                                         }
                                     });
-
+                                    try {
+                                        Thread.sleep(100);
+                                    }catch (InterruptedException ex){
+                                        ex.printStackTrace();
+                                    }
                                 }
                             }
-                        });
+                        }).start();
 
+                    }
+                });
 
             }
 

@@ -17,6 +17,7 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.design.widget.CollapsingToolbarLayout
+            android:background="@drawable/default_gradient_color"
             android:id="@+id/collapsingToolbar"
             android:layout_width="match_parent"
             android:layout_height="400dp"
@@ -45,10 +46,10 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_marginTop="10dp"
-                    android:layout_marginLeft="35dp"
-                    android:layout_marginRight="35dp"
-                    android:layout_marginEnd="35dp"
-                    android:layout_marginStart="35dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp"
                     android:textSize="25sp" />
 
                 <TextView
@@ -59,10 +60,10 @@
                     android:layout_alignParentStart="true"
                     android:layout_alignParentBottom="true"
                     android:layout_marginBottom="100dp"
-                    android:layout_marginLeft="35dp"
-                    android:layout_marginRight="35dp"
-                    android:layout_marginEnd="35dp"
-                    android:layout_marginStart="35dp" />
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp" />
 
             </RelativeLayout>
 
@@ -109,30 +110,32 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:id="@+id/changeCoverRelativeLayout"
-                android:paddingRight="10dp"
-                android:paddingEnd="10dp"
-                android:paddingLeft="10dp"
-                android:paddingStart="10dp"
                 android:paddingBottom="20dp"
                 android:paddingTop="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <TextView
+                    android:textColor="@color/grey_700"
                     android:text="Collection cover"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="12dp"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp"
                     android:id="@+id/changeCoverTextView"
                     android:textStyle="normal|bold" />
 
                 <TextView
+                    android:textColor="@color/grey_700"
                     android:text="Change your the cover photo of your collection"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="12dp"
-                    android:layout_marginStart="12dp" />
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp" />
             </LinearLayout>
 
             <View
@@ -141,12 +144,17 @@
                 android:layout_height="0.3dp"/>
 
             <RelativeLayout
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
                 android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/collectionNameRelativeLayout">
 
                 <EditText
+                    android:textColor="@color/grey_700"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:inputType="textMultiLine|textCapWords"
@@ -161,6 +169,7 @@
                     android:background="@drawable/input_background" />
 
                 <TextView
+                    android:textColor="@color/grey_700"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/nameCountTextView"
@@ -175,31 +184,33 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:id="@+id/changeNameRelativeLayout"
-                android:paddingRight="10dp"
-                android:paddingEnd="10dp"
-                android:paddingLeft="10dp"
-                android:paddingStart="10dp"
                 android:paddingBottom="20dp"
                 android:paddingTop="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <TextView
+                    android:textColor="@color/grey_700"
                     android:text="Collection name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="12dp"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp"
                     android:id="@+id/changeNameTextView"
                     android:textStyle="normal|bold" />
 
                 <TextView
+                    android:textColor="@color/grey_700"
                     android:layout_below="@+id/changeNameTextView"
                     android:text="Rename this collection with a more suitable name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="12dp"
-                    android:layout_marginStart="12dp" />
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp" />
             </LinearLayout>
 
             <View
@@ -208,12 +219,17 @@
                 android:layout_height="0.3dp"/>
 
             <RelativeLayout
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
                 android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/collectionNoteRelativeLayout">
 
                 <EditText
+                    android:textColor="@color/grey_700"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:inputType="textMultiLine"
@@ -228,6 +244,7 @@
                     android:textSize="16sp" />
 
                 <TextView
+                    android:textColor="@color/grey_700"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/noteCountTextView"
@@ -243,10 +260,6 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:id="@+id/changeNoteRelativeLayout"
-                android:paddingRight="10dp"
-                android:paddingEnd="10dp"
-                android:paddingLeft="10dp"
-                android:paddingStart="10dp"
                 android:paddingBottom="20dp"
                 android:paddingTop="20dp"
                 android:layout_width="match_parent"
@@ -254,20 +267,26 @@
 
 
                 <TextView
+                    android:textColor="@color/grey_700"
                     android:text="Collection note"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="12dp"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp"
                     android:id="@+id/changeNoteTextView"
                     android:textStyle="normal|bold" />
 
                 <TextView
+                    android:textColor="@color/grey_700"
                     android:text="Describe your collection to let other know more about it"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="12dp"
-                    android:layout_marginStart="12dp" />
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp" />
 
             </LinearLayout>
 

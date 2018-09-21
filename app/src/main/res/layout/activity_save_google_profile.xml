@@ -29,6 +29,7 @@
                 android:layout_gravity="bottom">
 
                 <TextView
+                    android:textColor="@color/grey_700"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
@@ -63,6 +64,7 @@
                         android:layout_height="120dp" />
 
                     <ImageButton
+                        android:tint="@color/grey_700"
                         android:layout_height="40dp"
                         android:src="@drawable/ic_menu_camera"
                         android:layout_width="40dp"
@@ -72,6 +74,7 @@
                         android:id="@+id/profilePhotoImageButton" />
 
                     <TextView
+                        android:textColor="@color/grey_700"
                         android:text="Create your profile to have a better experience with other Andeqans"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

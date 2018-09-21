@@ -7,8 +7,8 @@ android {
         applicationId "com.andeqa.andeqa"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 65
-        versionName "1.4.3"
+        versionCode 66
+        versionName "1.4.4"
         multiDexEnabled true
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -107,22 +107,18 @@ dependencies {
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
     implementation 'com.github.bumptech.glide:glide:4.7.1'
     implementation 'com.google.android.exoplayer:exoplayer:2.6.0'
-
-//    //rich link previews
     implementation 'org.jsoup:jsoup:1.11.3'
     implementation 'com.leocardz:link-preview:2.0.0@aar'
     implementation 'com.koushikdutta.urlimageviewhelper:urlimageviewhelper:1.0.4'
-
-
-
+    implementation 'io.michaelrocks:libphonenumber-android:8.8.5'
+    implementation 'com.github.joielechong:countrycodepicker:2.1.5'
 
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.robolectric:robolectric:3.0'
     testImplementation 'org.robolectric:shadows-support-v4:3.0'
     annotationProcessor 'org.parceler:parceler:1.1.6'
 
-    implementation 'io.michaelrocks:libphonenumber-android:8.8.5'
-
-    implementation 'com.github.joielechong:countrycodepicker:2.1.5'
 }
 apply plugin: 'com.google.gms.google-services'
+//com.google.gms.googleservices.GoogleServicesPlugin.config.disableVersionCheck = true;
+

@@ -23,9 +23,9 @@ import butterknife.ButterKnife;
  * A simple {@link Fragment} subclass.
  */
 public class ChooseCreationFragment extends BottomSheetDialogFragment implements View.OnClickListener {
-    @Bind(R.id.galleryRelativeLayout)RelativeLayout mGalleryRelativeLayout;
-    @Bind(R.id.collectionRelativeLayout)RelativeLayout mCollectionRelativeLayout;
-    @Bind(R.id.cameraRelativeLayout)RelativeLayout mCameraRelativeLayout;
+    @Bind(R.id.galleryLinearLayout)RelativeLayout mGalleryRelativeLayout;
+    @Bind(R.id.collectionLinearLayout)RelativeLayout mCollectionRelativeLayout;
+    @Bind(R.id.cameraLinearLayout)RelativeLayout mCameraRelativeLayout;
 
 
     public static ChooseCreationFragment newInstance() {

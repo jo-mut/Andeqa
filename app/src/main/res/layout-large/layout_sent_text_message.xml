@@ -11,13 +11,14 @@
     android:paddingBottom="2dp"
     android:paddingRight="10dp"
     android:paddingEnd="10dp"
-    android:paddingLeft="70dp"
-    android:paddingStart="70dp">
+    android:paddingLeft="150dp"
+    android:paddingStart="150dp">
 
     <TextView
         android:layout_gravity="center_horizontal"
         android:visibility="gone"
         android:id="@+id/dateTextView"
+        android:textColor="@color/grey_700"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_vertical|end"
@@ -68,6 +69,7 @@
         <TextView
             android:gravity="center_vertical|start"
             android:id="@+id/timeTextView"
+            android:textColor="@color/grey_700"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"

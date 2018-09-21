@@ -51,9 +51,9 @@ public class CountDrawable extends Drawable {
 
         /*Using Math.max rather than Math.min */
 
-        float radius = ((Math.max(width, height) / 2)) / 2;
-        float centerX = (width - radius - 1);
-        float centerY = radius;
+        float radius = ((Math.max(width, height) / 1)) / 3;
+        float centerX = (width - radius);
+        float centerY = radius + 6;
         if(mCount.length() <= 2){
             // Draw badge circle.
             canvas.drawCircle(centerX, centerY, (int)(radius), mBadgePaint);

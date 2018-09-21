@@ -200,102 +200,51 @@ public class ConfirmDeleteFragment extends DialogFragment implements View.OnClic
 
     private void deletePost(){
         progressDialog.show();
-        collectionsPosts.document(mPostId)
-                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
 
-                        if (documentSnapshot.exists()){
-                            CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
-//                            storageReference.getReferenceFromUrl(collectionPost.getImage()).delete();
-                            postsCollection.document(mPostId)
-                                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onEvent(DocumentSnapshot documentSnapshot,
-                                                            FirebaseFirestoreException e) {
-                                            if (e != null) {
-                                                Log.w(TAG, "Listen error", e);
-                                                return;
-                                            }
+        postsCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot,
+                                @javax.annotation.Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
 
-                                            if (documentSnapshot.exists()){
-                                                postsCollection.document(mPostId).delete();
-
-                                            }
+                if (documentSnapshot.exists()){
+                    Post post = documentSnapshot.toObject(Post.class);
+                    if (post.getUrl() == null){
+                        collectionsPosts.document(mPostId).delete()
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        try {
+                                            progressDialog.dismiss();
+                                        }catch (Exception e){
+                                            e.printStackTrace();
                                         }
-                                    });
 
-                            marketCollections.document(mPostId)
-                                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                    }
+                                });
 
-                                            if (e != null) {
-                                                Log.w(TAG, "Listen error", e);
-                                                return;
-                                            }
-
-
-                                            if (documentSnapshot.exists()) {
-                                                marketCollections.document(mPostId).delete();
-
-                                            }
+                    }else {
+                        postsCollection.document(mPostId).delete()
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        try {
+                                            progressDialog.dismiss();
+                                        }catch (Exception e){
+                                            e.printStackTrace();
                                         }
-                                    });
 
-                            senseCreditReference.document(mPostId)
-                                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                            if (e != null) {
-                                                Log.w(TAG, "Listen error", e);
-                                                return;
-                                            }
+                                    }
+                                });
 
-                                            if (documentSnapshot.exists()){
-                                                senseCreditReference.document(mPostId).delete();
-
-
-                                            }
-                                        }
-                                    });
-
-                            postOnwersCollection.document(mPostId)
-                                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                                            if (e != null) {
-                                                Log.w(TAG, "Listen error", e);
-                                                return;
-                                            }
-
-                                            if (documentSnapshot.exists()){
-                                                postOnwersCollection.document(mPostId).delete();
-
-                                            }
-                                        }
-                                    });
-
-                            collectionsPosts.document(mPostId).delete()
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            try {
-                                                progressDialog.dismiss();
-                                            }catch (Exception e){
-                                                e.printStackTrace();
-                                            }
-
-                                        }
-                                    });
-
-                        }
                     }
-                });
+
+                }
+            }
+        });
 
     }
 

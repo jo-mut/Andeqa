@@ -1,102 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:fitsSystemWindows="true"
     android:background="@color/blue_grey_50"
     tools:context="com.andeqa.andeqa.home.HomeFragment">
 
-    <android.support.v4.widget.NestedScrollView
-        android:fillViewport="true"
+    <android.support.v7.widget.RecyclerView
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:overScrollMode="never"
+        android:clipToPadding="false"
+        android:padding="@dimen/item_off_set"
+        android:id="@+id/homeRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"/>
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_margin="15dp"
+        android:background="@drawable/border_rectangle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:id="@+id/placeHolderRelativeLayout">
 
-            <RelativeLayout
-                android:id="@+id/peopleRelativeLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+        <ImageView
+            app:srcCompat="@drawable/ic_photo"
+            android:id="@+id/imagePlaceHolder"
+            android:layout_centerInParent="true"
+            android:layout_width="80sp"
+            android:layout_height="80sp"
+            android:tint="@color/grey_700"  />
 
-                <FrameLayout
-                    android:id="@+id/follow_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@color/grey_700"
+            android:textSize="21sp"
+            android:layout_below="@+id/imagePlaceHolder"
+            android:text="Follow some people to see their posts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/placeHolderTextView"
+            android:textAlignment="center"
+            android:padding="20dp" />
 
-                </FrameLayout>
+    </RelativeLayout>
 
-            </RelativeLayout>
-
-
-            <RelativeLayout
-                android:id="@+id/postRelativeLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <android.support.v7.widget.RecyclerView
-                    android:overScrollMode="never"
-                    android:clipToPadding="false"
-                    android:padding="@dimen/item_off_set"
-                    android:id="@+id/postsRecyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-                <RelativeLayout
-                    android:visibility="gone"
-                    android:layout_alignParentBottom="true"
-                    android:id="@+id/progressBarRelativeLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <ProgressBar
-                        android:layout_centerInParent="true"
-                        style="?android:attr/progressBarStyleLarge"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/progressBar" />
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_margin="15dp"
-                    android:background="@drawable/border_rectangle"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:visibility="gone"
-                    android:id="@+id/placeHolderRelativeLayout">
-
-                    <ImageView
-                        app:srcCompat="@drawable/ic_photo"
-                        android:id="@+id/imagePlaceHolder"
-                        android:layout_centerInParent="true"
-                        android:layout_width="80sp"
-                        android:layout_height="80sp"
-                        android:tint="@android:color/darker_gray" />
-
-                    <TextView
-                        android:textSize="21sp"
-                        android:layout_below="@+id/imagePlaceHolder"
-                        android:text="Follow some people to see their posts"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
-                        android:id="@+id/placeHolderTextView"
-                        android:textAlignment="center"
-                        android:padding="20dp" />
-
-                </RelativeLayout>
-
-            </RelativeLayout>
-
-        </LinearLayout>
-
-    </android.support.v4.widget.NestedScrollView>
-
-</android.support.design.widget.CoordinatorLayout>
+</LinearLayout>

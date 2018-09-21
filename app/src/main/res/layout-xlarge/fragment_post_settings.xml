@@ -42,12 +42,14 @@
             android:padding="20dp">
 
             <ImageView
+                android:tint="@color/grey_700"
                 android:layout_gravity="center_vertical"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 app:srcCompat="@drawable/ic_delete" />
 
             <TextView
+                android:textColor="@color/grey_700"
                 android:layout_marginLeft="60dp"
                 android:layout_marginStart="60dp"
                 android:layout_width="wrap_content"
@@ -67,12 +69,14 @@
             android:padding="20dp">
 
             <ImageView
+                android:tint="@color/grey_700"
                 android:layout_gravity="center_vertical"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 app:srcCompat="@drawable/ic_redeem" />
 
             <TextView
+                android:textColor="@color/grey_700"
                 android:layout_marginLeft="60dp"
                 android:layout_marginStart="60dp"
                 android:layout_width="wrap_content"
@@ -93,12 +97,14 @@
             android:padding="20dp">
 
             <ImageView
+                android:tint="@color/grey_700"
                 android:layout_gravity="center_vertical"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 app:srcCompat="@drawable/ic_info" />
 
             <TextView
+                android:textColor="@color/grey_700"
                 android:layout_marginLeft="60dp"
                 android:layout_marginStart="60dp"
                 android:layout_width="wrap_content"
@@ -118,12 +124,14 @@
             android:padding="20dp">
 
             <ImageView
+                android:tint="@color/grey_700"
                 android:layout_gravity="center_vertical"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 app:srcCompat="@drawable/ic_share" />
 
             <TextView
+                android:textColor="@color/grey_700"
                 android:layout_marginLeft="60dp"
                 android:layout_marginStart="60dp"
                 android:layout_width="wrap_content"

@@ -47,7 +47,6 @@ public class FeaturedCollectionsAdapter extends RecyclerView.Adapter<CollectionV
     private CollectionReference collectionsCollection;
     private CollectionReference followingCollection;
     private CollectionReference usersCollection;
-    private CollectionReference queryParamsCollection;
     private Query postCountQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
@@ -64,7 +63,6 @@ public class FeaturedCollectionsAdapter extends RecyclerView.Adapter<CollectionV
 
     protected void setFeaturedCollections(List<DocumentSnapshot> mSnapshots){
         this.featuredCollections = mSnapshots;
-        notifyDataSetChanged();
     }
 
     @Override
@@ -97,7 +95,6 @@ public class FeaturedCollectionsAdapter extends RecyclerView.Adapter<CollectionV
                 .orderBy("collection_id");
         followingCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_RELATIONS);
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-        queryParamsCollection = FirebaseFirestore.getInstance().collection(Constants.QUERY_OPTIONS);
 
         Glide.with(mContext.getApplicationContext())
                 .asBitmap()
@@ -181,7 +178,7 @@ public class FeaturedCollectionsAdapter extends RecyclerView.Adapter<CollectionV
                     Glide.with(mContext.getApplicationContext())
                             .load(andeqan.getProfile_image())
                             .apply(new RequestOptions()
-                                    .placeholder(R.drawable.ic_user_white)
+                                    .placeholder(R.drawable.ic_user)
                                     .diskCacheStrategy(DiskCacheStrategy.DATA))
                             .into(holder.profileImageView);
                 }
@@ -245,8 +242,8 @@ public class FeaturedCollectionsAdapter extends RecyclerView.Adapter<CollectionV
                 public void onClick(View v) {
                     processFollow = true;
                     followingCollection.document("following")
-                            .collection(collectionId)
-                            .whereEqualTo("following_id", firebaseAuth.getCurrentUser().getUid())
+                            .collection(firebaseAuth.getCurrentUser().getUid())
+                            .whereEqualTo("followed_id", collectionId)
                             .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                 @Override
                                 public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -263,25 +260,17 @@ public class FeaturedCollectionsAdapter extends RecyclerView.Adapter<CollectionV
                                             following.setFollowed_id(collectionId);
                                             following.setType("followed_collection");
                                             following.setTime(System.currentTimeMillis());
-                                            followingCollection.document("following").collection(collectionId)
+                                            followingCollection.document("following")
+                                                    .collection(collectionId)
                                                     .document(firebaseAuth.getCurrentUser().getUid()).set(following);
-
-                                            final String id = queryParamsCollection.document().getId();
-                                            QueryOptions queryOptions = new QueryOptions();
-                                            queryOptions.setUser_id(userId);
-                                            queryOptions.setQuery_option(collectionId);
-                                            queryOptions.setOption_id(id);
-                                            queryParamsCollection.document("options")
-                                                    .collection(firebaseAuth.getCurrentUser().getUid()).document(collectionId)
-                                                    .set(queryOptions);
-
                                             holder.followButton.setText("FOLLOWING");
                                             processFollow = false;
                                         }else {
-                                            followingCollection.document("following").collection(collectionId)
-                                                    .document(firebaseAuth.getCurrentUser().getUid()).delete();
-                                            queryParamsCollection.document("options").collection(firebaseAuth.getCurrentUser().getUid())
-                                                    .document(collectionId).delete();
+                                            followingCollection.document("following")
+                                                    .collection(collectionId)
+                                                    .document(firebaseAuth.getCurrentUser().getUid())
+                                                    .delete();
+
                                             holder.followButton.setText("FOLLOW");
                                             processFollow = false;
                                         }
