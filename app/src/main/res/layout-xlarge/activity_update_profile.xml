@@ -208,7 +208,6 @@
 
                         <ImageView
                             android:tint="@color/grey_700"
-                            app:srcCompat="@drawable/ic_description_black_24dp"
                             android:id="@+id/imageView3"
                             android:layout_alignParentTop="false"
                             android:layout_alignParentLeft="false"

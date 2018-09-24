@@ -7,20 +7,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@android:color/white"
     tools:context="com.andeqa.andeqa.creation.CreateCollectionActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="112dp"
-        app:titleTextColor="@color/grey_700"
+        android:textColor="@android:color/white"
+        android:background="@drawable/default_gradient_color"
         app:layout_scrollFlags="scroll|enterAlways"
         app:titleTextAppearance="@style/toolbarTextAppearance"
         app:popupTheme="@style/AppTheme.PopupOverlay">
 
         <ImageView
-            android:background="@drawable/accent_color"
+            android:background="@drawable/white_rounded_background"
             app:srcCompat="@drawable/ic_check"
+            android:tint="@color/grey_700"
             android:layout_margin="5dp"
             android:layout_width="90dp"
             android:layout_height="90dp"

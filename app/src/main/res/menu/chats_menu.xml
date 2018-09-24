@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/action_chat"
-        android:icon="@drawable/ic_speach"
+        android:icon="@drawable/ic_new_chat"
         app:showAsAction="always"
         android:title="Search">
 

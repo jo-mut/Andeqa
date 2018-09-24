@@ -135,6 +135,13 @@ public class PreviewImagePostActivity extends AppCompatActivity implements View.
                 intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
                 startActivity(intent);
                 finish();
+            }else if (photoUri != null){
+                Intent intent = new Intent(PreviewImagePostActivity.this, CreateSingleActivity.class);
+                intent.putExtra(PreviewImagePostActivity.GALLERY_PATH, cameraImage);
+                intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
+                intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
+                startActivity(intent);
+                finish();
             }else {
                 Intent intent = new Intent(PreviewImagePostActivity.this, CreateSingleActivity.class);
                 intent.putExtra(PreviewImagePostActivity.GALLERY_PATH, galleryImage);

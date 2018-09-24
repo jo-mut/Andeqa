@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/blue_grey_50"
     android:orientation="vertical"
-    tools:context="more.ChatsFragment">
+    tools:context=".chat_rooms.ChatsFragment">
 
     <android.support.v7.widget.RecyclerView
         android:overScrollMode="never"

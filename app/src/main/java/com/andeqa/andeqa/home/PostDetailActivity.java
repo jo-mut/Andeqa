@@ -3,7 +3,6 @@ package com.andeqa.andeqa.home;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -14,10 +13,14 @@ import android.support.constraint.ConstraintSet;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -25,15 +28,15 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
+import com.andeqa.andeqa.models.Comment;
 import com.andeqa.andeqa.models.Impression;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.ViewDuration;
-import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.settings.PostSettingsFragment;
+import com.andeqa.andeqa.utils.EndlessLinearRecyclerViewOnScrollListener;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
@@ -47,10 +50,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.File;
@@ -58,7 +63,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -72,30 +79,26 @@ public class PostDetailActivity extends AppCompatActivity
         implements View.OnClickListener{
     @Bind(R.id.usernameTextView)TextView mUsernameTextView;
     @Bind(R.id.postImageView)ImageView postImageView;
-    @Bind(R.id.topRelativeLayout)RelativeLayout topRelativeLayout;
-    @Bind(R.id.bottomRelativeLayout)RelativeLayout bottomRelativeLayout;
     @Bind(R.id.postConstrantLayout)ConstraintLayout postConstraintLayout;
     @Bind(R.id.profileImageView)CircleImageView mProfileImageView;
     @Bind(R.id.titleTextView)TextView titleTextView;
     @Bind(R.id.titleRelativeLayout)RelativeLayout mTitleRelativeLayout;
     @Bind(R.id.descriptionRelativeLayout)RelativeLayout mDescriptionRelativeLayout;
     @Bind(R.id.descriptionTextView)TextView mDescriptionTextView;
-    @Bind(R.id.viewsCountTextView)TextView mViewsCountTextView;
-    @Bind(R.id.viewsLinearLayout)LinearLayout mViewsLinearLayout;
-    @Bind(R.id.viewsImageView)ImageView mViewsImageView;
-    @Bind(R.id.commentsImageView)ImageView mCommentImageView;
-    @Bind(R.id.commentsCountTextView)TextView mCommentCountTextView;
-    @Bind(R.id.creditsTextView)TextView mCreditsTextView;
+//    @Bind(R.id.commentsImageView)ImageView mCommentImageView;
+//    @Bind(R.id.commentsCountTextView)TextView mCommentCountTextView;
     @Bind(R.id.settingsRelativeLayout)RelativeLayout mSettingsRelativeLayout;
-    @Bind(R.id.creditsLinearLayout)LinearLayout mCreditLinearLayout;
-    @Bind(R.id.itemLinearLayout)LinearLayout itemLinearLayout;
+    @Bind(R.id.sendCommentImageView)ImageView mSendCommentImageView;
+    @Bind(R.id.commentEditText)EditText mCommentEditText;
+    @Bind(R.id.commentsRecyclerView)RecyclerView mCommentsRecyclerView;
 
     //firestore reference
     private FirebaseFirestore firebaseFirestore;
     private CollectionReference postsCollections;
     private com.google.firebase.firestore.Query commentsCountQuery;
     private CollectionReference usersReference;
-    private CollectionReference commentsReference;
+    private CollectionReference commentsCollection;
+    private Query commentQuery;
     private CollectionReference collectionsPosts;
     private CollectionReference likesReference;
     private CollectionReference postWalletReference;
@@ -145,6 +148,11 @@ public class PostDetailActivity extends AppCompatActivity
     private long startTime;
     private long stopTime;
     private long duration;
+    private CommentsAdapter commentsAdapter;
+    private static final int DEFAULT_COMMENT_LENGTH_LIMIT = 500;
+    private static final int TOTAL_ITEMS = 25;
+    private List<String> commentsIds = new ArrayList<>();
+    private List<DocumentSnapshot> comments = new ArrayList<>();
 
 
     @Override
@@ -165,10 +173,14 @@ public class PostDetailActivity extends AppCompatActivity
             }
         });
 
+        //prevent the edited from focus on acitivity launch
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
         //Initialise click listners
-        mCommentImageView.setOnClickListener(this);
+//        mCommentImageView.setOnClickListener(this);
         postImageView.setOnClickListener(this);
         mSettingsRelativeLayout.setOnClickListener(this);
+        mSendCommentImageView.setOnClickListener(this);
 
         mPostId = getIntent().getStringExtra(EXTRA_POST_ID);
         mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
@@ -204,8 +216,7 @@ public class PostDetailActivity extends AppCompatActivity
 
         postsCollections = FirebaseFirestore.getInstance().collection(Constants.POSTS);
         usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-        commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS)
-                .document("post_ids").collection(mPostId);
+        commentsCollection = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
         marketCollections = FirebaseFirestore.getInstance().collection(Constants.SELLING);
         collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
         //firebase references
@@ -217,6 +228,13 @@ public class PostDetailActivity extends AppCompatActivity
         postWalletReference = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
         viewsCollection = FirebaseFirestore.getInstance().collection(Constants.VIEWS);
+
+        mCommentsRecyclerView.addOnScrollListener(new EndlessLinearRecyclerViewOnScrollListener() {
+            @Override
+            public void onLoadMore() {
+                setNextComments();
+            }
+        });
     }
 
 
@@ -227,6 +245,7 @@ public class PostDetailActivity extends AppCompatActivity
         setPostInfo();
         deletePostDialog();
         finishActivity();
+        loadComments();
 
     }
 
@@ -433,46 +452,46 @@ public class PostDetailActivity extends AppCompatActivity
 //                    }
 //                });
 
-        impressionReference.child("post_views").child(mPostId)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()){
-                            final long size = dataSnapshot.getChildrenCount();
-                            int childrenCount = (int) size;
-                            mViewsCountTextView.setText(childrenCount + "");
-                        }else {
-                            mViewsCountTextView.setText("0");
-                        }
-                    }
+//        impressionReference.child("post_views").child(mPostId)
+//                .addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                        if (dataSnapshot.exists()){
+//                            final long size = dataSnapshot.getChildrenCount();
+//                            int childrenCount = (int) size;
+//                            mViewsCountTextView.setText(childrenCount + "");
+//                        }else {
+//                            mViewsCountTextView.setText("0");
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                    }
+//                });
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
-                });
-
-
-        //get the number of commments in a cingle
-        commentsReference.orderBy("comment_id").whereEqualTo("post_id", mPostId)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                        if (e != null) {
-                            android.util.Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!documentSnapshots.isEmpty()){
-                            final int commentsCount = documentSnapshots.size();
-                            mCommentCountTextView.setText(commentsCount + "");
-                        }else {
-                            mCommentCountTextView.setText("0");
-
-                        }
-
-                    }
-                });
+        /**retrieve the counts of the posts comments*/
+//        commentsReference.orderBy("comment_id").whereEqualTo("post_id", mPostId)
+//                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+//                        if (e != null) {
+//                            android.util.Log.w(TAG, "Listen error", e);
+//                            return;
+//                        }
+//
+//                        if (!documentSnapshots.isEmpty()){
+//                            final int commentsCount = documentSnapshots.size();
+//                            mCommentCountTextView.setText(commentsCount + "");
+//                        }else {
+//                            mCommentCountTextView.setText("0");
+//
+//                        }
+//
+//                    }
+//                });
 
         postsCollections.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -684,23 +703,6 @@ public class PostDetailActivity extends AppCompatActivity
 
     @Override
     public void onClick(View v) {
-
-        if (v == mCommentImageView) {
-            Intent intent = new Intent(PostDetailActivity.this, CommentsActivity.class);
-            intent.putExtra(PostDetailActivity.EXTRA_POST_ID, mPostId);
-            intent.putExtra(PostDetailActivity.COLLECTION_ID, mCollectionId);
-            intent.putExtra(PostDetailActivity.TYPE, mType);
-            startActivity(intent);
-        }
-
-        if (v == mCommentCountTextView) {
-            Intent intent = new Intent(PostDetailActivity.this, CommentsActivity.class);
-            intent.putExtra(PostDetailActivity.EXTRA_POST_ID, mPostId);
-            intent.putExtra(PostDetailActivity.COLLECTION_ID, mCollectionId);
-            intent.putExtra(PostDetailActivity.TYPE, mType);
-            startActivity(intent);
-        }
-
         if (v == postImageView) {
             Intent intent = new Intent(PostDetailActivity.this, ImageViewActivity.class);
             intent.putExtra(PostDetailActivity.EXTRA_POST_ID, mPostId);
@@ -724,8 +726,194 @@ public class PostDetailActivity extends AppCompatActivity
             }
 
         }
+
+        if (v == mSendCommentImageView){
+            final long time = new Date().getTime();
+            final String uid = firebaseAuth.getCurrentUser().getUid();
+            final String commentText = mCommentEditText.getText().toString().trim();
+            if(!TextUtils.isEmpty(commentText)){
+                if(v == mSendCommentImageView){
+                    final String commentId = databaseReference.push().getKey();
+
+                    Comment comment = new Comment();
+                    comment.setUser_id(uid);
+                    comment.setComment_text(commentText);
+                    comment.setPost_id(mPostId);
+                    comment.setComment_id(commentId);
+                    comment.setTime(time);
+                    commentsCollection.document("post_ids").collection(mPostId)
+                            .document(commentId).set(comment);
+
+
+                    //record the comment on the timeline
+                    postsCollections.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                            if (e != null) {
+                                Log.w(TAG, "Listen error", e);
+                                return;
+                            }
+
+                            if (documentSnapshot.exists()){
+                                Post post = documentSnapshot.toObject(Post.class);
+                                final String creatorUid = post.getUser_id();
+
+                                final Timeline timeline = new Timeline();
+                                timeline.setActivity_id(commentId);
+                                timeline.setTime(time);
+                                timeline.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                timeline.setType("comment");
+                                timeline.setPost_id(mPostId);
+                                timeline.setStatus("un_read");
+                                timeline.setReceiver_id(creatorUid);
+                                if (creatorUid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                    //do nothing
+                                }else {
+                                    timelineCollection.document(creatorUid)
+                                            .collection("activities").document(commentId).set(timeline);
+                                }
+
+                            }
+                        }
+                    });
+
+                    mCommentEditText.setText("");
+
+                }
+            }
+        }
     }
 
+    private void loadComments(){
+        comments.clear();
+        setRecyclerView();
+        setCollections();
+    }
+
+    private void setRecyclerView(){
+        commentsAdapter = new CommentsAdapter(this);
+        mCommentsRecyclerView.setAdapter(commentsAdapter);
+        mCommentsRecyclerView.setHasFixedSize(false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        mCommentsRecyclerView.setLayoutManager(layoutManager);
+    }
+
+
+
+    private void setCollections(){
+        commentsCollection.document("post_ids").collection(mPostId)
+                .orderBy("time", Query.Direction.DESCENDING)
+                .limit(TOTAL_ITEMS)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!documentSnapshots.isEmpty()){
+                            //retrieve the first bacth of documentSnapshots
+                            for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                                switch (change.getType()) {
+                                    case ADDED:
+                                        onDocumentAdded(change);
+                                        break;
+                                    case MODIFIED:
+                                        onDocumentModified(change);
+                                        break;
+                                    case REMOVED:
+                                        onDocumentRemoved(change);
+                                        break;
+                                }
+                            }
+                        }
+
+                    }
+                });
+    }
+
+    private void setNextComments(){
+        // Get the last visible document
+        final int snapshotSize = commentsAdapter.getItemCount();
+
+        if (snapshotSize == 0){
+            //do nothing
+        }else{
+            DocumentSnapshot lastVisible = commentsAdapter.getSnapshot(snapshotSize - 1);
+            //retrieve the first bacth of documentSnapshots
+            Query nextSellingQuery = commentsCollection.document("post_ids")
+                    .collection(mPostId).orderBy("time", Query.Direction.DESCENDING)
+                    .startAfter(lastVisible).limit(TOTAL_ITEMS);
+
+            nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                    if (e != null) {
+                        Log.w(TAG, "Listen error", e);
+                        return;
+                    }
+
+                    if (!documentSnapshots.isEmpty()){
+                        //retrieve the first bacth of documentSnapshots
+                        for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                            switch (change.getType()) {
+                                case ADDED:
+                                    onDocumentAdded(change);
+                                    break;
+                                case MODIFIED:
+                                    onDocumentModified(change);
+                                    break;
+                                case REMOVED:
+                                    onDocumentRemoved(change);
+                                    break;
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+    }
+
+    protected void onDocumentAdded(DocumentChange change) {
+        commentsIds.add(change.getDocument().getId());
+        comments.add(change.getDocument());
+        commentsAdapter.setPostComments(comments);
+        commentsAdapter.notifyItemInserted(comments.size() -1);
+        commentsAdapter.getItemCount();
+
+    }
+
+    protected void onDocumentModified(DocumentChange change) {
+        try {
+            if (change.getOldIndex() == change.getNewIndex()) {
+                // Item changed but remained in same position
+                comments.set(change.getOldIndex(), change.getDocument());
+                commentsAdapter.notifyItemChanged(change.getOldIndex());
+            } else {
+                // Item changed and changed position
+                comments.remove(change.getOldIndex());
+                comments.add(change.getNewIndex(), change.getDocument());
+                commentsAdapter.notifyItemRangeChanged(0, comments.size());
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    protected void onDocumentRemoved(DocumentChange change) {
+        try {
+            comments.remove(change.getOldIndex());
+            commentsAdapter.notifyItemRemoved(change.getOldIndex());
+            commentsAdapter.notifyItemRangeChanged(0, comments.size());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
     //region listeners
     public static double round(double value, int places) {
@@ -735,6 +923,4 @@ public class PostDetailActivity extends AppCompatActivity
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
-
-
 }

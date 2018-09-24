@@ -17,16 +17,16 @@
 
 
         <LinearLayout
+            android:padding="20dp"
             android:layout_gravity="center"
-            android:orientation="vertical"
-            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <LinearLayout
-                android:layout_margin="10dp"
                 android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp">
+                android:layout_width="0dp"
+                android:layout_height="wrap_content">
 
                 <LinearLayout
                     android:orientation="vertical"
@@ -36,11 +36,12 @@
                     android:layout_height="wrap_content">
 
                     <ImageView
+                        android:layout_gravity="center_horizontal"
                         android:tint="@color/blue_grey_50"
                         app:srcCompat="@drawable/ic_camera"
                         android:id="@+id/cameraImageView"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp" />
+                        android:layout_width="75dp"
+                        android:layout_height="75dp" />
 
                     <TextView
                         android:layout_gravity="center_horizontal"
@@ -55,42 +56,9 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_margin="10dp"
                 android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp">
-
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:id="@+id/collectionLinearLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <ImageView
-                        android:tint="@color/blue_grey_50"
-                        app:srcCompat="@drawable/ic_collection"
-                        android:id="@+id/collectionImageView"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp" />
-
-                    <TextView
-                        android:layout_gravity="center_horizontal"
-                        android:textColor="@color/blue_grey_50"
-                        android:text="Collection"
-                        android:textSize="16sp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_margin="10dp"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp">
+                android:layout_width="0dp"
+                android:layout_height="wrap_content">
 
                 <LinearLayout
                     android:orientation="vertical"
@@ -100,16 +68,49 @@
                     android:layout_height="wrap_content">
 
                     <ImageView
+                        android:layout_gravity="center_horizontal"
                         android:tint="@color/blue_grey_50"
                         app:srcCompat="@drawable/ic_gallery"
                         android:id="@+id/galleryImageView"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp" />
+                        android:layout_width="75dp"
+                        android:layout_height="75dp" />
 
                     <TextView
                         android:layout_gravity="center_horizontal"
                         android:textColor="@color/blue_grey_50"
                         android:text="Gallery"
+                        android:textSize="16sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content">
+
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:id="@+id/collectionLinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_gravity="center_horizontal"
+                        android:tint="@color/blue_grey_50"
+                        app:srcCompat="@drawable/ic_collection"
+                        android:id="@+id/collectionImageView"
+                        android:layout_width="75dp"
+                        android:layout_height="75dp" />
+
+                    <TextView
+                        android:layout_gravity="center_horizontal"
+                        android:textColor="@color/blue_grey_50"
+                        android:text="Collection"
                         android:textSize="16sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />

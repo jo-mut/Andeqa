@@ -20,8 +20,10 @@ import com.andeqa.andeqa.models.QueryOptions;
 import com.andeqa.andeqa.models.Relation;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.Transformation;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.engine.Resource;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
@@ -34,6 +36,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,39 +105,12 @@ public class FeaturedCollectionsAdapter extends RecyclerView.Adapter<CollectionV
                 .apply(new RequestOptions()
                         .placeholder(R.drawable.post_placeholder)
                         .diskCacheStrategy(DiskCacheStrategy.DATA))
-                .listener(new RequestListener<Bitmap>() {
-                    @Override
-                    public boolean onLoadFailed(@android.support.annotation.Nullable GlideException e,
-                                                Object model, Target<Bitmap> target, boolean isFirstResource) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Bitmap resource, Object model,
-                                                   Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
-                        if (resource != null){
-                            int colorPalette;
-                            Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
-                                @Override
-                                public void onGenerated(@NonNull Palette palette) {
-                                   try {
-                                       Palette.Swatch swatch = palette.getVibrantSwatch();
-                                       holder.collectionDetailsLinearLayout.setBackgroundColor(swatch.getRgb());
-                                   }catch (Exception e){
-
-                                   }
-                                }
-                            });
-                        }
-                        return false;
-                    }
-                })
                 .into(holder.mCollectionCoverImageView);
 
         if (!TextUtils.isEmpty(collection.getName())){
             holder.mCollectionNameTextView.setText(collection.getName());
         }else {
-            holder.mCollectionNameTextView.setText("");
+            holder.mCollectionNameTextView.setVisibility(View.GONE);
         }
 
         if (!TextUtils.isEmpty(collection.getNote())){
@@ -151,7 +127,7 @@ public class FeaturedCollectionsAdapter extends RecyclerView.Adapter<CollectionV
                 holder.mCollectionsNoteTextView.setText(collection.getNote().substring(0, 44) + "...");
             }
         }else {
-            holder.mCollectionsNoteTextView.setText("");
+            holder.mCollectionsNoteTextView.setVisibility(View.GONE);
         }
 
 
@@ -162,26 +138,6 @@ public class FeaturedCollectionsAdapter extends RecyclerView.Adapter<CollectionV
                 intent.putExtra(FeaturedCollectionsAdapter.COLLECTION_ID, collectionId);
                 intent.putExtra(FeaturedCollectionsAdapter.EXTRA_USER_UID, userId);
                 mContext.startActivity(intent);
-            }
-        });
-        usersCollection.document(userId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                    holder.usernameTextView.setText(andeqan.getUsername());
-                    Glide.with(mContext.getApplicationContext())
-                            .load(andeqan.getProfile_image())
-                            .apply(new RequestOptions()
-                                    .placeholder(R.drawable.ic_user)
-                                    .diskCacheStrategy(DiskCacheStrategy.DATA))
-                            .into(holder.profileImageView);
-                }
             }
         });
 
@@ -210,7 +166,7 @@ public class FeaturedCollectionsAdapter extends RecyclerView.Adapter<CollectionV
 
         /**show the number of peopl following collection**/
         followingCollection.document("following")
-                .collection(collectionId).whereEqualTo("followed_id",collectionId)
+                .collection(collectionId)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot documentSnapshots,
@@ -232,18 +188,20 @@ public class FeaturedCollectionsAdapter extends RecyclerView.Adapter<CollectionV
                     }
                 });
 
+
+
         /**follow or un follow collection*/
         if (userId.equals(firebaseAuth.getCurrentUser().getUid())){
-            holder.followButton.setVisibility(View.GONE);
+            holder.followRelativeLayout.setVisibility(View.GONE);
         }else {
-            holder.followButton.setVisibility(View.VISIBLE);
+            holder.followRelativeLayout.setVisibility(View.VISIBLE);
             holder.followButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     processFollow = true;
                     followingCollection.document("following")
-                            .collection(firebaseAuth.getCurrentUser().getUid())
-                            .whereEqualTo("followed_id", collectionId)
+                            .collection(collectionId)
+                            .whereEqualTo("following_id", firebaseAuth.getCurrentUser().getUid())
                             .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                 @Override
                                 public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -268,8 +226,7 @@ public class FeaturedCollectionsAdapter extends RecyclerView.Adapter<CollectionV
                                         }else {
                                             followingCollection.document("following")
                                                     .collection(collectionId)
-                                                    .document(firebaseAuth.getCurrentUser().getUid())
-                                                    .delete();
+                                                    .document(firebaseAuth.getCurrentUser().getUid()).delete();
 
                                             holder.followButton.setText("FOLLOW");
                                             processFollow = false;

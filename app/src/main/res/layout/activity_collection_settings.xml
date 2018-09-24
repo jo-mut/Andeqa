@@ -36,7 +36,7 @@
                     android:layout_height="match_parent"
                     android:alpha="0.1"
                     android:scaleType="centerCrop"
-                    android:src="@color/transparentColor" />
+                    android:src="@color/transparent_color" />
 
                 <TextView
                     android:id="@+id/collectionNameTextView"
@@ -75,22 +75,6 @@
                 android:title="Collapsing Toolbar"
                 app:layout_collapseMode="pin"
                 tools:ignore="HardcodedText,UnusedAttribute">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:srcCompat="@drawable/ic_done_white_24dp"
-                        android:id="@+id/doneEditingImageView"
-                        android:padding="10dp"
-                        android:layout_centerVertical="true" />
-
-                </RelativeLayout>
 
             </android.support.v7.widget.Toolbar>
 
@@ -148,25 +132,57 @@
                 android:layout_marginRight="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginStart="20dp"
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/collectionNameRelativeLayout">
 
-                <EditText
-                    android:textColor="@color/grey_700"
+                <LinearLayout
+                    android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:inputType="textMultiLine|textCapWords"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:id="@+id/collectionNameEditText"
-                    android:textSize="18sp"
-                    android:padding="20dp"
-                    android:hint="Your collection's name"
-                    android:textStyle="normal|bold"
-                    android:background="@drawable/input_background" />
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:textColor="@color/grey_700"
+                        android:layout_weight="70"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:inputType="textMultiLine|textCapWords"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:id="@+id/collectionNameEditText"
+                        android:textSize="18sp"
+                        android:padding="20dp"
+                        android:hint="Your collection's name"
+                        android:textStyle="normal|bold"
+                        android:background="@drawable/input_background" />
+
+                    <Button
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/white"
+                        android:id="@+id/doneButton"
+                        android:text="Done"
+                        android:background="@drawable/button_default_background"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
+
+                </LinearLayout>
+
+                <!--<EditText-->
+                    <!--android:textColor="@color/grey_700"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:inputType="textMultiLine|textCapWords"-->
+                    <!--android:layout_alignParentBottom="true"-->
+                    <!--android:layout_alignParentLeft="true"-->
+                    <!--android:layout_alignParentStart="true"-->
+                    <!--android:id="@+id/collectionNameEditText"-->
+                    <!--android:textSize="18sp"-->
+                    <!--android:padding="20dp"-->
+                    <!--android:hint="Your collection's name"-->
+                    <!--android:textStyle="normal|bold"-->
+                    <!--android:background="@drawable/input_background" />-->
+
 
                 <TextView
                     android:textColor="@color/grey_700"

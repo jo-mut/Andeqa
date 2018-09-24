@@ -15,28 +15,23 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="112dp"
+        android:textColor="@android:color/white"
+        android:background="@drawable/default_gradient_color"
         app:layout_scrollFlags="scroll|enterAlways"
-        android:background="@android:color/white"
-        app:titleTextColor="@color/grey_700"
         app:titleTextAppearance="@style/toolbarTextAppearance"
-        app:popupTheme="@style/AppTheme.PopupOverlay"
-        app:titleMargin="20dp"
-        app:contentInsetLeft="0dp"
-        app:contentInsetStart="0dp">
+        app:popupTheme="@style/AppTheme.PopupOverlay">
 
         <ImageView
-            android:background="@drawable/accent_color"
+            android:background="@drawable/white_rounded_background"
             app:srcCompat="@drawable/ic_check"
-            android:textColor="@android:color/white"
+            android:tint="@color/grey_700"
+            android:layout_margin="5dp"
             android:layout_width="90dp"
             android:layout_height="90dp"
-            android:id="@+id/postPostImageView"
-            android:layout_gravity="right"
-            android:padding="20dp"
-            android:layout_margin="10dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true" />
+            android:id="@+id/doneImageView"
+            android:textColor="@android:color/white"
+            android:layout_gravity="end"
+            android:padding="10dp" />
 
     </android.support.v7.widget.Toolbar>
 

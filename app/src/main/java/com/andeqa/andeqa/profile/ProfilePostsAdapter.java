@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.home.PostDetailActivity;
 import com.andeqa.andeqa.home.PhotoPostViewHolder;
 import com.andeqa.andeqa.home.VideoPostViewHolder;
@@ -261,16 +260,6 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             holder.descriptionRelativeLayout.setVisibility(View.GONE);
         }
 
-        holder.mCommentsLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent =  new Intent(mContext, CommentsActivity.class);
-                intent.putExtra(ProfilePostsAdapter.EXTRA_POST_ID, postId);
-                intent.putExtra(ProfilePostsAdapter.COLLECTION_ID, collectionId);
-                intent.putExtra(ProfilePostsAdapter.TYPE, type);
-                mContext.startActivity(intent);
-            }
-        });
 
         holder.postVideoView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -703,17 +692,6 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
         }
 
-        holder.mCommentsLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(mContext, CommentsActivity.class);
-                intent.putExtra(ProfilePostsAdapter.COLLECTION_ID, collectionId);
-                intent.putExtra(ProfilePostsAdapter.EXTRA_POST_ID, postId);
-                intent.putExtra(ProfilePostsAdapter.TYPE, type);
-                mContext.startActivity(intent);
-            }
-        });
-
 
         if (post.getWidth() != null && post.getHeight() != null){
             holder.postImageView.setOnClickListener(new View.OnClickListener() {
@@ -802,42 +780,42 @@ public class ProfilePostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 //                    }
 //                });
 
-        impressionReference.child("post_views").child(postId)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()){
-                            final long size = dataSnapshot.getChildrenCount();
-                            int childrenCount = (int) size;
-                            holder.viewsCountTextView.setText(childrenCount + "");
-                        }else {
-                            holder.viewsCountTextView.setText("0");
-                        }
-                    }
+//        impressionReference.child("post_views").child(postId)
+//                .addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                        if (dataSnapshot.exists()){
+//                            final long size = dataSnapshot.getChildrenCount();
+//                            int childrenCount = (int) size;
+//                            holder.viewsCountTextView.setText(childrenCount + "");
+//                        }else {
+//                            holder.viewsCountTextView.setText("0");
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                    }
+//                });
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
-        impressionReference.child("post_views").child(postId)
-                .child(firebaseAuth.getCurrentUser().getUid())
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()){
-                            holder.viewsImageView.setBackgroundResource(R.drawable.ic_viewed);
-                        }else {
-                            holder.viewsImageView.setBackgroundResource(R.drawable.ic_views);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+//        impressionReference.child("post_views").child(postId)
+//                .child(firebaseAuth.getCurrentUser().getUid())
+//                .addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                        if (dataSnapshot.exists()){
+//                            holder.viewsImageView.setBackgroundResource(R.drawable.ic_viewed);
+//                        }else {
+//                            holder.viewsImageView.setBackgroundResource(R.drawable.ic_views);
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                    }
+//                });
 
         //get the number of commments in a single
         commentsReference.document("post_ids").collection(postId)

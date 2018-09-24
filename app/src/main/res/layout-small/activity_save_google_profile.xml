@@ -190,7 +190,7 @@
                         android:layout_height="wrap_content"
                         android:padding="10dp"
                         android:text="Done"
-                        android:background="@drawable/colour_btn_background"
+                        android:background="@drawable/button_default_background"
                         android:textSize="10sp"
                         android:textAlignment="center"
                         android:textColor="@android:color/white"

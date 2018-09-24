@@ -15,9 +15,11 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.comments.CommentsActivity;
+import com.andeqa.andeqa.collections.CollectionPostsActivity;
+import com.andeqa.andeqa.collections.FeaturedCollectionsAdapter;
 import com.andeqa.andeqa.impressions.ImpressionTracker;
 import com.andeqa.andeqa.models.Andeqan;
+import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Post;
@@ -48,6 +50,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.WeakHashMap;
+
+import javax.annotation.Nullable;
 
 import static android.media.CamcorderProfile.get;
 
@@ -90,6 +94,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private CollectionReference likesReference;
     private DatabaseReference impressionReference;
     private CollectionReference timelineCollection;
+    private CollectionReference collectionOfPost;
     //firebase
     private DatabaseReference databaseReference;
     //firebase auth
@@ -133,6 +138,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (firebaseAuth.getCurrentUser() != null){
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
+            collectionOfPost = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
             //firebase
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
             //document reference
@@ -261,11 +267,9 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             final String [] strings = post.getDescription().split("");
             final int size = strings.length;
             if (size <= 50){
-                holder.bottomLinearLayout.setVisibility(View.VISIBLE);
                 holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
                 holder.descriptionTextView.setText(post.getDescription());
             }else{
-                holder.bottomLinearLayout.setVisibility(View.VISIBLE);
                 holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
                 final String boldMore = "...";
                 final String boldLess = "";
@@ -291,16 +295,6 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             holder.descriptionRelativeLayout.setVisibility(View.GONE);
         }
 
-        holder.mCommentsLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent =  new Intent(mContext, CommentsActivity.class);
-                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postId);
-                intent.putExtra(PostsAdapter.COLLECTION_ID, collectionId);
-                intent.putExtra(PostsAdapter.TYPE, type);
-                mContext.startActivity(intent);
-            }
-        });
 
         holder.postRelativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -702,16 +696,6 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             }
         }
 
-        holder.mCommentsLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent =  new Intent(mContext, CommentsActivity.class);
-                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postId);
-                intent.putExtra(PostsAdapter.COLLECTION_ID, collectionId);
-                intent.putExtra(PostsAdapter.TYPE, type);
-                mContext.startActivity(intent);
-            }
-        });
 
         if (post.getWidth() != null && post.getHeight() != null){
             holder.postImageView.setOnClickListener(new View.OnClickListener() {
@@ -785,25 +769,53 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 //            }
 //        });
 
-        impressionReference.child("post_views").child(postId)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()){
-                            final long size = dataSnapshot.getChildrenCount();
-                            int childrenCount = (int) size;
-                            holder.viewsCountTextView.setText(childrenCount + "");
-                        }else {
-                            holder.viewsCountTextView.setText("0");
+//        impressionReference.child("post_views").child(postId)
+//                .addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                        if (dataSnapshot.exists()){
+//                            final long size = dataSnapshot.getChildrenCount();
+//                            int childrenCount = (int) size;
+//                            holder.viewsCountTextView.setText(childrenCount + "");
+//                        }else {
+//                            holder.viewsCountTextView.setText("0");
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                    }
+//                });
+
+
+        collectionOfPost.document(collectionId)
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (documentSnapshot.exists()){
+                    Collection collection = documentSnapshot.toObject(Collection.class);
+                    final String name = collection.getName();
+                    final String creatorUid = collection.getUser_id();
+                    holder.collectionNameTextView.setText("@" + name);
+                    holder.collectionNameTextView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(mContext, CollectionPostsActivity.class);
+                            intent.putExtra(PostsAdapter.COLLECTION_ID, collectionId);
+                            intent.putExtra(PostsAdapter.EXTRA_USER_UID, creatorUid);
+                            mContext.startActivity(intent);
                         }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
+                    });
+                }
+            }
+        });
 
         usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override

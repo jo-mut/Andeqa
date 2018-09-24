@@ -22,7 +22,6 @@ import com.andeqa.andeqa.home.VideoPostViewHolder;
 import com.andeqa.andeqa.impressions.ImpressionTracker;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
-import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Timeline;
@@ -253,16 +252,6 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             holder.descriptionTextView.setText("");
             holder.descriptionRelativeLayout.setVisibility(View.GONE);
         }
-        holder.mCommentsLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent =  new Intent(mContext, CommentsActivity.class);
-                intent.putExtra(CollectionPostsAdapter.EXTRA_POST_ID, postId);
-                intent.putExtra(CollectionPostsAdapter.COLLECTION_ID, collectionId);
-                intent.putExtra(CollectionPostsAdapter.TYPE, type);
-                mContext.startActivity(intent);
-            }
-        });
 
         holder.postVideoView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -697,16 +686,7 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             holder.descriptionTextView.setText("");
             holder.descriptionRelativeLayout.setVisibility(View.GONE);
         }
-        holder.mCommentsLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent =  new Intent(mContext, CommentsActivity.class);
-                intent.putExtra(CollectionPostsAdapter.EXTRA_POST_ID, postId);
-                intent.putExtra(CollectionPostsAdapter.COLLECTION_ID, collectionId);
-                intent.putExtra(CollectionPostsAdapter.TYPE, type);
-                mContext.startActivity(intent);
-            }
-        });
+
 
         if (post.getWidth() != null && post.getHeight() != null){
             holder.postImageView.setOnClickListener(new View.OnClickListener() {
@@ -780,25 +760,25 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 //                    }
 //                });
 
-
-        impressionReference.child("post_views").child(postId)
-                .addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()){
-                    final long size = dataSnapshot.getChildrenCount();
-                    int childrenCount = (int) size;
-                    holder.viewsCountTextView.setText(childrenCount + "");
-                }else {
-                    holder.viewsCountTextView.setText("0");
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+//
+//        impressionReference.child("post_views").child(postId)
+//                .addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                if (dataSnapshot.exists()){
+//                    final long size = dataSnapshot.getChildrenCount();
+//                    int childrenCount = (int) size;
+//                    holder.viewsCountTextView.setText(childrenCount + "");
+//                }else {
+//                    holder.viewsCountTextView.setText("0");
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
 
         usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override

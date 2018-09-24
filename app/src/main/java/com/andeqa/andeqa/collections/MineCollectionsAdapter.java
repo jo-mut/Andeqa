@@ -104,33 +104,6 @@ public class MineCollectionsAdapter extends RecyclerView.Adapter<CollectionViewH
                 .apply(new RequestOptions()
                         .placeholder(R.drawable.post_placeholder)
                         .diskCacheStrategy(DiskCacheStrategy.DATA))
-                .listener(new RequestListener<Bitmap>() {
-                    @Override
-                    public boolean onLoadFailed(@android.support.annotation.Nullable GlideException e,
-                                                Object model, Target<Bitmap> target, boolean isFirstResource) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Bitmap resource, Object model,
-                                                   Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
-                        if (resource != null){
-                            int colorPalette;
-                            Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
-                                @Override
-                                public void onGenerated(@NonNull Palette palette) {
-                                    try {
-                                        Palette.Swatch swatch = palette.getVibrantSwatch();
-                                        holder.collectionDetailsLinearLayout.setBackgroundColor(swatch.getRgb());
-                                    }catch (Exception e){
-
-                                    }
-                                }
-                            });
-                        }
-                        return false;
-                    }
-                })
                 .into(holder.mCollectionCoverImageView);
 
         if (!TextUtils.isEmpty(collection.getName())){
@@ -167,26 +140,6 @@ public class MineCollectionsAdapter extends RecyclerView.Adapter<CollectionViewH
             }
         });
 
-        usersCollection.document(userId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                    holder.usernameTextView.setText(andeqan.getUsername());
-                    Glide.with(mContext.getApplicationContext())
-                            .load(andeqan.getProfile_image())
-                            .apply(new RequestOptions()
-                                    .placeholder(R.drawable.ic_user_white)
-                                    .diskCacheStrategy(DiskCacheStrategy.DATA))
-                            .into(holder.profileImageView);
-                }
-            }
-        });
 
         /**show if the user is following collection or not**/
         followingCollection.document("following")
@@ -238,9 +191,9 @@ public class MineCollectionsAdapter extends RecyclerView.Adapter<CollectionViewH
 
         /**follow or un follow collection*/
         if (userId.equals(firebaseAuth.getCurrentUser().getUid())){
-            holder.followButton.setVisibility(View.GONE);
+            holder.followRelativeLayout.setVisibility(View.GONE);
         }else {
-            holder.followButton.setVisibility(View.VISIBLE);
+            holder.followRelativeLayout.setVisibility(View.VISIBLE);
             holder.followButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

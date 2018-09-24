@@ -60,8 +60,12 @@ public class ViewMessagePhoto extends AppCompatActivity implements View.OnClickL
 
         if (firebaseAuth.getCurrentUser()!=null){
             mPhotoImageView.setOnClickListener(this);
-            mMessageId = getIntent().getStringExtra(EXTRA_MESSAGE_ID);
-            mRoomId = getIntent().getStringExtra(EXTRA_ROOM_ID);
+
+            if (getIntent().getExtras() != null){
+                mMessageId = getIntent().getStringExtra(EXTRA_MESSAGE_ID);
+                mRoomId = getIntent().getStringExtra(EXTRA_ROOM_ID);
+            }
+
             messageCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
             setUpCingleDetails();
         }

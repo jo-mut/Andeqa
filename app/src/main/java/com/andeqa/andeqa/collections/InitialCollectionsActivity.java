@@ -14,9 +14,7 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.main.HomeActivity;
 import com.andeqa.andeqa.models.Collection;
-import com.andeqa.andeqa.models.QueryOptions;
-import com.andeqa.andeqa.models.Relation;
-import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
+import com.andeqa.andeqa.utils.EndlesssStaggeredRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -71,7 +69,7 @@ public class InitialCollectionsActivity extends AppCompatActivity implements Vie
         collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
         queryParametersCollection = FirebaseFirestore.getInstance().collection(Constants.QUERY_OPTIONS);
         relationsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_RELATIONS);
-        mCollectionsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+        mCollectionsRecyclerView.addOnScrollListener(new EndlesssStaggeredRecyclerOnScrollListener() {
             @Override
             public void onLoadMore() {
                 setNextCollections();

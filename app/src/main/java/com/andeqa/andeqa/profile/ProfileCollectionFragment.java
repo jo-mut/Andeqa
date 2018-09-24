@@ -1,6 +1,5 @@
 package com.andeqa.andeqa.profile;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,13 +9,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.collections.CollectionPostsActivity;
-import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
+import com.andeqa.andeqa.utils.EndlesssStaggeredRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -90,7 +87,7 @@ public class ProfileCollectionFragment extends Fragment{
                     .whereEqualTo("user_id", mUid)
                     .limit(TOTAL_ITEMS);
 
-            mCollectionsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+            mCollectionsRecyclerView.addOnScrollListener(new EndlesssStaggeredRecyclerOnScrollListener() {
                 @Override
                 public void onLoadMore() {
                     setNextCollections();

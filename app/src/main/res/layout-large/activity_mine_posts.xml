@@ -38,7 +38,7 @@
                     android:layout_height="match_parent"
                     android:alpha="0.4"
                     android:scaleType="centerCrop"
-                    android:src="@color/transparentColor" />
+                    android:src="@color/transparent_color" />
 
 
                 <LinearLayout
@@ -64,6 +64,7 @@
                             android:textSize="38sp" />
 
                         <TextView
+                            android:visibility="gone"
                             android:id="@+id/collectionNoteTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -219,7 +220,7 @@
         android:id="@+id/createPostButton"
         android:layout_width="wrap_content"
         android:layout_gravity="end|bottom"
-        app:srcCompat="@drawable/ic_create_white_24dp"
+        app:srcCompat="@drawable/ic_create"
         app:backgroundTint="@color/colorAccent"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"

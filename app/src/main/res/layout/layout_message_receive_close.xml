@@ -29,7 +29,7 @@
     <LinearLayout
         android:id="@+id/messageLinearLayout"
         android:layout_gravity="start"
-        android:background="@drawable/message_receive_background"
+        android:background="@drawable/message_receive_close_background"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="start"

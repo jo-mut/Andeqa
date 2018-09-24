@@ -6,7 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 
 public abstract class EndlessLinearRecyclerViewOnScrollListener extends RecyclerView.OnScrollListener {
-    //    public static String TAG = EndlessRecyclerOnScrollListener.class.getSimpleName();
+    //    public static String TAG = EndlesssStaggeredRecyclerOnScrollListener.class.getSimpleName();
 
     /**
      * The total number of items in the dataset after the last load

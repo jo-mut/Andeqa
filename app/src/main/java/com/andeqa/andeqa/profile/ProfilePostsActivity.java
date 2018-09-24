@@ -1,25 +1,18 @@
 package com.andeqa.andeqa.profile;
 
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
-import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
+import com.andeqa.andeqa.utils.EndlesssStaggeredRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -96,7 +89,7 @@ public class ProfilePostsActivity extends AppCompatActivity {
                     .whereEqualTo("user_id", mUid).limit(TOTAL_ITEMS);
             collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
 
-            mPostssRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+            mPostssRecyclerView.addOnScrollListener(new EndlesssStaggeredRecyclerOnScrollListener() {
                 @Override
                 public void onLoadMore() {
                     setNextPosts();

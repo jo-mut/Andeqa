@@ -126,7 +126,7 @@
                         android:layout_height="wrap_content"
                         android:padding="10dp"
                         android:text="Sign_up"
-                        android:background="@drawable/colour_btn_background"
+                        android:background="@drawable/button_default_background"
                         android:textSize="14sp"
                         android:textAlignment="center"
                         android:textColor="@android:color/white"

@@ -102,7 +102,7 @@
                         android:layout_marginTop="15dp"
                         android:textAlignment="center"
                         android:textColor="@android:color/white"
-                        android:background="@drawable/colour_btn_background"
+                        android:background="@drawable/button_default_background"
                         android:padding="10dp"
                         android:text="Sign_in"
                         android:textSize="14sp" />
@@ -114,7 +114,7 @@
                         <!--android:layout_height="wrap_content"-->
                         <!--android:padding="10dp"-->
                         <!--android:text="Transaction in"-->
-                        <!--android:background="@drawable/colour_btn_background"-->
+                        <!--android:background="@drawable/button_default_background"-->
                         <!--android:layout_marginTop="15dp"-->
                         <!--android:textSize="14sp"-->
                         <!--android:textAlignment="center"-->

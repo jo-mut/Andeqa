@@ -34,7 +34,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:background="@color/transparentColor"
+                android:background="@color/transparent_color"
                 app:titleTextColor="@android:color/black"
                 app:titleTextAppearance="@style/toolbarTextAppearance"
                 app:popupTheme="@style/AppTheme.PopupOverlay"

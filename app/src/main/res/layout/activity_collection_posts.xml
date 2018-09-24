@@ -36,7 +36,7 @@
                     android:layout_height="match_parent"
                     android:alpha="0.4"
                     android:scaleType="centerCrop"
-                    android:src="@color/transparentColor" />
+                    android:src="@color/transparent_color" />
 
                 <LinearLayout
                     android:layout_centerInParent="true"
@@ -62,6 +62,7 @@
                             android:textSize="25sp" />
 
                         <TextView
+                            android:visibility="gone"
                             android:id="@+id/collectionNoteTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

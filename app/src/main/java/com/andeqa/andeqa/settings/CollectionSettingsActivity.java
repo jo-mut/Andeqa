@@ -70,7 +70,6 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
     @Bind(R.id.toolbar)Toolbar toolbar;
     @Bind(R.id.collectionNoteRelativeLayout)RelativeLayout mCollectionNoteRelativeLayout;
     @Bind(R.id.collectionNameRelativeLayout)RelativeLayout mCollectionNameRelativelayout;
-    @Bind(R.id.doneEditingImageView)ImageView mDoneEditingImageView;
 
 
     private static final String TAG = CollectionSettingsActivity.class.getSimpleName();
@@ -121,7 +120,6 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
         mChangeCoverRelativeLayout.setOnClickListener(this);
         mChangeNameRelativeLayout.setOnClickListener(this);
         mChangeNoteRelativeLayout.setOnClickListener(this);
-        mDoneEditingImageView.setOnClickListener(this);
 
         if (firebaseAuth.getCurrentUser() != null){
             collectionId = getIntent().getStringExtra(COLLECTION_ID);
@@ -308,22 +306,23 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
        }
     }
 
-    /**update collection edit text fields*/
-    private void collectionNoteAndName(){
-        if (!TextUtils.isEmpty(mCollectionNameEditText.getText())){
-            collectionCollection.document(collectionId)
-                    .update("name", mCollectionNameEditText.getText().toString());
-            mCollectionNameTextView.setText(mCollectionNameEditText.getText().toString());
-            mCollectionNameEditText.setText("");
-        }
 
+    private void updateNote(){
         if (!TextUtils.isEmpty(mCollectionNoteEditText.getText())){
             collectionCollection.document(collectionId)
                     .update("note", mCollectionNoteEditText.getText().toString());
             mCollectionNoteTextView.setText(mCollectionNoteEditText.getText().toString());
             mCollectionNoteEditText.setText("");
         }
+    }
 
+    private void updaterName(){
+        if (!TextUtils.isEmpty(mCollectionNameEditText.getText())){
+            collectionCollection.document(collectionId)
+                    .update("name", mCollectionNameEditText.getText().toString());
+            mCollectionNameTextView.setText(mCollectionNameEditText.getText().toString());
+            mCollectionNameEditText.setText("");
+        }
     }
 
     @Override
@@ -338,6 +337,7 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
                             .load(photoUri)
                             .into(mCollectionCoverImageView);
 
+                    updateCollectionCover();
                 }
             }else {
                 super.onActivityResult(requestCode, resultCode, data);
@@ -365,12 +365,6 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
             mCollectionNoteRelativeLayout.setVisibility(View.VISIBLE);
         }
 
-        if (v == mDoneEditingImageView){
-            collectionNoteAndName();
 
-            if (collectionSettingsIntent != null){
-                updateCollectionCover();
-            }
-        }
     }
 }

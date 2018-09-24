@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,11 +36,15 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private static final String EXTRA_ROOM_ID = "roomId";
     private static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
-    private static final int SEND_TYPE=0;
-    private static final int RECEIVE_TYPE=1;
-    private static final int SEND_PHOTO=2;
-    private static final int RECEIVE_PHOTO=3;
-    private static final int EMPTY =4;
+    private static final int SEND_DEFAULT =0;
+    private static final int SEND_OPEN =1;
+    private static final int SEND_CLOSE =2;
+    private static final int SEND_PHOTO =3;
+    private static final int RECEIVE_DEFAULT =4;
+    private static final int RECEIVE_CLOSE =5;
+    private static final int RECEIVE_OPEN =6;
+    private static final int RECEIVE_PHOTO =7;
+    private static final int EMPTY =8;
     private FirebaseAuth firebaseAuth;
     private CollectionReference messagesCollection;
     private CollectionReference roomCollection;
@@ -58,94 +62,43 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         this.documentSnapshots = messages;
         notifyDataSetChanged();
         firebaseAuth = FirebaseAuth.getInstance();
+        initReferences();
     }
 
+    private void initReferences(){
+        messagesCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
+        messagesCollection.document("room").collection(firebaseAuth.getCurrentUser().getUid());
+        roomCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
 
+
+    }
 
     protected DocumentSnapshot getSnapshot(int index) {
+
         return documentSnapshots.get(index);
     }
 
     @Override
     public int getItemViewType(int position) {
         Message message = getSnapshot(position).toObject(Message.class);
-        Message messagebefore = getSnapshot(position - 0).toObject(Message.class);
-        Message messageafter = getSnapshot(position + 0).toObject(Message.class);
-
-        final String senderOfB4 = messagebefore.getSender_id();
-        final String senderOfAft = messageafter.getSender_id();
         final String senderUid = message.getSender_id();
-
-        if (senderUid != null && senderUid.equals(firebaseAuth.getCurrentUser().getUid())){
+        if (senderUid.equals(firebaseAuth.getCurrentUser().getUid())){
             if (message.getType() != null && message.getType().equals("text")){
-                return SEND_TYPE;
+                return SEND_DEFAULT;
             }else if (message.getType() != null && message.getType().equals("photo")){
                 return SEND_PHOTO;
             }else {
-                return SEND_TYPE;
-            }
-        }else if (senderOfB4 != null && senderOfB4.equals(firebaseAuth.getCurrentUser().getUid())){
-            if (message.getType() != null && message.getType().equals("text")){
-                return SEND_TYPE;
-            }else if (message.getType() != null && message.getType().equals("photo")){
-                return SEND_PHOTO;
-            }else {
-                return SEND_TYPE;
-            }
-        }else if (senderOfAft != null && senderOfAft.equals(firebaseAuth.getCurrentUser().getUid())){
-            if (message.getType() != null && message.getType().equals("text")){
-                return SEND_TYPE;
-            }else if (message.getType() != null && message.getType().equals("photo")){
-                return SEND_PHOTO;
-            }else {
-                return SEND_TYPE;
-            }
-        }else if (senderUid != null && !senderUid.equals(firebaseAuth.getCurrentUser().getUid())){
-            if (message.getType() != null && message.getType().equals("text")){
-                return RECEIVE_TYPE;
-            }else if (message.getType() != null && message.getType().equals("photo")){
-                return RECEIVE_PHOTO;
-            }else {
-                return RECEIVE_TYPE;
-            }
-        }else if (senderOfAft != null && senderOfAft.equals(firebaseAuth.getCurrentUser().getUid())){
-            if (message.getType() != null && message.getType().equals("text")){
-                return RECEIVE_TYPE;
-            }else if (message.getType() != null && message.getType().equals("photo")){
-                return RECEIVE_PHOTO;
-            }else {
-                return RECEIVE_TYPE;
-            }
-        }else if (senderOfB4 != null && senderOfB4.equals(firebaseAuth.getCurrentUser().getUid())){
-            if (message.getType() != null && message.getType().equals("text")){
-                return RECEIVE_TYPE;
-            }else if (message.getType() != null && message.getType().equals("photo")){
-                return RECEIVE_PHOTO;
-            }else {
-                return RECEIVE_TYPE;
+                return SEND_DEFAULT;
             }
         }else {
-            return EMPTY;
+            if (message.getType() != null && message.getType().equals("text")){
+                return RECEIVE_DEFAULT;
+            }else if (message.getType() != null && message.getType().equals("photo")){
+                return RECEIVE_PHOTO;
+            }else {
+                return RECEIVE_DEFAULT;
+            }
         }
-
-
-//        if (senderUid.equals(firebaseAuth.getCurrentUser().getUid())){
-//            if (message.getType() != null && message.getType().equals("text")){
-//                return SEND_TYPE;
-//            }else if (message.getType() != null && message.getType().equals("photo")){
-//                return SEND_PHOTO;
-//            }else {
-//                return SEND_TYPE;
-//            }
-//        }else {
-//            if (message.getType() != null && message.getType().equals("text")){
-//                return RECEIVE_TYPE;
-//            }else if (message.getType() != null && message.getType().equals("photo")){
-//                return RECEIVE_PHOTO;
-//            }else {
-//                return RECEIVE_TYPE;
-//            }
-//        }
 
     }
 
@@ -153,21 +106,21 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
         switch (viewType){
-            case SEND_TYPE:
+            case SEND_DEFAULT:
                 view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.layout_sent_text_message, parent, false);
+                        .inflate(R.layout.layout_message_sent_default, parent, false);
                 return new MessageSendViewHolder(view);
             case SEND_PHOTO:
                 view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.layout_sent_photo_message, parent, false);
-                return  new MessageSentPhotoViewHolder(view);
-            case RECEIVE_TYPE:
+                        .inflate(R.layout.layout_message_sent_photo, parent, false);
+                return new MessageSentPhotoViewHolder(view);
+            case RECEIVE_DEFAULT:
                 view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.layout_received_text_message, parent, false);
+                        .inflate(R.layout.layout_message_receive_default, parent, false);
                 return  new MessageReceiveViewHolder(view);
             case RECEIVE_PHOTO:
                 view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.layout_receive_photo_message, parent, false);
+                        .inflate(R.layout.layout_message_receive_photo, parent, false);
                 return new MessageReceivePhotoViewHolder(view);
         }
         return null;
@@ -175,7 +128,6 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        firebaseAuth = FirebaseAuth.getInstance();
 
         if (firebaseAuth.getCurrentUser() != null){
 
@@ -218,8 +170,6 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.MESSAGES);
 
         final Message message = getSnapshot(position).toObject(Message.class);
-        final String messageId = message.getMessage_id();
-        final String roomId = message.getRoom_id();
 
         if (message.getPhoto() != null){
             final String photo = message.getPhoto();
@@ -241,15 +191,26 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
         }
 
-        holder.photoImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(mContext, ViewMessagePhoto.class);
-                intent.putExtra(MessagingAdapter.EXTRA_MESSAGE_ID, messageId);
-                intent.putExtra(MessagingAdapter.EXTRA_ROOM_ID, roomId);
-                mContext.startActivity(intent);
-            }
-        });
+        if (message.getMessage() != null && TextUtils.isEmpty(message.getMessage())){
+            holder.photoImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, ViewMessagePhoto.class);
+                    intent.putExtra(MessagingAdapter.EXTRA_ROOM_ID, message.getRoom_id());
+                    mContext.startActivity(intent);
+                }
+            });
+        }else {
+            holder.photoImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, ViewMessagePhoto.class);
+                    intent.putExtra(MessagingAdapter.EXTRA_MESSAGE_ID, message.getMessage());
+                    intent.putExtra(MessagingAdapter.EXTRA_ROOM_ID, message.getRoom_id());
+                    mContext.startActivity(intent);
+                }
+            });
+        }
 
         holder.photoLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -267,11 +228,7 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     private void populateReceivePhoto(final MessageReceivePhotoViewHolder holder, int position){
-        roomCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
-
         final Message message = getSnapshot(position).toObject(Message.class);
-        final String messageId = message.getMessage_id();
-        final String roomId = message.getRoom_id();
 
         holder.timeTextView.setText(DateFormat.format("HH:mm", message.getTime()));
 
@@ -295,25 +252,37 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
 
 
-        holder.photoImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(mContext, ViewMessagePhoto.class);
-                intent.putExtra(MessagingAdapter.EXTRA_MESSAGE_ID, messageId);
-                intent.putExtra(MessagingAdapter.EXTRA_ROOM_ID, roomId);
-                mContext.startActivity(intent);
-            }
-        });
+
+        if (message.getMessage() != null && TextUtils.isEmpty(message.getMessage())){
+            holder.photoImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, ViewMessagePhoto.class);
+                    intent.putExtra(MessagingAdapter.EXTRA_ROOM_ID, message.getRoom_id());
+                    mContext.startActivity(intent);
+                }
+            });
+        }else {
+            holder.photoImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, ViewMessagePhoto.class);
+                    intent.putExtra(MessagingAdapter.EXTRA_MESSAGE_ID, message.getMessage());
+                    intent.putExtra(MessagingAdapter.EXTRA_ROOM_ID, message.getRoom_id());
+                    mContext.startActivity(intent);
+                }
+            });
+        }
 
         holder.photoLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (showOnClick){
-                    holder.statusRelativeLayout.setVisibility(View.GONE);
+                    holder.statusLinearLayout.setVisibility(View.GONE);
                     showOnClick = false;
                 }else {
                     showOnClick = true;
-                    holder.statusRelativeLayout.setVisibility(View.VISIBLE);
+                    holder.statusLinearLayout.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -321,17 +290,10 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     private void populateSend(final MessageSendViewHolder holder, int position){
-        messagesCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
-        messagesCollection.document("room").collection(firebaseAuth.getCurrentUser().getUid());
-        roomCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
-
-
         final Message message = getSnapshot(position).toObject(Message.class);
-        final String messageId = message.getMessage_id();
-        final String text = message.getMessage();
         holder.timeTextView.setText(DateFormat.format("HH:mm", message.getTime()));
 
-        if (!text.equals("")){
+        if (message.getMessage()!= null &&!message.getMessage().equals("")){
             holder.messageTextView.setText(message.getMessage());
         }
 
@@ -351,15 +313,10 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     private void populateReceive(final MessageReceiveViewHolder holder, int position){
-        roomCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
-
         final Message message = getSnapshot(position).toObject(Message.class);
-        final String messageId = message.getMessage_id();
-        final String text = message.getMessage();
-
         holder.timeTextView.setText(DateFormat.format("HH:mm", message.getTime()));
 
-        if (!text.equals("")){
+        if (message.getMessage()!= null &&!message.getMessage().equals("")){
             holder.messageTextView.setVisibility(View.VISIBLE);
             holder.messageTextView.setText(message.getMessage());
         }

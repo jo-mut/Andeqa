@@ -5,7 +5,7 @@
     android:layout_gravity="bottom"
     android:layoutDirection="ltr"
     android:id="@+id/control_panel"
-    android:background="@color/transparentColor"
+    android:background="@color/transparent_color"
     android:orientation="vertical">
 
     <LinearLayout

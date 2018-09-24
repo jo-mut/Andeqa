@@ -23,9 +23,6 @@ public class PhotoPostViewHolder extends RecyclerView.ViewHolder {
     View mView;
     Context mContext;
     ProgressBar progressBar;
-    public ImageView viewsImageView;
-    public LinearLayout viewsLinearLayout;
-    public TextView viewsCountTextView;
     public LinearLayout commentsLinearLayout;
     public ImageView commentsImageView;
     public TextView titleTextView;
@@ -44,14 +41,12 @@ public class PhotoPostViewHolder extends RecyclerView.ViewHolder {
     public LinearLayout mCreditsLinearLayout;
     public ConstraintLayout postConstraintLayout;
     public ImageView postImageView;
+    public TextView collectionNameTextView;
 
     public PhotoPostViewHolder(View itemView) {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
-        viewsImageView = (ImageView) itemView.findViewById(R.id.viewsImageView);
-        viewsLinearLayout = (LinearLayout) mView.findViewById(R.id.viewsLinearLayout);
-        viewsCountTextView = (TextView) mView.findViewById(R.id.viewsCountTextView);
         captionLinearLayout  =  (LinearLayout)  itemView.findViewById(R.id.captionLinearLayout);
         commentsImageView = (ImageView) itemView.findViewById(R.id.commentsImageView);
         descriptionTextView = (TextView) itemView.findViewById(R.id.descriptionTextView);
@@ -66,6 +61,7 @@ public class PhotoPostViewHolder extends RecyclerView.ViewHolder {
         senseCreditsTextView = (TextView) mView.findViewById(R.id.creditsTextView);
         mCommentsLinearLayout = (LinearLayout) mView.findViewById(R.id.commentsLinearLayout);
         mCreditsLinearLayout = (LinearLayout) mView.findViewById(R.id.creditsLinearLayout);
+        collectionNameTextView = (TextView) mView.findViewById(R.id.collectionNameTextView);
     }
 
 

@@ -18,7 +18,6 @@ import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.home.PhotoPostViewHolder;
 import com.andeqa.andeqa.home.PostDetailActivity;
 import com.andeqa.andeqa.home.PostsAdapter;
@@ -345,17 +344,6 @@ public class ExplorePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }else {
             holder.descriptionRelativeLayout.setVisibility(View.GONE);
         }
-
-        holder.mCommentsLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent =  new Intent(mContext, CommentsActivity.class);
-                intent.putExtra(ExplorePostAdapter.EXTRA_POST_ID, postId);
-                intent.putExtra(ExplorePostAdapter.COLLECTION_ID, collectionId);
-                intent.putExtra(ExplorePostAdapter.TYPE, type);
-                mContext.startActivity(intent);
-            }
-        });
 
         holder.postRelativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -765,17 +753,6 @@ public class ExplorePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
 
 
-        holder.mCommentsLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent =  new Intent(mContext, CommentsActivity.class);
-                intent.putExtra(ExplorePostAdapter.EXTRA_POST_ID, postId);
-                intent.putExtra(ExplorePostAdapter.COLLECTION_ID, collectionId);
-                intent.putExtra(ExplorePostAdapter.TYPE, type);
-                mContext.startActivity(intent);
-            }
-        });
-
         if (post.getWidth() != null && post.getHeight() != null){
             holder.postImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -848,25 +825,25 @@ public class ExplorePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 //
 //                    }
 //                });
-
-        impressionReference.child("post_views").child(postId)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()){
-                            final long size = dataSnapshot.getChildrenCount();
-                            int childrenCount = (int) size;
-                            holder.viewsCountTextView.setText(childrenCount + "");
-                        }else {
-                            holder.viewsCountTextView.setText("0");
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+//
+//        impressionReference.child("post_views").child(postId)
+//                .addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                        if (dataSnapshot.exists()){
+//                            final long size = dataSnapshot.getChildrenCount();
+//                            int childrenCount = (int) size;
+//                            holder.viewsCountTextView.setText(childrenCount + "");
+//                        }else {
+//                            holder.viewsCountTextView.setText("0");
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                    }
+//                });
 
 
 

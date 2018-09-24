@@ -24,7 +24,6 @@ import android.widget.VideoView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Credit;
 import com.andeqa.andeqa.models.Like;
@@ -74,8 +73,6 @@ public class VideoDetailActivity extends AppCompatActivity implements View.OnCli
     @Bind(R.id.viewsCountTextView)TextView mViewsCountTextView;
     @Bind(R.id.viewsLinearLayout)LinearLayout mViewsLinearLayout;
     @Bind(R.id.viewsImageView)ImageView mViewsImageView;
-    @Bind(R.id.commentsImageView)ImageView mCommentImageView;
-    @Bind(R.id.commentsCountTextView)TextView mCommentCountTextView;
     @Bind(R.id.creditsTextView)TextView mCreditsTextView;
     @Bind(R.id.settingsRelativeLayout)RelativeLayout mSettingsRelativeLayout;
     @Bind(R.id.creditsLinearLayout)LinearLayout mCreditLinearLayout;
@@ -148,7 +145,6 @@ public class VideoDetailActivity extends AppCompatActivity implements View.OnCli
         });
 
         //Initialise click listners
-        mCommentImageView.setOnClickListener(this);
         mSettingsRelativeLayout.setOnClickListener(this);
 
         mPostId = getIntent().getStringExtra(EXTRA_POST_ID);
@@ -266,28 +262,6 @@ public class VideoDetailActivity extends AppCompatActivity implements View.OnCli
             }
         });
 
-
-        //get the number of commments in a cingle
-        commentsCountQuery.orderBy("comment_id").whereEqualTo("post_id", mPostId)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                        if (e != null) {
-                            android.util.Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!documentSnapshots.isEmpty()){
-                            final int commentsCount = documentSnapshots.size();
-                            mCommentCountTextView.setText(commentsCount + "");
-                        }else {
-                            mCommentCountTextView.setText("0");
-
-                        }
-
-                    }
-                });
-
         collectionsPosts.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -382,23 +356,6 @@ public class VideoDetailActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onClick(View v){
-
-        if (v == mCommentImageView){
-            Intent intent = new Intent(VideoDetailActivity.this, CommentsActivity.class);
-            intent.putExtra(VideoDetailActivity.EXTRA_POST_ID, mPostId);
-            intent.putExtra(VideoDetailActivity.COLLECTION_ID, mCollectionId);
-            intent.putExtra(VideoDetailActivity.TYPE, mType);
-            startActivity(intent);
-        }
-
-        if (v == mCommentCountTextView){
-            Intent intent = new Intent(VideoDetailActivity.this, CommentsActivity.class);
-            intent.putExtra(VideoDetailActivity.EXTRA_POST_ID, mPostId);
-            intent.putExtra(VideoDetailActivity.COLLECTION_ID, mCollectionId);
-            intent.putExtra(VideoDetailActivity.TYPE, mType);
-            startActivity(intent);
-        }
-
 
         if (v == mSettingsRelativeLayout){
             Bundle bundle = new Bundle();

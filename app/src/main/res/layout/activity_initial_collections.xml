@@ -54,7 +54,7 @@
         <Button
             android:textSize="14sp"
             android:textColor="@android:color/white"
-            android:background="@drawable/colour_btn_background"
+            android:background="@drawable/button_default_background"
             android:id="@+id/doneButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

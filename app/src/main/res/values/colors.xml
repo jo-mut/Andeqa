@@ -10,7 +10,7 @@
     <color name="colorIcons">#ffffff</color>
     <color name="colorDivider">#bdbdbd</color>
     <color name="bottomNavBackground">#000000</color>
-    <color name="transparentColor">#00000000</color>
+    <color name="transparent_color">#00000000</color>
     <color name="background_color">#e00032</color>
 
     <color name="red_100">#f9bdbb</color>

@@ -3,10 +3,7 @@ package com.andeqa.andeqa.people;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.andeqa.andeqa.more.ActivitiesFragment;
-import com.andeqa.andeqa.more.ChatsFragment;
 import com.andeqa.andeqa.more.MorePagerAdapter;
 
 public class PeoplePagerAdapter extends FragmentPagerAdapter {

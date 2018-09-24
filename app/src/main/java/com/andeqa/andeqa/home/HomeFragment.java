@@ -23,7 +23,7 @@ import com.andeqa.andeqa.creation.ChooseCreationActivity;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.QueryOptions;
 import com.andeqa.andeqa.models.Relation;
-import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
+import com.andeqa.andeqa.utils.EndlesssStaggeredRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -52,6 +52,7 @@ public class HomeFragment extends Fragment{
     private CollectionReference postsCollection;
     private CollectionReference followingCollection;
     private CollectionReference collectionsPosts;
+    private CollectionReference collectionsRelations;
     private CollectionReference queryOptionsCollections;
     private Query nextRandomQuery;
     private CollectionReference usersReference;
@@ -95,7 +96,8 @@ public class HomeFragment extends Fragment{
             followingCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE);
             queryOptionsCollections = FirebaseFirestore.getInstance().collection(Constants.QUERY_OPTIONS);
             collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
-            homeRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+            collectionsRelations = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_RELATIONS);
+            homeRecyclerView.addOnScrollListener(new EndlesssStaggeredRecyclerOnScrollListener() {
                 @Override
                 public void onLoadMore() {
                   getNextPosts();
@@ -285,6 +287,61 @@ public class HomeFragment extends Fragment{
                 });
     }
 
+    private void getHomePosts(){
+        followingCollection.document("following")
+                .collection(firebaseAuth.getCurrentUser().getUid())
+                .whereEqualTo("type", "following_user")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@javax.annotation.Nullable QuerySnapshot documentSnapshots,
+                                        @javax.annotation.Nullable FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!documentSnapshots.isEmpty()){
+                            for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
+                                Relation relation = change.getDocument().toObject(Relation.class);
+                                final String userId = relation.getFollowed_id();
+                                postsCollection.orderBy("time", Query.Direction.DESCENDING)
+                                        .whereEqualTo("user_id", userId).limit(TOTAL_ITEMS)
+                                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onEvent(@Nullable QuerySnapshot documentSnapshots,
+                                                                @Nullable FirebaseFirestoreException e) {
+
+                                                if (e != null) {
+                                                    Log.w(TAG, "Listen error", e);
+                                                    return;
+                                                }
+
+                                                if (!documentSnapshots.isEmpty()) {
+                                                    for (final DocumentChange documentChange : documentSnapshots.getDocumentChanges()) {
+                                                        switch (documentChange.getType()) {
+                                                            case ADDED:
+                                                                onDocumentAdded(documentChange);
+                                                                break;
+                                                            case MODIFIED:
+                                                                onDocumentModified(documentChange);
+                                                                break;
+                                                            case REMOVED:
+                                                                onDocumentRemoved(documentChange);
+                                                                break;
+                                                        }
+                                                    }
+
+                                                }
+                                            }
+                                        });
+                            }
+                        }
+
+                    }
+                });
+
+    }
 
     private void getNextPosts(){
         final int snapshotSize = postsAdapter.getItemCount();

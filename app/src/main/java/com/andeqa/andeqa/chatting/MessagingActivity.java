@@ -523,10 +523,5 @@ public class MessagingActivity extends AppCompatActivity
         }
 
     }
-
-
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-
-    }
+    
 }

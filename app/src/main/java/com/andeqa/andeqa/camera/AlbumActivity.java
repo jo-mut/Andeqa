@@ -21,6 +21,7 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.chatting.MessagingActivity;
 import com.andeqa.andeqa.creation.CreateCollectionActivity;
 import com.andeqa.andeqa.creation.CreateCollectionPostActivity;
+import com.andeqa.andeqa.creation.CreateSingleActivity;
 import com.andeqa.andeqa.creation.PreviewImagePostActivity;
 import com.andeqa.andeqa.creation.PreviewVideoPostActivity;
 import com.andeqa.andeqa.profile.UpdateProfileActivity;
@@ -44,9 +45,9 @@ public class AlbumActivity extends AppCompatActivity {
 
     private static final String GALLERY_PATH ="gallery image";
     private static final String GALLERY_VIDEO ="gallery video";
-    private static final String POST_TAG = CreateCollectionPostActivity.class.getSimpleName();
     private static final String COLLECTION_TAG = CreateCollectionActivity.class.getSimpleName();
     private static final String COLLECTION_SETTINGS_COVER = CollectionSettingsActivity.class.getSimpleName();
+    private static final String COLLECTION_POST = CreateCollectionPostActivity.class.getSimpleName();
     private static final String PROFILE_PHOTO_PATH = "profile photo path";
     private static final String PROFILE_COVER_PATH = "profile cover path";
     private static final String COLLECTION_ID = "collection id";
@@ -60,8 +61,8 @@ public class AlbumActivity extends AppCompatActivity {
 
     private String mUid;
     private String mRoomId;
-    private String postIntent;
-    private String collectionIntent;
+    private String collection_post;
+    private String createCollection;
     private String collectionId;
     private String profileCoverIntent;
     private String profilePhotoIntent;
@@ -87,9 +88,9 @@ public class AlbumActivity extends AppCompatActivity {
         });
 
         album_name = getIntent().getStringExtra("name");
-        postIntent = getIntent().getStringExtra(POST_TAG);
+        collection_post = getIntent().getStringExtra(COLLECTION_POST);
         collectionId = getIntent().getStringExtra(COLLECTION_ID);
-        collectionIntent = getIntent().getStringExtra(COLLECTION_TAG);
+        createCollection = getIntent().getStringExtra(COLLECTION_TAG);
         collectionSettingsIntent  = getIntent().getStringExtra(COLLECTION_SETTINGS_COVER);
         profileCoverIntent = getIntent().getStringExtra(PROFILE_COVER_PATH);
         profilePhotoIntent = getIntent().getStringExtra(PROFILE_PHOTO_PATH);
@@ -236,19 +237,20 @@ public class AlbumActivity extends AppCompatActivity {
             holder.picsImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (postIntent != null) {
+                    if (collection_post != null) {
                         Intent intent = new Intent(AlbumActivity.this, PreviewImagePostActivity.class);
                         intent.putExtra(AlbumActivity.GALLERY_PATH, mediaFiles.get(position).get(Function.KEY_PATH));
-                        intent.putExtra(AlbumActivity.POST_TAG, postIntent);
-                        startActivity(intent);
-                        finish();
-                    } else if (collectionId != null) {
-                        Intent intent = new Intent(AlbumActivity.this, CreateCollectionActivity.class);
-                        intent.putExtra(AlbumActivity.GALLERY_PATH, mediaFiles.get(position).get(Function.KEY_PATH));
+                        intent.putExtra(AlbumActivity.COLLECTION_POST, collection_post);
                         intent.putExtra(AlbumActivity.COLLECTION_ID, collectionId);
                         startActivity(intent);
                         finish();
-                    } else if (collectionSettingsIntent != null) {
+                    } else if (createCollection != null){
+                        Intent intent = new Intent(AlbumActivity.this, CreateCollectionActivity.class);
+                        intent.putExtra(AlbumActivity.GALLERY_PATH, mediaFiles.get(position).get(Function.KEY_PATH));
+                        intent.putExtra(AlbumActivity.COLLECTION_TAG, createCollection);
+                        startActivity(intent);
+                        finish();
+                    }else if (collectionSettingsIntent != null) {
                         Intent intent = new Intent(AlbumActivity.this, CollectionSettingsActivity.class);
                         intent.putExtra(AlbumActivity.GALLERY_PATH, mediaFiles.get(position).get(Function.KEY_PATH));
                         intent.putExtra(AlbumActivity.COLLECTION_ID, collectionId);

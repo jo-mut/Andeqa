@@ -77,7 +77,7 @@ public class CreateCollectionPostActivity extends AppCompatActivity implements V
     private FirebaseAuth firebaseAuth;
     private Context mContext;
 
-    private static final String POST_TAG = CreateCollectionPostActivity.class.getSimpleName();
+    private static final String COLLECTION_POST = CreateCollectionPostActivity.class.getSimpleName();
     private static final int DEFAULT_TITLE_LENGTH_LIMIT = 100;
     private static final int IMAGE_GALLERY_REQUEST = 112;
     private static final String GALLERY_PATH ="gallery image";
@@ -226,7 +226,9 @@ public class CreateCollectionPostActivity extends AppCompatActivity implements V
         }
 
         if (v == mAddRelativeLayout){
-            Intent intent = new Intent(CreateCollectionPostActivity.this, PicturesActivity.class);intent.putExtra(CreateCollectionPostActivity.COLLECTION_ID, collectionId);
+            Intent intent = new Intent(CreateCollectionPostActivity.this, PicturesActivity.class);
+            intent.putExtra(CreateCollectionPostActivity.COLLECTION_ID, collectionId);
+            intent.putExtra(CreateCollectionPostActivity.COLLECTION_POST, CreateCollectionPostActivity.class.getSimpleName());
             startActivity(intent);
             finish();
 

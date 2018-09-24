@@ -36,7 +36,7 @@
                     android:layout_height="match_parent"
                     android:alpha="0.1"
                     android:scaleType="centerCrop"
-                    android:src="@color/transparentColor" />
+                    android:src="@color/transparent_color" />
                 <TextView
                     android:id="@+id/collectionNameTextView"
                     android:layout_above="@+id/collectionNoteTextView"
@@ -76,21 +76,6 @@
                 app:layout_collapseMode="pin"
                 tools:ignore="HardcodedText,UnusedAttribute">
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:srcCompat="@drawable/ic_done_white_24dp"
-                        android:id="@+id/doneEditingImageView"
-                        android:padding="10dp"
-                        android:layout_centerVertical="true" />
-
-                </RelativeLayout>
 
             </android.support.v7.widget.Toolbar>
 

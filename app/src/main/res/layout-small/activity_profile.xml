@@ -7,7 +7,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    android:background="@color/blue_grey_50"
+    android:background="@android:color/white"
     tools:context="com.andeqa.andeqa.profile.ProfileActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -24,13 +24,13 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="@color/colorPrimary"
-            app:expandedTitleMargin="15dp"
+            app:expandedTitleMargin="10dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <RelativeLayout
                 android:id="@+id/profileCoverRelativeLayout"
                 android:layout_width="match_parent"
-                android:layout_height="350dp">
+                android:layout_height="300dp">
 
                 <ImageView
                     android:id="@+id/profileCoverImageView"
@@ -39,16 +39,16 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
-                    android:alpha="0.4"
                     android:scaleType="centerCrop"
-                    android:src="@color/transparentColor" />
+                    android:alpha="0.4"
+                    android:src="@drawable/transparent_background" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/profileImageView"
                     android:layout_width="75dp"
                     android:layout_height="90dp"
                     android:layout_centerInParent="true"
-                    android:layout_marginTop="80dp"
+                    android:layout_marginTop="50dp"
                     android:background="@drawable/profile_circular_border_imageview"
                     android:padding="10dp"
                     android:scaleType="centerCrop" />
@@ -58,7 +58,7 @@
                     android:id="@+id/nameRelativeLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp">
+                    android:layout_marginTop="10dp">
 
                     <TextView
                         android:id="@+id/fullNameTextView"
@@ -80,8 +80,8 @@
                 <RelativeLayout
                     android:layout_below="@+id/nameRelativeLayout"
                     android:id="@+id/peopleRelativeLayout"
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
                     <RelativeLayout
                         android:layout_toLeftOf="@+id/centerRelativeLayout"
@@ -164,138 +164,136 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.v7.widget.CardView
-                android:id="@+id/bioCardView"
-                android:layout_marginTop="10dp"
+            <LinearLayout
+                android:visibility="gone"
+                android:padding="10dp"
+                android:id="@+id/connectLinearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <RelativeLayout
-                    android:id="@+id/bioRelativeLayout"
-                    android:layout_below="@+id/nameRelativeLayout"
+                    android:layout_weight="50"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content">
+
+                    <RelativeLayout
+                        android:id="@+id/followRelativeLayout"
+                        android:paddingRight="10dp"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="10dp"
+                        android:paddingLeft="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <Button
+                            android:textAllCaps="false"
+                            android:textColor="@android:color/white"
+                            android:textSize="12sp"
+                            android:background="@drawable/button_default_background"
+                            android:text="Follow"
+                            android:id="@+id/followButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp" />
+
+                    </RelativeLayout>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_weight="50"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content">
+
+                    <RelativeLayout
+                        android:id="@+id/sendMessageRelativeLayout"
+                        android:paddingRight="10dp"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="10dp"
+                        android:paddingLeft="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <Button
+                            android:textAllCaps="false"
+                            android:textColor="@android:color/white"
+                            android:textSize="12sp"
+                            android:background="@drawable/button_default_background"
+                            android:text="Message"
+                            android:id="@+id/sendMessageButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp" />
+
+                    </RelativeLayout>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:paddingRight="10dp"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp"
+                android:paddingLeft="10dp"
+                android:id="@+id/bioLinearLayout"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_gravity="center"
+                    android:textColor="@color/grey_700"
+                    android:id="@+id/bioTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="12sp"
+                    android:padding="10dp"
+                    android:textAlignment="center" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:paddingRight="16dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:paddingLeft="16dp"
+                android:id="@+id/postsLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:padding="5dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:textColor="@color/grey_700"
-                        android:id="@+id/bioTextView"
+                        android:layout_centerVertical="true"
+                        android:id="@+id/postsCountTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
                         android:text=""
-                        android:textSize="12sp"
-                        android:paddingBottom="5dp"
-                        android:paddingTop="5dp"
-                        android:textAlignment="center" />
+                        android:textColor="@color/grey_700"
+                        android:textSize="16sp" />
+
+                    <ImageView
+                        android:visibility="gone"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:id="@+id/addPostImageView"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:tint="@color/grey_700"
+                        app:srcCompat="@drawable/ic_plus" />
 
                 </RelativeLayout>
 
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
-                android:visibility="gone"
-                android:id="@+id/connectCardView"
-                android:layout_marginTop="15dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
+                <android.support.v7.widget.CardView
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="0dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-
-                    <RelativeLayout
-                        android:layout_weight="50"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content">
-
-                        <RelativeLayout
-                            android:id="@+id/followRelativeLayout"
-                            android:layout_margin="10dp"
-                            android:padding="10dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <Button
-                                android:textAllCaps="false"
-                                android:textColor="@android:color/white"
-                                android:textSize="12sp"
-                                android:background="@drawable/colour_btn_background"
-                                android:text="Follow"
-                                android:id="@+id/followButton"
-                                android:layout_width="match_parent"
-                                android:layout_height="30dp" />
-
-                        </RelativeLayout>
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_weight="50"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content">
-
-                        <RelativeLayout
-                            android:id="@+id/sendMessageRelativeLayout"
-                            android:layout_margin="10dp"
-                            android:padding="10dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <Button
-                                android:textAllCaps="false"
-                                android:textColor="@android:color/white"
-                                android:textSize="12sp"
-                                android:background="@drawable/colour_btn_background"
-                                android:text="Message"
-                                android:id="@+id/sendMessageButton"
-                                android:layout_width="match_parent"
-                                android:layout_height="30dp" />
-
-
-                        </RelativeLayout>
-                    </RelativeLayout>
-                </LinearLayout>
-
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
-                android:id="@+id/postCardView"
-                android:layout_marginTop="15dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:padding="16dp"
-                    android:id="@+id/postsRelativeLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:layout_centerVertical="true"
-                            android:id="@+id/postsCountTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text=""
-                            android:textColor="@color/grey_700"
-                            android:padding="5dp"
-                            android:textSize="12sp" />
-
-                        <ImageView
-                            android:layout_centerVertical="true"
-                            android:layout_alignParentRight="true"
-                            android:layout_alignParentEnd="true"
-                            android:id="@+id/addPostImageView"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:tint="@color/grey_700"
-                            app:srcCompat="@drawable/ic_plus" />
-
-                    </RelativeLayout>
 
                     <FrameLayout
                         android:visibility="gone"
@@ -305,81 +303,87 @@
 
                     </FrameLayout>
 
-                    <RelativeLayout
-                        android:visibility="gone"
-                        android:id="@+id/createPostRelativeLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                </android.support.v7.widget.CardView>
 
-                        <TextView
-                            android:id="@+id/createPostTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="You have not create your first post. Create your first post"
-                            android:textColor="@color/colorPrimary"
-                            android:padding="5dp"
-                            android:textSize="12sp" />
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:visibility="gone"
-                        android:id="@+id/viewPostRelativelayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/viewPostsTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="View all"
-                            android:textColor="@color/colorPrimary"
-                            android:padding="5dp"
-                            android:textSize="10sp" />
-
-                    </RelativeLayout>
-
-                </LinearLayout>
-
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
-                android:id="@+id/collectionsCardView"
-                android:layout_marginTop="15dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:padding="16dp"
+                <RelativeLayout
+                    android:visibility="gone"
+                    android:id="@+id/createPostRelativeLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content">
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/createPostTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="You have not create your first post. Create your first post"
+                        android:textColor="@color/colorPrimary"
+                        android:padding="5dp"
+                        android:textSize="12sp" />
 
-                        <TextView
-                            android:layout_centerVertical="true"
-                            android:id="@+id/collectionCountTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text=""
-                            android:padding="5dp"
-                            android:textColor="@color/grey_700"
-                            android:textSize="12sp" />
+                </RelativeLayout>
 
-                        <ImageView
-                            android:layout_centerVertical="true"
-                            android:layout_alignParentRight="true"
-                            android:layout_alignParentEnd="true"
-                            android:id="@+id/addCollectionImageView"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:tint="@color/grey_700"
-                            app:srcCompat="@drawable/ic_plus" />
 
-                    </RelativeLayout>
+                <RelativeLayout
+                    android:visibility="gone"
+                    android:id="@+id/viewPostRelativelayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/viewPostsTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="View all"
+                        android:textColor="@color/colorPrimary"
+                        android:padding="5dp"
+                        android:textSize="12sp" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/collectionsLinearLayout"
+                android:orientation="vertical"
+                android:paddingRight="10dp"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp"
+                android:paddingLeft="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <RelativeLayout
+                    android:padding="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_centerVertical="true"
+                        android:id="@+id/collectionCountTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textColor="@color/grey_700"
+                        android:textSize="16sp" />
+
+                    <ImageView
+                        android:visibility="gone"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:id="@+id/addCollectionImageView"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:tint="@color/grey_700"
+                        app:srcCompat="@drawable/ic_plus" />
+
+                </RelativeLayout>
+
+                <android.support.v7.widget.CardView
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="0dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
                     <FrameLayout
                         android:visibility="gone"
@@ -389,43 +393,44 @@
 
                     </FrameLayout>
 
-                    <RelativeLayout
-                        android:visibility="gone"
-                        android:id="@+id/createCollectionsRelativeLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                </android.support.v7.widget.CardView>
 
-                        <TextView
-                            android:id="@+id/createCollectionsTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="You have not create your first collection. Create your first collection"
-                            android:textColor="@color/colorPrimary"
-                            android:padding="5dp"
-                            android:textSize="12sp" />
+                <RelativeLayout
+                    android:visibility="gone"
+                    android:id="@+id/createCollectionsRelativeLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                    </RelativeLayout>
+                    <TextView
+                        android:id="@+id/createCollectionsTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="You have not create your first collection. Create your first collection"
+                        android:textColor="@color/colorPrimary"
+                        android:padding="5dp"
+                        android:textSize="12sp" />
 
-                    <RelativeLayout
-                        android:visibility="gone"
-                        android:id="@+id/viewCollectionsRelativeLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                </RelativeLayout>
 
-                        <TextView
-                            android:id="@+id/viewCollectionsTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="View all"
-                            android:textColor="@color/colorPrimary"
-                            android:padding="5dp"
-                            android:textSize="10sp" />
+                <RelativeLayout
+                    android:visibility="gone"
+                    android:id="@+id/viewCollectionsRelativeLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                    </RelativeLayout>
+                    <TextView
+                        android:id="@+id/viewCollectionsTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="View all"
+                        android:textColor="@color/colorPrimary"
+                        android:padding="5dp"
+                        android:textSize="12sp" />
 
-                </LinearLayout>
+                </RelativeLayout>
 
-            </android.support.v7.widget.CardView>
+            </LinearLayout>
+
 
         </LinearLayout>
 

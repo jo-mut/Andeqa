@@ -258,7 +258,8 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Translucent" />
         <activity android:name=".search.SearchedPostsActivity" />
-        <activity android:name=".search.SearchedCollectionsActivity"></activity>
+        <activity android:name=".search.SearchedCollectionsActivity" />
+        <activity android:name=".chatting.ChattingActivity"></activity>
     </application>
 
 </manifest>

@@ -180,15 +180,15 @@
                     <ProgressBar
                         android:visibility="gone"
                         android:id="@+id/progressBar"
-                        style="?android:attr/progressBarStyle"
+                        style="?android:attr/progressBarStyleHorizontal"
                         android:layout_centerInParent="true"
                         android:progressDrawable="@drawable/progress_drawable"
                         android:indeterminate="false"
                         android:max="100"
                         android:progress="0"
                         android:secondaryProgress="0"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp" />
+                        android:layout_width="75dp"
+                        android:layout_height="75dp" />
 
                     <TextView
                         android:textSize="12sp"

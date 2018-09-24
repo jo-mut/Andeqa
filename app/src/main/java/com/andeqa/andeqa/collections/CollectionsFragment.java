@@ -3,7 +3,6 @@ package com.andeqa.andeqa.collections;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -19,11 +18,7 @@ import android.view.ViewGroup;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.creation.ChooseCreationActivity;
-import com.andeqa.andeqa.models.Collection;
-import com.andeqa.andeqa.models.Post;
-import com.andeqa.andeqa.profile.ProfileActivity;
-import com.andeqa.andeqa.search.SearchActivity;
-import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
+import com.andeqa.andeqa.utils.EndlesssStaggeredRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -90,7 +85,7 @@ public class CollectionsFragment extends Fragment {
             collectionsQuery = collectionsCollection.orderBy("time", Query.Direction.ASCENDING)
                     .limit(TOTAL_ITEMS);
 
-            mCollectionsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+            mCollectionsRecyclerView.addOnScrollListener(new EndlesssStaggeredRecyclerOnScrollListener() {
                 @Override
                 public void onLoadMore() {
                     setNextCollections();

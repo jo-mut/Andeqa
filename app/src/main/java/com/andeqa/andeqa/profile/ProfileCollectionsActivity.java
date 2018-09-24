@@ -1,8 +1,6 @@
 package com.andeqa.andeqa.profile;
 
-import android.content.Intent;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -10,13 +8,10 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.collections.CollectionPostsActivity;
-import com.andeqa.andeqa.creation.CreateCollectionActivity;
-import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
+import com.andeqa.andeqa.utils.EndlesssStaggeredRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -80,7 +75,7 @@ public class ProfileCollectionsActivity extends AppCompatActivity{
                 .whereEqualTo("user_id", mUid)
                 .limit(TOTAL_ITEMS);
 
-        mCollectionsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+        mCollectionsRecyclerView.addOnScrollListener(new EndlesssStaggeredRecyclerOnScrollListener() {
             @Override
             public void onLoadMore() {
                 setNextCollections();

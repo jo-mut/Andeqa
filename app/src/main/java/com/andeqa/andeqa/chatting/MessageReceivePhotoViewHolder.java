@@ -5,7 +5,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andeqa.andeqa.R;
@@ -15,7 +14,7 @@ public class MessageReceivePhotoViewHolder  extends RecyclerView.ViewHolder {
     View mView;
     Context mContext;
     public TextView timeTextView;
-    public RelativeLayout statusRelativeLayout;
+    public LinearLayout statusLinearLayout;
     public TextView messageTextView;
     public ImageView photoImageView;
     public ImageView statusImageView;
@@ -28,7 +27,7 @@ public class MessageReceivePhotoViewHolder  extends RecyclerView.ViewHolder {
         mView = itemView;
         mContext = itemView.getContext();
         timeTextView = (TextView) mView.findViewById(R.id.timeTextView);
-        statusRelativeLayout = (RelativeLayout) mView.findViewById(R.id.statusLinearLayout);
+        statusLinearLayout = (LinearLayout) mView.findViewById(R.id.statusLinearLayout);
         photoImageView = (ImageView) mView.findViewById(R.id.photoImageView);
         statusImageView = (ImageView) mView.findViewById(R.id.statusImageView);
         messageLinearLayout = (LinearLayout) mView.findViewById(R.id.messageLinearLayout);

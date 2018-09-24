@@ -69,7 +69,7 @@
                 android:textSize="24sp"
                 android:textColor="@android:color/white"
                 android:textAllCaps="false"
-                android:background="@drawable/colour_btn_background"
+                android:background="@drawable/button_default_background"
                 android:id="@+id/followButton"
                 android:visibility="gone"
                 android:layout_width="140dp"

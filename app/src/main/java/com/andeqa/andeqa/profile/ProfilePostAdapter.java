@@ -14,11 +14,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.home.PostDetailActivity;
 import com.andeqa.andeqa.home.VideoPostViewHolder;
 import com.andeqa.andeqa.impressions.ImpressionTracker;
@@ -54,6 +57,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.WeakHashMap;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfilePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = ProfilePostsAdapter.class.getSimpleName();
@@ -159,7 +164,7 @@ public class ProfilePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case IMAGE_POST:
                 view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.layout_profile_posts, parent, false);
-                return new ProfilePostViewHolder(view);
+                return new ProfilePostAdapter.ProfilePostViewHolder(view);
         }
         return null;
     }
@@ -173,7 +178,7 @@ public class ProfilePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (type.equals("single_video_post") || type.equals("collection_video_post")){
             populateVideo((VideoPostViewHolder)holder, position);
         }else {
-            populateImage((ProfilePostViewHolder)holder, position);
+            populateImage((ProfilePostAdapter.ProfilePostViewHolder)holder, position);
 
         }
     }
@@ -205,16 +210,6 @@ public class ProfilePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
         });
 
-        holder.mCommentsLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent =  new Intent(mContext, CommentsActivity.class);
-                intent.putExtra(ProfilePostAdapter.EXTRA_POST_ID, postId);
-                intent.putExtra(ProfilePostAdapter.COLLECTION_ID, collectionId);
-                intent.putExtra(ProfilePostAdapter.TYPE, type);
-                mContext.startActivity(intent);
-            }
-        });
 
         holder.postVideoView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -238,54 +233,9 @@ public class ProfilePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         });
 
 
-        usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                    holder.usernameTextView.setText(andeqan.getUsername());
-
-                    Glide.with(mContext)
-                            .load(andeqan.getProfile_image())
-                            .apply(new RequestOptions()
-                                    .placeholder(R.drawable.ic_user)
-                                    .diskCacheStrategy(DiskCacheStrategy.NONE))
-                            .into(holder.profileImageView);
-                }
-            }
-        });
-
-        //get the number of commments in a single
-        commentsReference.document("post_ids").collection(postId)
-                .orderBy("comment_id").whereEqualTo("post_id", postId)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!documentSnapshots.isEmpty()){
-                            final int commentsCount = documentSnapshots.size();
-                            holder.commentsCountTextView.setText(commentsCount + "");
-                        }else {
-                            holder.commentsCountTextView.setText("0");
-                        }
-                    }
-                });
-
-
-
     }
 
-    private void populateImage(final ProfilePostViewHolder holder, final int position){
+    private void populateImage(final ProfilePostAdapter.ProfilePostViewHolder holder, final int position){
         final Post post = getSnapshot(holder.getAdapterPosition()).toObject(Post.class);
         final String postId = post.getPost_id();
         final String uid = post.getUser_id();
@@ -335,16 +285,6 @@ public class ProfilePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         }
 
-        holder.mCommentsLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(mContext, CommentsActivity.class);
-                intent.putExtra(ProfilePostAdapter.COLLECTION_ID, collectionId);
-                intent.putExtra(ProfilePostAdapter.EXTRA_POST_ID, postId);
-                intent.putExtra(ProfilePostAdapter.TYPE, type);
-                mContext.startActivity(intent);
-            }
-        });
 
 
         if (post.getWidth() != null && post.getHeight() != null){
@@ -376,73 +316,6 @@ public class ProfilePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         }
 
-        usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()) {
-                    final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                    final String username = andeqan.getUsername();
-                    final String profileImage = andeqan.getProfile_image();
-
-                    holder.usernameTextView.setText(username);
-                    Glide.with(mContext.getApplicationContext())
-                            .load(andeqan.getProfile_image())
-                            .apply(new RequestOptions()
-                                    .placeholder(R.drawable.ic_user)
-                                    .diskCacheStrategy(DiskCacheStrategy.DATA))
-                            .into(holder.profileImageView);
-                }
-            }
-        });
-
-
-        //get the number of commments in a single
-        commentsReference.document("post_ids").collection(postId)
-                .orderBy("comment_id").whereEqualTo("post_id", postId)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!documentSnapshots.isEmpty()){
-                            final int commentsCount = documentSnapshots.size();
-                            holder.commentsCountTextView.setText(commentsCount + "");
-                        }else {
-                            holder.commentsCountTextView.setText("0");
-                        }
-                    }
-                });
-
-
-        impressionReference.child("post_views").child(postId)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()){
-                            final long size = dataSnapshot.getChildrenCount();
-                            int childrenCount = (int) size;
-                            holder.viewsCountTextView.setText(childrenCount + "");
-                        }else {
-                            holder.viewsCountTextView.setText("0");
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
-
     }
 
 
@@ -453,6 +326,21 @@ public class ProfilePostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
+    }
+
+    public static class ProfilePostViewHolder extends RecyclerView.ViewHolder{
+        View mView;
+        Context mContext;
+        public ImageView postImageView;
+
+
+        public ProfilePostViewHolder(View itemView) {
+            super(itemView);
+            mView = itemView;
+            mContext = itemView.getContext();
+            postImageView = (ImageView) mView.findViewById(R.id.postImageView);
+
+        }
     }
 
 

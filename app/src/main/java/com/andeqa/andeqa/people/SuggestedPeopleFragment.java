@@ -9,12 +9,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Andeqan;
-import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
+import com.andeqa.andeqa.utils.EndlesssStaggeredRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -82,7 +81,7 @@ public class SuggestedPeopleFragment extends Fragment {
         followingCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE);
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
 
-        peopleRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+        peopleRecyclerView.addOnScrollListener(new EndlesssStaggeredRecyclerOnScrollListener() {
             @Override
             public void onLoadMore() {
                 setNextFollowers();

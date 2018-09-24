@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -21,10 +22,9 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.creation.CreateCollectionPostActivity;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.Post;
-import com.andeqa.andeqa.models.QueryOptions;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.settings.CollectionSettingsActivity;
-import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
+import com.andeqa.andeqa.utils.EndlesssStaggeredRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -134,7 +134,7 @@ public class CollectionPostsActivity extends AppCompatActivity
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
         collectionOwnersCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_OWNERS);
 
-        mCollectionsPostsRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+        mCollectionsPostsRecyclerView.addOnScrollListener(new EndlesssStaggeredRecyclerOnScrollListener() {
             @Override
             public void onLoadMore() {
                 setNextCollections();
@@ -158,7 +158,7 @@ public class CollectionPostsActivity extends AppCompatActivity
         followCollection();
         getCountOfCollectionFollowers();
         getCountOfCollectionsPosts();
-        getCountOfFollowers();
+        findIfUserIsFollowing();
     }
 
     @Override
@@ -211,11 +211,11 @@ public class CollectionPostsActivity extends AppCompatActivity
         ViewCompat.setNestedScrollingEnabled(mCollectionsPostsRecyclerView,false);
     }
 
-    private void getCountOfFollowers(){
+    private void findIfUserIsFollowing(){
         /**show the number of peopl following collection**/
         collectionsRelations.document("following")
-                .collection(collectionId).whereEqualTo("following_id",
-                firebaseAuth.getCurrentUser().getUid())
+                .collection(collectionId)
+                .whereEqualTo("following_id", firebaseAuth.getCurrentUser().getUid())
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot documentSnapshots,
@@ -227,12 +227,9 @@ public class CollectionPostsActivity extends AppCompatActivity
                         }
 
                         if (!documentSnapshots.isEmpty()){
-                            int following = documentSnapshots.size();
-                            mFollowersCountTextView.setText(following);
-                            mFollowersTextView.setText("Following");
+                            mFollowTextView.setText("FOLLOWING");
                         }else {
-                            mFollowersCountTextView.setText("0");
-                            mFollowersTextView.setText("Following");
+                            mFollowTextView.setText("FOLLOW");
                         }
 
                     }
@@ -255,9 +252,11 @@ public class CollectionPostsActivity extends AppCompatActivity
 
                         if (!documentSnapshots.isEmpty()){
                             int following = documentSnapshots.size();
-                            mFollowersCountTextView.setText(following);
+                            mFollowersCountTextView.setText(following + "");
+                            mFollowersTextView.setText("Following");
                         }else {
                             mFollowersCountTextView.setText("0");
+                            mFollowersTextView.setText("Following");
                         }
 
                     }
@@ -301,8 +300,8 @@ public class CollectionPostsActivity extends AppCompatActivity
                 public void onClick(View v) {
                     processFollow = true;
                     collectionsRelations.document("following")
-                            .collection(firebaseAuth.getCurrentUser().getUid())
-                            .whereEqualTo("followed_id", collectionId)
+                            .collection(collectionId).whereEqualTo("following_id",
+                            firebaseAuth.getCurrentUser().getUid())
                             .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                 @Override
                                 public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -319,14 +318,15 @@ public class CollectionPostsActivity extends AppCompatActivity
                                             following.setFollowed_id(collectionId);
                                             following.setType("followed_collection");
                                             following.setTime(System.currentTimeMillis());
-                                            collectionsRelations.document("following").collection(firebaseAuth
-                                                    .getCurrentUser().getUid()).document(collectionId).set(following);
+                                            collectionsRelations.document("following").collection(collectionId)
+                                                    .document(firebaseAuth.getCurrentUser().getUid())
+                                                    .set(following);
 
                                             mFollowTextView.setText("FOLLOWING");
                                             processFollow = false;
                                         }else {
-                                            collectionsRelations.document("following").collection(firebaseAuth.getCurrentUser().getUid())
-                                                    .document(collectionId).delete();
+                                            collectionsRelations.document("following").collection(collectionId)
+                                                    .document(firebaseAuth.getCurrentUser().getUid()).delete();
                                             mFollowTextView.setText("FOLLOW");
                                             processFollow = false;
                                         }
@@ -358,7 +358,12 @@ public class CollectionPostsActivity extends AppCompatActivity
                     final String userId = collection.getUser_id();
 
                     mCollectionNameTextView.setText(name);
-                    mCollectionNoteTextView.setText(note);
+
+                    if (!TextUtils.isEmpty(note)){
+                        mCollectionNoteTextView.setVisibility(View.VISIBLE);
+                        mCollectionNoteTextView.setText(note);
+                    }
+
                     Glide.with(getApplicationContext())
                             .load(cover)
                             .apply(new RequestOptions()

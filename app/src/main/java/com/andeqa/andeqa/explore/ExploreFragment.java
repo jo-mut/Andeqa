@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -17,20 +15,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.collections.CollectionPostsAdapter;
 import com.andeqa.andeqa.creation.ChooseCreationActivity;
-import com.andeqa.andeqa.home.HomeFragment;
-import com.andeqa.andeqa.home.PostsAdapter;
-import com.andeqa.andeqa.models.Andeqan;
-import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
-import com.andeqa.andeqa.profile.ProfileActivity;
-import com.andeqa.andeqa.search.SearchActivity;
-import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
+import com.andeqa.andeqa.utils.EndlesssStaggeredRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -89,7 +80,7 @@ public class ExploreFragment extends Fragment{
         //firestore
         postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
         exploreQuery = postsCollection;
-        exploreRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+        exploreRecyclerView.addOnScrollListener(new EndlesssStaggeredRecyclerOnScrollListener() {
             @Override
             public void onLoadMore() {
                 setNextPosts();

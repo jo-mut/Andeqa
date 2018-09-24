@@ -1,7 +1,6 @@
 package com.andeqa.andeqa.profile;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
@@ -12,14 +11,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.collections.CollectionPostsActivity;
 import com.andeqa.andeqa.models.Post;
-import com.andeqa.andeqa.utils.EndlessRecyclerOnScrollListener;
+import com.andeqa.andeqa.utils.EndlesssStaggeredRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -102,7 +99,7 @@ public class PostsFragment extends Fragment{
             postsQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
                     .whereEqualTo("user_id", mUid).limit(TOTAL_ITEMS);
 
-            mPostssRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
+            mPostssRecyclerView.addOnScrollListener(new EndlesssStaggeredRecyclerOnScrollListener() {
                 @Override
                 public void onLoadMore() {
                     setNextPosts();

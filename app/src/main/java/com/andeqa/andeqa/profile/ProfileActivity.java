@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -62,6 +63,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Bind(R.id.profileImageView)CircleImageView mProifleImageView;
     @Bind(R.id.fullNameTextView)TextView mFullNameTextView;
     @Bind(R.id.bioTextView)TextView mBioTextView;
+    @Bind(R.id.bioLinearLayout)LinearLayout mBioRelativeLayout;
     @Bind(R.id.profileCoverImageView)ImageView mProfileCover;
     @Bind(R.id.sendMessageButton)Button mSendMessageButton;
     @Bind(R.id.followersCountTextView)TextView mFollowerCountTextView;
@@ -70,9 +72,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Bind(R.id.followRelativeLayout)RelativeLayout mFollowRelativeLayout;
     @Bind(R.id.postsCountTextView)TextView mPostCountTextView;
     @Bind(R.id.collectionCountTextView)TextView mCollectionsCountTextView;
-    @Bind(R.id.connectCardView)CardView mConnectCardView;
-    @Bind(R.id.postCardView)CardView mPostsCardView;
-    @Bind(R.id.collectionsCardView) CardView mCollectionsCardView;
     @Bind(R.id.addPostImageView)ImageView addPostImageView;
     @Bind(R.id.addCollectionImageView)ImageView addCollectionImageView;
     @Bind(R.id.post_container)FrameLayout mPostContainerFrameLayout;
@@ -81,6 +80,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Bind(R.id.createCollectionsRelativeLayout)RelativeLayout mCreateCollectionRelativeLayout;
     @Bind(R.id.viewPostRelativelayout)RelativeLayout mViewPostRelativeLayout;
     @Bind(R.id.viewCollectionsRelativeLayout)RelativeLayout mViewCollectionsRelativeLayout;
+    @Bind(R.id.connectLinearLayout)LinearLayout mConnectLinearLayout;
+    @Bind(R.id.postsLinearLayout)LinearLayout mPostsLinearLayout;
+    @Bind(R.id.collectionsLinearLayout)LinearLayout mCollectionsLinearLayout;
 
     private static final String TAG = ProfileActivity.class.getSimpleName();
     //firestore reference
@@ -154,7 +156,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
             //show hidden views
             if (!firebaseAuth.getCurrentUser().getUid().equals(mUid)){
-                mConnectCardView.setVisibility(View.VISIBLE);
+                mConnectLinearLayout.setVisibility(View.VISIBLE);
             }else {
                 addPostImageView.setVisibility(View.VISIBLE);
                 addCollectionImageView.setVisibility(View.VISIBLE);
@@ -535,8 +537,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                             if (firebaseAuth.getCurrentUser().getUid().equals(mUid)){
                                 mCollectionsCountTextView.setText("Collections: 0");
                                 mCreateCollectionRelativeLayout.setVisibility(View.VISIBLE);
+                                addCollectionImageView.setVisibility(View.VISIBLE);
                             }else {
-                                mCollectionsCardView.setVisibility(View.GONE);
+                                addCollectionImageView.setVisibility(View.GONE);
                             }
 
                         }
@@ -567,8 +570,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                            if (firebaseAuth.getCurrentUser().getUid().equals(mUid)){
                                mPostCountTextView.setText("Posts: 0");
                                mCreatePostRelativeLayout.setVisibility(View.VISIBLE);
+                               addPostImageView.setVisibility(View.VISIBLE);
                            }else {
-                               mPostsCardView.setVisibility(View.GONE);
+                               addPostImageView.setVisibility(View.GONE);
                            }
                         }
 

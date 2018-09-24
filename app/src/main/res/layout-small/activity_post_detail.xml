@@ -7,9 +7,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:background="@android:color/white"
     tools:context="com.andeqa.andeqa.home.PostDetailActivity">
 
     <ScrollView
+        android:overScrollMode="never"
+        android:layout_marginBottom="75dp"
         android:fillViewport="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -19,278 +22,267 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
+            <LinearLayout
+                android:orientation="vertical"
+                android:id="@+id/itemLinearLayout"
                 android:layout_width="match_parent"
-                android:layout_gravity="top"
-                app:titleTextAppearance="@style/toolbarTextAppearance"
-                android:layout_height="42dp"
-                android:background="@drawable/default_gradient_color"
-                app:layout_scrollFlags="scroll|enterAlways"
-                app:popupTheme="@style/AppTheme.PopupOverlay"
-                app:titleTextColor="@android:color/white"
-                app:contentInsetStart="0dp"
-                app:contentInsetLeft="0dp">
+                android:layout_height="wrap_content">
 
-            </android.support.v7.widget.Toolbar>
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/postConstrantLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-           <LinearLayout
-               android:id="@+id/itemLinearLayout"
-               android:orientation="vertical"
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/postImageView"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:scaleType="centerCrop"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp" />
 
-               <RelativeLayout
-                   android:id="@+id/topRelativeLayout"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content">
-
-                   <android.support.v7.widget.CardView
-                       android:layout_width="match_parent"
-                       android:layout_height="wrap_content"
-                       app:cardPreventCornerOverlap="false"
-                       app:cardCornerRadius="0dp"
-                       app:cardElevation="0dp"
-                       app:cardMaxElevation="1dp">
-
-                       <LinearLayout
-                           android:orientation="vertical"
-                           android:layout_width="match_parent"
-                           android:layout_height="wrap_content">
-
-                           <RelativeLayout
-                               android:layout_width="match_parent"
-                               android:layout_height="wrap_content"
-                               android:layout_marginTop="5dp">
-
-                               <de.hdodenhof.circleimageview.CircleImageView
-                                   android:layout_margin="5dp"
-                                   android:id="@+id/profileImageView"
-                                   android:layout_width="40dp"
-                                   android:layout_height="40dp"
-                                   android:layout_centerVertical="true"
-                                   android:layout_alignParentLeft="true"
-                                   android:layout_alignParentStart="true"
-                                   android:scaleType="centerCrop" />
-
-                               <LinearLayout
-                                   android:layout_toStartOf="@+id/settingsRelativeLayout"
-                                   android:layout_toLeftOf="@+id/settingsRelativeLayout"
-                                   android:layout_toRightOf="@+id/profileImageView"
-                                   android:layout_toEndOf="@+id/profileImageView"
-                                   android:orientation="vertical"
-                                   android:padding="5dp"
-                                   android:layout_centerVertical="true"
-                                   android:id="@+id/nameRelativeLayout"
-                                   android:layout_width="match_parent"
-                                   android:layout_height="wrap_content">
-
-                                   <TextView
-                                       android:textColor="@color/grey_700"
-                                       android:layout_width="wrap_content"
-                                       android:layout_height="wrap_content"
-                                       android:id="@+id/usernameTextView"
-                                       android:textSize="12sp"
-                                       android:textStyle="normal|bold"
-                                       android:text="" />
-
-                                   <LinearLayout
-                                       android:visibility="gone"
-                                       android:id="@+id/creditsLinearLayout"
-                                       android:orientation="horizontal"
-                                       android:layout_width="match_parent"
-                                       android:layout_height="wrap_content">
-
-                                       <TextView
-                                           android:textColor="@color/grey_700"
-                                           android:layout_gravity="center_vertical"
-                                           android:text=""
-                                           android:layout_width="wrap_content"
-                                           android:layout_height="wrap_content"
-                                           android:id="@+id/creditsTextView"
-                                           android:textStyle="normal|bold"
-                                           android:textSize="10sp"
-                                           android:paddingTop="3dp"
-                                           android:paddingBottom="3dp" />
-
-                                   </LinearLayout>
-
-                               </LinearLayout>
-
-                               <RelativeLayout
-                                   android:padding="5dp"
-                                   android:layout_centerVertical="true"
-                                   android:layout_alignParentRight="true"
-                                   android:layout_alignParentEnd="true"
-                                   android:layout_margin="2dp"
-                                   android:id="@+id/settingsRelativeLayout"
-                                   android:layout_width="wrap_content"
-                                   android:layout_height="wrap_content">
-
-                                   <ImageView
-                                       android:id="@+id/shareImageView"
-                                       android:layout_width="18dp"
-                                       android:layout_height="18dp"
-                                       android:tint="@color/grey_700"
-                                       app:srcCompat="@drawable/ic_settings_vert" />
-
-                               </RelativeLayout>
-
-                           </RelativeLayout>
-
-                       </LinearLayout>
-
-                   </android.support.v7.widget.CardView>
-
-               </RelativeLayout>
-
-               <android.support.constraint.ConstraintLayout
-                   android:layout_margin="0.1dp"
-                   android:id="@+id/postConstrantLayout"
-                   android:background="@android:color/white"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content">
-
-                   <ImageView
-                       android:id="@+id/postImageView"
-                       app:layout_constraintTop_toTopOf="parent"
-                       app:layout_constraintEnd_toEndOf="parent"
-                       app:layout_constraintStart_toStartOf="parent"
-                       android:scaleType="centerCrop"
-                       android:layout_width="match_parent"
-                       android:layout_height="0dp" />
-
-               </android.support.constraint.ConstraintLayout>
-
-               <RelativeLayout
-                   android:id="@+id/bottomRelativeLayout"
-                   android:layout_marginBottom="10dp"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content">
-
-                   <android.support.v7.widget.CardView
-                       android:layout_width="match_parent"
-                       android:layout_height="wrap_content"
-                       app:cardPreventCornerOverlap="false"
-                       app:cardCornerRadius="0dp">
-
-                       <LinearLayout
-                           android:layout_width="match_parent"
-                           android:layout_height="wrap_content"
-                           android:layout_margin="2dp"
-                           android:orientation="vertical">
-
-                           <RelativeLayout
-                               android:layout_width="match_parent"
-                               android:layout_height="wrap_content">
-
-                               <LinearLayout
-                                   android:orientation="horizontal"
-                                   android:id="@+id/toolsRelativeLayout"
-                                   android:layout_width="match_parent"
-                                   android:layout_height="wrap_content">
-
-                                   <LinearLayout
-                                       android:orientation="horizontal"
-                                       android:id="@+id/viewsLinearLayout"
-                                       android:layout_width="wrap_content"
-                                       android:layout_height="wrap_content">
-
-                                       <ImageView
-                                           android:id="@+id/viewsImageView"
-                                           android:layout_width="18dp"
-                                           android:layout_height="18dp"
-                                           android:tint="@color/grey_700"
-                                           app:srcCompat="@drawable/ic_views" />
+                </android.support.constraint.ConstraintLayout>
 
 
-                                       <TextView
-                                           android:textColor="@color/grey_700"
-                                           android:id="@+id/viewsCountTextView"
-                                           android:layout_width="wrap_content"
-                                           android:layout_height="wrap_content"
-                                           android:text="0"
-                                           android:padding="2dp"
-                                           android:textSize="10sp"
-                                           android:textStyle="normal" />
+                <LinearLayout
+                    android:padding="5dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-                                   </LinearLayout>
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
 
-                                   <LinearLayout
-                                       android:id="@+id/commentsLinearLayout"
-                                       android:orientation="horizontal"
-                                       android:layout_gravity="center_vertical"
-                                       android:layout_width="wrap_content"
-                                       android:layout_height="wrap_content">
+                            <de.hdodenhof.circleimageview.CircleImageView
+                                android:id="@+id/profileImageView"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:layout_centerVertical="true"
+                                android:layout_alignParentLeft="true"
+                                android:layout_alignParentStart="true"
+                                android:scaleType="centerCrop" />
 
-                                       <ImageView
-                                           android:id="@+id/commentsImageView"
-                                           android:layout_width="18dp"
-                                           android:layout_height="18dp"
-                                           android:tint="@color/grey_700"
-                                           app:srcCompat="@drawable/ic_comment" />
+                            <LinearLayout
+                                android:layout_toLeftOf="@+id/settingsRelativeLayout"
+                                android:layout_toStartOf="@+id/settingsRelativeLayout"
+                                android:layout_toRightOf="@+id/profileImageView"
+                                android:layout_toEndOf="@+id/profileImageView"
+                                android:orientation="vertical"
+                                android:padding="5dp"
+                                android:layout_centerVertical="true"
+                                android:id="@+id/nameRelativeLayout"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
 
-                                       <TextView
-                                           android:textColor="@color/grey_700"
-                                           android:id="@+id/commentsCountTextView"
-                                           android:layout_width="wrap_content"
-                                           android:layout_height="wrap_content"
-                                           android:text="0"
-                                           android:textSize="10sp"
-                                           android:padding="2dp"
-                                           android:layout_gravity="bottom"
-                                           android:textStyle="normal" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:id="@+id/usernameTextView"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/grey_700"
+                                    android:textStyle="normal|bold"
+                                    android:text="" />
 
-                                   </LinearLayout>
+                            </LinearLayout>
 
-                               </LinearLayout>
+                            <RelativeLayout
+                                android:padding="10dp"
+                                android:layout_centerVertical="true"
+                                android:layout_alignParentRight="true"
+                                android:layout_alignParentEnd="true"
+                                android:id="@+id/settingsRelativeLayout"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
 
-                           </RelativeLayout>
+                                <ImageView
+                                    android:id="@+id/shareImageView"
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
+                                    android:tint="@color/grey_700"
+                                    app:srcCompat="@drawable/ic_settings_vert" />
 
-                           <RelativeLayout
-                               android:visibility="gone"
-                               android:id="@+id/titleRelativeLayout"
-                               android:layout_width="match_parent"
-                               android:layout_height="wrap_content">
+                            </RelativeLayout>
 
-                               <TextView
-                                   android:id="@+id/titleTextView"
-                                   android:layout_width="wrap_content"
-                                   android:layout_height="wrap_content"
-                                   android:text=""
-                                   android:textColor="@color/grey_700"
-                                   android:textSize="12sp"
-                                   android:textStyle="normal|bold" />
+                        </RelativeLayout>
 
-                           </RelativeLayout>
+                    </LinearLayout>
 
-                           <RelativeLayout
-                               android:visibility="gone"
-                               android:id="@+id/descriptionRelativeLayout"
-                               android:layout_width="match_parent"
-                               android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="1dp"
+                        android:orientation="vertical">
 
-                               <TextView
-                                   android:id="@+id/descriptionTextView"
-                                   android:layout_width="wrap_content"
-                                   android:layout_height="wrap_content"
-                                   android:text=""
-                                   android:textColor="@color/grey_700"
-                                   android:textSize="12sp" />
+                        <RelativeLayout
+                            android:visibility="gone"
+                            android:id="@+id/titleRelativeLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
 
-                           </RelativeLayout>
+                            <TextView
+                                android:id="@+id/titleTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text=""
+                                android:textColor="@color/grey_700"
+                                android:textSize="12sp"
+                                android:textStyle="normal|bold" />
 
-                       </LinearLayout>
+                        </RelativeLayout>
 
-                   </android.support.v7.widget.CardView>
+                        <RelativeLayout
+                            android:visibility="gone"
+                            android:id="@+id/descriptionRelativeLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
 
-               </RelativeLayout>
+                            <TextView
+                                android:id="@+id/descriptionTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text=""
+                                android:textColor="@color/grey_700"
+                                android:textSize="12sp" />
 
-           </LinearLayout>
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <!--<LinearLayout-->
+                            <!--android:layout_marginBottom="10dp"-->
+                            <!--android:layout_gravity="start"-->
+                            <!--android:orientation="horizontal"-->
+                            <!--android:id="@+id/toolsRelativeLayout"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content">-->
+
+                            <!--<LinearLayout-->
+                            <!--android:id="@+id/commentsLinearLayout"-->
+                            <!--android:orientation="horizontal"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content">-->
+
+                            <!--<ImageView-->
+                            <!--android:id="@+id/commentsImageView"-->
+                            <!--android:layout_width="24dp"-->
+                            <!--android:layout_height="24dp"-->
+                            <!--android:tint="@color/grey_700"-->
+                            <!--app:srcCompat="@drawable/ic_comment" />-->
+
+                            <!--<TextView-->
+                            <!--android:id="@+id/commentsCountTextView"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:text="0"-->
+                            <!--android:textSize="12sp"-->
+                            <!--android:padding="10dp"-->
+                            <!--android:layout_gravity="bottom"-->
+                            <!--android:textStyle="normal" />-->
+
+                            <!--</LinearLayout>-->
+
+                            <!--</LinearLayout>-->
+
+                            <RelativeLayout
+                                android:id="@+id/commentsRelativeLayout"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <android.support.v7.widget.RecyclerView
+                                    android:id="@+id/commentsRecyclerView"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:overScrollMode="never" />
+
+                            </RelativeLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
 
         </LinearLayout>
 
     </ScrollView>
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_gravity="top"
+        app:titleTextAppearance="@style/toolbarTextAppearance"
+        android:layout_height="42dp"
+        android:background="@drawable/transparent_background"
+        app:layout_scrollFlags="scroll|enterAlways"
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+        app:titleTextColor="@android:color/white"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp">
+
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:padding="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:layout_toLeftOf="@+id/sendCommentImageView"
+                android:layout_toStartOf="@+id/sendCommentImageView"
+                android:background="@drawable/border_rectangle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:padding="10dp"
+                android:maxHeight="75dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:id="@+id/commentEditText"
+                android:layout_centerVertical="true"
+                android:textSize="12sp"
+                android:hint="Comment on this post" />
+
+            <ImageView
+                android:background="@drawable/accent_color"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                app:srcCompat="@drawable/ic_send"
+                android:id="@+id/sendCommentImageView"
+                android:tint="@android:color/white"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:padding="10dp"
+                android:layout_alignParentEnd="true" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
 
 </RelativeLayout>

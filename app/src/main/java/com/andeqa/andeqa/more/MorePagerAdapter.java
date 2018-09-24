@@ -4,6 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.andeqa.andeqa.chat_rooms.ChatsFragment;
+
 public class MorePagerAdapter extends FragmentPagerAdapter {
     private static final String TAG = MorePagerAdapter.class.getSimpleName();
 

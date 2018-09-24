@@ -14,8 +14,8 @@
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profileImageView"
             android:layout_centerVertical="true"
-            android:layout_width="75dp"
-            android:layout_height="75dp" />
+            android:layout_width="45dp"
+            android:layout_height="45dp" />
 
         <LinearLayout
             android:padding="5dp"
@@ -61,7 +61,7 @@
                 android:textSize="18sp"
                 android:textColor="@android:color/white"
                 android:textAllCaps="false"
-                android:background="@drawable/colour_btn_background"
+                android:background="@drawable/button_default_background"
                 android:id="@+id/followButton"
                 android:visibility="gone"
                 android:layout_width="105dp"

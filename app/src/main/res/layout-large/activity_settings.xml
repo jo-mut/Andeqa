@@ -48,7 +48,7 @@
                     android:textStyle="normal|bold"
                     android:textColor="@android:color/white"
                     android:textSize="38sp"
-                    android:layout_marginTop="40dp"
+                    android:layout_marginTop="15dp"
                     android:layout_below="@+id/profileImageView"
                     android:layout_centerHorizontal="true" />
 
@@ -70,6 +70,7 @@
                     android:text=""
                     android:textAlignment="center"
                     android:textSize="21sp"
+                    android:layout_marginBottom="20dp"
                     android:layout_below="@+id/usernameTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

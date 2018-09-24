@@ -5,55 +5,12 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
+    <android.support.v7.widget.CardView
+        app:cardElevation="0dp"
+        app:cardCornerRadius="10dp"
         android:orientation="vertical"
         android:layout_width="200dp"
-        android:layout_height="wrap_content">
-
-        <LinearLayout
-            android:background="@drawable/top_background"
-            android:padding="5dp"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="5dp">
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/profileImageView"
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:scaleType="centerCrop" />
-
-                <LinearLayout
-                    android:layout_toRightOf="@+id/profileImageView"
-                    android:layout_toEndOf="@+id/profileImageView"
-                    android:orientation="vertical"
-                    android:padding="5dp"
-                    android:id="@+id/nameRelativeLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/usernameTextView"
-                        android:textSize="18sp"
-                        android:textColor="@color/grey_700"
-                        android:textStyle="normal"
-                        android:text="" />
-
-                </LinearLayout>
-
-            </RelativeLayout>
-
-        </LinearLayout>
+        android:layout_height="200dp">
 
         <RelativeLayout
             android:id="@+id/postRelativeLayout"
@@ -67,119 +24,11 @@
                 android:id="@+id/postImageView"
                 android:layout_width="match_parent"
                 android:scaleType="centerCrop"
-                android:layout_height="200dp" />
+                android:layout_height="match_parent" />
 
         </RelativeLayout>
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
 
-            <LinearLayout
-                android:padding="5dp"
-                android:background="@drawable/post_bottom_background"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:id="@+id/toolsRelativeLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:id="@+id/viewsLinearLayout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                        <ImageView
-                            android:id="@+id/viewsImageView"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:tint="@color/grey_700"
-                            app:srcCompat="@drawable/ic_views" />
-
-
-                        <TextView
-                            android:id="@+id/viewsCountTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/grey_700"
-                            android:text="0"
-                            android:padding="5dp"
-                            android:textSize="15sp"
-                            android:textStyle="normal" />
-
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/commentsLinearLayout"
-                        android:orientation="horizontal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                        <ImageView
-                            android:id="@+id/commentsImageView"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_marginLeft="5dp"
-                            android:layout_marginStart="5dp"
-                            android:tint="@color/grey_700"
-                            app:srcCompat="@drawable/ic_comment" />
-
-                        <TextView
-                            android:id="@+id/commentsCountTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/grey_700"
-                            android:text="0"
-                            android:padding="5dp"
-                            android:textSize="15sp"
-                            android:textStyle="normal" />
-
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:visibility="gone"
-                    android:id="@+id/creditsLinearLayout"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <ImageView
-                        android:layout_gravity="center_vertical"
-                        android:id="@+id/creditsImageView"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:tint="@color/grey_700"
-                        app:srcCompat="@drawable/ic_credits" />
-
-                    <TextView
-                        android:layout_gravity="center_vertical"
-                        android:text=""
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/creditsTextView"
-                        android:textColor="@color/grey_700"
-                        android:textStyle="normal|bold"
-                        android:textSize="15sp"
-                        android:padding="3dp" />
-
-                </LinearLayout>
-
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
+    </android.support.v7.widget.CardView>
 
 </LinearLayout>
