@@ -2,16 +2,16 @@ package com.andeqa.andeqa.main;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.LayerDrawable;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.internal.BottomNavigationMenuView;
-import android.support.design.widget.BottomNavigationView;
+import android.os.Handler;
+import android.support.annotation.ColorRes;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -24,16 +24,23 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.chat_rooms.ChatsFragment;
 import com.andeqa.andeqa.collections.CollectionsFragment;
+import com.andeqa.andeqa.home.ExploreFragment;
 import com.andeqa.andeqa.home.HomeFragment;
 
 import com.andeqa.andeqa.models.Andeqan;
+import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.more.ActivitiesFragment;
-import com.andeqa.andeqa.chat_rooms.ChatsFragment;
+import com.andeqa.andeqa.more.MoreFragment;
 import com.andeqa.andeqa.profile.ProfileActivity;
+import com.andeqa.andeqa.utils.BottomNavigationPagerAdapter;
 import com.andeqa.andeqa.utils.BottomNavigationViewBehavior;
-import com.andeqa.andeqa.utils.BottomNavigationViewHelper;
-import com.andeqa.andeqa.utils.CountDrawable;
+import com.andeqa.andeqa.utils.ForceUpdateChecker;
+import com.andeqa.andeqa.utils.NoSwipePager;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
+import com.aurelhubert.ahbottomnavigation.notification.AHNotification;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
@@ -46,6 +53,9 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 import butterknife.Bind;
@@ -54,12 +64,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener,
         ForceUpdateChecker.OnUpdateNeededListener  {
-    @Bind(R.id.bottomNavigationView)BottomNavigationView mBottomNavigationView;
+    @Bind(R.id.bottomNavigationView)AHBottomNavigation mBottomNavigationView;
 //    @Bind(R.id.fab)FloatingActionButton mFloatingActionButton;
     @Bind(R.id.toolbar)Toolbar toolbar;
     @Bind(R.id.titleTextView)TextView titleTextView;
     @Bind(R.id.profileImageView)
     CircleImageView mProfileImageView;
+    @Bind(R.id.noSwipeViewPager)NoSwipePager noSwipePager;
 
     private Uri photoUri;
     private static final String TAG = HomeActivity.class.getSimpleName();
@@ -76,9 +87,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     //bottom navigation view
     final FragmentManager fragmentManager = getSupportFragmentManager();
     final Fragment homeFragment = new HomeFragment();
+    final Fragment exploreFragment = new ExploreFragment();
     final Fragment collectionFragment = new CollectionsFragment();
-    final Fragment timelineFragment = new ActivitiesFragment();
+    final Fragment moreFragment = new MoreFragment();
+    final Fragment activitiesFragment = new ActivitiesFragment();
     final Fragment chatsFragment = new ChatsFragment();
+    private BottomNavigationPagerAdapter navigationPagerAdapter;
+    private boolean notificationVisible = false;
 
     private static final int SECONDS_TO_FORCED_UPDATE = 1296000;
 
@@ -102,24 +117,18 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
         timelineQuery = timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
                 .collection("activities").whereEqualTo("status", "un_read");
-        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
+        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
         usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
         initializeCollections();
-//        displayPopupWindow();
         setProfile();
-        /***disable bottom navigation shifting mode**/
-        BottomNavigationViewHelper.disableShiftMode(mBottomNavigationView);
-        /***bottom navigation click listeners**/
-        mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView
-                .OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                selectFragment(item);
-                return true;
-            }
-        });
-
-//        /***hide bottom navigation when user scrolls the home actvity***/
+        setUpWithViewPager();
+        addFragmentsToBottomNavigation();
+        setUpBottomNavigationStyle();
+        mBottomNavigationView.setCurrentItem(0);
+        titleTextView.setText("Andeqa");
+        timelineNotifications();
+        bottomNavigationListener();
+        /**hide bottom navigation when user scrolls the home actvity***/
         CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams)
                 mBottomNavigationView.getLayoutParams();
         layoutParams.setBehavior(new BottomNavigationViewBehavior());
@@ -149,17 +158,91 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onUpdateNeeded(final String updateUrl) {
-        AlertDialog dialog = new AlertDialog.Builder(this)
+        final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("New version available")
-                .setMessage("Please update app to Andeqa the newer version to continue using the service")
+                .setMessage("Please update app to Andeqa to the newer version to experience new features")
                 .setPositiveButton("Update",
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 redirectStore(updateUrl);
                             }
+                        }).setNegativeButton("No, thanks",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
                         }).create();
-//        dialog.show();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                dialog.show();
+                dialog.setCancelable(false);
+            }
+        }, 30000);
+
+    }
+
+    private void redirectStore(String updateUrl) {
+        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(updateUrl));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
+    private void addFragmentsToBottomNavigation(){
+        AHBottomNavigationItem home = new AHBottomNavigationItem(R.string.home,
+                R.drawable.ic_home, R.color.grey_700);
+        AHBottomNavigationItem collection = new AHBottomNavigationItem(R.string.collections,
+                R.drawable.ic_collection_bottom_nv, R.color.grey_700);
+        AHBottomNavigationItem explore = new AHBottomNavigationItem(R.string.explore,
+                R.drawable.ic_explore, R.color.grey_700);
+        AHBottomNavigationItem more = new AHBottomNavigationItem(R.string.more,
+                R.drawable.ic_more_bottom_nav, R.color.grey_700);
+        AHBottomNavigationItem activities = new AHBottomNavigationItem(R.string.activitites,
+                R.drawable.ic_stopwatch, R.color.grey_700);
+        AHBottomNavigationItem chats = new AHBottomNavigationItem(R.string.chats,
+                R.drawable.ic_chats, R.color.grey_700);
+        mBottomNavigationView.addItem(home);
+        mBottomNavigationView.addItem(collection);
+        mBottomNavigationView.addItem(activities);
+        mBottomNavigationView.addItem(chats);
+    }
+
+    private void bottomNavigationListener(){
+        mBottomNavigationView.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
+            @Override
+            public boolean onTabSelected(int position, boolean wasSelected) {
+                if (!wasSelected)
+                    selectFragment(position);
+                    noSwipePager.setCurrentItem(position);
+                    int lastPosition = mBottomNavigationView.getItemsCount()-1;
+                    if (notificationVisible && position == lastPosition){
+                        mBottomNavigationView.setNotification(new AHNotification(), lastPosition);
+                    }
+
+                return true;
+            }
+        });
+    }
+
+    private void setUpWithViewPager(){
+        noSwipePager.setPagingEnabled(false);
+        navigationPagerAdapter = new BottomNavigationPagerAdapter(getSupportFragmentManager());
+        navigationPagerAdapter.addFragments(homeFragment);
+        navigationPagerAdapter.addFragments(collectionFragment);
+        navigationPagerAdapter.addFragments(activitiesFragment);
+        navigationPagerAdapter.addFragments(chatsFragment);
+        noSwipePager.setAdapter(navigationPagerAdapter);
+
+    }
+
+    private void setUpBottomNavigationStyle(){
+        mBottomNavigationView.setDefaultBackgroundColor(Color.WHITE);
+        mBottomNavigationView.setAccentColor(fetchColor(R.color.colorPrimary));
+        mBottomNavigationView.setInactiveColor(fetchColor(R.color.grey_700));
+        mBottomNavigationView.setTitleState(AHBottomNavigation.TitleState.ALWAYS_SHOW);
     }
 
     private void initializeCollections(){
@@ -172,17 +255,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 }
 
                 if (documentSnapshots.isEmpty()){
+                    List<Collection> collections = new ArrayList<>();
 
                 }
 
             }
         });
-    }
-
-    private void redirectStore(String updateUrl) {
-        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(updateUrl));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
     }
 
     private void setProfile(){
@@ -223,10 +301,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onStart() {
         super.onStart();
-        MenuItem selectedItem;
-        selectedItem = mBottomNavigationView.getMenu().getItem(0);
-        selectFragment(selectedItem);
-        timelineNotifications();
     }
 
     @Override
@@ -251,17 +325,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void timelineNotifications(){
-        MenuItem menuItem = mBottomNavigationView.getMenu().findItem(R.id.action_chat);
-        final LayerDrawable icon = (LayerDrawable) menuItem.getIcon();
-        menuItem.setIcon(icon);
-
-        int count = 0;
-        CountDrawable badge;
-        badge = new CountDrawable(HomeActivity.this);
-        badge.setCount(count + "");
-        icon.mutate();
-        icon.setDrawableByLayerId(R.id.ic_group_count, badge);
-
         timelineQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -272,11 +335,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
                 if (!queryDocumentSnapshots.isEmpty()){
                     final int count = queryDocumentSnapshots.size();
-                    CountDrawable badge;
-                    badge = new CountDrawable(HomeActivity.this);
-                    badge.setCount(count + "");
-                    icon.mutate();
-                    icon.setDrawableByLayerId(R.id.ic_group_count, badge);
+                    AHNotification notification = new AHNotification.Builder()
+                            .setText(count + "")
+                            .setBackgroundColor(fetchColor(R.color.red_900))
+                            .setTextColor(fetchColor(R.color.grey_1000))
+                            .build();
+                    mBottomNavigationView.setNotification(notification, mBottomNavigationView.getItemsCount()-1);
+                            notificationVisible = true;
                 }
             }
         });
@@ -284,49 +349,38 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    private void selectFragment(MenuItem item){
+
+    private void selectFragment(int position){
         //initialize each corresponding fragment
-        switch (item.getItemId()){
-            case R.id.action_home:
+        switch (position){
+            case 0:
                 titleTextView.setText("Andeqa");
                 FragmentTransaction homeTransaction = fragmentManager.beginTransaction();
-                homeTransaction.replace(R.id.container, homeFragment).commit();
+                homeTransaction.replace(R.id.noSwipeViewPager, homeFragment).commit();
                 break;
-            case R.id.action_collection:
+            case 1:
                 titleTextView.setText("Andeqa");
                 FragmentTransaction collectionTransaction = fragmentManager.beginTransaction();
-                collectionTransaction.replace(R.id.container, collectionFragment).commit();
+                collectionTransaction.replace(R.id.noSwipeViewPager, collectionFragment).commit();
                 break;
-            case R.id.action_timeline:
+            case 2:
                 titleTextView.setText("Andeqa");
-                FragmentTransaction timelineTransaction = fragmentManager.beginTransaction();
-                timelineTransaction.replace(R.id.container, timelineFragment).commit();
+                FragmentTransaction activitiesTransaction = fragmentManager.beginTransaction();
+                activitiesTransaction.replace(R.id.noSwipeViewPager, activitiesFragment).commit();
                 break;
-            case R.id.action_chat:
+            case 3:
                 titleTextView.setText("Andeqa");
-                FragmentTransaction exploreTransaction = fragmentManager.beginTransaction();
-                exploreTransaction.replace(R.id.container, chatsFragment).commit();
+                FragmentTransaction chatsTransaction = fragmentManager.beginTransaction();
+                chatsTransaction.replace(R.id.noSwipeViewPager, chatsFragment).commit();
                 break;
         }
 
-        //update selected item
-        mSelectedItem = item.getItemId();
-        //uncheck the other items
-        for(int i = 0; i < mBottomNavigationView.getMenu().size(); i++){
-            MenuItem menuItem = mBottomNavigationView.getMenu().getItem(i);
-            menuItem.setChecked(menuItem.getItemId() ==item.getItemId());
-        }
     }
 
 
 
     @Override
     public void onClick(View v){
-
-//        if (v == mFloatingActionButton){
-//            ChooseCreationFragment chooseCreationFragment = ChooseCreationFragment.newInstance();
-//            chooseCreationFragment.show(getSupportFragmentManager(), "create bottom fragment");
-//        }
 
         if (v == mProfileImageView){
             Intent intent = new Intent(this, ProfileActivity.class);
@@ -338,8 +392,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void displayPopupWindow() {
-        final BottomNavigationMenuView menuView = (BottomNavigationMenuView)
-                mBottomNavigationView.getMenu().getItem(3);
+//        final BottomNavigationMenuView menuView = (BottomNavigationMenuView)
+//                mBottomNavigationView.getMenu().getItem(3);
 
 //        int [] loc_int = new int[2];
 //        try {
@@ -384,6 +438,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 //            }
 //        });
 
+    }
+
+    private int fetchColor(@ColorRes int color){
+        return ContextCompat.getColor(this, color);
     }
 
 }

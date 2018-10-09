@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="600dp"
             android:fitsSystemWindows="true"
-            app:contentScrim="?attr/colorPrimary"
+            app:contentScrim="@color/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <RelativeLayout
@@ -78,6 +78,22 @@
                 app:layout_collapseMode="pin"
                 tools:ignore="HardcodedText,UnusedAttribute">
 
+                <RelativeLayout
+                    android:visibility="gone"
+                    android:id="@+id/doneRelativeLayout"
+                    android:layout_gravity="end"
+                    android:padding="15dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/doneImageView"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:scaleType="centerCrop"
+                        app:srcCompat="@drawable/ic_done" />
+
+                </RelativeLayout>
 
             </android.support.v7.widget.Toolbar>
 

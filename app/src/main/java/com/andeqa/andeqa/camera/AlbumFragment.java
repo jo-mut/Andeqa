@@ -10,6 +10,7 @@ import android.database.MergeCursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -112,6 +113,7 @@ public class AlbumFragment extends Fragment {
             Uri imagesInternalUri = android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI;
             Uri videosInternalUri = android.provider.MediaStore.Video.Media.INTERNAL_CONTENT_URI;
             Uri videosExternalUri = android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+
 
 
             String[] projection = { MediaStore.MediaColumns.DATA,
@@ -333,11 +335,7 @@ public class AlbumFragment extends Fragment {
                     if (collection_post != null) {
                         Intent intent = new Intent(getActivity(), AlbumActivity.class);
                         intent.putExtra("name", albumList.get(position).get(Function.KEY_ALBUM));
-                        startActivity(intent);
-                    } else if (collectionId != null) {
-                        Intent intent = new Intent(getActivity(), AlbumActivity.class);
-                        intent.putExtra("name", albumList.get(position).get(Function.KEY_ALBUM));
-                        intent.putExtra(AlbumFragment.COLLECTION_ID, CreateCollectionActivity.class.getSimpleName());
+                        intent.putExtra(AlbumFragment.COLLECTION_ID, collectionId);
                         startActivity(intent);
                     }else if (createCollection != null){
                         Intent intent = new Intent(getActivity(), AlbumActivity.class);

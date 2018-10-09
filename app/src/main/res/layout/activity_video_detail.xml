@@ -126,7 +126,7 @@
                             android:layout_height="wrap_content">
 
                             <ImageView
-                                android:id="@+id/shareImageView"
+                                android:id="@+id/postSettingsImageView"
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:tint="@color/grey_700"
@@ -153,6 +153,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:use_controller="false"
+                    app:resize_mode="fixed_width"
                     app:controller_layout_id="@layout/playback_control_view">
 
                     <RelativeLayout

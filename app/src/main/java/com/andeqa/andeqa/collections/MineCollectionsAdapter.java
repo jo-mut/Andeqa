@@ -2,9 +2,6 @@ package com.andeqa.andeqa.collections;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -14,17 +11,11 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Collection;
-import com.andeqa.andeqa.models.QueryOptions;
 import com.andeqa.andeqa.models.Relation;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -89,7 +80,7 @@ public class MineCollectionsAdapter extends RecyclerView.Adapter<CollectionViewH
 
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
-            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
+            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS);
             postCountQuery = collectionsCollection.document("collections").collection(collectionId)
                     .orderBy("collection_id");
             followingCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_RELATIONS);
@@ -140,6 +131,50 @@ public class MineCollectionsAdapter extends RecyclerView.Adapter<CollectionViewH
             }
         });
 
+//        postCountQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable QuerySnapshot documentSnapshots,
+//                                @Nullable FirebaseFirestoreException e) {
+//                if (e != null) {
+//                    Log.w(TAG, "Listen error", e);
+//                    return;
+//                }
+//
+//                if (!documentSnapshots.isEmpty()){
+//                    holder.postsCountTextView.setVisibility(View.VISIBLE);
+//                    holder.postsCountTextView.setText( "following " + documentSnapshots.size());
+//                }else {
+//                    holder.postsCountTextView.setText("Posts 0");
+//                    holder.postsCountTextView.setVisibility(View.VISIBLE);
+//                }
+//            }
+//        });
+
+//        /**show the number of peopl following collection**/
+//        followingCollection.document("following")
+//                .collection(collectionId)
+//                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onEvent(@Nullable QuerySnapshot documentSnapshots,
+//                                        @Nullable FirebaseFirestoreException e) {
+//
+//                        if (e != null) {
+//                            Log.w(TAG, "Listen error", e);
+//                            return;
+//                        }
+//
+//                        if (!documentSnapshots.isEmpty()){
+//                            holder.followingCountTextView.setVisibility(View.VISIBLE);
+//                            int following = documentSnapshots.size();
+//                            holder.followingCountTextView.setText("following " + following);
+//                        }else {
+//                            holder.followingCountTextView.setVisibility(View.VISIBLE);
+//                            holder.followingCountTextView.setText("following 0");
+//                        }
+//
+//                    }
+//                });
+
 
         /**show if the user is following collection or not**/
         followingCollection.document("following")
@@ -164,43 +199,16 @@ public class MineCollectionsAdapter extends RecyclerView.Adapter<CollectionViewH
                     }
                 });
 
-        /**show the number of peopl following collection**/
-        followingCollection.document("following")
-                .collection(collectionId).whereEqualTo("followed_id",collectionId)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot documentSnapshots,
-                                        @Nullable FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!documentSnapshots.isEmpty()){
-                            holder.followingCountTextView.setVisibility(View.VISIBLE);
-                            int following = documentSnapshots.size();
-                            holder.followingCountTextView.setText(following + " following");
-                        }else {
-                            holder.followingCountTextView.setVisibility(View.GONE);
-                        }
-
-                    }
-                });
-
 
         /**follow or un follow collection*/
-        if (userId.equals(firebaseAuth.getCurrentUser().getUid())){
-            holder.followRelativeLayout.setVisibility(View.GONE);
-        }else {
-            holder.followRelativeLayout.setVisibility(View.VISIBLE);
+        if (!userId.equals(firebaseAuth.getCurrentUser().getUid())){
             holder.followButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     processFollow = true;
                     followingCollection.document("following")
-                            .collection(firebaseAuth.getCurrentUser().getUid())
-                            .whereEqualTo("followed_id", collectionId)
+                            .collection(collectionId)
+                            .whereEqualTo("following_id", firebaseAuth.getCurrentUser().getUid())
                             .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                 @Override
                                 public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -225,8 +233,7 @@ public class MineCollectionsAdapter extends RecyclerView.Adapter<CollectionViewH
                                         }else {
                                             followingCollection.document("following")
                                                     .collection(collectionId)
-                                                    .document(firebaseAuth.getCurrentUser().getUid())
-                                                    .delete();
+                                                    .document(firebaseAuth.getCurrentUser().getUid()).delete();
 
                                             holder.followButton.setText("FOLLOW");
                                             processFollow = false;
@@ -236,7 +243,10 @@ public class MineCollectionsAdapter extends RecyclerView.Adapter<CollectionViewH
                             });
                 }
             });
+        }else {
+            holder.followRelativeLayout.setVisibility(View.GONE);
         }
+
 
     }
 

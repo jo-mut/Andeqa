@@ -2,35 +2,23 @@ package com.andeqa.andeqa.profile;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.collections.CollectionViewHolder;
 import com.andeqa.andeqa.collections.MineCollectionsAdapter;
 import com.andeqa.andeqa.collections.MinePostsActivity;
-import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Collection;
-import com.andeqa.andeqa.models.QueryOptions;
 import com.andeqa.andeqa.models.Relation;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -90,7 +78,7 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
 
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null) {
-            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
+            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS);
             postCountQuery = collectionsCollection.document("collections").collection(collectionId)
                     .orderBy("collection_id");
             followingCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_RELATIONS);
@@ -141,6 +129,53 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
             }
         });
 
+
+//        postCountQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable QuerySnapshot documentSnapshots,
+//                                @Nullable FirebaseFirestoreException e) {
+//                if (e != null) {
+//                    Log.w(TAG, "Listen error", e);
+//                    return;
+//                }
+//
+//                if (!documentSnapshots.isEmpty()){
+//                    holder.postsCountTextView.setVisibility(View.VISIBLE);
+//                    holder.postsCountTextView.setText( "following " + documentSnapshots.size());
+//                }else {
+//                    holder.postsCountTextView.setText("Posts 0");
+//                    holder.postsCountTextView.setVisibility(View.VISIBLE);
+//                }
+//            }
+//        });
+
+
+        /**show the number of peopl following collection**/
+//        followingCollection.document("following")
+//                .collection(collectionId)
+//                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onEvent(@Nullable QuerySnapshot documentSnapshots,
+//                                        @Nullable FirebaseFirestoreException e) {
+//
+//                        if (e != null) {
+//                            Log.w(TAG, "Listen error", e);
+//                            return;
+//                        }
+//
+//                        if (!documentSnapshots.isEmpty()){
+//                            holder.followingCountTextView.setVisibility(View.VISIBLE);
+//                            int following = documentSnapshots.size();
+//                            holder.followingCountTextView.setText("following " + following);
+//                        }else {
+//                            holder.followingCountTextView.setVisibility(View.VISIBLE);
+//                            holder.followingCountTextView.setText("following 0");
+//                        }
+//
+//                    }
+//                });
+
+
         /**show if the user is following collection or not**/
         followingCollection.document("following")
                 .collection(collectionId)
@@ -155,34 +190,10 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
                             return;
                         }
 
-                        if (!documentSnapshots.isEmpty()) {
+                        if (!documentSnapshots.isEmpty()){
                             holder.followButton.setText("FOLLOWING");
-                        } else {
+                        }else {
                             holder.followButton.setText("FOLLOW");
-                        }
-
-                    }
-                });
-
-        /**show the number of peopl following collection**/
-        followingCollection.document("following")
-                .collection(collectionId)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot documentSnapshots,
-                                        @Nullable FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!documentSnapshots.isEmpty()) {
-                            holder.followingCountTextView.setVisibility(View.VISIBLE);
-                            int following = documentSnapshots.size();
-                            holder.followingCountTextView.setText(following + " following");
-                        } else {
-                            holder.followingCountTextView.setVisibility(View.GONE);
                         }
 
                     }
@@ -190,9 +201,7 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
 
 
         /**follow or un follow collection*/
-        if (userId.equals(firebaseAuth.getCurrentUser().getUid())) {
-            holder.followRelativeLayout.setVisibility(View.GONE);
-        } else {
+        if (!userId.equals(firebaseAuth.getCurrentUser().getUid())){
             holder.followRelativeLayout.setVisibility(View.VISIBLE);
             holder.followButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -210,8 +219,8 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
                                         return;
                                     }
 
-                                    if (processFollow) {
-                                        if (documentSnapshots.isEmpty()) {
+                                    if (processFollow){
+                                        if (documentSnapshots.isEmpty()){
                                             final Relation following = new Relation();
                                             following.setFollowing_id(firebaseAuth.getCurrentUser().getUid());
                                             following.setFollowed_id(collectionId);
@@ -222,7 +231,7 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
                                                     .document(firebaseAuth.getCurrentUser().getUid()).set(following);
                                             holder.followButton.setText("FOLLOWING");
                                             processFollow = false;
-                                        } else {
+                                        }else {
                                             followingCollection.document("following")
                                                     .collection(collectionId)
                                                     .document(firebaseAuth.getCurrentUser().getUid()).delete();
@@ -235,6 +244,8 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
                             });
                 }
             });
+        }else {
+            holder.followRelativeLayout.setVisibility(View.GONE);
         }
 
     }

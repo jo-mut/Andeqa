@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
@@ -86,10 +85,10 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnClick
         mType = getIntent().getStringExtra(TYPE);
         //firestore
         if (mType.equals("single") || mType.equals("single_image_post")){
-            collectionPost = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+            collectionPost = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
                     .document("singles").collection(mCollectionId);
         }else {
-            collectionPost = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+            collectionPost = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
                     .document("collections").collection(mCollectionId);
         }
 

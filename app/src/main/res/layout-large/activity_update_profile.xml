@@ -7,6 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@android:color/white"
     tools:context="com.andeqa.andeqa.profile.UpdateProfileActivity">
 
 
@@ -23,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="600dp"
             android:fitsSystemWindows="true"
-            app:contentScrim="?attr/colorPrimary"
+            app:contentScrim="@color/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <RelativeLayout
@@ -109,7 +110,6 @@
                     android:layout_height="match_parent">
 
                     <ImageView
-                        android:tint="@color/grey_700"
                         android:layout_alignParentRight="true"
                         android:layout_alignParentEnd="true"
                         android:layout_width="45dp"
@@ -143,228 +143,118 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <LinearLayout
-                    android:orientation="horizontal"
+                <RelativeLayout
+                    android:layout_margin="5dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="match_parent">
 
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:padding="30dp">
-
-                        <ImageView
-                            android:tint="@color/grey_700"
-                            app:srcCompat="@drawable/ic_person"
-                            android:id="@+id/imageView"
-                            android:layout_centerVertical="false"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerInParent="true" />
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
+                    <EditText
+                        android:background="@drawable/input_background"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+                        android:ems="10"
+                        android:paddingRight="5dp"
+                        android:paddingEnd="5dp"
+                        android:paddingLeft="5dp"
+                        android:paddingStart="5dp"
+                        android:paddingTop="20dp"
+                        android:paddingBottom="20dp"
+                        android:id="@+id/usernameEditText"
+                        android:hint="Username"
+                        android:freezesText="true"
+                        android:textSize="21sp"
+                        android:layout_alignParentTop="false"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                        <EditText
-                            android:background="@drawable/input_background"
-                            android:layout_height="wrap_content"
-                            android:inputType="textPersonName"
-                            android:ems="10"
-                            android:paddingRight="5dp"
-                            android:paddingEnd="5dp"
-                            android:paddingLeft="5dp"
-                            android:paddingStart="5dp"
-                            android:paddingTop="20dp"
-                            android:paddingBottom="20dp"
-                            android:id="@+id/usernameEditText"
-                            android:hint="Username"
-                            android:freezesText="true"
-                            android:textSize="21sp"
-                            android:layout_alignParentTop="false"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true"
-                            android:layout_width="match_parent"
-                            android:layout_centerVertical="true" />
+                        android:layout_centerVertical="true" />
 
 
-                    </RelativeLayout>
+                </RelativeLayout>
 
-                </LinearLayout>
-
-                <LinearLayout
-                    android:orientation="horizontal"
+                <RelativeLayout
+                    android:layout_margin="5dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="match_parent">
 
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:padding="30dp">
-
-                        <ImageView
-                            android:tint="@color/grey_700"
-                            android:id="@+id/imageView3"
-                            android:layout_alignParentTop="false"
-                            android:layout_alignParentLeft="false"
-                            android:layout_alignParentStart="false"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="false"
-                            android:layout_centerInParent="true" />
-                    </RelativeLayout>
-
-                    <RelativeLayout
+                    <EditText
+                        android:background="@drawable/input_background"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:paddingRight="5dp"
+                        android:paddingEnd="5dp"
+                        android:paddingLeft="5dp"
+                        android:paddingStart="5dp"
+                        android:paddingTop="20dp"
+                        android:paddingBottom="20dp"
+                        android:inputType="textMultiLine"
+                        android:id="@+id/bioEditText"
+                        android:hint="Bio line"
+                        android:freezesText="true"
+                        android:textSize="21sp"
+                        android:layout_alignParentTop="false"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true" />
 
-                        <EditText
-                            android:background="@drawable/input_background"
-                            android:layout_height="wrap_content"
-                            android:ems="10"
-                            android:paddingRight="5dp"
-                            android:paddingEnd="5dp"
-                            android:paddingLeft="5dp"
-                            android:paddingStart="5dp"
-                            android:paddingTop="20dp"
-                            android:paddingBottom="20dp"
-                            android:inputType="textMultiLine"
-                            android:id="@+id/bioEditText"
-                            android:hint="Bio line"
-                            android:freezesText="true"
-                            android:textSize="21sp"
-                            android:layout_alignParentTop="false"
-                            android:layout_width="match_parent"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true"
-                            android:layout_centerVertical="true" />
+                </RelativeLayout>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/statusCountTextView"
-                            android:textSize="14sp"
-                            android:padding="5dp"
-                            android:layout_below="@+id/bioEditText"
-                            android:layout_alignParentRight="true"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true" />
-
-
-                    </RelativeLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:orientation="horizontal"
+                <RelativeLayout
+                    android:layout_margin="5dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="match_parent">
 
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:padding="30dp">
-
-                        <ImageView
-                            android:tint="@color/grey_700"
-                            app:srcCompat="@drawable/ic_account"
-                            android:layout_centerVertical="false"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerInParent="true" />
-
-                    </RelativeLayout>
-
-
-
-                    <RelativeLayout
+                    <EditText
+                        android:background="@drawable/input_background"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+                        android:ems="10"
+                        android:paddingRight="5dp"
+                        android:paddingEnd="5dp"
+                        android:paddingLeft="5dp"
+                        android:paddingStart="5dp"
+                        android:paddingTop="20dp"
+                        android:paddingBottom="20dp"
+                        android:id="@+id/fisrtNameEditText"
+                        android:hint="First Name"
+                        android:textSize="21sp"
+                        android:freezesText="true"
+                        android:layout_alignParentTop="false"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                        <EditText
-                            android:background="@drawable/input_background"
-                            android:layout_height="wrap_content"
-                            android:inputType="textPersonName"
-                            android:ems="10"
-                            android:paddingRight="5dp"
-                            android:paddingEnd="5dp"
-                            android:paddingLeft="5dp"
-                            android:paddingStart="5dp"
-                            android:paddingTop="20dp"
-                            android:paddingBottom="20dp"
-                            android:id="@+id/fisrtNameEditText"
-                            android:hint="First Name"
-                            android:textSize="21sp"
-                            android:freezesText="true"
-                            android:layout_alignParentTop="false"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true"
-                            android:layout_width="match_parent"
-                            android:layout_centerVertical="true" />
+                        android:layout_centerVertical="true" />
 
 
-                    </RelativeLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:orientation="horizontal"
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_margin="5dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="match_parent">
 
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:padding="30dp">
-
-                        <ImageView
-                            android:tint="@color/grey_700"
-                            app:srcCompat="@drawable/ic_account"
-                            android:layout_centerVertical="false"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerInParent="true" />
-
-                    </RelativeLayout>
-
-
-
-                    <RelativeLayout
+                    <EditText
+                        android:background="@drawable/input_background"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+                        android:ems="10"
+                        android:paddingRight="5dp"
+                        android:paddingEnd="5dp"
+                        android:paddingLeft="5dp"
+                        android:paddingStart="5dp"
+                        android:paddingTop="20dp"
+                        android:paddingBottom="20dp"
+                        android:id="@+id/secondNameEditText"
+                        android:hint="Second Name"
+                        android:textSize="21sp"
+                        android:freezesText="true"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                        <EditText
-                            android:background="@drawable/input_background"
-                            android:layout_height="wrap_content"
-                            android:inputType="textPersonName"
-                            android:ems="10"
-                            android:paddingRight="5dp"
-                            android:paddingEnd="5dp"
-                            android:paddingLeft="5dp"
-                            android:paddingStart="5dp"
-                            android:paddingTop="20dp"
-                            android:paddingBottom="20dp"
-                            android:id="@+id/secondNameEditText"
-                            android:hint="Second Name"
-                            android:textSize="21sp"
-                            android:freezesText="true"
-                            android:layout_width="match_parent"
-                            android:layout_centerVertical="true"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true" />
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true" />
 
 
-                    </RelativeLayout>
-
-                </LinearLayout>
+                </RelativeLayout>
 
 
             </LinearLayout>

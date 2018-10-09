@@ -41,8 +41,7 @@ import android.widget.Toast;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.creation.PreviewImagePostActivity;
 import com.andeqa.andeqa.creation.PreviewVideoPostActivity;
-import com.andeqa.andeqa.creation.CreateSingleActivity;
-import com.andeqa.andeqa.explore.ExploreFragment;
+import com.andeqa.andeqa.home.ExploreFragment;
 
 import java.io.File;
 import java.io.FileOutputStream;

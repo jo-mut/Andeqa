@@ -18,18 +18,15 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -118,10 +115,10 @@ public class ConfirmDeleteFragment extends DialogFragment implements View.OnClic
 
             if (mType != null){
                 if (mType.equals("single")|| mType.equals("single_image_post")){
-                    collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                    collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
                             .document("singles").collection(mCollectionId);
                 }else{
-                    collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                    collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
                             .document("collections").collection(mCollectionId);
                 }
 

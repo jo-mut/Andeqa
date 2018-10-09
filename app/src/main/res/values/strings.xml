@@ -33,7 +33,6 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_navigation_drawer">NavigationDrawerActivity</string>
     <string name="feedback">Send Feedback</string>
-    <string name="home">Home</string>
     <string name="profile">Profile</string>
     <string name="Market">Market</string>
     <string name="sendfeedback">Send Feedback</string>
@@ -121,4 +120,13 @@
     <string name="let_s_get_you_started_with_andeqa_follow_some_few_collections_to_see_interest_posts_from_other_user_s_collections">Let\'s get you started with Andeqa. Follow some few collections to see interest posts from other user\'s collections</string>
     <!--follow collections-->
     <string name="start_by_following_collections">Let\'s get you started. Follow some few collections to see posts from other user\'s collections</string>
+
+    <!--bottom navigation-->
+    <string name="home">Home</string>
+    <string name="explore">Explore</string>
+    <string name="activitites">Activities</string>
+    <string name="chats">Chats</string>
+    <string name="more">More</string>
+    <string name="collections">Collections</string>
 </resources>
+

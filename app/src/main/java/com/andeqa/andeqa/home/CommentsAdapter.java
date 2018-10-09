@@ -14,7 +14,6 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.chatting.MessagingActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Comment;
-import com.andeqa.andeqa.models.QueryOptions;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Room;
 import com.andeqa.andeqa.models.Timeline;
@@ -57,7 +56,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     private CollectionReference usersCollection;
     private CollectionReference followersCollection;
     private CollectionReference timelineCollection;
-    private CollectionReference queryParamsCollection;
     private CollectionReference roomsCollection;
     private static final String COLLECTION_ID = "collection id";
     private static final String EXTRA_POST_ID = "post id";
@@ -78,13 +76,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     protected void setPostComments(List<DocumentSnapshot> mSnapshots){
         this.documentSnapshots = mSnapshots;
         notifyDataSetChanged();
-        initReferences();
     }
 
-    private void initReferences(){
-        queryParamsCollection = FirebaseFirestore.getInstance().collection(Constants.QUERY_OPTIONS);
-
-    }
 
     @Override
     public long getItemId(int position) {
@@ -118,7 +111,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
         if (firebaseAuth.getCurrentUser() != null){
             //firestore
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            followersCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE);
+            followersCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE_RELATIONS);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             roomsCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
             //firebase
@@ -353,26 +346,12 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
                                             followersCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
                                                     .document(userId).set(following);
 
-                                            if (!userId.equals(firebaseAuth.getCurrentUser().getUid())){
-                                                final String id = queryParamsCollection.document().getId();
-                                                QueryOptions queryOptions = new QueryOptions();
-                                                queryOptions.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                queryOptions.setFollowed_id(userId);
-                                                queryOptions.setType("people");
-                                                queryParamsCollection.document("options")
-                                                        .collection(firebaseAuth.getCurrentUser().getUid()).document(userId)
-                                                        .set(queryOptions);
-                                            }
-
                                             processFollow = false;
                                         }else {
                                             followersCollection.document("followers").collection(userId)
                                                     .document(firebaseAuth.getCurrentUser().getUid()).delete();
                                             followersCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
                                                     .document(userId).delete();
-                                            queryParamsCollection.document("options")
-                                                    .collection(firebaseAuth.getCurrentUser().getUid()).document(userId)
-                                                    .delete();
                                             processFollow = false;
                                         }
                                     }

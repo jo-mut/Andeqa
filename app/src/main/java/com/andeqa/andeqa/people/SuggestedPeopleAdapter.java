@@ -72,7 +72,7 @@ public class SuggestedPeopleAdapter extends RecyclerView.Adapter<SuggestedPeople
 
     private void initReferences(){
         firebaseAuth = FirebaseAuth.getInstance();
-        peopleCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE);
+        peopleCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE_RELATIONS);
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);

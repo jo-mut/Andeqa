@@ -284,7 +284,6 @@
                         android:id="@+id/addPostImageView"
                         android:layout_width="36dp"
                         android:layout_height="36dp"
-                        android:tint="@color/grey_700"
                         app:srcCompat="@drawable/ic_plus" />
 
                 </RelativeLayout>
@@ -315,7 +314,7 @@
                         android:id="@+id/createPostTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="You have not create your first post. Create your first post"
+                        android:text="Create your first post"
                         android:textColor="@color/colorPrimary"
                         android:padding="5dp"
                         android:textSize="21sp" />
@@ -341,98 +340,6 @@
                 </RelativeLayout>
 
             </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/collectionsLinearLayout"
-                android:orientation="vertical"
-                android:paddingRight="20dp"
-                android:paddingEnd="20dp"
-                android:paddingStart="20dp"
-                android:paddingLeft="20dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <RelativeLayout
-                    android:padding="5dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_centerVertical="true"
-                        android:id="@+id/collectionCountTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=""
-                        android:textColor="@color/grey_700"
-                        android:textSize="32sp" />
-
-                    <ImageView
-                        android:visibility="gone"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true"
-                        android:id="@+id/addCollectionImageView"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:tint="@color/grey_700"
-                        app:srcCompat="@drawable/ic_plus" />
-
-                </RelativeLayout>
-
-                <android.support.v7.widget.CardView
-                    app:cardCornerRadius="15dp"
-                    app:cardElevation="0dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <FrameLayout
-                        android:visibility="gone"
-                        android:id="@+id/collection_container"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                    </FrameLayout>
-
-                </android.support.v7.widget.CardView>
-
-
-
-                <RelativeLayout
-                    android:visibility="gone"
-                    android:id="@+id/createCollectionsRelativeLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/createCollectionsTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="You have not create your first collection. Create your first collection"
-                        android:textColor="@color/colorPrimary"
-                        android:padding="5dp"
-                        android:textSize="14sp" />
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:visibility="gone"
-                    android:id="@+id/viewCollectionsRelativeLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/viewCollectionsTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="View all"
-                        android:textColor="@color/colorPrimary"
-                        android:padding="5dp"
-                        android:textSize="14sp" />
-
-                </RelativeLayout>
-
-            </LinearLayout>
-
 
         </LinearLayout>
 

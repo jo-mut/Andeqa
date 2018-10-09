@@ -5,14 +5,14 @@ package com.andeqa.andeqa;
  */
 
 public final class Constants {
-    public static final String USER_COLLECTIONS = "collections";
-    public static final String COLLECTIONS_POSTS = "posts_collections";
+    public static final String COLLECTIONS = "collections";
+    public static final String COLLECTIONS_OF_POSTS = "posts_collections";
     public static final String POSTS = "posts";
     public static final String SHARES = "shares";
     public static final String FIREBASE_USERS = "users";
     public static final String COMMENTS = "comments";
     public static final String LIKES= "likes";
-    public static final String PEOPLE = "people_relations";
+    public static final String PEOPLE_RELATIONS = "people_relations";
     public static final String COLLECTION_RELATIONS = "collection_relations";
     public static final String WALLET = "wallets";
     public static final String POST_WALLET = "post_wallets";
@@ -24,7 +24,7 @@ public final class Constants {
     public static final String MESSAGES = "messages";
     public static final String VIEWS = "views";
     public static final String RANDOM_PUSH_ID = "random_ids";
-    public static final String QUERY_OPTIONS = "query_options";
+    public static final String QUERY_OPTIONS = "search_options";
 
 
 }

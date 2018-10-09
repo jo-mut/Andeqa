@@ -31,6 +31,7 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.camera.PicturesActivity;
 import com.andeqa.andeqa.collections.CollectionPostsActivity;
 import com.andeqa.andeqa.models.Collection;
+import com.andeqa.andeqa.models.QueryOptions;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
@@ -51,6 +52,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.Arrays;
 import java.util.Date;
 
 import butterknife.Bind;
@@ -66,7 +68,6 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
     @Bind(R.id.collectionLinearLayout)RelativeLayout mCollectionRelativeLayout;
     @Bind(R.id.addRelativeLayout)RelativeLayout mAddRelativeLayout;
 
-
     private Uri photoUri;
     private static final String KEY_IMAGE = "IMAGE FROM GALLERY";
     private static final String TAG = CreateCollectionActivity.class.getSimpleName();
@@ -80,9 +81,10 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
 
     //FIRESTORE
     private FirebaseFirestore firebaseFirestore;
-    private CollectionReference postsCollection;
+    private CollectionReference postsReference;
     private DatabaseReference postReference;
-    private CollectionReference collectionCollection;
+    private CollectionReference collectionReference;
+    private CollectionReference queryOptionsReference;
 
     //intent extras
     private static final String COLLECTION_ID = "collection id";
@@ -128,12 +130,11 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
             //initialize firestore
             firebaseFirestore =  FirebaseFirestore.getInstance();
             //get the reference to posts(collection reference)
-            postsCollection = firebaseFirestore.collection(Constants.USER_COLLECTIONS);
-            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
-
+            postsReference = firebaseFirestore.collection(Constants.COLLECTIONS);
+            queryOptionsReference = FirebaseFirestore.getInstance().collection(Constants.QUERY_OPTIONS);
+            collectionReference = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
             //firebase
-            postReference = FirebaseDatabase.getInstance().getReference(Constants.USER_COLLECTIONS);
-
+            postReference = FirebaseDatabase.getInstance().getReference(Constants.COLLECTIONS);
             //textwatchers
             mCollectionNameEditText.setFilters(new InputFilter[]{new InputFilter
                     .LengthFilter(DEFAULT_TITLE_LENGTH_LIMIT)});
@@ -265,9 +266,11 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
     private void  createCollection(){
         final DatabaseReference collectionRef= postReference.push();
         final String collectionId = collectionRef.getKey();
+        final String name = mCollectionNameEditText.getText().toString();
+        final String note = mCollectionNoteEditText.getText().toString();
 
-        if (TextUtils.isEmpty(mCollectionNameEditText.getText())){
-            Toast.makeText(CreateCollectionActivity.this, "Your collection must have a name",
+        if (TextUtils.isEmpty(name) && TextUtils.isEmpty(note)){
+            Toast.makeText(CreateCollectionActivity.this, "Your collection must have a name and a description note",
                     Toast.LENGTH_SHORT).show();
         }else if (image == null){
             Toast.makeText(CreateCollectionActivity.this, "Your collection must have a cover photo",
@@ -280,7 +283,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
             final byte[] data = baos.toByteArray();
-            collectionCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            collectionReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot documentSnapshots) {
                     final Collection collection = new Collection();
@@ -289,7 +292,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                     if (data != null){
                         final StorageReference storageReference = FirebaseStorage
                                 .getInstance().getReference()
-                                .child(Constants.USER_COLLECTIONS)
+                                .child(Constants.COLLECTIONS)
                                 .child("collection_covers")
                                 .child(collectionId);
 
@@ -310,7 +313,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                                 if (task.isSuccessful()) {
                                     final Uri downloadUri = task.getResult();
 
-                                    CollectionReference cl = postsCollection;
+                                    CollectionReference cl = postsReference;
                                     cl.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                         @Override
                                         public void onSuccess(QuerySnapshot documentSnapshots) {
@@ -318,17 +321,34 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                                             final int count = documentSnapshots.getDocuments().size();
                                             //save the collection
                                             collection.setType("collection");
-                                            collection.setName(mCollectionNameEditText.getText().toString().trim());
-                                            collection.setNote(mCollectionNoteEditText.getText().toString().trim());
+                                            collection.setName(name);
+                                            collection.setNote(note);
                                             collection.setNumber(count + 1);
                                             collection.setUser_id(firebaseAuth.getCurrentUser().getUid());
                                             collection.setCollection_id(collectionId);
                                             collection.setTime(timeStamp);
                                             collection.setImage(downloadUri.toString());
-                                            collectionCollection.document(collectionId).set(collection);
+                                            collectionReference.document(collectionId).set(collection);
 
                                             mCollectionNameEditText.setText("");
                                             mCollectionNoteEditText.setText("");
+
+                                            final String nameToLowercase [] = name.toLowerCase().split(" ");
+                                            final String noteToLowercase [] = note.toLowerCase().split(" ");
+
+                                            QueryOptions queryOptions = new QueryOptions();
+                                            queryOptions.setOption_id(collectionId);
+                                            queryOptions.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                            queryOptions.setType("collection");
+                                            queryOptions.setOne(Arrays.asList(nameToLowercase));
+                                            queryOptions.setTwo(Arrays.asList(noteToLowercase));
+                                            queryOptionsReference.document(collectionId).set(queryOptions);
+
+                                            Intent intent = new Intent(CreateCollectionActivity.this, CollectionPostsActivity.class);
+                                            intent.putExtra(CreateCollectionActivity.COLLECTION_ID, collectionId);
+                                            intent.putExtra(CreateCollectionActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
+                                            startActivity(intent);
+                                            finish();
 
 
                                         }
@@ -355,12 +375,6 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                                 if (progress == 100.0){
                                     progressDialog.dismiss();
                                     //reset input fields
-
-                                    Intent intent = new Intent(CreateCollectionActivity.this, CollectionPostsActivity.class);
-                                    intent.putExtra(CreateCollectionActivity.COLLECTION_ID, collectionId);
-                                    intent.putExtra(CreateCollectionActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
-                                    startActivity(intent);
-                                    finish();
                                 }
                             }
                         });
@@ -375,7 +389,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
                         collection.setUser_id(firebaseAuth.getCurrentUser().getUid());
                         collection.setCollection_id(collectionId);
                         collection.setTime(timeStamp);
-                        collectionCollection.document(collectionId).set(collection);
+                        collectionReference.document(collectionId).set(collection);
 
                         progressDialog.dismiss();
                         mCollectionNameEditText.setText("");

@@ -51,7 +51,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
         Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_app_logo)
+                .setSmallIcon(R.drawable.ic_log)
                 .setContentTitle("Andeqa")
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(body))
                 .setContentText(body)

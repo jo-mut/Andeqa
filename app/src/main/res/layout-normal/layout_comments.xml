@@ -7,7 +7,6 @@
     android:layout_height="wrap_content">
 
     <RelativeLayout
-        android:padding="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
@@ -35,9 +34,10 @@
                 android:textColor="@color/grey_700"
                 android:textStyle="normal|bold"
                 android:layout_alignParentTop="true"
-                android:textSize="16sp" />
+                android:textSize="12sp" />
 
             <TextView
+                android:textSize="12sp"
                 android:text=""
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -51,7 +51,6 @@
             android:layout_toStartOf="@+id/sendMessageRelativeLayout"
             android:id="@+id/followRelativeLayout"
             android:padding="5dp"
-            android:layout_margin="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -73,7 +72,6 @@
             android:layout_alignParentEnd="true"
             android:id="@+id/sendMessageRelativeLayout"
             android:padding="5dp"
-            android:layout_margin="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 

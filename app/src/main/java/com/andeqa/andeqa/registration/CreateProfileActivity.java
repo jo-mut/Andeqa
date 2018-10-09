@@ -7,14 +7,18 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,6 +31,7 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.main.HomeActivity;
 import com.andeqa.andeqa.models.Andeqan;
+import com.andeqa.andeqa.profile.UpdateProfileActivity;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -36,13 +41,17 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.util.Date;
+import javax.annotation.Nullable;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -114,6 +123,29 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
             mUpdateProfilePictureImageButton.setOnClickListener(this);
             mSubmitUserInfoButton.setOnClickListener(this);
             mResendLinkRelativeLayout.setOnClickListener(this);
+
+            mUsernameEditText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void afterTextChanged(final Editable editable) {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            uniqueUsernameName(editable.toString());
+                        }
+                    }, 500);
+
+                }
+            });
        }
     }
 
@@ -150,6 +182,46 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
         }
     }
 
+
+
+    private void uniqueUsernameName(final String name){
+        usersReference.whereEqualTo("username", name)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot documentSnapshots,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!documentSnapshots.isEmpty()){
+                            for (DocumentChange change : documentSnapshots.getDocumentChanges()){
+                                Andeqan andeqan = change.getDocument().toObject(Andeqan.class);
+                                if (andeqan.getUser_id().equals(name) && andeqan.getUser_id()
+                                        .equals(firebaseAuth.getCurrentUser().getUid())){
+                                    Toast toast = Toast.makeText(CreateProfileActivity.this,"Username available",
+                                            Toast.LENGTH_SHORT);
+                                    toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 0);
+                                    toast.show();
+                                }else {
+                                    Toast toast = Toast.makeText(CreateProfileActivity.this,"Username has been taken",
+                                            Toast.LENGTH_SHORT);
+                                    toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 0);
+                                    toast.show();
+                                }
+                            }
+                        }else {
+                            Toast toast = Toast.makeText(CreateProfileActivity.this,"Username available",
+                                    Toast.LENGTH_SHORT);
+                            toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 0);
+                            toast.show();
+                        }
+
+                    }
+                });
+
+    }
 
     private void createAuthProgressDialog() {
         mAuthProgressDialog = new ProgressDialog(this);
@@ -406,7 +478,21 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
                checkIfImailVerified();
            }else {
                mAuthProgressDialog.show();
-               loginWithPassword();
+               usersReference.whereEqualTo("username", mUsernameEditText.getText().toString())
+                       .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                           @Override
+                           public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
+
+
+                               if (!documentSnapshots.isEmpty()){
+                                   Toast.makeText(CreateProfileActivity.this,"Please chooser a username that has not been taken",
+                                           Toast.LENGTH_SHORT).show();
+                               }else {
+                                   loginWithPassword();
+                               }
+
+                           }
+                       });
            }
         }
 

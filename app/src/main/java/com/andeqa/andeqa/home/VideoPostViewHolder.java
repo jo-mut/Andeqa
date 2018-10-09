@@ -20,10 +20,6 @@ public class VideoPostViewHolder extends RecyclerView.ViewHolder {
     View mView;
     Context mContext;
     ProgressBar progressBar;
-    public ImageView likesImageView;
-    public ImageView dislikeImageView;
-    public LinearLayout dislikeLinearLayout;
-    public LinearLayout likesLinearLayout;
     public LinearLayout commentsLinearLayout;
     public TextView dislikeCountTextView;
     public ImageView commentsImageView;
@@ -42,21 +38,16 @@ public class VideoPostViewHolder extends RecyclerView.ViewHolder {
     public static final int MAX_WIDTH = 400;
     public static final int MAX_HEIGHT = 400;
     public RelativeLayout descriptionRelativeLayout;
-    public LinearLayout likesRelativeLayout;
     public LinearLayout mCommentsLinearLayout;
     public TextView timeTextView;
     public LinearLayout bottomLinearLayout;
-    public LinearLayout mCreditsLinearLayout;
     public RelativeLayout postRelativeLayout;
 
     public VideoPostViewHolder(View itemView) {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
-        likesImageView = (ImageView) itemView.findViewById(R.id.likesImageView);
         bottomLinearLayout  =  (LinearLayout)  itemView.findViewById(R.id.captionLinearLayout);
-        dislikeImageView = (ImageView) itemView.findViewById(R.id.dislikeImageView);
-        dislikeCountTextView = (TextView) itemView.findViewById(R.id.dislikesCountTextView);
         commentsImageView = (ImageView) itemView.findViewById(R.id.commentsImageView);
         descriptionTextView = (TextView) itemView.findViewById(R.id.descriptionTextView);
         titleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
@@ -69,11 +60,7 @@ public class VideoPostViewHolder extends RecyclerView.ViewHolder {
         descriptionRelativeLayout  = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
         postVideoView = (SimpleExoPlayerView) mView.findViewById(R.id.simpleExoPlayerView);
         senseCreditsTextView = (TextView) mView.findViewById(R.id.creditsTextView);
-        likesRelativeLayout = (LinearLayout) mView.findViewById(R.id.likesLinearLayout);
-        likesCountTextView = (TextView) mView.findViewById(R.id.likesCountTextView);
         mCommentsLinearLayout = (LinearLayout) mView.findViewById(R.id.commentsLinearLayout);
-        mCreditsLinearLayout = (LinearLayout) mView.findViewById(R.id.creditsLinearLayout);
         postRelativeLayout = (RelativeLayout) mView.findViewById(R.id.postRelativeLayout);
-        dislikeLinearLayout = (LinearLayout) mView.findViewById(R.id.dislikeLinearLayout);
     }
 }

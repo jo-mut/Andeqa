@@ -47,7 +47,7 @@ public class HomeSettingsFragment extends BottomSheetDialogFragment
     @Bind(R.id.settingsImageView) ImageView settingsImageView;
     @Bind(R.id.aboutImageView)ImageView aboutImageView;
     @Bind(R.id.feedbackImageView)ImageView feedbackImageView;
-    @Bind(R.id.shareImageView)ImageView shareImageView;
+    @Bind(R.id.postSettingsImageView)ImageView shareImageView;
 
     private static final String EXTRA_USER_UID =  "uid";
     private FirebaseAuth firebaseAuth;

@@ -66,7 +66,7 @@ public class InitialCollectionsActivity extends AppCompatActivity implements Vie
 
         //FIREBASE AUTH
         firebaseAuth = FirebaseAuth.getInstance();
-        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
+        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
         queryParametersCollection = FirebaseFirestore.getInstance().collection(Constants.QUERY_OPTIONS);
         relationsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_RELATIONS);
         mCollectionsRecyclerView.addOnScrollListener(new EndlesssStaggeredRecyclerOnScrollListener() {

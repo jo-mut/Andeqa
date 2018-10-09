@@ -19,7 +19,6 @@ import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Comment;
 import com.andeqa.andeqa.models.Post;
-import com.andeqa.andeqa.models.QueryOptions;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.profile.ProfileActivity;
@@ -71,7 +70,6 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
     private CollectionReference usersCollection;
     private CollectionReference postCollection;
     private CollectionReference collectionsPostCollections;
-    private CollectionReference queryParamsCollection;
     private CollectionReference peopleCollection;
     private CollectionReference likesCollection;
     private CollectionReference timelineCollection;
@@ -88,7 +86,6 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
         this.documentSnapshots = mSnapshots;
         notifyDataSetChanged();
         initReferences();
-        queryParamsCollection = FirebaseFirestore.getInstance().collection(Constants.QUERY_OPTIONS);
     }
 
     private void initReferences(){
@@ -97,9 +94,9 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
         postCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
         likesCollection = FirebaseFirestore.getInstance().collection(Constants.LIKES);
-        collectionsPostCollections = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
+        collectionsPostCollections = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS);
         commentCollection = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
-        peopleCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE);
+        peopleCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE_RELATIONS);
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
     }
 
@@ -188,10 +185,10 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 
                     if (type.equals("single") || type.equals("single_image_post") || type.equals("single_video_post")){
-                        collectionsPostCollections = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        collectionsPostCollections = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
                                 .document("singles").collection(collectionId);
                     }else {
-                        collectionsPostCollections = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                        collectionsPostCollections = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
                                 .document("collections").collection(collectionId);
                     }
 
@@ -411,7 +408,6 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
                                         Relation follow = new Relation();
                                         follow.setFollowing_id(firebaseAuth.getCurrentUser().getUid());
                                         follow.setFollowed_id(userId);
-                                        follow.setType("followed_user");
                                         follow.setTime(System.currentTimeMillis());
                                         peopleCollection.document("followers").collection(userId)
                                                 .document(firebaseAuth.getCurrentUser().getUid()).set(follow)
@@ -442,27 +438,12 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
                                                 .document(userId).set(following);
                                         holder.followButton.setText("Following");
 
-                                        if (!userId.equals(firebaseAuth.getCurrentUser().getUid())){
-                                            final String id = queryParamsCollection.document().getId();
-                                            QueryOptions queryOptions = new QueryOptions();
-                                            queryOptions.setUser_id(userId);
-                                            queryOptions.setFollowed_id(userId);
-                                            queryOptions.setType("people");
-                                            queryParamsCollection.document("options")
-                                                    .collection(firebaseAuth.getCurrentUser().getUid()).document(userId)
-                                                    .set(queryOptions);
-                                        }
-
-
                                         processFollow = false;
                                     }else {
                                         peopleCollection.document("followers").collection(userId)
                                                 .document(firebaseAuth.getCurrentUser().getUid()).delete();
                                         peopleCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
                                                 .document(userId).delete();
-                                        queryParamsCollection.document("options")
-                                                .collection(firebaseAuth.getCurrentUser().getUid()).document(userId)
-                                                .delete();
                                         holder.followButton.setText("Follow");
                                         processFollow = false;
                                     }

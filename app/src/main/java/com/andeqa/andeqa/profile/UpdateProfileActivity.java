@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -26,6 +28,8 @@ import android.widget.ViewAnimator;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.camera.PicturesActivity;
+import com.andeqa.andeqa.models.Andeqan;
+import com.andeqa.andeqa.registration.CreateProfileActivity;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
@@ -36,8 +40,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -46,6 +54,8 @@ import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+
+import javax.annotation.Nullable;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -63,7 +73,6 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     @Bind(R.id.profileCoverImageView)ImageView mProfileCoverImageView;
     @Bind(R.id.profilePhotoImageButton)ImageButton mUpdateProfileImageButton;
     @Bind(R.id.updateCoverTextView)TextView mUpdateCoverTextView;
-    @Bind(R.id.statusCountTextView)TextView mStatusCountTextView;
     @Bind(R.id.doneEditingImageView)ImageView mDoneEditingImageView;
 
     private static  final int GALLERY_PROFILE_PHOTO_REQUEST = 111;
@@ -107,21 +116,36 @@ public class UpdateProfileActivity extends AppCompatActivity implements
         });
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
+        usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+        updateProfileProgessDialog();
+        mBioEditText.setFilters(new InputFilter[]{new InputFilter
+                .LengthFilter(DEFAULT_TITLE_LENGTH_LIMIT)});
+        loadProfileCover();
+        loadProfileImage();
+        mUsernameEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-        if (firebaseAuth.getCurrentUser() != null){
-            usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+            }
 
-            updateProfileProgessDialog();
-            mBioEditText.setFilters(new InputFilter[]{new InputFilter
-                    .LengthFilter(DEFAULT_TITLE_LENGTH_LIMIT)});
-            textWatchers();
-            loadProfileCover();
-            loadProfileImage();
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            mUpdateProfileImageButton.setOnClickListener(this);
-            mUpdateCoverTextView.setOnClickListener(this);
-            mDoneEditingImageView.setOnClickListener(this);
-        }
+            }
+
+            @Override
+            public void afterTextChanged(final Editable editable) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        uniqueUsernameName(editable.toString());
+                    }
+                }, 500);
+            }
+        });
+        mUpdateProfileImageButton.setOnClickListener(this);
+        mUpdateCoverTextView.setOnClickListener(this);
+        mDoneEditingImageView.setOnClickListener(this);
 
     }
 
@@ -146,39 +170,44 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     }
 
 
+    private void uniqueUsernameName(final String name){
+        usersReference.whereEqualTo("username", name)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable final QuerySnapshot documentSnapshots,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
 
+                        if (!documentSnapshots.isEmpty()){
+                            for (DocumentChange change : documentSnapshots.getDocumentChanges()){
+                                Andeqan andeqan = change.getDocument().toObject(Andeqan.class);
+                                if (andeqan.getUser_id().equals(name) && andeqan.getUser_id()
+                                        .equals(firebaseAuth.getCurrentUser().getUid())){
+                                    Toast toast = Toast.makeText(UpdateProfileActivity.this,"Username available",
+                                            Toast.LENGTH_SHORT);
+                                    toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 0);
+                                    toast.show();
+                                }else {
+                                    Toast toast = Toast.makeText(UpdateProfileActivity.this,"Username has been taken",
+                                            Toast.LENGTH_SHORT);
+                                    toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 0);
+                                    toast.show();
+                                }
+                            }
 
-    private void textWatchers(){
-        //TITLE TEXT WATCHER
-        mBioEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        }else {
+                            Toast toast = Toast.makeText(UpdateProfileActivity.this,"Username available",
+                                    Toast.LENGTH_SHORT);
+                            toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 0);
+                            toast.show();
+                        }
+                    }
+                });
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                int count = DEFAULT_TITLE_LENGTH_LIMIT - editable.length();
-                mStatusCountTextView.setText(Integer.toString(count));
-
-                if (count == 0){
-                    mStatusCountTextView.setTextColor(Color.GRAY);
-                }else if (count <= 250){
-                    mStatusCountTextView.setTextColor(Color.BLACK);
-                }else{
-                    mStatusCountTextView.setTextColor(Color.RED);
-                    //do nothing
-                }
-
-            }
-        });
     }
-
 
     @Override
     public void onClick(View v){
@@ -335,17 +364,43 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 
     /**update profile edit text fields*/
     private void updateUsernameAndBio(){
-        final String username = (mUsernameEditText.getText().toString());
+        final String username = (mUsernameEditText.getText().toString().toLowerCase());
         final String bio = (mBioEditText.getText().toString());
         final String firstName = (mFirstNameEditText.getText().toString());
         final String secondName = (mSecondNameEditText.getText().toString());
 
         if (!TextUtils.isEmpty(username)){
-            DocumentReference usernameRef = usersReference.document(firebaseUser.getUid());
-            usernameRef.update("username", username);
-            mUsernameEditText.setText("");
-            Toast.makeText(UpdateProfileActivity.this,
-                    "Successfully updated", Toast.LENGTH_SHORT).show();
+            usersReference.whereEqualTo("username", username)
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot documentSnapshots,
+                                    @Nullable FirebaseFirestoreException e) {
+                    if (e != null) {
+                        Log.w(TAG, "Listen error", e);
+                        return;
+                    }
+
+                    if (!documentSnapshots.isEmpty()){
+                        for (DocumentChange change : documentSnapshots.getDocumentChanges()){
+                            Andeqan andeqan = change.getDocument().toObject(Andeqan.class);
+                            if (!andeqan.getUser_id().equals(username) && andeqan.getUser_id()
+                                    .equals(firebaseAuth.getCurrentUser().getUid())){
+                                DocumentReference usernameRef = usersReference.document(firebaseUser.getUid());
+                                usernameRef.update("username", username);
+                            }
+                        }
+
+                    }else {
+                        DocumentReference usernameRef = usersReference.document(firebaseUser.getUid());
+                        usernameRef.update("username", username);
+                        mUsernameEditText.setText("");
+                        Toast.makeText(UpdateProfileActivity.this,
+                                "Successfully updated", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+            });
+
         }
         if(!TextUtils.isEmpty(bio)){
             DocumentReference bioRef = usersReference.document(firebaseUser.getUid());

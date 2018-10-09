@@ -1,34 +1,20 @@
 package com.andeqa.andeqa.home;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Environment;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.VideoView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Andeqan;
-import com.andeqa.andeqa.models.Credit;
-import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Post;
-import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.player.Player;
 import com.andeqa.andeqa.settings.PostSettingsFragment;
 import com.bumptech.glide.Glide;
@@ -45,15 +31,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.util.Date;
 
 import javax.annotation.Nullable;
 
@@ -73,7 +53,6 @@ public class VideoDetailActivity extends AppCompatActivity implements View.OnCli
     @Bind(R.id.viewsCountTextView)TextView mViewsCountTextView;
     @Bind(R.id.viewsLinearLayout)LinearLayout mViewsLinearLayout;
     @Bind(R.id.viewsImageView)ImageView mViewsImageView;
-    @Bind(R.id.creditsTextView)TextView mCreditsTextView;
     @Bind(R.id.settingsRelativeLayout)RelativeLayout mSettingsRelativeLayout;
     @Bind(R.id.creditsLinearLayout)LinearLayout mCreditLinearLayout;
 
@@ -153,10 +132,10 @@ public class VideoDetailActivity extends AppCompatActivity implements View.OnCli
         mType = getIntent().getStringExtra(TYPE);
 
         if  (mType.equals("single_video_post")){
-            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
                     .document("singles").collection(mCollectionId);
         }else {
-            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
                     .document("collections").collection(mCollectionId);
         }
 
@@ -165,7 +144,7 @@ public class VideoDetailActivity extends AppCompatActivity implements View.OnCli
                 .document("post_ids").collection(mPostId);
         sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
         marketCollections = FirebaseFirestore.getInstance().collection(Constants.SELLING);
-        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
+        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
         //firebase
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
         commentsCountQuery = commentsReference;
@@ -239,28 +218,6 @@ public class VideoDetailActivity extends AppCompatActivity implements View.OnCli
 
     /**display the price of the cingle*/
     private void setPostInfo() {
-
-        creditsCollection.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshot.exists()){
-                    mCreditLinearLayout.setVisibility(View.VISIBLE);
-                    Credit credit = documentSnapshot.toObject(Credit.class);
-                    final double senseCredits = credit.getAmount();
-                    DecimalFormat formatter = new DecimalFormat("0.00000000");
-                    mCreditsTextView.setText("Credo" + " " + formatter.format(senseCredits));
-                }else {
-                    mCreditLinearLayout.setVisibility(View.GONE);
-                    mCreditsTextView.setText("Credo" + " " + "0.00000000");
-                }
-            }
-        });
 
         collectionsPosts.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override

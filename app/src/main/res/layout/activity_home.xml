@@ -44,32 +44,20 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <FrameLayout
-        android:id="@+id/container"
+    <com.andeqa.andeqa.utils.NoSwipePager
+        android:background="@color/blue_grey_50"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:id="@+id/noSwipeViewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        android:layout_height="match_parent">
 
 
-    <!--<android.support.design.widget.FloatingActionButton-->
-    <!--android:id="@+id/fab"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_gravity="end|bottom"-->
-    <!--app:srcCompat="@drawable/ic_create"-->
-    <!--app:backgroundTint="@color/colorAccent"-->
-    <!--android:layout_alignParentBottom="true"-->
-    <!--android:layout_alignParentRight="true"-->
-    <!--android:layout_alignParentEnd="true"-->
-    <!--android:layout_marginBottom="60dp"-->
-    <!--android:layout_marginRight="16dp"-->
-    <!--android:layout_marginEnd="16dp"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--app:elevation="0dp" />-->
+    </com.andeqa.andeqa.utils.NoSwipePager>
 
-    <android.support.design.widget.BottomNavigationView
+
+    <com.aurelhubert.ahbottomnavigation.AHBottomNavigation
         android:background="@android:color/white"
         android:id="@+id/bottomNavigationView"
-        app:menu="@menu/bottom_navigation_menu"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_gravity="bottom"

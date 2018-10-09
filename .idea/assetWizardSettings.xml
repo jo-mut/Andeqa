@@ -14,8 +14,11 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="ic_chatttt" />
-                            <entry key="sourceFile" value="C:\Users\J.EL\Documents\icons\chatttt.svg" />
+                            <entry key="height" value="512" />
+                            <entry key="outputName" value="ic_pause" />
+                            <entry key="overrideSize" value="true" />
+                            <entry key="sourceFile" value="C:\Users\J.EL\Downloads\pause.svg" />
+                            <entry key="width" value="512" />
                           </map>
                         </option>
                       </PersistentState>

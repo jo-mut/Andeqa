@@ -4,18 +4,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.Andeqan;
-import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.utils.EndlessLinearRecyclerViewOnScrollListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -84,7 +78,7 @@ public class FollowingActivity extends AppCompatActivity {
         if (firebaseAuth.getCurrentUser()!= null){
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             usersQuery = usersCollection;
-            followersCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE);
+            followersCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE_RELATIONS);
             followersQuery = followersCollection.document("following")
                     .collection(mUid).orderBy("time");
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);

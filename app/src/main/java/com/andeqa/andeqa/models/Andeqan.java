@@ -15,6 +15,9 @@ public class Andeqan {
     String second_name;
     String device_id;
     String phone_number;
+    String gender;
+    String location;
+    String age;
     long time;
 
     public Andeqan(){
@@ -101,6 +104,30 @@ public class Andeqan {
 
     public void setPhone_number(String phone_number) {
         this.phone_number = phone_number;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getAge() {
+        return age;
+    }
+
+    public void setAge(String age) {
+        this.age = age;
     }
 
     public long getTime() {

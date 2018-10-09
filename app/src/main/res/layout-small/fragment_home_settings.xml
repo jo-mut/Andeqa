@@ -221,12 +221,12 @@
                                 android:layout_centerInParent="true"
                                 android:tint="@android:color/white"
                                 app:srcCompat="@drawable/ic_share"
-                                android:id="@+id/shareImageView"
+                                android:id="@+id/postSettingsImageView"
                                 android:layout_width="24dp"
                                 android:layout_height="24dp" />
 
                             <TextView
-                                android:layout_below="@+id/shareImageView"
+                                android:layout_below="@+id/postSettingsImageView"
                                 android:layout_centerHorizontal="true"
                                 android:text="Share"
                                 android:textColor="@android:color/white"

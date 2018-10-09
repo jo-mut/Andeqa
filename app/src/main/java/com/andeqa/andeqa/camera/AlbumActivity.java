@@ -240,7 +240,6 @@ public class AlbumActivity extends AppCompatActivity {
                     if (collection_post != null) {
                         Intent intent = new Intent(AlbumActivity.this, PreviewImagePostActivity.class);
                         intent.putExtra(AlbumActivity.GALLERY_PATH, mediaFiles.get(position).get(Function.KEY_PATH));
-                        intent.putExtra(AlbumActivity.COLLECTION_POST, collection_post);
                         intent.putExtra(AlbumActivity.COLLECTION_ID, collectionId);
                         startActivity(intent);
                         finish();

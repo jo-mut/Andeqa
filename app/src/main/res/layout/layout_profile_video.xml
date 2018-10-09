@@ -122,56 +122,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:id="@+id/likesLinearLayout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                        <ImageView
-                            android:id="@+id/likesImageView"
-                            android:layout_width="15dp"
-                            android:layout_height="15dp"
-                            android:tint="@color/grey_700"
-                            app:srcCompat="@drawable/ic_thumb_up" />
-
-
-                        <TextView
-                            android:id="@+id/likesCountTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:padding="5dp"
-                            android:textSize="10sp"
-                            android:textStyle="normal" />
-
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:id="@+id/dislikeLinearLayout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                        <ImageView
-                            android:id="@+id/dislikeImageView"
-                            android:layout_width="15dp"
-                            android:layout_height="15dp"
-                            android:tint="@color/grey_700"
-                            app:srcCompat="@drawable/ic_thumb_down"/>
-
-
-                        <TextView
-                            android:id="@+id/dislikesCountTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textSize="10sp"
-                            android:padding="5dp"
-                            android:textStyle="normal|bold"/>
-
-                    </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/commentsLinearLayout"
@@ -197,34 +147,6 @@
 
 
                     </LinearLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:visibility="gone"
-                    android:id="@+id/creditsLinearLayout"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <ImageView
-                        android:layout_gravity="center_vertical"
-                        android:id="@+id/creditsImageView"
-                        android:layout_width="15dp"
-                        android:layout_height="15dp"
-                        android:padding="3dp"
-                        android:tint="@color/grey_700"
-                        app:srcCompat="@drawable/ic_credits" />
-
-                    <TextView
-                        android:layout_gravity="center_vertical"
-                        android:text=""
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/creditsTextView"
-                        android:textStyle="normal|bold"
-                        android:textSize="10sp"
-                        android:padding="3dp" />
 
                 </LinearLayout>
 

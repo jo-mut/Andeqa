@@ -14,23 +14,22 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="42dp"
-        android:textColor="@android:color/white"
-        android:background="@drawable/default_gradient_color"
+        android:background="@android:color/white"
+        android:textColor="@color/grey_700"
         app:layout_scrollFlags="scroll|enterAlways"
         app:titleTextAppearance="@style/toolbarTextAppearance"
         app:popupTheme="@style/AppTheme.PopupOverlay">
 
         <ImageView
-            android:background="@drawable/white_rounded_background"
-            app:srcCompat="@drawable/ic_check"
-            android:tint="@color/grey_700"
+            android:background="@drawable/accent_color"
+            app:srcCompat="@drawable/ic_done_primary"
             android:layout_margin="5dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:id="@+id/doneImageView"
             android:textColor="@android:color/white"
             android:layout_gravity="end"
-            android:padding="3dp" />
+            android:padding="5dp" />
 
     </android.support.v7.widget.Toolbar>
 

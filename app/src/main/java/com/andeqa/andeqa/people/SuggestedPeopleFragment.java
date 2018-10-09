@@ -78,7 +78,7 @@ public class SuggestedPeopleFragment extends Fragment {
 
         firebaseAuth = FirebaseAuth.getInstance();
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-        followingCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE);
+        followingCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE_RELATIONS);
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
 
         peopleRecyclerView.addOnScrollListener(new EndlesssStaggeredRecyclerOnScrollListener() {

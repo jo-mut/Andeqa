@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.creation.CreateCollectionPostActivity;
+import com.andeqa.andeqa.camera.PicturesActivity;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Relation;
@@ -128,7 +128,7 @@ public class CollectionPostsActivity extends AppCompatActivity
         }
 
         collectionsRelations = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_RELATIONS);
-        collectionCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
+        collectionCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
         postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
         postsQuery = postsCollection.orderBy("time", Query.Direction.ASCENDING);
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
@@ -228,8 +228,14 @@ public class CollectionPostsActivity extends AppCompatActivity
 
                         if (!documentSnapshots.isEmpty()){
                             mFollowTextView.setText("FOLLOWING");
+                            mCreatePostButton.setVisibility(View.VISIBLE);
                         }else {
                             mFollowTextView.setText("FOLLOW");
+                            if (mUid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                mCreatePostButton.setVisibility(View.VISIBLE);
+                            }else {
+                                mCreatePostButton.setVisibility(View.GONE);
+                            }
                         }
 
                     }
@@ -498,7 +504,7 @@ public class CollectionPostsActivity extends AppCompatActivity
     @Override
     public void onClick(View v){
         if (v == mCreatePostButton){
-            Intent intent = new Intent(CollectionPostsActivity.this, CreateCollectionPostActivity.class);
+            Intent intent = new Intent(CollectionPostsActivity.this, PicturesActivity.class);
             intent.putExtra(CollectionPostsActivity.COLLECTION_ID, collectionId);
             startActivity(intent);
             finish();

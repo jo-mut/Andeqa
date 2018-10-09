@@ -168,7 +168,7 @@
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_height="56dp"
                 android:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
                 android:title="Collapsing Toolbar"
                 app:layout_collapseMode="pin"
@@ -218,6 +218,7 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/createPostButton"
+        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_gravity="end|bottom"
         app:srcCompat="@drawable/ic_create"

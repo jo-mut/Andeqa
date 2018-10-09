@@ -2,9 +2,7 @@ package com.andeqa.andeqa.collections;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -14,19 +12,11 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Collection;
-import com.andeqa.andeqa.models.QueryOptions;
 import com.andeqa.andeqa.models.Relation;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.Transformation;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.load.engine.Resource;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -36,7 +26,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,7 +82,7 @@ public class FeaturedCollectionsAdapter extends RecyclerView.Adapter<CollectionV
         final String userId = collection.getUser_id();
 
         firebaseAuth = FirebaseAuth.getInstance();
-        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
+        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS);
         postCountQuery = collectionsCollection.document("collections").collection(collectionId)
                 .orderBy("collection_id");
         followingCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_RELATIONS);
@@ -141,6 +130,52 @@ public class FeaturedCollectionsAdapter extends RecyclerView.Adapter<CollectionV
             }
         });
 
+//        postCountQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable QuerySnapshot documentSnapshots,
+//                                @Nullable FirebaseFirestoreException e) {
+//                if (e != null) {
+//                    Log.w(TAG, "Listen error", e);
+//                    return;
+//                }
+//
+//                if (!documentSnapshots.isEmpty()){
+//                    holder.postsCountTextView.setVisibility(View.VISIBLE);
+//                    holder.postsCountTextView.setText( "following " + documentSnapshots.size());
+//                }else {
+//                    holder.postsCountTextView.setText("Posts 0");
+//                    holder.postsCountTextView.setVisibility(View.VISIBLE);
+//                }
+//            }
+//        });
+
+
+//        /**show the number of peopl following collection**/
+//        followingCollection.document("following")
+//                .collection(collectionId)
+//                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onEvent(@Nullable QuerySnapshot documentSnapshots,
+//                                        @Nullable FirebaseFirestoreException e) {
+//
+//                        if (e != null) {
+//                            Log.w(TAG, "Listen error", e);
+//                            return;
+//                        }
+//
+//                        if (!documentSnapshots.isEmpty()){
+//                            holder.followingCountTextView.setVisibility(View.VISIBLE);
+//                            int following = documentSnapshots.size();
+//                            holder.followingCountTextView.setText("following " + following);
+//                        }else {
+//                            holder.followingCountTextView.setVisibility(View.VISIBLE);
+//                            holder.followingCountTextView.setText("following 0");
+//                        }
+//
+//                    }
+//                });
+
+
         /**show if the user is following collection or not**/
         followingCollection.document("following")
                 .collection(collectionId)
@@ -164,36 +199,9 @@ public class FeaturedCollectionsAdapter extends RecyclerView.Adapter<CollectionV
                     }
                 });
 
-        /**show the number of peopl following collection**/
-        followingCollection.document("following")
-                .collection(collectionId)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot documentSnapshots,
-                                        @Nullable FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!documentSnapshots.isEmpty()){
-                            holder.followingCountTextView.setVisibility(View.VISIBLE);
-                            int following = documentSnapshots.size();
-                            holder.followingCountTextView.setText(following + " following");
-                        }else {
-                            holder.followingCountTextView.setVisibility(View.GONE);
-                        }
-
-                    }
-                });
-
-
 
         /**follow or un follow collection*/
-        if (userId.equals(firebaseAuth.getCurrentUser().getUid())){
-            holder.followRelativeLayout.setVisibility(View.GONE);
-        }else {
+        if (!userId.equals(firebaseAuth.getCurrentUser().getUid())){
             holder.followRelativeLayout.setVisibility(View.VISIBLE);
             holder.followButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -236,8 +244,9 @@ public class FeaturedCollectionsAdapter extends RecyclerView.Adapter<CollectionV
                             });
                 }
             });
+        }else {
+            holder.followRelativeLayout.setVisibility(View.GONE);
         }
-
 
     }
 

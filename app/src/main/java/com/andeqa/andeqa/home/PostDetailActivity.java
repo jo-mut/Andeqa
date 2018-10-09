@@ -22,7 +22,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -35,6 +34,7 @@ import com.andeqa.andeqa.models.Impression;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.ViewDuration;
 import com.andeqa.andeqa.models.Timeline;
+import com.andeqa.andeqa.registration.SignInActivity;
 import com.andeqa.andeqa.settings.PostSettingsFragment;
 import com.andeqa.andeqa.utils.EndlessLinearRecyclerViewOnScrollListener;
 import com.bumptech.glide.Glide;
@@ -85,12 +85,13 @@ public class PostDetailActivity extends AppCompatActivity
     @Bind(R.id.titleRelativeLayout)RelativeLayout mTitleRelativeLayout;
     @Bind(R.id.descriptionRelativeLayout)RelativeLayout mDescriptionRelativeLayout;
     @Bind(R.id.descriptionTextView)TextView mDescriptionTextView;
-//    @Bind(R.id.commentsImageView)ImageView mCommentImageView;
-//    @Bind(R.id.commentsCountTextView)TextView mCommentCountTextView;
+    @Bind(R.id.commentsImageView)ImageView mCommentImageView;
+    @Bind(R.id.commentsCountTextView)TextView mCommentCountTextView;
     @Bind(R.id.settingsRelativeLayout)RelativeLayout mSettingsRelativeLayout;
     @Bind(R.id.sendCommentImageView)ImageView mSendCommentImageView;
     @Bind(R.id.commentEditText)EditText mCommentEditText;
     @Bind(R.id.commentsRecyclerView)RecyclerView mCommentsRecyclerView;
+    @Bind(R.id.sendCommentsRelativeLayout)RelativeLayout mSendCommentRelativeLayout;
 
     //firestore reference
     private FirebaseFirestore firebaseFirestore;
@@ -172,23 +173,46 @@ public class PostDetailActivity extends AppCompatActivity
                 finish();
             }
         });
-
         //prevent the edited from focus on acitivity launch
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-
         //Initialise click listners
-//        mCommentImageView.setOnClickListener(this);
+        mCommentImageView.setOnClickListener(this);
         postImageView.setOnClickListener(this);
         mSettingsRelativeLayout.setOnClickListener(this);
         mSendCommentImageView.setOnClickListener(this);
+        //check that user is logged in;
+        checkIfUserIsLoggedIn();
 
-        mPostId = getIntent().getStringExtra(EXTRA_POST_ID);
-        mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
-        mUid = getIntent().getStringExtra(EXTRA_USER_UID);
-        mType = getIntent().getStringExtra(TYPE);
+        if (getIntent().getData() != null) {
+            Uri data = getIntent().getData();
+            mPostId = data.toString();
+        }
 
-        intentWidth = getIntent().getStringExtra(POST_WIDTH);
-        intentHeight = getIntent().getStringExtra(POST_HEIGHT);
+        if (getIntent().getStringExtra(EXTRA_POST_ID) != null){
+            mPostId = getIntent().getStringExtra(EXTRA_POST_ID);
+        }
+
+        if (getIntent().getStringExtra(COLLECTION_ID) != null){
+            mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
+        }
+
+        if (getIntent().getStringExtra(EXTRA_USER_UID) != null){
+            mUid = getIntent().getStringExtra(EXTRA_USER_UID);
+        }
+
+        if (getIntent().getStringExtra(TYPE) != null){
+            mType = getIntent().getStringExtra(TYPE);
+        }
+
+        if (getIntent().getStringExtra(POST_WIDTH) != null){
+            intentWidth = getIntent().getStringExtra(POST_WIDTH);
+        }
+
+        if (getIntent().getStringExtra(POST_HEIGHT) != null){
+            intentHeight = getIntent().getStringExtra(POST_HEIGHT);
+        }
+
+
         if (intentHeight != null && intentWidth != null){
             final float width = (float) Integer.parseInt(intentWidth);
             final float height = (float) Integer.parseInt(intentHeight);
@@ -207,10 +231,10 @@ public class PostDetailActivity extends AppCompatActivity
         startTime = System.currentTimeMillis();
         //firestore
         if (mType.equals("single") || mType.equals("single_image_post")){
-            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
                     .document("singles").collection(mCollectionId);
         }else {
-            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
                     .document("collections").collection(mCollectionId);
         }
 
@@ -218,7 +242,7 @@ public class PostDetailActivity extends AppCompatActivity
         usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
         commentsCollection = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
         marketCollections = FirebaseFirestore.getInstance().collection(Constants.SELLING);
-        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
+        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
         //firebase references
         impressionReference = FirebaseDatabase.getInstance().getReference(Constants.VIEWS);
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
@@ -473,25 +497,26 @@ public class PostDetailActivity extends AppCompatActivity
 
 
         /**retrieve the counts of the posts comments*/
-//        commentsReference.orderBy("comment_id").whereEqualTo("post_id", mPostId)
-//                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-//                        if (e != null) {
-//                            android.util.Log.w(TAG, "Listen error", e);
-//                            return;
-//                        }
-//
-//                        if (!documentSnapshots.isEmpty()){
-//                            final int commentsCount = documentSnapshots.size();
-//                            mCommentCountTextView.setText(commentsCount + "");
-//                        }else {
-//                            mCommentCountTextView.setText("0");
-//
-//                        }
-//
-//                    }
-//                });
+        commentsCollection.document("post_ids").collection(mPostId)
+                .orderBy("comment_id").whereEqualTo("post_id", mPostId)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                        if (e != null) {
+                            android.util.Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!documentSnapshots.isEmpty()){
+                            final int commentsCount = documentSnapshots.size();
+                            mCommentCountTextView.setText(commentsCount + "");
+                        }else {
+                            mCommentCountTextView.setText("0");
+
+                        }
+
+                    }
+                });
 
         postsCollections.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -728,60 +753,12 @@ public class PostDetailActivity extends AppCompatActivity
         }
 
         if (v == mSendCommentImageView){
-            final long time = new Date().getTime();
-            final String uid = firebaseAuth.getCurrentUser().getUid();
-            final String commentText = mCommentEditText.getText().toString().trim();
-            if(!TextUtils.isEmpty(commentText)){
-                if(v == mSendCommentImageView){
-                    final String commentId = databaseReference.push().getKey();
+            sendComment();
+        }
 
-                    Comment comment = new Comment();
-                    comment.setUser_id(uid);
-                    comment.setComment_text(commentText);
-                    comment.setPost_id(mPostId);
-                    comment.setComment_id(commentId);
-                    comment.setTime(time);
-                    commentsCollection.document("post_ids").collection(mPostId)
-                            .document(commentId).set(comment);
+        if (v == mCommentImageView){
+            mSendCommentRelativeLayout.setVisibility(View.VISIBLE);
 
-
-                    //record the comment on the timeline
-                    postsCollections.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
-
-                            if (documentSnapshot.exists()){
-                                Post post = documentSnapshot.toObject(Post.class);
-                                final String creatorUid = post.getUser_id();
-
-                                final Timeline timeline = new Timeline();
-                                timeline.setActivity_id(commentId);
-                                timeline.setTime(time);
-                                timeline.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                timeline.setType("comment");
-                                timeline.setPost_id(mPostId);
-                                timeline.setStatus("un_read");
-                                timeline.setReceiver_id(creatorUid);
-                                if (creatorUid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                    //do nothing
-                                }else {
-                                    timelineCollection.document(creatorUid)
-                                            .collection("activities").document(commentId).set(timeline);
-                                }
-
-                            }
-                        }
-                    });
-
-                    mCommentEditText.setText("");
-
-                }
-            }
         }
     }
 
@@ -790,6 +767,74 @@ public class PostDetailActivity extends AppCompatActivity
         setRecyclerView();
         setCollections();
     }
+
+    private void sendComment(){
+        final long time = new Date().getTime();
+        final String uid = firebaseAuth.getCurrentUser().getUid();
+        final String commentText = mCommentEditText.getText().toString().trim();
+        if(!TextUtils.isEmpty(commentText)){
+            final String commentId = databaseReference.push().getKey();
+
+            Comment comment = new Comment();
+            comment.setUser_id(uid);
+            comment.setComment_text(commentText);
+            comment.setPost_id(mPostId);
+            comment.setComment_id(commentId);
+            comment.setTime(time);
+            commentsCollection.document("post_ids").collection(mPostId)
+                    .document(commentId).set(comment);
+
+
+            //record the comment on the timeline
+            postsCollections.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                    if (e != null) {
+                        Log.w(TAG, "Listen error", e);
+                        return;
+                    }
+
+                    if (documentSnapshot.exists()){
+                        Post post = documentSnapshot.toObject(Post.class);
+                        final String creatorUid = post.getUser_id();
+
+                        final Timeline timeline = new Timeline();
+                        timeline.setActivity_id(commentId);
+                        timeline.setTime(time);
+                        timeline.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                        timeline.setType("comment");
+                        timeline.setPost_id(mPostId);
+                        timeline.setStatus("un_read");
+                        timeline.setReceiver_id(creatorUid);
+                        if (creatorUid.equals(firebaseAuth.getCurrentUser().getUid())){
+                            //do nothing
+                        }else {
+                            timelineCollection.document(creatorUid)
+                                    .collection("activities").document(commentId).set(timeline);
+                        }
+
+                    }
+                }
+            });
+
+            mCommentEditText.setText("");
+            mSendCommentRelativeLayout.setVisibility(View.GONE);
+        }
+    }
+
+    //make sure if user is not logged int will first have to log
+    // in to see the post from deeplink intent data
+    private void checkIfUserIsLoggedIn(){
+        if (firebaseAuth.getCurrentUser() == null){
+            Log.d("user is null", "user is present");
+            Intent intent = new Intent(PostDetailActivity.this, SignInActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
+    }
+
 
     private void setRecyclerView(){
         commentsAdapter = new CommentsAdapter(this);
@@ -878,6 +923,7 @@ public class PostDetailActivity extends AppCompatActivity
         }
 
     }
+
 
     protected void onDocumentAdded(DocumentChange change) {
         commentsIds.add(change.getDocument().getId());

@@ -27,15 +27,14 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.camera.PicturesActivity;
 import com.andeqa.andeqa.models.Collection;
+import com.andeqa.andeqa.models.QueryOptions;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -45,12 +44,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.Arrays;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -70,11 +67,12 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
     @Bind(R.id.toolbar)Toolbar toolbar;
     @Bind(R.id.collectionNoteRelativeLayout)RelativeLayout mCollectionNoteRelativeLayout;
     @Bind(R.id.collectionNameRelativeLayout)RelativeLayout mCollectionNameRelativelayout;
-
+    @Bind(R.id.doneRelativeLayout)RelativeLayout mDoneRelativeLayout;
 
     private static final String TAG = CollectionSettingsActivity.class.getSimpleName();
     //firestore reference
     private CollectionReference collectionCollection;
+    private CollectionReference queryOptionsReference;
     private Query collectionsQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
@@ -120,10 +118,12 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
         mChangeCoverRelativeLayout.setOnClickListener(this);
         mChangeNameRelativeLayout.setOnClickListener(this);
         mChangeNoteRelativeLayout.setOnClickListener(this);
+        mDoneRelativeLayout.setOnClickListener(this);
 
         if (firebaseAuth.getCurrentUser() != null){
             collectionId = getIntent().getStringExtra(COLLECTION_ID);
-            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
+            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
+            queryOptionsReference = FirebaseFirestore.getInstance().collection(Constants.QUERY_OPTIONS);
 
             //textwatchers
             mCollectionNameEditText.setFilters(new InputFilter[]{new InputFilter
@@ -164,6 +164,9 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
 
             @Override
             public void afterTextChanged(Editable editable) {
+                if (mDoneRelativeLayout.getVisibility() == View.GONE){
+                    mDoneRelativeLayout.setVisibility(View.VISIBLE);
+                }
                 int count = DEFAULT_TITLE_LENGTH_LIMIT - editable.length();
                 mNameCountTextView.setText(Integer.toString(count));
 
@@ -192,6 +195,9 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
 
             @Override
             public void afterTextChanged(Editable editable) {
+                if (mDoneRelativeLayout.getVisibility() == View.GONE){
+                    mDoneRelativeLayout.setVisibility(View.VISIBLE);
+                }
                 int count = DEFAULT_DESCRIPTION_LENGTH_LIMIT- editable.length();
                 mNoteCountTextView.setText(Integer.toString(count));
 
@@ -250,7 +256,7 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
            byte[] data = baos.toByteArray();
            final StorageReference storageReference = FirebaseStorage
                    .getInstance().getReference()
-                   .child(Constants.USER_COLLECTIONS)
+                   .child(Constants.COLLECTIONS)
                    .child("collection_covers")
                    .child(collectionId);
 
@@ -308,19 +314,38 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
 
 
     private void updateNote(){
-        if (!TextUtils.isEmpty(mCollectionNoteEditText.getText())){
+        final String note = mCollectionNoteEditText.getText().toString();
+        if (!TextUtils.isEmpty(note)){
             collectionCollection.document(collectionId)
-                    .update("note", mCollectionNoteEditText.getText().toString());
-            mCollectionNoteTextView.setText(mCollectionNoteEditText.getText().toString());
+                    .update("note", note);
+            final String noteToLowercase [] = note.toLowerCase().split(" ");
+
+            QueryOptions queryOptions = new QueryOptions();
+            queryOptions.setOption_id(collectionId);
+            queryOptions.setUser_id(firebaseAuth.getCurrentUser().getUid());
+            queryOptions.setType("collection");
+            queryOptions.setTwo(Arrays.asList(noteToLowercase));
+            queryOptionsReference.document(collectionId).set(queryOptions);
             mCollectionNoteEditText.setText("");
+
         }
     }
 
     private void updaterName(){
-        if (!TextUtils.isEmpty(mCollectionNameEditText.getText())){
+        final String name = mCollectionNameEditText.getText().toString();
+        if (!TextUtils.isEmpty(name)){
             collectionCollection.document(collectionId)
-                    .update("name", mCollectionNameEditText.getText().toString());
-            mCollectionNameTextView.setText(mCollectionNameEditText.getText().toString());
+                    .update("name", name);
+
+            final String nameToLowercase [] = name.toLowerCase().split(" ");
+
+            QueryOptions queryOptions = new QueryOptions();
+            queryOptions.setOption_id(collectionId);
+            queryOptions.setUser_id(firebaseAuth.getCurrentUser().getUid());
+            queryOptions.setType("collection");
+            queryOptions.setOne(Arrays.asList(nameToLowercase));
+            queryOptionsReference.document(collectionId).set(queryOptions);
+
             mCollectionNameEditText.setText("");
         }
     }
@@ -365,6 +390,10 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
             mCollectionNoteRelativeLayout.setVisibility(View.VISIBLE);
         }
 
+        if (v == mDoneRelativeLayout){
+            updateNote();
+            updaterName();
+        }
 
     }
 }

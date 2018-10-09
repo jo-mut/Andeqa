@@ -6,14 +6,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.utils.ProportionalImageView;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
@@ -31,6 +27,8 @@ public class CollectionViewHolder extends RecyclerView.ViewHolder {
     public TextView mCollectionsNoteTextView;
     public LinearLayout mCollectionsLinearLayout;
     public TextView followingCountTextView;
+    public TextView postsCountTextView;
+    public CircleImageView profileImageView;
 
 
     public CollectionViewHolder(View itemView) {
@@ -42,8 +40,10 @@ public class CollectionViewHolder extends RecyclerView.ViewHolder {
         mCollectionsNoteTextView = (TextView) mView.findViewById(R.id.collectionsNoteTextView);
         mCollectionsLinearLayout = (LinearLayout) mView.findViewById(R.id.collectionLinearLayout);
         followButton = (Button) mView.findViewById(R.id.followButton);
+        postsCountTextView = (TextView) mView.findViewById(R.id.postsCountTextView);
         followingCountTextView  = (TextView) mView.findViewById(R.id.followingCountTextView);
         followRelativeLayout = (LinearLayout) mView.findViewById(R.id.followRelativeLayout);
+        profileImageView = (CircleImageView) mView.findViewById(R.id.profileImageView);
 
 
     }

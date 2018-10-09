@@ -4,10 +4,11 @@
     tools:context="com.andeqa.andeqa.home.TestActivity">
 
     <item
-        android:id="@+id/action_create"
-        android:icon="@drawable/ic_plus_white"
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search"
         app:showAsAction="always"
         android:title="Search">
 
     </item>
+
 </menu>

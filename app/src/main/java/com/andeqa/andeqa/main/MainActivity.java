@@ -1,16 +1,19 @@
 package com.andeqa.andeqa.main;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.collections.InitialCollectionsActivity;
-import com.andeqa.andeqa.people.FollowingActivity;
 import com.andeqa.andeqa.registration.SignInActivity;
+import com.andeqa.andeqa.utils.ConnectivityHelper;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -35,7 +38,11 @@ public class MainActivity extends AppCompatActivity {
     private static final String EXTRA_USER_UID =  "uid";
     private CollectionReference allCollections;
     private boolean queryOptions = false;
-
+    private boolean playServicesAvailable = true;
+    private static final int REQUEST_PLAY_SERVICES_RESOLUTION = 9000;
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
+    private String firstLaunch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +50,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        allCollections = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
-        followingCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE);
+        //check for cases where google play services is not available
+        // or needs to be updated
+        playServicesAvailable = checkPlayServices();
+        if (!playServicesAvailable){
+            Toast.makeText(this,"play not services available", Toast.LENGTH_SHORT).show();
+        }else {
+            init();
+        }
+
+    }
+
+    private void init(){
+        allCollections = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
+        followingCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE_RELATIONS);
         queryOptionsCollectons = FirebaseFirestore.getInstance().collection(Constants.QUERY_OPTIONS);
         allCollections.orderBy("time").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -71,9 +90,20 @@ public class MainActivity extends AppCompatActivity {
                 authenticationListener();
             }
         }, 2000);
-
     }
 
+    private boolean checkPlayServices(){
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int result = googleApiAvailability.isGooglePlayServicesAvailable(getApplicationContext());
+        if (result != ConnectionResult.SUCCESS){
+            if (googleApiAvailability.isUserResolvableError(result)){
+                googleApiAvailability.getErrorDialog(this, result, REQUEST_PLAY_SERVICES_RESOLUTION)
+                        .show();
+            }
+            return false;
+        }
+        return true;
+    }
 
     private void authenticationListener(){
         firebaseAuth = FirebaseAuth.getInstance();

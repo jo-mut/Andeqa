@@ -66,11 +66,6 @@
             android:label="Account settings"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name=".comments.CommentsActivity"
-            android:label="Comments"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
 
         <service android:name=".services.FirebaseMessaging">
             <intent-filter>
@@ -116,7 +111,21 @@
             android:name=".home.PostDetailActivity"
             android:label="Post"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="andeqa.page.link" />
+                <data android:scheme="https" />
+                <data android:scheme="http" />
+                <data android:pathPattern=".*" />
+            </intent-filter>
+
+        </activity>
         <activity
             android:name=".main.MainActivity"
             android:screenOrientation="portrait"
@@ -175,17 +184,6 @@
             android:name=".home.DeepLinkActivity"
             android:label="Post"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:host="andeqa.page.link" />
-                <data android:scheme="https" />
-                <data android:scheme="http" />
-                <data android:pathPattern=".*" />
-            </intent-filter>
         </activity>
 
         <provider
@@ -249,17 +247,29 @@
             android:label="Collections"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".search.SearchActivity"
-            android:label="Search"
+            android:name=".search.SearchPeopleActivity"
+            android:label="Search people"
             android:screenOrientation="portrait" />
-        <activity android:name=".people.PeopleActivity" />
+        <activity
+            android:name=".people.PeopleActivity"
+            android:label="Poeple"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".creation.ChooseCreationActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Translucent" />
-        <activity android:name=".search.SearchedPostsActivity" />
-        <activity android:name=".search.SearchedCollectionsActivity" />
-        <activity android:name=".chatting.ChattingActivity"></activity>
+        <activity
+            android:name=".search.SearchedCollectionsActivity"
+            android:label="Search collections"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".collections.ChooseCollectionActivity"
+            android:label="Add to collection"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".search.SearchPostsActivity"
+            android:label="Search posts"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

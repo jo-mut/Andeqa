@@ -12,7 +12,6 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.chatting.MessagingActivity;
 import com.andeqa.andeqa.models.Andeqan;
-import com.andeqa.andeqa.models.QueryOptions;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Room;
 import com.andeqa.andeqa.models.Timeline;
@@ -44,7 +43,6 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleRelationsViewHo
     private DatabaseReference databaseReference;
     private CollectionReference followingCollection;
     private CollectionReference timelineCollection;
-    private CollectionReference queryParamsCollection;
     private CollectionReference usersCollection;
     private CollectionReference roomsCollection;
 
@@ -84,11 +82,10 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleRelationsViewHo
 
         if (firebaseAuth.getCurrentUser()!= null){
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            followingCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE);
+            followingCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE_RELATIONS);
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
             roomsCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
-            queryParamsCollection = FirebaseFirestore.getInstance().collection(Constants.QUERY_OPTIONS);
 
         }
 
@@ -289,28 +286,12 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleRelationsViewHo
                                                                 .document(userId).set(following);
                                                         holder.followButton.setText("Following");
 
-                                                        if (!userId.equals(firebaseAuth.getCurrentUser().getUid())){
-                                                            final String id = queryParamsCollection.document().getId();
-                                                            QueryOptions queryOptions = new QueryOptions();
-                                                            queryOptions.setUser_id(userId);
-                                                            queryOptions.setFollowed_id(userId);
-                                                            queryOptions.setType("people");
-                                                            queryParamsCollection.document("options")
-                                                                    .collection(firebaseAuth.getCurrentUser().getUid()).document(userId)
-                                                                    .set(queryOptions);
-
-                                                        }
-
-
                                                         processFollow = false;
                                                     }else {
                                                         followingCollection.document("followers").collection(userId)
                                                                 .document(firebaseAuth.getCurrentUser().getUid()).delete();
                                                         followingCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
                                                                 .document(userId).delete();
-                                                        queryParamsCollection.document("options")
-                                                                .collection(firebaseAuth.getCurrentUser().getUid()).document(userId)
-                                                                .delete();
                                                         processFollow = false;
                                                     }
                                                 }

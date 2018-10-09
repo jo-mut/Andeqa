@@ -80,7 +80,7 @@ public class FollowersActivity extends AppCompatActivity {
         if (firebaseAuth.getCurrentUser()!= null){
             usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
             usersQuery = usersCollection;
-            followersCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE);
+            followersCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE_RELATIONS);
             followersQuery = followersCollection.document("followers")
                     .collection(mUid).orderBy("time");
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);

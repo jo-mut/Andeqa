@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.creation.ChooseCreationActivity;
+import com.andeqa.andeqa.search.SearchedCollectionsActivity;
 import com.andeqa.andeqa.utils.EndlesssStaggeredRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -54,10 +54,7 @@ public class CollectionsFragment extends Fragment {
     private int TOTAL_ITEMS = 10;
     private StaggeredGridLayoutManager layoutManager;
     private static final String EXTRA_USER_UID = "uid";
-    private String mUid;
-
     private SearchView searchView;
-
     private List<String> mSnapshotsIds = new ArrayList<>();
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
     private ItemOffsetDecoration itemOffsetDecoration;
@@ -77,22 +74,15 @@ public class CollectionsFragment extends Fragment {
         //FIREBASE AUTH
         firebaseAuth = FirebaseAuth.getInstance();
 
-        if (firebaseAuth.getCurrentUser()!= null){
+        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
+        collectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING);
+        mCollectionsRecyclerView.addOnScrollListener(new EndlesssStaggeredRecyclerOnScrollListener() {
+            @Override
+            public void onLoadMore() {
+                setNextCollections();
+            }
+        });
 
-            mUid = getActivity().getIntent().getStringExtra(EXTRA_USER_UID);
-
-            collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
-            collectionsQuery = collectionsCollection.orderBy("time", Query.Direction.ASCENDING)
-                    .limit(TOTAL_ITEMS);
-
-            mCollectionsRecyclerView.addOnScrollListener(new EndlesssStaggeredRecyclerOnScrollListener() {
-                @Override
-                public void onLoadMore() {
-                    setNextCollections();
-                }
-            });
-
-        }
 
         return view;
     }
@@ -113,7 +103,8 @@ public class CollectionsFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.collection_menu, menu);
+        menu.clear();
+        inflater.inflate(R.menu.explore_menu, menu);
     }
 
 
@@ -121,8 +112,8 @@ public class CollectionsFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_create){
-            Intent intent =  new Intent(getActivity(), ChooseCreationActivity.class);
+        if (id == R.id.action_search){
+            Intent intent =  new Intent(getActivity(), SearchedCollectionsActivity.class);
             startActivity(intent);
         }
 
@@ -166,6 +157,7 @@ public class CollectionsFragment extends Fragment {
         // RecyclerView
         featuredCollectionsAdapter = new FeaturedCollectionsAdapter(getContext());
         mCollectionsRecyclerView.setAdapter(featuredCollectionsAdapter);
+        featuredCollectionsAdapter.setFeaturedCollections(documentSnapshots);
         mCollectionsRecyclerView.setHasFixedSize(false);
         layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
         itemOffsetDecoration = new ItemOffsetDecoration(getContext(), R.dimen.item_off_set);
@@ -175,7 +167,7 @@ public class CollectionsFragment extends Fragment {
     }
 
     private void setColections(){
-        collectionsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        collectionsQuery.limit(TOTAL_ITEMS).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
@@ -210,12 +202,11 @@ public class CollectionsFragment extends Fragment {
         // Get the last visible document
         final int snapshotSize = featuredCollectionsAdapter.getItemCount();
 
-        if (snapshotSize == 0){
-        }else {
+        if (snapshotSize!= 0){
             DocumentSnapshot lastVisible = featuredCollectionsAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of posts
-            Query nextSinglesQuery = collectionsCollection.orderBy("time", Query.Direction.ASCENDING)
+            Query nextSinglesQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
                     .startAfter(lastVisible).limit(TOTAL_ITEMS);
 
             nextSinglesQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -239,15 +230,15 @@ public class CollectionsFragment extends Fragment {
                     }
                 }
             });
-
         }
 
     }
 
+
+
     protected void onDocumentAdded(DocumentChange change) {
         mSnapshotsIds.add(change.getDocument().getId());
         documentSnapshots.add(change.getDocument());
-        featuredCollectionsAdapter.setFeaturedCollections(documentSnapshots);
         featuredCollectionsAdapter.notifyItemInserted(documentSnapshots.size() -1);
         featuredCollectionsAdapter.getItemCount();
 
@@ -280,7 +271,6 @@ public class CollectionsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
     }
 
 }

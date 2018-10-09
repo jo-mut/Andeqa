@@ -48,7 +48,6 @@ public class MoreFragment extends Fragment {
         viewPager = (ViewPager)view.findViewById(R.id.container);
         viewPager.setAdapter(collectionsPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
-
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
 

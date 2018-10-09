@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.camera.CameraActivity;
 import com.andeqa.andeqa.camera.PicturesActivity;
+import com.andeqa.andeqa.collections.ChooseCollectionActivity;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -42,7 +43,7 @@ public class ChooseCreationActivity extends AppCompatActivity implements View.On
         }
 
         if (v == mCollectionLinearLayout){
-            Intent intent = new Intent(this, CreateCollectionActivity.class);
+            Intent intent = new Intent(this, ChooseCollectionActivity.class);
             startActivity(intent);
         }
 

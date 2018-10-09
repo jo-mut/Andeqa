@@ -191,21 +191,12 @@ public class MessagingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
         }
 
-        if (message.getMessage() != null && TextUtils.isEmpty(message.getMessage())){
+        if (message.getPhoto() != null && !message.getPhoto().equals("")){
             holder.photoImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(mContext, ViewMessagePhoto.class);
-                    intent.putExtra(MessagingAdapter.EXTRA_ROOM_ID, message.getRoom_id());
-                    mContext.startActivity(intent);
-                }
-            });
-        }else {
-            holder.photoImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(mContext, ViewMessagePhoto.class);
-                    intent.putExtra(MessagingAdapter.EXTRA_MESSAGE_ID, message.getMessage());
+                    intent.putExtra(MessagingAdapter.EXTRA_MESSAGE_ID, message.getMessage_id());
                     intent.putExtra(MessagingAdapter.EXTRA_ROOM_ID, message.getRoom_id());
                     mContext.startActivity(intent);
                 }

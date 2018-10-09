@@ -3,13 +3,11 @@ package com.andeqa.andeqa.home;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -27,17 +25,14 @@ import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.main.MainActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Comment;
-import com.andeqa.andeqa.models.Like;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.profile.ProfileActivity;
 import com.andeqa.andeqa.registration.SignInActivity;
 import com.andeqa.andeqa.settings.PostSettingsFragment;
-import com.andeqa.andeqa.utils.EndlessLinearRecyclerViewOnScrollListener;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -58,9 +53,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -91,7 +83,10 @@ public class DeepLinkActivity extends AppCompatActivity {
     @Bind(R.id.settingsRelativeLayout)RelativeLayout mSettingsRelativeLayout;
     @Bind(R.id.sendCommentImageView)ImageView mSendCommentImageView;
     @Bind(R.id.commentEditText)EditText mCommentEditText;
+    @Bind(R.id.commentsImageView)ImageView mCommentImageView;
+    @Bind(R.id.commentsCountTextView)TextView mCommentCountTextView;
     @Bind(R.id.commentsRecyclerView)RecyclerView mCommentsRecyclerView;
+    @Bind(R.id.sendCommentsRelativeLayout)RelativeLayout mSendCommentRelativeLayout;
 
 
     //firestore reference
@@ -148,7 +143,6 @@ public class DeepLinkActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
-        checkIfUserIsLoggedIn();
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -166,7 +160,7 @@ public class DeepLinkActivity extends AppCompatActivity {
         commentsCollection = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
         sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
         marketCollections = FirebaseFirestore.getInstance().collection(Constants.SELLING);
-        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
+        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
         //firebase
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
         likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
@@ -190,17 +184,6 @@ public class DeepLinkActivity extends AppCompatActivity {
         super.onStop();
     }
 
-    private void checkIfUserIsLoggedIn(){
-        if (firebaseAuth.getCurrentUser() != null){
-            handleLinks();
-        }else {
-            Log.d("user is null", "user is present");
-            Intent intent = new Intent(DeepLinkActivity.this, SignInActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
-        }
-    }
 
     private void handleLinks(){
         Uri data = null;
@@ -230,10 +213,10 @@ public class DeepLinkActivity extends AppCompatActivity {
 
                                     //firestore
                                     if (type.equals("single") || type.equals("single_image_post")){
-                                        collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                                        collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
                                                 .document("singles").collection(collectionId);
                                     }else{
-                                        collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS)
+                                        collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
                                                 .document("collections").collection(collectionId);
                                     }
 
@@ -404,6 +387,34 @@ public class DeepLinkActivity extends AppCompatActivity {
                                         });
                                     }
 
+                                    mCommentImageView.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            mSendCommentImageView.setVisibility(View.VISIBLE);
+                                        }
+                                    });
+
+                                    commentsCollection.document("post_ids").collection(postId)
+                                            .orderBy("comment_id").whereEqualTo("post_id", postId)
+                                            .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                                @Override
+                                                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                                                    if (e != null) {
+                                                        android.util.Log.w(TAG, "Listen error", e);
+                                                        return;
+                                                    }
+
+                                                    if (!documentSnapshots.isEmpty()){
+                                                        final int commentsCount = documentSnapshots.size();
+                                                        mCommentCountTextView.setText(commentsCount + "");
+                                                    }else {
+                                                        mCommentCountTextView.setText("0");
+
+                                                    }
+
+                                                }
+                                            });
+
                                     commentsCollection.document("post_ids").collection(postId)
                                             .orderBy("time", Query.Direction.DESCENDING)
                                             .limit(TOTAL_ITEMS)
@@ -481,55 +492,53 @@ public class DeepLinkActivity extends AppCompatActivity {
                                             final String uid = firebaseAuth.getCurrentUser().getUid();
                                             final String commentText = mCommentEditText.getText().toString().trim();
                                             if(!TextUtils.isEmpty(commentText)){
-                                                if(v == mSendCommentImageView){
-                                                    final String commentId = databaseReference.push().getKey();
+                                                final String commentId = databaseReference.push().getKey();
 
-                                                    Comment comment = new Comment();
-                                                    comment.setUser_id(uid);
-                                                    comment.setComment_text(commentText);
-                                                    comment.setPost_id(postId);
-                                                    comment.setComment_id(commentId);
-                                                    comment.setTime(time);
-                                                    commentsCollection.document("post_ids").collection(postId)
-                                                            .document(commentId).set(comment);
+                                                Comment comment = new Comment();
+                                                comment.setUser_id(uid);
+                                                comment.setComment_text(commentText);
+                                                comment.setPost_id(postId);
+                                                comment.setComment_id(commentId);
+                                                comment.setTime(time);
+                                                commentsCollection.document("post_ids").collection(postId)
+                                                        .document(commentId).set(comment);
 
 
-                                                    //record the comment on the timeline
-                                                    postsCollections.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                                        @Override
-                                                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                                //record the comment on the timeline
+                                                postsCollections.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                                    @Override
+                                                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
-                                                            if (e != null) {
-                                                                Log.w(TAG, "Listen error", e);
-                                                                return;
-                                                            }
-
-                                                            if (documentSnapshot.exists()){
-                                                                Post post = documentSnapshot.toObject(Post.class);
-                                                                final String creatorUid = post.getUser_id();
-
-                                                                final Timeline timeline = new Timeline();
-                                                                timeline.setActivity_id(commentId);
-                                                                timeline.setTime(time);
-                                                                timeline.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                                                timeline.setType("comment");
-                                                                timeline.setPost_id(postId);
-                                                                timeline.setStatus("un_read");
-                                                                timeline.setReceiver_id(creatorUid);
-                                                                if (creatorUid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                                                    //do nothing
-                                                                }else {
-                                                                    timelineCollection.document(creatorUid)
-                                                                            .collection("activities").document(commentId).set(timeline);
-                                                                }
-
-                                                            }
+                                                        if (e != null) {
+                                                            Log.w(TAG, "Listen error", e);
+                                                            return;
                                                         }
-                                                    });
 
-                                                    mCommentEditText.setText("");
+                                                        if (documentSnapshot.exists()){
+                                                            Post post = documentSnapshot.toObject(Post.class);
+                                                            final String creatorUid = post.getUser_id();
 
-                                                }
+                                                            final Timeline timeline = new Timeline();
+                                                            timeline.setActivity_id(commentId);
+                                                            timeline.setTime(time);
+                                                            timeline.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                            timeline.setType("comment");
+                                                            timeline.setPost_id(postId);
+                                                            timeline.setStatus("un_read");
+                                                            timeline.setReceiver_id(creatorUid);
+                                                            if (creatorUid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                                                //do nothing
+                                                            }else {
+                                                                timelineCollection.document(creatorUid)
+                                                                        .collection("activities").document(commentId).set(timeline);
+                                                            }
+
+                                                        }
+                                                    }
+                                                });
+
+                                                mCommentEditText.setText("");
+                                                mSendCommentRelativeLayout.setVisibility(View.GONE);
                                             }
                                         }
                                     });

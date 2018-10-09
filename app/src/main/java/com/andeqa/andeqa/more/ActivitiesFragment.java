@@ -19,10 +19,9 @@ import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.creation.ChooseCreationActivity;
 import com.andeqa.andeqa.models.Timeline;
-import com.andeqa.andeqa.profile.ProfileActivity;
-import com.andeqa.andeqa.search.SearchActivity;
+import com.andeqa.andeqa.search.SearchPeopleActivity;
+import com.andeqa.andeqa.search.SearchPostsActivity;
 import com.andeqa.andeqa.utils.EndlessLinearRecyclerViewOnScrollListener;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -96,7 +95,8 @@ public class ActivitiesFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.activities_menu, menu);
+        menu.clear();
+        inflater.inflate(R.menu.explore_menu, menu);
 
     }
 
@@ -105,8 +105,8 @@ public class ActivitiesFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_create){
-            Intent intent =  new Intent(getActivity(), ChooseCreationActivity.class);
+        if (id == R.id.action_search){
+            Intent intent =  new Intent(getActivity(), SearchPostsActivity.class);
             startActivity(intent);
         }
 
@@ -183,7 +183,6 @@ public class ActivitiesFragment extends Fragment {
                                         Timeline timeline = change.getDocument().toObject(Timeline.class);
                                         if (timeline.getType() != null){
                                             final String type = timeline.getType();
-                                            Log.d("time line type", type);
                                             if (type.equals("comment") || type.equals("follow")){
                                                 onDocumentAdded(change);
                                             }else {
@@ -237,7 +236,6 @@ public class ActivitiesFragment extends Fragment {
                                     Timeline timeline = change.getDocument().toObject(Timeline.class);
                                     if (timeline.getType() != null){
                                         final String type = timeline.getType();
-                                        Log.d("time line type", type);
                                         if (type.equals("comment") || type.equals("follow")){
                                             onDocumentAdded(change);
                                         }else {

@@ -3,12 +3,11 @@ package com.andeqa.andeqa;
 
 import android.app.Application;
 import android.content.Context;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDex;
 import android.util.Log;
 
-import com.andeqa.andeqa.main.ForceUpdateChecker;
+import com.andeqa.andeqa.utils.ForceUpdateChecker;
 import com.andeqa.andeqa.services.ConnectivityReceiver;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -16,8 +15,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-import com.squareup.picasso.OkHttpDownloader;
-import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,7 +44,7 @@ public class App extends Application {
         // set in-app defaults
         Map<String, Object> remoteConfigDefaults = new HashMap();
         remoteConfigDefaults.put(ForceUpdateChecker.KEY_UPDATE_REQUIRED, false);
-        remoteConfigDefaults.put(ForceUpdateChecker.KEY_CURRENT_VERSION, "1.0.0");
+        remoteConfigDefaults.put(ForceUpdateChecker.KEY_CURRENT_VERSION, "1.4.4");
         remoteConfigDefaults.put(ForceUpdateChecker.KEY_UPDATE_URL,
                 "https://play.google.com/store/apps/details?id=com.sembozdemir.renstagram");
         firebaseRemoteConfig.setDefaults(remoteConfigDefaults);

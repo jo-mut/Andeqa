@@ -5,7 +5,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -22,11 +21,9 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.creation.CreateCollectionActivity;
-import com.andeqa.andeqa.creation.CreateCollectionPostActivity;
+import com.andeqa.andeqa.camera.PicturesActivity;
 import com.andeqa.andeqa.chatting.MessagingActivity;
 import com.andeqa.andeqa.models.Andeqan;
-import com.andeqa.andeqa.models.QueryOptions;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Room;
 
@@ -71,18 +68,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Bind(R.id.followButton)Button followButton;
     @Bind(R.id.followRelativeLayout)RelativeLayout mFollowRelativeLayout;
     @Bind(R.id.postsCountTextView)TextView mPostCountTextView;
-    @Bind(R.id.collectionCountTextView)TextView mCollectionsCountTextView;
     @Bind(R.id.addPostImageView)ImageView addPostImageView;
-    @Bind(R.id.addCollectionImageView)ImageView addCollectionImageView;
     @Bind(R.id.post_container)FrameLayout mPostContainerFrameLayout;
-    @Bind(R.id.collection_container) FrameLayout mCollectionsContainerFrameLayout;
     @Bind(R.id.createPostRelativeLayout)RelativeLayout mCreatePostRelativeLayout;
-    @Bind(R.id.createCollectionsRelativeLayout)RelativeLayout mCreateCollectionRelativeLayout;
     @Bind(R.id.viewPostRelativelayout)RelativeLayout mViewPostRelativeLayout;
-    @Bind(R.id.viewCollectionsRelativeLayout)RelativeLayout mViewCollectionsRelativeLayout;
-    @Bind(R.id.connectLinearLayout)LinearLayout mConnectLinearLayout;
     @Bind(R.id.postsLinearLayout)LinearLayout mPostsLinearLayout;
-    @Bind(R.id.collectionsLinearLayout)LinearLayout mCollectionsLinearLayout;
+    @Bind(R.id.connectLinearLayout)LinearLayout mConnectLinearLayout;
 
     private static final String TAG = ProfileActivity.class.getSimpleName();
     //firestore reference
@@ -93,7 +84,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private CollectionReference peopleCollection;
     private CollectionReference followingCollection;
     private CollectionReference timelineCollection;
-    private CollectionReference queryParamsCollection;
     private Query followersQuery;
     private Query followingQuery;
     private Query followQuery;
@@ -137,11 +127,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
             mUid = getIntent().getStringExtra(EXTRA_USER_UID);
             usersCollections = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
+            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
             roomsCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            peopleCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE);
-            queryParamsCollection = FirebaseFirestore.getInstance().collection(Constants.QUERY_OPTIONS);
+            peopleCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE_RELATIONS);
 
             followersQuery = peopleCollection.document("followers")
                     .collection(mUid);
@@ -159,7 +148,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 mConnectLinearLayout.setVisibility(View.VISIBLE);
             }else {
                 addPostImageView.setVisibility(View.VISIBLE);
-                addCollectionImageView.setVisibility(View.VISIBLE);
             }
 
             usersCollections.document(mUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -188,10 +176,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             mSendMessageButton.setOnClickListener(this);
             followButton.setOnClickListener(this);
             mViewPostRelativeLayout.setOnClickListener(this);
-            mViewCollectionsRelativeLayout.setOnClickListener(this);
             mFollowerCountTextView.setOnClickListener(this);
             mFollowingCountTextView.setOnClickListener(this);
-            addCollectionImageView.setOnClickListener(this);
             addPostImageView.setOnClickListener(this);
 
             PostsFragment postsFragment = new PostsFragment();
@@ -199,12 +185,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             FragmentTransaction ft = fragmentManager.beginTransaction();
             ft.replace(R.id.post_container, postsFragment);
             ft.commit();
-
-            ProfileCollectionFragment profileCollectionFragment = new ProfileCollectionFragment();
-            fragmentManager = this.getSupportFragmentManager();
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.collection_container, profileCollectionFragment);
-            transaction.commit();
         }
 
     }
@@ -379,7 +359,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     public void onStart() {
         super.onStart();
         postCount();
-        collectionsCount();
     }
 
     @Override
@@ -400,13 +379,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             startActivity(intent);
         }
 
-        if (v == mViewCollectionsRelativeLayout){
-            Intent intent = new Intent(this, ProfileCollectionsActivity.class);
-            intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
-            startActivity(intent);
-        }
-
-
         if (v == followButton){
             followProfile();
         }
@@ -423,13 +395,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             startActivity(intent);
         }
 
-        if (v == addCollectionImageView){
-            Intent intent = new Intent(this, CreateCollectionActivity.class);
-            startActivity(intent);
-        }
-
         if (v == addPostImageView){
-            Intent intent = new Intent(this, CreateCollectionPostActivity.class);
+            Intent intent = new Intent(this, PicturesActivity.class);
             startActivity(intent);
         }
     }
@@ -486,67 +453,18 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                         .document(mUid).set(following);
                                 followButton.setText("Following");
 
-                                if (!mUid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                    final String id = queryParamsCollection.document().getId();
-                                    QueryOptions queryOptions = new QueryOptions();
-                                    queryOptions.setUser_id(mUid);
-                                    queryOptions.setFollowed_id(mUid);
-                                    queryOptions.setType("people");
-                                    queryParamsCollection.document("options")
-                                            .collection(firebaseAuth.getCurrentUser().getUid()).document(mUid)
-                                            .set(queryOptions);
-
-                                }
-
-
                                 processFollow = false;
                             }else {
                                 peopleCollection.document("followers").collection(mUid)
                                         .document(firebaseAuth.getCurrentUser().getUid()).delete();
                                 peopleCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
                                         .document(mUid).delete();
-                                queryParamsCollection.document("options")
-                                        .collection(firebaseAuth.getCurrentUser().getUid()).document(mUid)
-                                        .delete();
                                 followButton.setText("Follow");
                                 processFollow = false;
                             }
                         }
                     }
                 });
-
-    }
-
-    private void collectionsCount(){
-        collectionCollection.orderBy("user_id").whereEqualTo("user_id", mUid)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!documentSnapshots.isEmpty()){
-                            final int collectionCount = documentSnapshots.size();
-                            mCollectionsContainerFrameLayout.setVisibility(View.VISIBLE);
-                            mCollectionsCountTextView.setText("Collections: " + collectionCount);
-                            mViewCollectionsRelativeLayout.setVisibility(View.VISIBLE);
-                        }else {
-                            if (firebaseAuth.getCurrentUser().getUid().equals(mUid)){
-                                mCollectionsCountTextView.setText("Collections: 0");
-                                mCreateCollectionRelativeLayout.setVisibility(View.VISIBLE);
-                                addCollectionImageView.setVisibility(View.VISIBLE);
-                            }else {
-                                addCollectionImageView.setVisibility(View.GONE);
-                            }
-
-                        }
-                    }
-                });
-
-
 
     }
 

@@ -14,20 +14,19 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="84dp"
-        android:background="@drawable/default_gradient_color"
-        android:textColor="@android:color/white"
+        android:background="@android:color/white"
+        android:textColor="@color/grey_700"
         app:layout_scrollFlags="scroll|enterAlways"
         app:titleTextAppearance="@style/toolbarTextAppearance"
         app:popupTheme="@style/AppTheme.PopupOverlay">
 
         <ImageView
-            android:background="@drawable/white_rounded_background"
-            app:srcCompat="@drawable/ic_check"
-            android:tint="@color/grey_700"
+            android:background="@drawable/accent_color"
+            app:srcCompat="@drawable/ic_done_primary"
             android:layout_margin="5dp"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:padding="5dp"
+            android:padding="10dp"
             android:id="@+id/doneImageView"
             android:textColor="@android:color/white"
             android:layout_gravity="end" />

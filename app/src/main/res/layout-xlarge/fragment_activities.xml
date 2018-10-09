@@ -27,7 +27,6 @@
 
 
         <ImageView
-            android:tint="@color/grey_700"
             app:srcCompat="@drawable/ic_stopwatch"
             android:id="@+id/imagePlaceHolder"
             android:layout_centerInParent="true"

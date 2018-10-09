@@ -17,7 +17,7 @@ import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.search.SearchActivity;
+import com.andeqa.andeqa.search.SearchPeopleActivity;
 import com.andeqa.andeqa.utils.EndlessLinearRecyclerViewOnScrollListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -95,6 +95,7 @@ public class ChatsFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
         inflater.inflate(R.menu.chats_menu, menu);
 
     }
@@ -106,7 +107,7 @@ public class ChatsFragment extends Fragment {
 
 
         if (id == R.id.action_chat){
-            Intent intent =  new Intent(getActivity(), SearchActivity.class);
+            Intent intent =  new Intent(getActivity(), SearchPeopleActivity.class);
             startActivity(intent);
         }
 

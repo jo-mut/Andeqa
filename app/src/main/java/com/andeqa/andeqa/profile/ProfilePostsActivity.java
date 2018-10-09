@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.utils.EndlesssStaggeredRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
@@ -28,17 +29,21 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class ProfilePostsActivity extends AppCompatActivity {
     @Bind(R.id.postsRecyclerView)RecyclerView mPostssRecyclerView;
+    @Bind(R.id.toolbar)Toolbar toolbar;
     private static final String TAG = ProfilePostsActivity.class.getSimpleName();
 
     //firestore reference
     private CollectionReference postsCollection;
     private CollectionReference collectionsPosts;
     private Query profilePostsQuery;
+    private CollectionReference usersReference;
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore adapters
@@ -68,7 +73,6 @@ public class ProfilePostsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_posts);
         ButterKnife.bind(this);
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         toolbar.setNavigationIcon(R.drawable.ic_arrow);
@@ -80,23 +84,21 @@ public class ProfilePostsActivity extends AppCompatActivity {
         });
         //FIREBASE AUTH
         firebaseAuth = FirebaseAuth.getInstance();
-        if (firebaseAuth.getCurrentUser()!= null){
+        mUid = getIntent().getStringExtra(EXTRA_USER_UID);
 
-            mUid = getIntent().getStringExtra(EXTRA_USER_UID);
+        postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+        profilePostsQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
+                .whereEqualTo("user_id", mUid).limit(TOTAL_ITEMS);
+        collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS);
+        usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+        mPostssRecyclerView.addOnScrollListener(new EndlesssStaggeredRecyclerOnScrollListener() {
+            @Override
+            public void onLoadMore() {
+                setNextPosts();
+            }
+        });
 
-            postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            profilePostsQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
-                    .whereEqualTo("user_id", mUid).limit(TOTAL_ITEMS);
-            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_POSTS);
-
-            mPostssRecyclerView.addOnScrollListener(new EndlesssStaggeredRecyclerOnScrollListener() {
-                @Override
-                public void onLoadMore() {
-                    setNextPosts();
-                }
-            });
-
-        }
+        setToolbarTitle();
 
     }
 
@@ -123,6 +125,26 @@ public class ProfilePostsActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    private void setToolbarTitle(){
+        usersReference.document(mUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (documentSnapshot.exists()){
+                    Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                    final String username = andeqan.getUsername();
+                    toolbar.setTitle(username + "'s" + " posts");
+
+                }
+            }
+        });
     }
 
     private void loadData(){

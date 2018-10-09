@@ -27,6 +27,7 @@ public class PreviewImagePostActivity extends AppCompatActivity implements View.
 
     private static final String COLLECTION_ID = "collection id";
     private static final String CAMERA_PATH = "camera image";
+    private static final String PHOTO_URI = "photo uri";
     private static final String GALLERY_PATH ="gallery image";
     private static final String HEIGHT = "height";
     private static final String WIDTH = "width";
@@ -137,7 +138,7 @@ public class PreviewImagePostActivity extends AppCompatActivity implements View.
                 finish();
             }else if (photoUri != null){
                 Intent intent = new Intent(PreviewImagePostActivity.this, CreateSingleActivity.class);
-                intent.putExtra(PreviewImagePostActivity.GALLERY_PATH, cameraImage);
+                intent.putExtra(PreviewImagePostActivity.PHOTO_URI, photoUri.toString());
                 intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
                 intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
                 startActivity(intent);

@@ -6,16 +6,21 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
@@ -29,13 +34,20 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.Date;
+
+import javax.annotation.Nullable;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -95,6 +107,28 @@ public class SaveGoogleProfileActivity extends AppCompatActivity implements View
 
             mUpdateProfilePictureImageButton.setOnClickListener(this);
             mSubmitUserInfoButton.setOnClickListener(this);
+
+            mUsernameEditText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void afterTextChanged(final Editable editable) {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            uniqueUsernameName(editable.toString());
+                        }
+                    }, 500);
+                }
+            });
         }
     }
 
@@ -127,6 +161,45 @@ public class SaveGoogleProfileActivity extends AppCompatActivity implements View
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+    }
+
+
+
+    private void uniqueUsernameName(final String name){
+        usersReference.whereEqualTo("username", name)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot documentSnapshots,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+                        if (!documentSnapshots.isEmpty()){
+                            for (DocumentChange change : documentSnapshots.getDocumentChanges()){
+                                Andeqan andeqan = change.getDocument().toObject(Andeqan.class);
+                                if (andeqan.getUser_id().equals(name) && andeqan.getUser_id()
+                                        .equals(firebaseAuth.getCurrentUser().getUid())){
+                                    Toast toast = Toast.makeText(SaveGoogleProfileActivity.this,"Username available",
+                                            Toast.LENGTH_SHORT);
+                                    toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 0);
+                                    toast.show();
+                                }else {
+                                    Toast toast = Toast.makeText(SaveGoogleProfileActivity.this,"Username has been taken",
+                                            Toast.LENGTH_SHORT);
+                                    toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 0);
+                                    toast.show();
+                                }
+                            }
+                        }else {
+                            Toast toast = Toast.makeText(SaveGoogleProfileActivity.this,"Username available",
+                                    Toast.LENGTH_SHORT);
+                            toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 0);
+                            toast.show();
+                        }
+                    }
+                });
+
     }
 
 
@@ -284,7 +357,22 @@ public class SaveGoogleProfileActivity extends AppCompatActivity implements View
 
         if (v == mSubmitUserInfoButton){
             if (firebaseAuth.getCurrentUser() != null){
-                createProfile();
+                usersReference.whereEqualTo("username", mUsernameEditText.getText().toString())
+                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                            @Override
+                            public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
+
+
+                                if (!documentSnapshots.isEmpty()){
+                                    Toast.makeText(SaveGoogleProfileActivity.this,
+                                            "Please chooser a username that has not been taken",
+                                            Toast.LENGTH_SHORT).show();
+                                }else {
+                                    createProfile();
+                                }
+
+                            }
+                        });
             }
         }
 

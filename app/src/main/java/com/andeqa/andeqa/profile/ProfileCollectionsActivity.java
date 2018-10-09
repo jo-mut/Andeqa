@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.utils.EndlesssStaggeredRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -27,6 +28,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -37,6 +40,7 @@ public class ProfileCollectionsActivity extends AppCompatActivity{
     //firestore reference
     private CollectionReference collectionsCollection;
     private Query collectionsQuery;
+    private CollectionReference usersReference;
 
     //firebase auth
     private FirebaseAuth firebaseAuth;
@@ -70,15 +74,31 @@ public class ProfileCollectionsActivity extends AppCompatActivity{
 
         firebaseAuth = FirebaseAuth.getInstance();
         mUid = getIntent().getStringExtra(EXTRA_USER_UID);
-        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.USER_COLLECTIONS);
-        collectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
-                .whereEqualTo("user_id", mUid)
-                .limit(TOTAL_ITEMS);
-
+        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
+        collectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING);
         mCollectionsRecyclerView.addOnScrollListener(new EndlesssStaggeredRecyclerOnScrollListener() {
             @Override
             public void onLoadMore() {
                 setNextCollections();
+            }
+        });
+
+        usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+        usersReference.document(mUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (documentSnapshot.exists()){
+                    Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                    final String username = andeqan.getUsername();
+                    toolbar.setTitle(username + "'s" + " collections");
+
+                }
             }
         });
     }
@@ -125,7 +145,8 @@ public class ProfileCollectionsActivity extends AppCompatActivity{
     }
 
     private void setCollections(){
-        collectionsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        collectionsQuery.whereEqualTo("user_id", mUid)
+                .limit(TOTAL_ITEMS).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
