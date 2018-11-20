@@ -3,7 +3,6 @@ package com.andeqa.andeqa.profile;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Handler;
@@ -27,15 +26,11 @@ import android.widget.ViewAnimator;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.camera.PicturesActivity;
+import com.andeqa.andeqa.creation.CreateActivity;
 import com.andeqa.andeqa.models.Andeqan;
-import com.andeqa.andeqa.registration.CreateProfileActivity;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -49,8 +44,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -212,7 +205,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     @Override
     public void onClick(View v){
         if(v == mUpdateProfileImageButton){
-            Intent intent = new Intent(UpdateProfileActivity.this, PicturesActivity.class);
+            Intent intent = new Intent(UpdateProfileActivity.this, CreateActivity.class);
             intent.putExtra(UpdateProfileActivity.PROFILE_PHOTO_PATH, UpdateProfileActivity.class.getSimpleName());
             startActivity(intent);
             finish();
@@ -233,7 +226,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 
 
         if (v == mUpdateCoverTextView){
-            Intent intent = new Intent(UpdateProfileActivity.this, PicturesActivity.class);
+            Intent intent = new Intent(UpdateProfileActivity.this, CreateActivity.class);
             intent.putExtra(UpdateProfileActivity.PROFILE_COVER_PATH, UpdateProfileActivity.class.getSimpleName());
             startActivity(intent);
             finish();

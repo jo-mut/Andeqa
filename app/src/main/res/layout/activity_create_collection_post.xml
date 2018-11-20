@@ -15,7 +15,6 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@drawable/white_rounded_background"
         android:textColor="@color/grey_700"
         app:layout_scrollFlags="scroll|enterAlways"
         app:titleTextAppearance="@style/toolbarTextAppearance"
@@ -23,7 +22,7 @@
 
         <ImageView
             android:background="@drawable/accent_color"
-            app:srcCompat="@drawable/ic_done_primary"
+            app:srcCompat="@drawable/ic_done_dark"
             android:layout_margin="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -49,10 +48,28 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:padding="5dp"
+                    android:id="@+id/progressRelativeLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ProgressBar
+                        android:indeterminate="false"
+                        android:max="100"
+                        android:progress="0"
+                        android:secondaryProgress="0"
+                        android:id="@+id/progressBar"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+
+                </RelativeLayout>
 
                 <LinearLayout
-                    android:layout_marginTop="20dp"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -172,62 +189,17 @@
                     android:layout_height="0.1dp"/>
 
                 <RelativeLayout
-                    android:id="@+id/progressRelativeLayout"
+                    android:id="@+id/collectionsRelativeLayout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <ProgressBar
-                        android:visibility="gone"
-                        android:id="@+id/progressBar"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_centerInParent="true"
-                        android:progressDrawable="@drawable/progress_drawable"
-                        android:indeterminate="false"
-                        android:max="100"
-                        android:progress="0"
-                        android:secondaryProgress="0"
-                        android:layout_width="75dp"
-                        android:layout_height="75dp" />
-
-                    <TextView
-                        android:textColor="@color/grey_700"
-                        android:textSize="12sp"
-                        android:id="@+id/progressTextView"
-                        android:layout_centerInParent="true"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                </RelativeLayout>
-
-
-                <RelativeLayout
-                    android:id="@+id/addRelativeLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:layout_centerVertical="true"
-                        android:id="@+id/addImageView"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_centerHorizontal="true"
-                        android:adjustViewBounds="true"
-                        app:srcCompat="@drawable/ic_plus" />
-
-                    <TextView
-                        android:textColor="@color/grey_700"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/addPostTextView"
-                        android:textSize="14sp"
-                        android:layout_below="@+id/addImageView"
-                        android:text="Tap to add your collection post"
-                        android:layout_centerHorizontal="true"
-                        android:padding="20dp"
-                        android:layout_marginRight="5dp"
-                        android:layout_marginEnd="5dp" />
-
+                    <android.support.v7.widget.RecyclerView
+                        android:clipToPadding="false"
+                        android:padding="@dimen/item_off_set"
+                        android:id="@+id/collectionsRecyclerView"
+                        android:overScrollMode="never"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
 
                 </RelativeLayout>
 

@@ -73,7 +73,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="10dp"
                 android:id="@+id/nextRelativeLayout"
-                android:background="@drawable/white_rounded_background"
+                android:background="@drawable/white_circle_background"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
@@ -151,7 +151,7 @@
                                 android:id="@+id/imageCaptureImageView"
                                 android:layout_width="80dp"
                                 android:layout_height="80dp"
-                                app:srcCompat="@drawable/rounded_background" />
+                                app:srcCompat="@drawable/camera_capture_background" />
 
                             <RelativeLayout
                                 android:layout_marginLeft="30dp"

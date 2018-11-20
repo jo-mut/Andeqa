@@ -5,12 +5,10 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.camera.Function;
 import com.andeqa.andeqa.utils.ProportionalImageView;
 import com.bumptech.glide.Glide;
 
@@ -31,9 +29,11 @@ public class PreviewImagePostActivity extends AppCompatActivity implements View.
     private static final String GALLERY_PATH ="gallery image";
     private static final String HEIGHT = "height";
     private static final String WIDTH = "width";
+    private static final String EXTRA_POST_ID = "post id";
     private String mCollectionId;
     private String galleryImage;
     private String cameraImage;
+    private String postId;
     private String video;
     private int height;
     private int width;
@@ -65,6 +65,7 @@ public class PreviewImagePostActivity extends AppCompatActivity implements View.
         mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
         galleryImage = getIntent().getStringExtra(GALLERY_PATH);
         cameraImage = getIntent().getStringExtra(CAMERA_PATH);
+        postId = getIntent().getStringExtra(EXTRA_POST_ID);
 
         if (cameraImage != null){
             Glide.with(PreviewImagePostActivity.this)
@@ -121,6 +122,64 @@ public class PreviewImagePostActivity extends AppCompatActivity implements View.
         if (v == mNextImageView){
             height = postImageView.getDrawable().getIntrinsicHeight();
             width = postImageView.getDrawable().getIntrinsicWidth();
+
+            if (postId != null){
+                if (cameraImage != null){
+                    Intent intent = new Intent(PreviewImagePostActivity.this, CreateSingleActivity.class);
+                    intent.putExtra(PreviewImagePostActivity.GALLERY_PATH, cameraImage);
+                    intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
+                    intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
+                    startActivity(intent);
+                    finish();
+                }
+
+                if (video != null){
+                    Intent intent = new Intent(PreviewImagePostActivity.this, CreateSingleActivity.class);
+                    intent.putExtra(PreviewImagePostActivity.PHOTO_URI, video);
+                    intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
+                    intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
+                    startActivity(intent);
+                    finish();
+                }
+
+                if (photoUri != null){
+                    Intent intent = new Intent(PreviewImagePostActivity.this, CreateSingleActivity.class);
+                    intent.putExtra(PreviewImagePostActivity.PHOTO_URI, photoUri.toString());
+                    intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
+                    intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
+                    startActivity(intent);
+                    finish();
+                }
+
+            }else {
+                if (cameraImage != null){
+                    Intent intent = new Intent(PreviewImagePostActivity.this, CreateSingleActivity.class);
+                    intent.putExtra(PreviewImagePostActivity.GALLERY_PATH, cameraImage);
+                    intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
+                    intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
+                    startActivity(intent);
+                    finish();
+                }
+
+                if (video != null){
+                    Intent intent = new Intent(PreviewImagePostActivity.this, CreateSingleActivity.class);
+                    intent.putExtra(PreviewImagePostActivity.PHOTO_URI, video);
+                    intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
+                    intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
+                    startActivity(intent);
+                    finish();
+                }
+
+                if (photoUri != null){
+                    Intent intent = new Intent(PreviewImagePostActivity.this, CreateSingleActivity.class);
+                    intent.putExtra(PreviewImagePostActivity.PHOTO_URI, photoUri.toString());
+                    intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
+                    intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
+                    startActivity(intent);
+                    finish();
+                }
+            }
+
             if (mCollectionId != null){
                 Intent intent = new Intent(PreviewImagePostActivity.this, CreateCollectionPostActivity.class);
                 intent.putExtra(PreviewImagePostActivity.GALLERY_PATH, galleryImage);
@@ -129,28 +188,9 @@ public class PreviewImagePostActivity extends AppCompatActivity implements View.
                 intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
                 startActivity(intent);
                 finish();
-            }else if (cameraImage != null){
-                Intent intent = new Intent(PreviewImagePostActivity.this, CreateSingleActivity.class);
-                intent.putExtra(PreviewImagePostActivity.GALLERY_PATH, cameraImage);
-                intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
-                intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
-                startActivity(intent);
-                finish();
-            }else if (photoUri != null){
-                Intent intent = new Intent(PreviewImagePostActivity.this, CreateSingleActivity.class);
-                intent.putExtra(PreviewImagePostActivity.PHOTO_URI, photoUri.toString());
-                intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
-                intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
-                startActivity(intent);
-                finish();
-            }else {
-                Intent intent = new Intent(PreviewImagePostActivity.this, CreateSingleActivity.class);
-                intent.putExtra(PreviewImagePostActivity.GALLERY_PATH, galleryImage);
-                intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
-                intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
-                startActivity(intent);
-                finish();
             }
+
+
         }
     }
 }

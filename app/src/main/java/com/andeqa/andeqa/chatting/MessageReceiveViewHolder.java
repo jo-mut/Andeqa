@@ -10,7 +10,8 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Message;
-import com.andeqa.andeqa.utils.ProportionalImageView;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 /**
@@ -24,27 +25,23 @@ public class MessageReceiveViewHolder extends RecyclerView.ViewHolder {
     public TextView messageTextView;
     public TextView timeTextView;
     public ImageView statusImageView;
-    public LinearLayout receiveLinearLayout;
-    public RelativeLayout statusRelativeLayout;
+    public TextView dateTextView;
     public TextView photoTextView;
-    public ProportionalImageView photoImageView;
-    public LinearLayout messageLinearLayout;
+    public ImageView photoImageView;
     public LinearLayout photoLinearLayout;
-
+    public LinearLayout timeRelativeLayout;
 
     public MessageReceiveViewHolder(View itemView) {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
         messageTextView = (TextView) mView.findViewById(R.id.messageTextView);
-        timeTextView = (TextView) mView.findViewById(R.id.timeTextView);
-        statusImageView = (ImageView) mView.findViewById(R.id.statusImageView);
-        statusRelativeLayout = (RelativeLayout) mView.findViewById(R.id.statusLinearLayout);
-        receiveLinearLayout = (LinearLayout) mView.findViewById(R.id.receiveRelativeLayout);
-        photoImageView = (ProportionalImageView) mView.findViewById(R.id.photoImageView);
-        messageLinearLayout = (LinearLayout) mView.findViewById(R.id.messageLinearLayout);
+        timeTextView = (TextView) mView.findViewById(R.id.statusTextView);
+        photoImageView = (ImageView) mView.findViewById(R.id.photoImageView);
         photoLinearLayout = (LinearLayout) mView.findViewById(R.id.photoLinearLayout);
         photoTextView = (TextView) mView.findViewById(R.id.messageTextView);
+        timeRelativeLayout = (LinearLayout) mView.findViewById(R.id.timeRelativeLayout);
+        dateTextView = (TextView) mView.findViewById(R.id.dateTextView);
 
     }
 

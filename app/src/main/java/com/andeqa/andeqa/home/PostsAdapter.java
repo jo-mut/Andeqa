@@ -14,13 +14,17 @@ import android.view.ViewGroup;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.collections.CollectionPostsActivity;
+import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.impressions.ImpressionTracker;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.player.Player;
+import com.andeqa.andeqa.post_detail.PostDetailActivity;
+import com.andeqa.andeqa.post_detail.VideoDetailActivity;
 import com.andeqa.andeqa.profile.ProfileActivity;
+import com.andeqa.andeqa.utils.BottomReachedListener;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
@@ -36,7 +40,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.WeakHashMap;
@@ -56,51 +59,30 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private static final String EXTRA_POST_ID = "post id";
     private static final String COLLECTION_ID = "collection id";
     private static final String VIDEO = "video";
-    private static final String TYPE = "type";
     private static final String EXTRA_USER_UID =  "uid";
-
-    private static final String SOURCE = PostsAdapter.class.getSimpleName();
-
-    private boolean processLikes = false;
-    private boolean processDislikes = false;
-    private boolean processWallet = false;
-    private boolean processAmount = false;
-    private boolean processCredit = false;
-    private static final double DEFAULT_PRICE = 1.5;
-    private static final double GOLDEN_RATIO = 1.618;
+    private static final String TYPE = "type";
     private static final String POST_HEIGHT = "height";
     private static final String POST_WIDTH = "width";
-    private static final int MAX_WIDTH = 200;
-    private static final int MAX_HEIGHT = 200;
-    private static final int VIDEO_POST = 1;
-    private static final int NORMAL_IMAGE_POST = 2;
-    private static final int IMAGE_POST = 3;
+    private static final int VIDEO_POST = 0;
+    private static final int IMAGE_POST = 1;
     private static final int LIMIT = 10;
     //firestore reference
     private CollectionReference collectionsPosts;
-    private com.google.firebase.firestore.Query commentsCountQuery;
     private CollectionReference usersReference;
     private CollectionReference commentsReference;
-    private CollectionReference followersReference;
-    private CollectionReference likesReference;
     private DatabaseReference impressionReference;
-    private CollectionReference timelineCollection;
     private CollectionReference collectionsPostReference;
-    //firebase
-    private DatabaseReference databaseReference;
     //firebase auth
     private FirebaseAuth firebaseAuth;
     public boolean showOnClick = true;
     private ConstraintSet constraintSet;
     private Player player;
-    private long startTime;
-    private long stopTime;
-    private long duration;
-    DecimalFormat formatter = new DecimalFormat("0.000");
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
     //impression tracking
     private ImpressionTracker impressionTracker;
     private final WeakHashMap<View, Integer> mViewPositionMap = new WeakHashMap<>();
+    //bottom reached listener
+    private BottomReachedListener mBottomReachedListener;
 
 
     public PostsAdapter(Activity activity) {
@@ -109,8 +91,13 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         initReferences();
     }
 
-    public void setRandomPosts(List<DocumentSnapshot> posts){
+    public void setDefaultsPosts(List<DocumentSnapshot> posts) {
         this.documentSnapshots = posts;
+        notifyDataSetChanged();
+    }
+
+    public void setmBottomReachedListener(BottomReachedListener mBottomReachedListener){
+        this.mBottomReachedListener = mBottomReachedListener;
     }
 
     public void clear(){
@@ -132,17 +119,12 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             collectionsPostReference = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
             //firebase
-            databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
             //document reference
             commentsReference  = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
-            commentsCountQuery= commentsReference;
-            likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
             //firebase database references
             impressionReference = FirebaseDatabase.getInstance().getReference(Constants.VIEWS);
-            followersReference = FirebaseFirestore.getInstance().collection(Constants.PEOPLE_RELATIONS);
             impressionReference.keepSynced(true);
         }
 
@@ -150,7 +132,6 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public int getItemCount() {
-        Log.d("posts explore adapter",  documentSnapshots.size() + "");
         return documentSnapshots.size();
     }
 
@@ -164,7 +145,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }else {
             return IMAGE_POST;
         }
-    }
+    };
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -176,7 +157,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 return new VideoPostViewHolder(view);
             case IMAGE_POST:
                 view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.layout_image_post, parent, false);
+                        .inflate(R.layout.layout_explore_posts, parent, false);
                 return new PhotoPostViewHolder(view);
         }
         return null;
@@ -187,15 +168,23 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        Post post = documentSnapshots.get(position).toObject(Post.class);
-        final String type = post.getType();
 
-        if (type.equals("single_video_post") || type.equals("collection_video_post")){
-//            populateVideo((VideoPostViewHolder)holder, position);
-        }else {
-            populateConstrainedImage((PhotoPostViewHolder)holder, position);
+        switch (holder.getItemViewType()){
+            case 0:
+//                populateVideo((VideoPostViewHolder)holder, position);
+                break;
+            case 1:
+                populateConstrainedImage((PhotoPostViewHolder)holder, position);
+                break;
         }
 
+        try {
+            if (position == documentSnapshots.size() - 1){
+                mBottomReachedListener.onBottomReached(position);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
     }
 
@@ -388,7 +377,7 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         //calculate view visibility and add visible views to impression tracker
         mViewPositionMap.put(holder.itemView, position);
-        impressionTracker.addView(holder.itemView, 100, postId);
+        impressionTracker.addView(holder.itemView, 100, postId, "post", post.getUser_id());
 
         if (post.getUrl() == null){
             //firebase firestore references
@@ -519,6 +508,15 @@ public class PostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, ProfileActivity.class);
                 intent.putExtra(PostsAdapter.EXTRA_USER_UID, uid);
+                mContext.startActivity(intent);
+            }
+        });
+
+        holder.commentsImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, CommentsActivity.class);
+                intent.putExtra(PostsAdapter.EXTRA_POST_ID, postId);
                 mContext.startActivity(intent);
             }
         });

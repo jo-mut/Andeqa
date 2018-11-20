@@ -12,7 +12,6 @@ import android.view.View;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Andeqan;
-import com.andeqa.andeqa.utils.EndlesssStaggeredRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,7 +44,7 @@ public class ProfileCollectionsActivity extends AppCompatActivity{
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore adapters
-    private ProfileCollectionsAdapter profileCollectionsAdapter;
+    private ProfileCollectionsAdapter collectionsAdapter;
     private int TOTAL_ITEMS = 10;
     private StaggeredGridLayoutManager layoutManager;
     private static final String EXTRA_USER_UID = "uid";
@@ -76,12 +75,6 @@ public class ProfileCollectionsActivity extends AppCompatActivity{
         mUid = getIntent().getStringExtra(EXTRA_USER_UID);
         collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
         collectionsQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING);
-        mCollectionsRecyclerView.addOnScrollListener(new EndlesssStaggeredRecyclerOnScrollListener() {
-            @Override
-            public void onLoadMore() {
-                setNextCollections();
-            }
-        });
 
         usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
         usersReference.document(mUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -136,8 +129,8 @@ public class ProfileCollectionsActivity extends AppCompatActivity{
 
     private void setRecyclerView(){
         // RecyclerView
-        profileCollectionsAdapter = new ProfileCollectionsAdapter(this);
-        mCollectionsRecyclerView.setAdapter(profileCollectionsAdapter);
+        collectionsAdapter = new ProfileCollectionsAdapter(this);
+        mCollectionsRecyclerView.setAdapter(collectionsAdapter);
         mCollectionsRecyclerView.setHasFixedSize(false);
         layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
         itemOffsetDecoration = new ItemOffsetDecoration(this, R.dimen.item_off_set);
@@ -179,10 +172,10 @@ public class ProfileCollectionsActivity extends AppCompatActivity{
 
     private void setNextCollections(){
         // Get the last visible document
-        final int snapshotSize = profileCollectionsAdapter.getItemCount();
+        final int snapshotSize = collectionsAdapter.getItemCount();
 
         if (snapshotSize!= 0){
-            DocumentSnapshot lastVisible = profileCollectionsAdapter.getSnapshot(snapshotSize - 1);
+            DocumentSnapshot lastVisible = collectionsAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of posts
             Query nextSinglesQuery = collectionsCollection.orderBy("time", Query.Direction.DESCENDING)
@@ -217,9 +210,9 @@ public class ProfileCollectionsActivity extends AppCompatActivity{
     protected void onDocumentAdded(DocumentChange change) {
         mSnapshotsIds.add(change.getDocument().getId());
         mSnapshots.add(change.getDocument());
-        profileCollectionsAdapter.setProfileCollections(mSnapshots);
-        profileCollectionsAdapter.notifyItemInserted(mSnapshots.size() -1);
-        profileCollectionsAdapter.getItemCount();
+        collectionsAdapter.setCollections(mSnapshots);
+        collectionsAdapter.notifyItemInserted(mSnapshots.size() -1);
+        collectionsAdapter.getItemCount();
 
     }
 
@@ -227,20 +220,20 @@ public class ProfileCollectionsActivity extends AppCompatActivity{
         if (change.getOldIndex() == change.getNewIndex()) {
             // Item changed but remained in same position
             mSnapshots.set(change.getOldIndex(), change.getDocument());
-            profileCollectionsAdapter.notifyItemChanged(change.getOldIndex());
+            collectionsAdapter.notifyItemChanged(change.getOldIndex());
         } else {
             // Item changed and changed position
             mSnapshots.remove(change.getOldIndex());
             mSnapshots.add(change.getNewIndex(), change.getDocument());
-            profileCollectionsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+            collectionsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
         }
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
         try{
             mSnapshots.remove(change.getOldIndex());
-            profileCollectionsAdapter.notifyItemRemoved(change.getOldIndex());
-            profileCollectionsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+            collectionsAdapter.notifyItemRemoved(change.getOldIndex());
+            collectionsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
         }catch (Exception e){
             e.printStackTrace();
         }

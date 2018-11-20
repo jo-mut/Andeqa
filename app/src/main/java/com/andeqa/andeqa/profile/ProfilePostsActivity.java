@@ -13,7 +13,6 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Post;
-import com.andeqa.andeqa.utils.EndlesssStaggeredRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -47,7 +46,7 @@ public class ProfilePostsActivity extends AppCompatActivity {
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore adapters
-    private ProfilePostsAdapter profilePostsAdapter;
+    private ProfilePostsAdapters profilePostsAdapters;
     private static final String KEY_LAYOUT_POSITION = "layout pooition";
     private Parcelable recyclerViewState;
     private  static final int MAX_WIDTH = 400;
@@ -91,12 +90,6 @@ public class ProfilePostsActivity extends AppCompatActivity {
                 .whereEqualTo("user_id", mUid).limit(TOTAL_ITEMS);
         collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS);
         usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-        mPostssRecyclerView.addOnScrollListener(new EndlesssStaggeredRecyclerOnScrollListener() {
-            @Override
-            public void onLoadMore() {
-                setNextPosts();
-            }
-        });
 
         setToolbarTitle();
 
@@ -155,8 +148,9 @@ public class ProfilePostsActivity extends AppCompatActivity {
 
     private void setRecyclerView(){
         // RecyclerView
-        profilePostsAdapter = new ProfilePostsAdapter(this);
-        mPostssRecyclerView.setAdapter(profilePostsAdapter);
+        profilePostsAdapters = new ProfilePostsAdapters(this);
+        mPostssRecyclerView.setAdapter(profilePostsAdapters);
+        profilePostsAdapters.setCollectionPosts(documentSnapshots);
         mPostssRecyclerView.setHasFixedSize(false);
         layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
         itemOffsetDecoration = new ItemOffsetDecoration(this, R.dimen.item_off_set);
@@ -201,10 +195,10 @@ public class ProfilePostsActivity extends AppCompatActivity {
 
     private void setNextPosts(){
         // Get the last visible document
-        final int snapshotSize = profilePostsAdapter.getItemCount();
+        final int snapshotSize = profilePostsAdapters.getItemCount();
 
         if (snapshotSize != 0){
-            DocumentSnapshot lastVisible = profilePostsAdapter.getSnapshot(snapshotSize - 1);
+            DocumentSnapshot lastVisible = profilePostsAdapters.getSnapshot(snapshotSize - 1);
             //retrieve the first bacth of posts
             Query nextSinglesQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
                     .whereEqualTo("user_id", mUid).startAfter(lastVisible)
@@ -241,9 +235,8 @@ public class ProfilePostsActivity extends AppCompatActivity {
     protected void onDocumentAdded(DocumentChange change) {
         mSnapshotsIds.add(change.getDocument().getId());
         documentSnapshots.add(change.getDocument());
-        profilePostsAdapter.setCollectionPosts(documentSnapshots);
-        profilePostsAdapter.notifyItemInserted(documentSnapshots.size() -1);
-        profilePostsAdapter.getItemCount();
+        profilePostsAdapters.notifyItemInserted(documentSnapshots.size() -1);
+        profilePostsAdapters.getItemCount();
 
     }
 
@@ -251,20 +244,20 @@ public class ProfilePostsActivity extends AppCompatActivity {
         if (change.getOldIndex() == change.getNewIndex()) {
             // Item changed but remained in same position
             documentSnapshots.set(change.getOldIndex(), change.getDocument());
-            profilePostsAdapter.notifyItemChanged(change.getOldIndex());
+            profilePostsAdapters.notifyItemChanged(change.getOldIndex());
         } else {
             // Item changed and changed position
             documentSnapshots.remove(change.getOldIndex());
             documentSnapshots.add(change.getNewIndex(), change.getDocument());
-            profilePostsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+            profilePostsAdapters.notifyItemRangeChanged(0, documentSnapshots.size());
         }
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
         try{
             documentSnapshots.remove(change.getOldIndex());
-            profilePostsAdapter.notifyItemRemoved(change.getOldIndex());
-            profilePostsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+            profilePostsAdapters.notifyItemRemoved(change.getOldIndex());
+            profilePostsAdapters.notifyItemRangeChanged(0, documentSnapshots.size());
         }catch (Exception e){
             e.printStackTrace();
         }

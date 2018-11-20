@@ -8,6 +8,7 @@ public final class Constants {
     public static final String COLLECTIONS = "collections";
     public static final String COLLECTIONS_OF_POSTS = "posts_collections";
     public static final String POSTS = "posts";
+    public static final String POSTS_OF_POSTS = "posts_of_posts";
     public static final String SHARES = "shares";
     public static final String FIREBASE_USERS = "users";
     public static final String COMMENTS = "comments";
@@ -25,6 +26,9 @@ public final class Constants {
     public static final String VIEWS = "views";
     public static final String RANDOM_PUSH_ID = "random_ids";
     public static final String QUERY_OPTIONS = "search_options";
-
+    public static final String IMAGES = "images";
+    public static final String VIDEOS = "videos";
+    public static final String STRORIES = "stories";
+    public static final String HASHTAGS = "hashtags";
 
 }

@@ -134,9 +134,6 @@ public class SignUpActivity extends AppCompatActivity implements
 
                             }
                         }else {
-                            //editText for email and password
-                            final String email = mEmailEditText.getText().toString().trim();
-                            final String password = mPasswordEditText.getText().toString().trim();
                             Intent intent = new Intent(SignUpActivity.this, CreateProfileActivity.class);
                             intent.putExtra(SignUpActivity.EMAIL, email);
                             intent.putExtra(SignUpActivity.PASSWORD, password);

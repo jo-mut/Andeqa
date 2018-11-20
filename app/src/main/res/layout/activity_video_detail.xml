@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context="com.andeqa.andeqa.home.PostDetailActivity">
+    tools:context="com.andeqa.andeqa.post_detail.PostDetailActivity">
 
     <ScrollView
         android:fillViewport="true"
@@ -70,7 +70,7 @@
                             android:orientation="vertical"
                             android:padding="5dp"
                             android:layout_centerVertical="true"
-                            android:id="@+id/nameRelativeLayout"
+                            android:id="@+id/nameLinearLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
 

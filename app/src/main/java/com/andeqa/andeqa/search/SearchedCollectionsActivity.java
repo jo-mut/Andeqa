@@ -20,11 +20,10 @@ import android.view.ViewGroup;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.collections.CollectionPostsActivity;
-import com.andeqa.andeqa.collections.CollectionViewHolder;
-import com.andeqa.andeqa.collections.FeaturedCollectionsAdapter;
+import com.andeqa.andeqa.collections.ExploreCollectionViewHolder;
+import com.andeqa.andeqa.collections.ExploreCollectionsAdapter;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.QueryOptions;
-import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -271,8 +270,8 @@ public class SearchedCollectionsActivity extends AppCompatActivity {
     }
 
 
-    public static class SearchCollectionsAdapter extends RecyclerView.Adapter<CollectionViewHolder>{
-        private static final String TAG = FeaturedCollectionsAdapter.class.getSimpleName();
+    public static class SearchCollectionsAdapter extends RecyclerView.Adapter<ExploreCollectionViewHolder>{
+        private static final String TAG = ExploreCollectionsAdapter.class.getSimpleName();
 
         private Context mContext;
         //firestore
@@ -315,13 +314,13 @@ public class SearchedCollectionsActivity extends AppCompatActivity {
 
         @NonNull
         @Override
-        public CollectionViewHolder onCreateViewHolder(final @NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_collections, parent, false);
-            return new CollectionViewHolder(view );
+        public ExploreCollectionViewHolder onCreateViewHolder(final @NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_explore_collections, parent, false);
+            return new ExploreCollectionViewHolder(view );
         }
 
         @Override
-        public void onBindViewHolder(final @NonNull CollectionViewHolder holder, int position) {
+        public void onBindViewHolder(final @NonNull ExploreCollectionViewHolder holder, int position) {
             final QueryOptions queryOptions = getSnapshot(position).toObject(QueryOptions.class);
             final String collectionId = queryOptions.getOption_id();
             final String userId = queryOptions.getUser_id();
@@ -407,32 +406,6 @@ public class SearchedCollectionsActivity extends AppCompatActivity {
 //                        }
 //                    });
 
-                    /**show if the user is following collection or not**/
-                    followingCollection.document("following")
-                            .collection(collectionId)
-                            .whereEqualTo("following_id", firebaseAuth.getCurrentUser().getUid())
-                            .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                @Override
-                                public void onEvent(@Nullable QuerySnapshot documentSnapshots,
-                                                    @Nullable FirebaseFirestoreException e) {
-
-                                    if (e != null) {
-                                        Log.w(TAG, "Listen error", e);
-                                        return;
-                                    }
-
-                                    if (!documentSnapshots.isEmpty()){
-                                        holder.followButton.setText("FOLLOWING");
-                                    }else {
-                                        if (userId.equals(firebaseAuth.getCurrentUser().getUid())){
-                                            holder.followButton.setVisibility(View.GONE);
-                                        }else {
-                                            holder.followButton.setText("FOLLOW");
-                                        }
-                                    }
-
-                                }
-                            });
 
 //                    /**show the number of peopl following collection**/
 //                    followingCollection.document("following")
@@ -462,47 +435,47 @@ public class SearchedCollectionsActivity extends AppCompatActivity {
 
                     /**follow or un follow collection*/
                     if (!userId.equals(firebaseAuth.getCurrentUser().getUid())){
-                        holder.followButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                processFollow = true;
-                                followingCollection.document("following")
-                                        .collection(collectionId)
-                                        .whereEqualTo("following_id", firebaseAuth.getCurrentUser().getUid())
-                                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                            @Override
-                                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                                if (e != null) {
-                                                    Log.w(TAG, "Listen error", e);
-                                                    return;
-                                                }
-
-                                                if (processFollow){
-                                                    if (documentSnapshots.isEmpty()){
-                                                        final Relation following = new Relation();
-                                                        following.setFollowing_id(firebaseAuth.getCurrentUser().getUid());
-                                                        following.setFollowed_id(collectionId);
-                                                        following.setType("followed_collection");
-                                                        following.setTime(System.currentTimeMillis());
-                                                        followingCollection.document("following")
-                                                                .collection(collectionId)
-                                                                .document(firebaseAuth.getCurrentUser().getUid()).set(following);
-                                                        holder.followButton.setText("FOLLOWING");
-                                                        processFollow = false;
-                                                    }else {
-                                                        followingCollection.document("following")
-                                                                .collection(collectionId)
-                                                                .document(firebaseAuth.getCurrentUser().getUid()).delete();
-
-                                                        holder.followButton.setText("FOLLOW");
-                                                        processFollow = false;
-                                                    }
-                                                }
-                                            }
-                                        });
-                            }
-                        });
+//                        holder.followButton.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                processFollow = true;
+//                                followingCollection.document("following")
+//                                        .collection(collectionId)
+//                                        .whereEqualTo("following_id", firebaseAuth.getCurrentUser().getUid())
+//                                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                                            @Override
+//                                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+//
+//                                                if (e != null) {
+//                                                    Log.w(TAG, "Listen error", e);
+//                                                    return;
+//                                                }
+//
+//                                                if (processFollow){
+//                                                    if (documentSnapshots.isEmpty()){
+//                                                        final Relation following = new Relation();
+//                                                        following.setFollowing_id(firebaseAuth.getCurrentUser().getUid());
+//                                                        following.setFollowed_id(collectionId);
+//                                                        following.setType("followed_collection");
+//                                                        following.setTime(System.currentTimeMillis());
+//                                                        followingCollection.document("following")
+//                                                                .collection(collectionId)
+//                                                                .document(firebaseAuth.getCurrentUser().getUid()).set(following);
+//                                                        holder.followButton.setText("FOLLOWING");
+//                                                        processFollow = false;
+//                                                    }else {
+//                                                        followingCollection.document("following")
+//                                                                .collection(collectionId)
+//                                                                .document(firebaseAuth.getCurrentUser().getUid()).delete();
+//
+//                                                        holder.followButton.setText("FOLLOW");
+//                                                        processFollow = false;
+//                                                    }
+//                                                }
+//                                            }
+//                                        });
+//                            }
+//                        });
                     }
 
                 }

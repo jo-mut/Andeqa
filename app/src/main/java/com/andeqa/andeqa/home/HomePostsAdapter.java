@@ -21,6 +21,8 @@ import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.player.Player;
+import com.andeqa.andeqa.post_detail.PostDetailActivity;
+import com.andeqa.andeqa.post_detail.VideoDetailActivity;
 import com.andeqa.andeqa.profile.ProfileActivity;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -208,7 +210,7 @@ public class HomePostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 return new VideoPostViewHolder(view);
             case IMAGE_POST:
                 view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.layout_image_post, parent, false);
+                        .inflate(R.layout.layout_explore_posts, parent, false);
                 return new PhotoPostViewHolder(view);
         }
         return null;
@@ -419,7 +421,7 @@ public class HomePostsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         //calculate view visibility and add visible views to impression tracker
         mViewPositionMap.put(holder.itemView, position);
-        impressionTracker.addView(holder.itemView, 100, postId);
+        impressionTracker.addView(holder.itemView, 100, postId, "post", post.getUser_id());
 
         if (post.getUrl() == null){
             //firebase firestore references

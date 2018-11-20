@@ -66,7 +66,7 @@
              android:layout_height="wrap_content">
 
             <Button
-                android:text="Following"
+                android:text=""
                 android:textSize="12sp"
                 android:textColor="@android:color/white"
                 android:textAllCaps="false"
@@ -93,7 +93,7 @@
                 android:id="@+id/sendMessageImageView"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                app:srcCompat="@drawable/ic_comment"
+                app:srcCompat="@drawable/ic_start_chat"
                 android:tint="@color/colorAccent" />
 
          </RelativeLayout>

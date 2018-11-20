@@ -60,7 +60,7 @@
                 android:layout_height="45dp"
                 android:id="@+id/nextImageView"
                 android:layout_gravity="right"
-                android:padding="10dp"
+                android:padding="15dp"
                 android:layout_margin="5dp"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"

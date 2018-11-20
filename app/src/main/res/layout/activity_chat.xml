@@ -1,0 +1,147 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/blue_grey_50"
+    android:orientation="vertical"
+    tools:context="com.andeqa.andeqa.chatting.ChatActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_gravity="top"
+            app:titleTextAppearance="@style/toolbarTextAppearance"
+            android:layout_height="56dp"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStart="0dp"
+            android:background="@drawable/default_gradient_color"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            tools:ignore="HardcodedText,UnusedAttribute"
+            app:titleTextColor="@android:color/white">
+
+            <ImageView
+                android:layout_marginLeft="15dp"
+                android:layout_marginStart="15dp"
+                android:layout_gravity="start"
+                android:id="@+id/backImageView"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:background="@drawable/ic_arrow"
+                android:scaleType="centerCrop"/>
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_marginLeft="15dp"
+                android:layout_marginStart="15dp"
+                android:layout_gravity="start"
+                android:id="@+id/profileImageView"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:scaleType="centerCrop"/>
+
+            <TextView
+                android:layout_marginLeft="15dp"
+                android:layout_marginStart="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/usernameTextView"
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                android:textStyle="normal|bold"
+                android:text="" />
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <RelativeLayout
+            android:layout_above="@id/messageLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:overScrollMode="never"
+                android:id="@+id/massagesRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_alignParentBottom="true"
+            android:id="@+id/messageLinearLayout"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:background="@drawable/white_circle_background"
+                android:layout_centerVertical="true"
+                android:layout_margin="5dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                app:srcCompat="@drawable/ic_plus_white"
+                android:id="@+id/attachFilesImageView"
+                android:padding="10dp"/>
+
+            <android.support.v7.widget.CardView
+                android:layout_toEndOf="@+id/attachFilesImageView"
+                android:layout_toRightOf="@+id/attachFilesImageView"
+                android:layout_toLeftOf="@+id/sendMessageImageView"
+                android:layout_toStartOf="@+id/sendMessageImageView"
+                app:cardElevation="0dp"
+                app:cardCornerRadius="15dp"
+                android:layout_margin="5dp"
+                android:layout_centerVertical="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:maxHeight="100dp"
+                    android:background="@drawable/transparent_background"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:id="@+id/sendMessageEditText"
+                    android:hint="Write a message"
+                    android:padding="12dp"
+                    android:textSize="14sp"
+                    android:layout_centerVertical="true" />
+
+
+            </android.support.v7.widget.CardView>
+
+            <ImageView
+                android:layout_margin="5dp"
+                android:background="@drawable/accent_color"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                app:srcCompat="@drawable/ic_send"
+                android:id="@+id/sendMessageImageView"
+                android:tint="@android:color/white"
+                android:padding="15dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+</LinearLayout>

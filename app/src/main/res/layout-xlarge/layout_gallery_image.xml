@@ -6,16 +6,26 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <RelativeLayout
-        android:layout_margin="0.1dp"
+    <android.support.v7.widget.CardView
+        app:cardElevation="0dp"
+        app:cardCornerRadius="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="240dp"
-            app:srcCompat="@drawable/transparent_background"
-            android:id="@+id/galleryImageView"
-            android:scaleType="centerCrop" />
-    </RelativeLayout>
+        <RelativeLayout
+            android:layout_margin="0.1dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                app:srcCompat="@drawable/transparent_background"
+                android:id="@+id/galleryImageView"
+                android:scaleType="centerCrop" />
+        </RelativeLayout>
+
+
+    </android.support.v7.widget.CardView>
+
 </LinearLayout>

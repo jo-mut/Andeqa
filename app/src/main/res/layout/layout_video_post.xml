@@ -36,7 +36,7 @@
                     android:layout_toEndOf="@+id/profileImageView"
                     android:orientation="vertical"
                     android:padding="5dp"
-                    android:id="@+id/nameRelativeLayout"
+                    android:id="@+id/nameLinearLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 

@@ -12,11 +12,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.andeqa.andeqa.utils.BottomReachedListener;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.home.PostDetailActivity;
+import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.home.PhotoPostViewHolder;
-import com.andeqa.andeqa.home.VideoDetailActivity;
+import com.andeqa.andeqa.post_detail.PostDetailActivity;
+import com.andeqa.andeqa.post_detail.VideoDetailActivity;
 import com.andeqa.andeqa.home.VideoPostViewHolder;
 import com.andeqa.andeqa.impressions.ImpressionTracker;
 import com.andeqa.andeqa.models.Andeqan;
@@ -90,6 +92,7 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private long duration;
     private ImpressionTracker impressionTracker;
     private final WeakHashMap<View, Integer> mViewPositionMap = new WeakHashMap<>();
+    BottomReachedListener mBottomReachedListener;
 
 
     public CollectionPostsAdapter(Activity activity) {
@@ -102,6 +105,10 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     public void setCollectionsPosts(List<DocumentSnapshot> snapshots){
         this.documentSnapshots = snapshots;
         notifyDataSetChanged();
+    }
+
+    public void setBottomReachedListener(BottomReachedListener bottomReachedListener){
+        this.mBottomReachedListener = bottomReachedListener;
     }
 
     public DocumentSnapshot getSnapshot(int index) {
@@ -159,7 +166,7 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 return new VideoPostViewHolder(view);
             case IMAGE_POST:
                 view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.layout_image_post, parent, false);
+                        .inflate(R.layout.layout_explore_posts, parent, false);
                 return new PhotoPostViewHolder(view);
         }
         return null;
@@ -167,6 +174,7 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+
         final Post post = getSnapshot(position).toObject(Post.class);
         final String type = post.getType();
 
@@ -174,6 +182,14 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 //            populateVideo((VideoPostViewHolder) holder, position);
         }else {
             populateImage((PhotoPostViewHolder)holder, position);
+        }
+
+        try {
+            if (position == documentSnapshots.size() - 1){
+                mBottomReachedListener.onBottomReached(position);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
     }
@@ -383,7 +399,7 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
         //calculate view visibility and add visible views to impression tracker
         mViewPositionMap.put(holder.itemView, position);
-        impressionTracker.addView(holder.itemView, 100, postId);
+        impressionTracker.addView(holder.itemView, 100, postId, "post", post.getUser_id());
 
         //firebase firestore references;
         if (post.getUrl() == null){
@@ -511,7 +527,6 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             holder.descriptionRelativeLayout.setVisibility(View.GONE);
         }
 
-
         if (post.getWidth() != null && post.getHeight() != null){
             holder.postImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -550,6 +565,18 @@ public class CollectionPostsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 mContext.startActivity(intent);
             }
         });
+
+
+
+        holder.commentsImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, CommentsActivity.class);
+                intent.putExtra(CollectionPostsAdapter.EXTRA_POST_ID, postId);
+                mContext.startActivity(intent);
+            }
+        });
+
 
 //        //calculate the generated points from the compiled time
 //        impressionReference.child("compiled_views").child(postId)

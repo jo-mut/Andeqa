@@ -4,6 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.andeqa.andeqa.gallery.PicturesFragment;
+
 public class GalleryPagerAdapter extends FragmentPagerAdapter {
     private static final String TAG = GalleryPagerAdapter.class.getSimpleName();
 
@@ -15,11 +17,11 @@ public class GalleryPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position){
             case 0:
+                CameraFragment cameraFragment = new CameraFragment();
+                return cameraFragment;
+            case 1:
                 PicturesFragment picturesFragment = new PicturesFragment();
                 return picturesFragment;
-            case 1:
-                AlbumFragment albumFragment = new AlbumFragment();
-                return albumFragment;
         }
         return null;
     }
@@ -34,9 +36,9 @@ public class GalleryPagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return "Pictures";
+                return "Camera";
             case 1:
-                return "Albums";
+                return "Photos";
         }
         return null;
     }

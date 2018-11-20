@@ -21,7 +21,7 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.chatting.MessagingActivity;
+import com.andeqa.andeqa.chatting.ChatActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Room;
 import com.bumptech.glide.Glide;
@@ -343,7 +343,7 @@ public class SearchPeopleActivity extends AppCompatActivity {
                                                     if (documentSnapshot.exists()){
                                                         Room room = documentSnapshot.toObject(Room.class);
                                                         roomId = room.getRoom_id();
-                                                        Intent intent = new Intent(mContext, MessagingActivity.class);
+                                                        Intent intent = new Intent(mContext, ChatActivity.class);
                                                         intent.putExtra(SearchPeopleAdapter.EXTRA_ROOM_UID, roomId);
                                                         intent.putExtra(SearchPeopleAdapter.EXTRA_USER_UID, userId);
                                                         mContext.startActivity(intent);
@@ -363,7 +363,7 @@ public class SearchPeopleActivity extends AppCompatActivity {
                                                                     if (documentSnapshot.exists()){
                                                                         Room room = documentSnapshot.toObject(Room.class);
                                                                         roomId = room.getRoom_id();
-                                                                        Intent intent = new Intent(mContext, MessagingActivity.class);
+                                                                        Intent intent = new Intent(mContext, ChatActivity.class);
                                                                         intent.putExtra(SearchPeopleAdapter.EXTRA_ROOM_UID, roomId);
                                                                         intent.putExtra(SearchPeopleAdapter.EXTRA_USER_UID, userId);
                                                                         mContext.startActivity(intent);
@@ -373,7 +373,7 @@ public class SearchPeopleActivity extends AppCompatActivity {
                                                                     }else {
                                                                         //start a chat with mUid since they have no chatting history
                                                                         roomId = databaseReference.push().getKey();
-                                                                        Intent intent = new Intent(mContext, MessagingActivity.class);
+                                                                        Intent intent = new Intent(mContext, ChatActivity.class);
                                                                         intent.putExtra(SearchPeopleAdapter.EXTRA_ROOM_UID, roomId);
                                                                         intent.putExtra(SearchPeopleAdapter.EXTRA_USER_UID, userId);
                                                                         mContext.startActivity(intent);

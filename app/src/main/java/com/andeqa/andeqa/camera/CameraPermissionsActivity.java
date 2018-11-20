@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.utils.RunTimePermissions;
 
 public class CameraPermissionsActivity extends AppCompatActivity {
     private RunTimePermissions runTimePermissions;

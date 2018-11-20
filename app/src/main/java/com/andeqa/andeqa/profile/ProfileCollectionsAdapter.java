@@ -11,9 +11,7 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.collections.CollectionViewHolder;
-import com.andeqa.andeqa.collections.MineCollectionsAdapter;
-import com.andeqa.andeqa.collections.MinePostsActivity;
+import com.andeqa.andeqa.collections.ExploreCollectionViewHolder;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.Relation;
 import com.bumptech.glide.Glide;
@@ -33,8 +31,14 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionViewHolder> {
-    private static final String TAG = MineCollectionsAdapter.class.getSimpleName();
+import static android.media.CamcorderProfile.get;
+
+/**
+ * Created by J.EL on 2/28/2018.
+ */
+
+public class ProfileCollectionsAdapter extends RecyclerView.Adapter<ExploreCollectionViewHolder> {
+    private static final String TAG = ProfileCollectionsAdapter.class.getSimpleName();
     private Context mContext;
     //firestore
     private CollectionReference collectionsCollection;
@@ -46,7 +50,7 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
     private FirebaseAuth firebaseAuth;
     private static final String COLLECTION_ID = "collection id";
     private static final String EXTRA_USER_UID = "uid";
-    private static final int MAX_WIDTH = 200;
+    private  static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
     private boolean processFollow = false;
     private List<DocumentSnapshot> profileCollections = new ArrayList<>();
@@ -60,24 +64,23 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
         return profileCollections.size();
     }
 
-    protected void setProfileCollections(List<DocumentSnapshot> mSnapshots) {
+    public void setCollections(List<DocumentSnapshot> mSnapshots){
         this.profileCollections = mSnapshots;
-        notifyDataSetChanged();
     }
 
-    protected DocumentSnapshot getSnapshot(int index) {
+    public DocumentSnapshot getSnapshot(int index) {
         return profileCollections.get(index);
     }
 
 
     @Override
-    public void onBindViewHolder(final CollectionViewHolder holder, int position) {
+    public void onBindViewHolder(final ExploreCollectionViewHolder holder, int position) {
         final Collection collection = getSnapshot(position).toObject(Collection.class);
         final String collectionId = collection.getCollection_id();
         final String userId = collection.getUser_id();
 
         firebaseAuth = FirebaseAuth.getInstance();
-        if (firebaseAuth.getCurrentUser() != null) {
+        if (firebaseAuth.getCurrentUser() != null){
             collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS);
             postCountQuery = collectionsCollection.document("collections").collection(collectionId)
                     .orderBy("collection_id");
@@ -87,30 +90,6 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
 
         }
 
-        if (!TextUtils.isEmpty(collection.getName())) {
-            holder.mCollectionNameTextView.setText(collection.getName());
-        } else {
-            holder.mCollectionNameTextView.setVisibility(View.GONE);
-        }
-
-        if (!TextUtils.isEmpty(collection.getNote())) {
-            holder.mCollectionsNoteTextView.setVisibility(View.VISIBLE);
-            //prevent collection note from overlapping other layouts
-            final String[] strings = collection.getNote().split("");
-
-            final int size = strings.length;
-
-            if (size <= 45) {
-                //setence will not have read more
-                holder.mCollectionsNoteTextView.setText(collection.getNote());
-            } else {
-                holder.mCollectionsNoteTextView.setText(collection.getNote().substring(0, 44) + "...");
-            }
-        } else {
-            holder.mCollectionsNoteTextView.setVisibility(View.GONE);
-        }
-
-
         Glide.with(mContext.getApplicationContext())
                 .asBitmap()
                 .load(collection.getImage())
@@ -119,16 +98,39 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
                         .diskCacheStrategy(DiskCacheStrategy.DATA))
                 .into(holder.mCollectionCoverImageView);
 
+        if (!TextUtils.isEmpty(collection.getName())){
+            holder.mCollectionNameTextView.setText(collection.getName());
+        }else {
+            holder.mCollectionNameTextView.setText("");
+        }
+
+        if (!TextUtils.isEmpty(collection.getNote())){
+            holder.mCollectionsNoteTextView.setVisibility(View.VISIBLE);
+            //prevent collection note from overlapping other layouts
+            final String [] strings = collection.getNote().split("");
+
+            final int size = strings.length;
+
+            if (size <= 45){
+                //setence will not have read more
+                holder.mCollectionsNoteTextView.setText(collection.getNote());
+            }else {
+                holder.mCollectionsNoteTextView.setText(collection.getNote().substring(0, 44) + "...");
+            }
+        }else {
+            holder.mCollectionsNoteTextView.setText("");
+        }
+
+
         holder.mCollectionsLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, MinePostsActivity.class);
+                Intent intent = new Intent(mContext, ProfilePostsActivity.class);
                 intent.putExtra(ProfileCollectionsAdapter.COLLECTION_ID, collectionId);
                 intent.putExtra(ProfileCollectionsAdapter.EXTRA_USER_UID, userId);
                 mContext.startActivity(intent);
             }
         });
-
 
 //        postCountQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
 //            @Override
@@ -149,8 +151,7 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
 //            }
 //        });
 
-
-        /**show the number of peopl following collection**/
+//        /**show the number of peopl following collection**/
 //        followingCollection.document("following")
 //                .collection(collectionId)
 //                .addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -176,83 +177,59 @@ public class ProfileCollectionsAdapter extends RecyclerView.Adapter<CollectionVi
 //                });
 
 
-        /**show if the user is following collection or not**/
-        followingCollection.document("following")
-                .collection(collectionId)
-                .whereEqualTo("following_id", firebaseAuth.getCurrentUser().getUid())
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot documentSnapshots,
-                                        @Nullable FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!documentSnapshots.isEmpty()){
-                            holder.followButton.setText("FOLLOWING");
-                        }else {
-                            holder.followButton.setText("FOLLOW");
-                        }
-
-                    }
-                });
-
 
         /**follow or un follow collection*/
         if (!userId.equals(firebaseAuth.getCurrentUser().getUid())){
-            holder.followRelativeLayout.setVisibility(View.VISIBLE);
-            holder.followButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    processFollow = true;
-                    followingCollection.document("following")
-                            .collection(collectionId)
-                            .whereEqualTo("following_id", firebaseAuth.getCurrentUser().getUid())
-                            .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                @Override
-                                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                                    if (e != null) {
-                                        Log.w(TAG, "Listen error", e);
-                                        return;
-                                    }
-
-                                    if (processFollow){
-                                        if (documentSnapshots.isEmpty()){
-                                            final Relation following = new Relation();
-                                            following.setFollowing_id(firebaseAuth.getCurrentUser().getUid());
-                                            following.setFollowed_id(collectionId);
-                                            following.setType("followed_collection");
-                                            following.setTime(System.currentTimeMillis());
-                                            followingCollection.document("following")
-                                                    .collection(collectionId)
-                                                    .document(firebaseAuth.getCurrentUser().getUid()).set(following);
-                                            holder.followButton.setText("FOLLOWING");
-                                            processFollow = false;
-                                        }else {
-                                            followingCollection.document("following")
-                                                    .collection(collectionId)
-                                                    .document(firebaseAuth.getCurrentUser().getUid()).delete();
-
-                                            holder.followButton.setText("FOLLOW");
-                                            processFollow = false;
-                                        }
-                                    }
-                                }
-                            });
-                }
-            });
-        }else {
-            holder.followRelativeLayout.setVisibility(View.GONE);
+//            holder.followButton.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    processFollow = true;
+//                    followingCollection.document("following")
+//                            .collection(collectionId)
+//                            .whereEqualTo("following_id", firebaseAuth.getCurrentUser().getUid())
+//                            .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                                @Override
+//                                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+//
+//                                    if (e != null) {
+//                                        Log.w(TAG, "Listen error", e);
+//                                        return;
+//                                    }
+//
+//                                    if (processFollow){
+//                                        if (documentSnapshots.isEmpty()){
+//                                            final Relation following = new Relation();
+//                                            following.setFollowing_id(firebaseAuth.getCurrentUser().getUid());
+//                                            following.setFollowed_id(collectionId);
+//                                            following.setType("followed_collection");
+//                                            following.setTime(System.currentTimeMillis());
+//                                            followingCollection.document("following")
+//                                                    .collection(collectionId)
+//                                                    .document(firebaseAuth.getCurrentUser().getUid()).set(following);
+//                                            holder.followButton.setText("FOLLOWING");
+//                                            processFollow = false;
+//                                        }else {
+//                                            followingCollection.document("following")
+//                                                    .collection(collectionId)
+//                                                    .document(firebaseAuth.getCurrentUser().getUid()).delete();
+//
+//                                            holder.followButton.setText("FOLLOW");
+//                                            processFollow = false;
+//                                        }
+//                                    }
+//                                }
+//                            });
+//                }
+//            });
         }
+
 
     }
 
     @Override
-    public CollectionViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_collections, parent, false);
-        return new CollectionViewHolder(view);
+    public ExploreCollectionViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_explore_collections, parent, false);
+        return new ExploreCollectionViewHolder(view );
     }
+
 }

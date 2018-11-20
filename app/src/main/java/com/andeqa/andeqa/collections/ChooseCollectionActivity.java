@@ -11,7 +11,6 @@ import android.view.View;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.utils.EndlesssStaggeredRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,7 +39,7 @@ public class ChooseCollectionActivity extends AppCompatActivity {
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore adapters
-    private FeaturedCollectionsAdapter featuredCollectionsAdapter;
+    private ExploreCollectionsAdapter exploreCollectionsAdapter;
     private int TOTAL_ITEMS = 10;
     private StaggeredGridLayoutManager layoutManager;
     private static final String EXTRA_USER_UID = "uid";
@@ -68,13 +67,6 @@ public class ChooseCollectionActivity extends AppCompatActivity {
             collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
             collectionsQuery = collectionsCollection.orderBy("time", Query.Direction.ASCENDING)
                     .limit(TOTAL_ITEMS);
-            mCollectionsRecyclerView.addOnScrollListener(new EndlesssStaggeredRecyclerOnScrollListener() {
-                @Override
-                public void onLoadMore() {
-                    setNextCollections();
-                }
-            });
-
         }
 
     }
@@ -108,13 +100,13 @@ public class ChooseCollectionActivity extends AppCompatActivity {
 
     private void setRecyclerView(){
         // RecyclerView
-        featuredCollectionsAdapter = new FeaturedCollectionsAdapter(this);
-        mCollectionsRecyclerView.setAdapter(featuredCollectionsAdapter);
+        exploreCollectionsAdapter = new ExploreCollectionsAdapter(this);
+        mCollectionsRecyclerView.setAdapter(exploreCollectionsAdapter);
         mCollectionsRecyclerView.setHasFixedSize(false);
         layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
         itemOffsetDecoration = new ItemOffsetDecoration(this, R.dimen.item_off_set);
         mCollectionsRecyclerView.setLayoutManager(layoutManager);
-//        ViewCompat.setNestedScrollingEnabled(mCollectionsRecyclerView,false);
+//        ViewCompat.setNestedScrollingEnabled(mExploreCollectionsRecyclerView,false);
 
     }
 
@@ -152,11 +144,11 @@ public class ChooseCollectionActivity extends AppCompatActivity {
 
     private void setNextCollections(){
         // Get the last visible document
-        final int snapshotSize = featuredCollectionsAdapter.getItemCount();
+        final int snapshotSize = exploreCollectionsAdapter.getItemCount();
 
         if (snapshotSize == 0){
         }else {
-            DocumentSnapshot lastVisible = featuredCollectionsAdapter.getSnapshot(snapshotSize - 1);
+            DocumentSnapshot lastVisible = exploreCollectionsAdapter.getSnapshot(snapshotSize - 1);
 
             //retrieve the first bacth of posts
             Query nextSinglesQuery = collectionsCollection.orderBy("time", Query.Direction.ASCENDING)
@@ -191,9 +183,9 @@ public class ChooseCollectionActivity extends AppCompatActivity {
     protected void onDocumentAdded(DocumentChange change) {
         mSnapshotsIds.add(change.getDocument().getId());
         documentSnapshots.add(change.getDocument());
-        featuredCollectionsAdapter.setFeaturedCollections(documentSnapshots);
-        featuredCollectionsAdapter.notifyItemInserted(documentSnapshots.size() -1);
-        featuredCollectionsAdapter.getItemCount();
+        exploreCollectionsAdapter.setCollections(documentSnapshots);
+        exploreCollectionsAdapter.notifyItemInserted(documentSnapshots.size() -1);
+        exploreCollectionsAdapter.getItemCount();
 
     }
 
@@ -201,20 +193,20 @@ public class ChooseCollectionActivity extends AppCompatActivity {
         if (change.getOldIndex() == change.getNewIndex()) {
             // Item changed but remained in same position
             documentSnapshots.set(change.getOldIndex(), change.getDocument());
-            featuredCollectionsAdapter.notifyItemChanged(change.getOldIndex());
+            exploreCollectionsAdapter.notifyItemChanged(change.getOldIndex());
         } else {
             // Item changed and changed position
             documentSnapshots.remove(change.getOldIndex());
             documentSnapshots.add(change.getNewIndex(), change.getDocument());
-            featuredCollectionsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+            exploreCollectionsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
         }
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
         try{
             documentSnapshots.remove(change.getOldIndex());
-            featuredCollectionsAdapter.notifyItemRemoved(change.getOldIndex());
-            featuredCollectionsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
+            exploreCollectionsAdapter.notifyItemRemoved(change.getOldIndex());
+            exploreCollectionsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
         }catch (Exception e){
             e.printStackTrace();
         }

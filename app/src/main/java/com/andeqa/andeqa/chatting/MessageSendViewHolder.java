@@ -3,12 +3,15 @@ package com.andeqa.andeqa.chatting;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Message;
-import com.andeqa.andeqa.utils.ProportionalImageView;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 /**
@@ -21,27 +24,27 @@ public class MessageSendViewHolder extends RecyclerView.ViewHolder {
     Context mContext;
     public TextView messageTextView;
     public TextView timeTextView;
-    public TextView statusTextView;
-    public LinearLayout sendLinearLayout;
-    public LinearLayout statusLinearLayout;
+    public TextView dateTextView;
     public TextView photoTextView;
-    public ProportionalImageView photoImageView;
-    public LinearLayout messageLinearLayout;
+    public ImageView photoImageView;
     public LinearLayout photoLinearLayout;
+    public CircleImageView seenImageView;
+    public LinearLayout timeRelativeLayout;
+
 
     public MessageSendViewHolder(View itemView) {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
         messageTextView = (TextView) mView.findViewById(R.id.messageTextView);
-        timeTextView = (TextView) mView.findViewById(R.id.timeTextView);
-        statusTextView = (TextView) mView.findViewById(R.id.statusImageView);
-        sendLinearLayout = (LinearLayout) mView.findViewById(R.id.sendLinearLayout);
-        statusLinearLayout = (LinearLayout) mView.findViewById(R.id.statusLinearLayout);
-        photoImageView = (ProportionalImageView) mView.findViewById(R.id.photoImageView);
-        messageLinearLayout = (LinearLayout) mView.findViewById(R.id.messageLinearLayout);
+        timeTextView = (TextView) mView.findViewById(R.id.statusTextView);
+        photoImageView = (ImageView) mView.findViewById(R.id.photoImageView);
         photoLinearLayout = (LinearLayout) mView.findViewById(R.id.photoLinearLayout);
         photoTextView = (TextView) mView.findViewById(R.id.messageTextView);
+        seenImageView = (CircleImageView) mView.findViewById(R.id.seenImageView);
+        timeRelativeLayout = (LinearLayout) mView.findViewById(R.id.timeRelativeLayout);
+        dateTextView = (TextView) mView.findViewById(R.id.dateTextView);
+
 
     }
 

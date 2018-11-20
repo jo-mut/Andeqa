@@ -1,8 +1,10 @@
 package com.andeqa.andeqa.profile;
 
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
@@ -11,23 +13,26 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.collections.CollectionPostsActivity;
+import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
-import com.andeqa.andeqa.utils.EndlesssStaggeredRecyclerOnScrollListener;
+import com.andeqa.andeqa.post_detail.PostDetailActivity;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,33 +45,31 @@ import butterknife.ButterKnife;
  */
 public class PostsFragment extends Fragment{
     @Bind(R.id.postsRecyclerView)RecyclerView mPostssRecyclerView;
-    private static final String TAG = CollectionPostsActivity.class.getSimpleName();
+    private static final String TAG = PostsFragment.class.getSimpleName();
 
     //firestore reference
     private CollectionReference postsCollection;
     private Query postsQuery;
+    private CollectionReference collectionsPosts;
+    private CollectionReference commentsReference;
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore adapters
-    private ProfilePostAdapter profilePostAdapter;
-    private static final String KEY_LAYOUT_POSITION = "layout pooition";
-    private Parcelable recyclerViewState;
-    private  static final int MAX_WIDTH = 400;
-    private static final int MAX_HEIGHT = 400;
+//    private ProfilePostAdapter profilePostAdapter;
+    private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     private int TOTAL_ITEMS = 10;
     private StaggeredGridLayoutManager layoutManager;
     private static final String EXTRA_USER_UID = "uid";
-
-    private String collectionId;
     private String mUid;
-    private String mSource;
-    private static final String COLLECTION_ID = "collection id";
     private List<String> mSnapshotsIds = new ArrayList<>();
     private List<DocumentSnapshot> mSnapshots = new ArrayList<>();
-    int spanCount = 2; // 3 columns
-    int spacing = 10; // 50px
-    boolean includeEdge = false;
     private ItemOffsetDecoration itemOffsetDecoration;
+
+    private static final String COLLECTION_ID = "collection id";
+    private static final String EXTRA_POST_ID = "post id";
+    private static final String TYPE = "type";
+    private static final String POST_HEIGHT = "height";
+    private static final String POST_WIDTH = "width";
 
     public static PostsFragment newInstance(String title) {
         PostsFragment fragment = new PostsFragment();
@@ -98,13 +101,7 @@ public class PostsFragment extends Fragment{
             postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
             postsQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
                     .whereEqualTo("user_id", mUid).limit(TOTAL_ITEMS);
-
-            mPostssRecyclerView.addOnScrollListener(new EndlesssStaggeredRecyclerOnScrollListener() {
-                @Override
-                public void onLoadMore() {
-                    setNextPosts();
-                }
-            });
+            firebaseAuth = FirebaseAuth.getInstance();
 
         }
 
@@ -139,19 +136,20 @@ public class PostsFragment extends Fragment{
     @Override
     public void onDestroy() {
         super.onDestroy();
+        firestoreRecyclerAdapter.stopListening();
     }
 
 
     private void loadData(){
         mSnapshots.clear();
+        profilePosts();
         setRecyclerView();
-        setPosts();
     }
 
     private void setRecyclerView(){
         // RecyclerView
-        profilePostAdapter = new ProfilePostAdapter(getContext());
-        mPostssRecyclerView.setAdapter(profilePostAdapter);
+        mPostssRecyclerView.setAdapter(firestoreRecyclerAdapter);
+        firestoreRecyclerAdapter.startListening();
         mPostssRecyclerView.setHasFixedSize(false);
         layoutManager = new StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL);
         itemOffsetDecoration = new ItemOffsetDecoration(getContext(), R.dimen.item_off_set);
@@ -159,113 +157,121 @@ public class PostsFragment extends Fragment{
 
     }
 
-    private void setPosts(){
-        postsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+    private void profilePosts() {
+        FirestoreRecyclerOptions<Post> options = new FirestoreRecyclerOptions.Builder<Post>()
+                .setQuery(postsQuery, Post.class)
+                .build();
 
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
+        firestoreRecyclerAdapter = new FirestoreRecyclerAdapter<Post, ProfilePostViewHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull final ProfilePostViewHolder holder, int position, @NonNull Post mode) {
+                final Post post = getSnapshots().get(position);
+                final String postId = post.getPost_id();
+                final String uid = post.getUser_id();
+                final String collectionId = post.getCollection_id();
+                final String type = post.getType();
+
+
+                if (type.equals("single") || type.equals("single_image_post")){
+                    collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
+                            .document("singles").collection(collectionId);
+                }else {
+                    collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
+                            .document("collections").collection(collectionId);
                 }
 
-                if (!documentSnapshots.isEmpty()) {
-                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                        switch (change.getType()) {
-                            case ADDED:
-                                Post post = change.getDocument().toObject(Post.class);
-                                String type = post.getType();
-                                if (!type.equals("single_video_post") || !type.equals("collection_video_post")){
-                                    onDocumentAdded(change);
-                                }
-                                break;
-                            case MODIFIED:
-                                onDocumentModified(change);
-                                break;
-                            case REMOVED:
-                                onDocumentRemoved(change);
-                                break;
+                if (post.getUrl() == null){
+                    collectionsPosts.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                            if (e != null) {
+                                Log.w(TAG, "Listen error", e);
+                                return;
+                            }
+
+                            if (documentSnapshot.exists()){
+                                final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+
+                                Glide.with(PostsFragment.this)
+                                        .load(collectionPost.getImage())
+                                        .apply(new RequestOptions()
+                                                .placeholder(R.drawable.post_placeholder)
+                                                .diskCacheStrategy(DiskCacheStrategy.DATA))
+                                        .into(holder.postImageView);
+
+                            }
                         }
-                    }
+                    });
+
+                }else {
+                    Glide.with(PostsFragment.this)
+                            .load(post.getUrl())
+                            .apply(new RequestOptions()
+                                    .placeholder(R.drawable.post_placeholder)
+                                    .diskCacheStrategy(DiskCacheStrategy.DATA))
+                            .into(holder.postImageView);
+
+                }
+
+
+
+                if (post.getWidth() != null && post.getHeight() != null){
+                    holder.postImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent =  new Intent(getActivity(), PostDetailActivity.class);
+                            intent.putExtra(PostsFragment.EXTRA_POST_ID, postId);
+                            intent.putExtra(PostsFragment.COLLECTION_ID, collectionId);
+                            intent.putExtra(PostsFragment.EXTRA_USER_UID, uid);
+                            intent.putExtra(PostsFragment.TYPE, type);
+                            intent.putExtra(PostsFragment.POST_HEIGHT, post.getHeight());
+                            intent.putExtra(PostsFragment.POST_WIDTH, post.getWidth());
+                            startActivity(intent);
+                        }
+                    });
+                }else {
+                    holder.postImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent =  new Intent(getActivity(), PostDetailActivity.class);
+                            intent.putExtra(PostsFragment.EXTRA_POST_ID, postId);
+                            intent.putExtra(PostsFragment.COLLECTION_ID, collectionId);
+                            intent.putExtra(PostsFragment.EXTRA_USER_UID, uid);
+                            intent.putExtra(PostsFragment.TYPE, type);
+                            startActivity(intent);
+                        }
+                    });
+
                 }
 
             }
-        });
+
+            @NonNull
+            @Override
+            public ProfilePostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.layout_profile_posts, parent, false);
+                return new ProfilePostViewHolder(view);
+            }
+        };
 
     }
 
-    private void setNextPosts(){
-        // Get the last visible document
-        final int snapshotSize = profilePostAdapter.getItemCount();
+    public static class ProfilePostViewHolder extends RecyclerView.ViewHolder{
+        View mView;
+        Context mContext;
+        public ImageView postImageView;
 
-        if (snapshotSize != 0){
-            DocumentSnapshot lastVisible = profilePostAdapter.getSnapshot(snapshotSize - 1);
 
-            //retrieve the first bacth of posts
-            Query nextSinglesQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
-                    .whereEqualTo("user_id", mUid).startAfter(lastVisible)
-                    .limit(TOTAL_ITEMS);
-            nextSinglesQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                @Override
-                public void onSuccess(QuerySnapshot documentSnapshots) {
-                    if (!documentSnapshots.isEmpty()){
-                        //retrieve the first bacth of posts
-                        for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                            switch (change.getType()) {
-                                case ADDED:
-                                    Post post = change.getDocument().toObject(Post.class);
-                                    String type = post.getType();
-                                    if (!type.equals("single_video_post") || !type.equals("collection_video_post")){
-                                        onDocumentAdded(change);
-                                    }
-                                    break;
-                                case MODIFIED:
-                                    onDocumentModified(change);
-                                    break;
-                                case REMOVED:
-                                    onDocumentRemoved(change);
-                                    break;
-                            }
-                        }
-                    }
-                }
-            });
-        }
+        public ProfilePostViewHolder(View itemView) {
+            super(itemView);
+            mView = itemView;
+            mContext = itemView.getContext();
+            postImageView = (ImageView) mView.findViewById(R.id.postImageView);
 
-    }
-
-    protected void onDocumentAdded(DocumentChange change) {
-        mSnapshotsIds.add(change.getDocument().getId());
-        mSnapshots.add(change.getDocument());
-        profilePostAdapter.setCollectionPosts(mSnapshots);
-        profilePostAdapter.notifyItemInserted(mSnapshots.size() -1);
-        profilePostAdapter.getItemCount();
-
-    }
-
-    protected void onDocumentModified(DocumentChange change) {
-        if (change.getOldIndex() == change.getNewIndex()) {
-            // Item changed but remained in same position
-            mSnapshots.set(change.getOldIndex(), change.getDocument());
-            profilePostAdapter.notifyItemChanged(change.getOldIndex());
-        } else {
-            // Item changed and changed position
-            mSnapshots.remove(change.getOldIndex());
-            mSnapshots.add(change.getNewIndex(), change.getDocument());
-            profilePostAdapter.notifyItemRangeChanged(0, mSnapshots.size());
         }
     }
-
-    protected void onDocumentRemoved(DocumentChange change) {
-        try{
-            mSnapshots.remove(change.getOldIndex());
-            profilePostAdapter.notifyItemRemoved(change.getOldIndex());
-            profilePostAdapter.notifyItemRangeChanged(0, mSnapshots.size());
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
 
     @Override
     public void onResume() {

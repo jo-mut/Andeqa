@@ -10,7 +10,6 @@ import android.view.View;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.utils.EndlessLinearRecyclerViewOnScrollListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -84,12 +83,6 @@ public class FollowingActivity extends AppCompatActivity {
             timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
 
-            followingRecyclerView.addOnScrollListener(new EndlessLinearRecyclerViewOnScrollListener() {
-                @Override
-                public void onLoadMore() {
-                    setNextFollowing();
-                }
-            });
         }
     }
 

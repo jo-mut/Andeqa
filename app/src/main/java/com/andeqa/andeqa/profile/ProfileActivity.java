@@ -21,8 +21,8 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.camera.PicturesActivity;
-import com.andeqa.andeqa.chatting.MessagingActivity;
+import com.andeqa.andeqa.chatting.ChatActivity;
+import com.andeqa.andeqa.creation.CreateActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Room;
@@ -30,7 +30,6 @@ import com.andeqa.andeqa.models.Room;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.people.FollowersActivity;
 import com.andeqa.andeqa.people.FollowingActivity;
-import com.andeqa.andeqa.people.PeopleActivity;
 import com.andeqa.andeqa.settings.SettingsActivity;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -220,8 +219,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
 
         if (id == R.id.action_people){
-            Intent intent = new Intent(this, PeopleActivity.class);
-            startActivity(intent);
+
         }
 
 
@@ -326,12 +324,21 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                             .diskCacheStrategy(DiskCacheStrategy.DATA))
                                     .into(mProifleImageView);
 
+                            if (profileCover == null){
 
-                            Glide.with(getApplicationContext())
-                                    .load(profileCover)
-                                    .apply(new RequestOptions()
-                                            .diskCacheStrategy(DiskCacheStrategy.DATA))
-                                    .into(mProfileCover);
+                                Glide.with(getApplicationContext())
+                                        .load(profileImage)
+                                        .apply(new RequestOptions()
+                                                .diskCacheStrategy(DiskCacheStrategy.DATA))
+                                        .into(mProfileCover);
+                            }else {
+
+                                Glide.with(getApplicationContext())
+                                        .load(profileCover)
+                                        .apply(new RequestOptions()
+                                                .diskCacheStrategy(DiskCacheStrategy.DATA))
+                                        .into(mProfileCover);
+                            }
 
                         }
                     }
@@ -396,7 +403,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         }
 
         if (v == addPostImageView){
-            Intent intent = new Intent(this, PicturesActivity.class);
+            Intent intent = new Intent(this, CreateActivity.class);
             startActivity(intent);
         }
     }
@@ -516,7 +523,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                             if (documentSnapshot.exists()){
                                 Room room = documentSnapshot.toObject(Room.class);
                                 roomId = room.getRoom_id();
-                                Intent intent = new Intent(ProfileActivity.this, MessagingActivity.class);
+                                Intent intent = new Intent(ProfileActivity.this, ChatActivity.class);
                                 intent.putExtra(ProfileActivity.EXTRA_ROOM_UID, roomId);
                                 intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
                                 startActivity(intent);
@@ -537,7 +544,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                             if (documentSnapshot.exists()){
                                                 Room room = documentSnapshot.toObject(Room.class);
                                                 roomId = room.getRoom_id();
-                                                Intent intent = new Intent(ProfileActivity.this, MessagingActivity.class);
+                                                Intent intent = new Intent(ProfileActivity.this, ChatActivity.class);
                                                 intent.putExtra(ProfileActivity.EXTRA_ROOM_UID, roomId);
                                                 intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
                                                 startActivity(intent);
@@ -547,7 +554,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                             }else {
                                                 //start a chat with mUid since they have no chatting history
                                                 roomId = databaseReference.push().getKey();
-                                                Intent intent = new Intent(ProfileActivity.this, MessagingActivity.class);
+                                                Intent intent = new Intent(ProfileActivity.this, ChatActivity.class);
                                                 intent.putExtra(ProfileActivity.EXTRA_ROOM_UID, roomId);
                                                 intent.putExtra(ProfileActivity.EXTRA_USER_UID, mUid);
                                                 startActivity(intent);

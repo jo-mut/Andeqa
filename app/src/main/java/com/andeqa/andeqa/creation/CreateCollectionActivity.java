@@ -28,7 +28,6 @@ import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.camera.PicturesActivity;
 import com.andeqa.andeqa.collections.CollectionPostsActivity;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.QueryOptions;
@@ -421,7 +420,7 @@ public class CreateCollectionActivity extends AppCompatActivity implements View.
         if (v == mAddRelativeLayout){
             mAddRelativeLayout.setVisibility(View.GONE);
             mCollectionRelativeLayout.setVisibility(View.VISIBLE);
-            Intent intent = new Intent(CreateCollectionActivity.this, PicturesActivity.class);
+            Intent intent = new Intent(CreateCollectionActivity.this, CreateActivity.class);
             intent.putExtra(CreateCollectionActivity.COLLECTION_TAG, CreateCollectionActivity.class.getSimpleName());
             startActivity(intent);
             finish();

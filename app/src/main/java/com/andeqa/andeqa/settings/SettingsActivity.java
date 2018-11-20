@@ -7,20 +7,16 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Andeqan;
-import com.andeqa.andeqa.profile.DialogConfirmSingOutFragment;
-import com.andeqa.andeqa.profile.ProfileActivity;
+import com.andeqa.andeqa.profile.ConfirmSingOutFragment;
 import com.andeqa.andeqa.profile.UpdateProfileActivity;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -31,9 +27,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -169,8 +162,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
         if (v == mSignOutLinearLayout){
             FragmentManager fragmentManager = getSupportFragmentManager();
-            DialogConfirmSingOutFragment dialogConfirmSingOutFragment = DialogConfirmSingOutFragment.newInstance("sing out");
-            dialogConfirmSingOutFragment.show(fragmentManager, "delete account fragment");
+            ConfirmSingOutFragment confirmSingOutFragment = ConfirmSingOutFragment.newInstance("sing out");
+            confirmSingOutFragment.show(fragmentManager, "delete account fragment");
         }
     }
 

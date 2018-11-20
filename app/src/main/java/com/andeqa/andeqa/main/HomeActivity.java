@@ -8,36 +8,33 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.ColorRes;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
+import android.view.WindowManager;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.chat_rooms.ChatsFragment;
+import com.andeqa.andeqa.chatting.ConversationsFragment;
 import com.andeqa.andeqa.collections.CollectionsFragment;
-import com.andeqa.andeqa.home.ExploreFragment;
+import com.andeqa.andeqa.creation.CreateActivity;
+import com.andeqa.andeqa.more.MoreFragment;
 import com.andeqa.andeqa.home.HomeFragment;
 
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Collection;
-import com.andeqa.andeqa.more.ActivitiesFragment;
-import com.andeqa.andeqa.more.MoreFragment;
+import com.andeqa.andeqa.notifications.NotificationsFragment;
 import com.andeqa.andeqa.profile.ProfileActivity;
-import com.andeqa.andeqa.utils.BottomNavigationPagerAdapter;
-import com.andeqa.andeqa.utils.BottomNavigationViewBehavior;
-import com.andeqa.andeqa.utils.ForceUpdateChecker;
-import com.andeqa.andeqa.utils.NoSwipePager;
+import com.andeqa.andeqa.home.NoSwipePager;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.aurelhubert.ahbottomnavigation.notification.AHNotification;
@@ -65,19 +62,21 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener,
         ForceUpdateChecker.OnUpdateNeededListener  {
     @Bind(R.id.bottomNavigationView)AHBottomNavigation mBottomNavigationView;
-//    @Bind(R.id.fab)FloatingActionButton mFloatingActionButton;
-    @Bind(R.id.toolbar)Toolbar toolbar;
-    @Bind(R.id.titleTextView)TextView titleTextView;
-    @Bind(R.id.profileImageView)
-    CircleImageView mProfileImageView;
     @Bind(R.id.noSwipeViewPager)NoSwipePager noSwipePager;
+    @Bind(R.id.profileImageView) CircleImageView mProfileImageView;
+    @Bind(R.id.floatingActionButton)FloatingActionButton mFloatingActionButton;
+
+
+//    @Bind(R.id.toolbar)Toolbar toolbar;
+//    @Bind(R.id.titleTextView)TextView titleTextView;
+//    @Bind(R.id.mProfileImageView) CircleImageView mProfileImageView;
 
     private Uri photoUri;
     private static final String TAG = HomeActivity.class.getSimpleName();
     private static final String KEY_STATE = "state";
     private int mSelectedItem;
-
     private static final String EXTRA_USER_UID = "uid";
+
     private CollectionReference timelineCollection;
     private CollectionReference collectionsCollection;
     private CollectionReference usersReference;
@@ -87,11 +86,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     //bottom navigation view
     final FragmentManager fragmentManager = getSupportFragmentManager();
     final Fragment homeFragment = new HomeFragment();
-    final Fragment exploreFragment = new ExploreFragment();
+    final Fragment exploreFragment = new MoreFragment();
     final Fragment collectionFragment = new CollectionsFragment();
     final Fragment moreFragment = new MoreFragment();
-    final Fragment activitiesFragment = new ActivitiesFragment();
-    final Fragment chatsFragment = new ChatsFragment();
+    final Fragment activitiesFragment = new NotificationsFragment();
+    final Fragment chatsFragment = new ConversationsFragment();
     private BottomNavigationPagerAdapter navigationPagerAdapter;
     private boolean notificationVisible = false;
 
@@ -103,32 +102,32 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        /**initialize force update checker***/
+
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        // initialize force update checker
         ForceUpdateChecker.with(this).onUpdateNeeded(this).check();
-        /***initialize firebase authentication**/
+        // initialize firebase authentication
         firebaseAuth = FirebaseAuth.getInstance();
-        /****click listeners*/
-//        mFloatingActionButton.setOnClickListener(this);
+        //click listeners
         mProfileImageView.setOnClickListener(this);
-        /***firestore references***/
+        mFloatingActionButton.setOnClickListener(this);
+        // firestore references
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
         timelineQuery = timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
                 .collection("activities").whereEqualTo("status", "un_read");
         collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
         usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-        initializeCollections();
         setProfile();
+        initializeCollections();
         setUpWithViewPager();
         addFragmentsToBottomNavigation();
         setUpBottomNavigationStyle();
         mBottomNavigationView.setCurrentItem(0);
-        titleTextView.setText("Andeqa");
+        mBottomNavigationView.setVisibility(View.VISIBLE);
         timelineNotifications();
         bottomNavigationListener();
-        /**hide bottom navigation when user scrolls the home actvity***/
+        // hide bottom navigation when user scrolls the home actvity***/
         CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams)
                 mBottomNavigationView.getLayoutParams();
         layoutParams.setBehavior(new BottomNavigationViewBehavior());
@@ -194,19 +193,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private void addFragmentsToBottomNavigation(){
         AHBottomNavigationItem home = new AHBottomNavigationItem(R.string.home,
                 R.drawable.ic_home, R.color.grey_700);
-        AHBottomNavigationItem collection = new AHBottomNavigationItem(R.string.collections,
-                R.drawable.ic_collection_bottom_nv, R.color.grey_700);
-        AHBottomNavigationItem explore = new AHBottomNavigationItem(R.string.explore,
-                R.drawable.ic_explore, R.color.grey_700);
-        AHBottomNavigationItem more = new AHBottomNavigationItem(R.string.more,
+        AHBottomNavigationItem explore = new AHBottomNavigationItem(R.string.more,
                 R.drawable.ic_more_bottom_nav, R.color.grey_700);
-        AHBottomNavigationItem activities = new AHBottomNavigationItem(R.string.activitites,
-                R.drawable.ic_stopwatch, R.color.grey_700);
-        AHBottomNavigationItem chats = new AHBottomNavigationItem(R.string.chats,
-                R.drawable.ic_chats, R.color.grey_700);
+        AHBottomNavigationItem notifications = new AHBottomNavigationItem(R.string.notifications,
+                R.drawable.ic_notification, R.color.grey_700);
+        AHBottomNavigationItem chats = new AHBottomNavigationItem(R.string.inbox,
+                R.drawable.ic_inbox_nv, R.color.grey_700);
         mBottomNavigationView.addItem(home);
-        mBottomNavigationView.addItem(collection);
-        mBottomNavigationView.addItem(activities);
+        mBottomNavigationView.addItem(explore);
+        mBottomNavigationView.addItem(notifications);
         mBottomNavigationView.addItem(chats);
     }
 
@@ -231,7 +226,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         noSwipePager.setPagingEnabled(false);
         navigationPagerAdapter = new BottomNavigationPagerAdapter(getSupportFragmentManager());
         navigationPagerAdapter.addFragments(homeFragment);
-        navigationPagerAdapter.addFragments(collectionFragment);
+        navigationPagerAdapter.addFragments(exploreFragment);
+//        navigationPagerAdapter.addFragments(collectionFragment);
         navigationPagerAdapter.addFragments(activitiesFragment);
         navigationPagerAdapter.addFragments(chatsFragment);
         noSwipePager.setAdapter(navigationPagerAdapter);
@@ -239,6 +235,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setUpBottomNavigationStyle(){
+        mBottomNavigationView.setForceTint(false);
         mBottomNavigationView.setDefaultBackgroundColor(Color.WHITE);
         mBottomNavigationView.setAccentColor(fetchColor(R.color.colorPrimary));
         mBottomNavigationView.setInactiveColor(fetchColor(R.color.grey_700));
@@ -263,29 +260,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    private void setProfile(){
-        usersReference.document(firebaseAuth.getCurrentUser().getUid())
-                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                        if (e != null) {
-                            android.util.Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (documentSnapshot.exists()){
-                            final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
-                            final String profileImage = cinggulan.getProfile_image();
-                            Glide.with(HomeActivity.this)
-                                    .load(profileImage)
-                                    .apply(new RequestOptions()
-                                            .placeholder(R.drawable.ic_user_white)
-                                            .diskCacheStrategy(DiskCacheStrategy.DATA))
-                                    .into(mProfileImageView);
-                        }
-                    }
-                });
-    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -323,6 +297,29 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         super.onResume();
     }
 
+    private void setProfile(){
+        usersReference.document(firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                        if (e != null) {
+                            android.util.Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (documentSnapshot.exists()){
+                            final Andeqan cinggulan = documentSnapshot.toObject(Andeqan.class);
+                            final String profileImage = cinggulan.getProfile_image();
+                            Glide.with(HomeActivity.this)
+                                    .load(profileImage)
+                                    .apply(new RequestOptions()
+                                            .placeholder(R.drawable.ic_user_white)
+                                            .diskCacheStrategy(DiskCacheStrategy.DATA))
+                                    .into(mProfileImageView);
+                        }
+                    }
+                });
+    }
 
     private void timelineNotifications(){
         timelineQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -354,22 +351,18 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         //initialize each corresponding fragment
         switch (position){
             case 0:
-                titleTextView.setText("Andeqa");
                 FragmentTransaction homeTransaction = fragmentManager.beginTransaction();
                 homeTransaction.replace(R.id.noSwipeViewPager, homeFragment).commit();
                 break;
             case 1:
-                titleTextView.setText("Andeqa");
-                FragmentTransaction collectionTransaction = fragmentManager.beginTransaction();
-                collectionTransaction.replace(R.id.noSwipeViewPager, collectionFragment).commit();
+                FragmentTransaction exploreTransaction = fragmentManager.beginTransaction();
+                exploreTransaction.replace(R.id.noSwipeViewPager, exploreFragment).commit();
                 break;
             case 2:
-                titleTextView.setText("Andeqa");
                 FragmentTransaction activitiesTransaction = fragmentManager.beginTransaction();
                 activitiesTransaction.replace(R.id.noSwipeViewPager, activitiesFragment).commit();
                 break;
-            case 3:
-                titleTextView.setText("Andeqa");
+            case 4:
                 FragmentTransaction chatsTransaction = fragmentManager.beginTransaction();
                 chatsTransaction.replace(R.id.noSwipeViewPager, chatsFragment).commit();
                 break;
@@ -388,57 +381,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
         }
 
-    }
-
-
-    private void displayPopupWindow() {
-//        final BottomNavigationMenuView menuView = (BottomNavigationMenuView)
-//                mBottomNavigationView.getMenu().getItem(3);
-
-//        int [] loc_int = new int[2];
-//        try {
-//            menuView.getLocationOnScreen(loc_int);
-//        }catch (Exception e){
-//            return;
-//        }
-//        final Rect location = new Rect();
-//        location.left = loc_int[0];
-//        location.top = loc_int[1];
-//        location.right = location.left + menuView.getWidth();
-//        location.bottom = location.top + menuView.getHeight();
-//        timelineQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-//                if (e != null) {
-//                    Log.w(TAG, "Listen error", e);
-//                    return;
-//                }
-//
-//                if (!queryDocumentSnapshots.isEmpty()){
-//                    final int count = queryDocumentSnapshots.size();
-//                    PopupWindow popup = new PopupWindow(HomeActivity.this);
-//                    View layout = getLayoutInflater().inflate(R.layout.popup_layout, null);
-//
-//                    TextView textView = (TextView) layout.findViewById(R.id.popupTextView);
-//                    textView.setBackground(getResources().getDrawable(R.drawable.ic_pop_bubble));
-//                    textView.setTextColor(Color.BLACK);
-//                    textView.setText(count + "");
-//
-//                    popup.setContentView(layout);
-//                    // Set content width and height
-//                    popup.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-//                    popup.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
-//                    // Closes the popup window when touch outside of it - when looses focus
-//                    popup.setOutsideTouchable(true);
-//                    popup.setFocusable(true);
-//                    // Show anchored to button
-//                    popup.setBackgroundDrawable(new BitmapDrawable());
-//                    popup.showAtLocation(mBottomNavigationView, Gravity.CENTER, 0, location.top);
-//                }
-//            }
-//        });
+        if (v == mFloatingActionButton){
+            Intent intent = new Intent(this, CreateActivity.class);
+            startActivity(intent);
+        }
 
     }
+
 
     private int fetchColor(@ColorRes int color){
         return ContextCompat.getColor(this, color);

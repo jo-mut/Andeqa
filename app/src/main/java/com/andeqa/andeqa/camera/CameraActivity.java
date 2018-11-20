@@ -39,9 +39,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.utils.RunTimePermissions;
+import com.andeqa.andeqa.creation.CreateCollectionActivity;
+import com.andeqa.andeqa.creation.CreateCollectionPostActivity;
 import com.andeqa.andeqa.creation.PreviewImagePostActivity;
 import com.andeqa.andeqa.creation.PreviewVideoPostActivity;
-import com.andeqa.andeqa.home.ExploreFragment;
+import com.andeqa.andeqa.more.MoreFragment;
+import com.andeqa.andeqa.settings.CollectionSettingsActivity;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -54,11 +58,7 @@ import butterknife.ButterKnife;
 
 public class CameraActivity extends AppCompatActivity  implements
         SurfaceHolder.Callback, View.OnClickListener {
-    private static final String TAG = ExploreFragment.class.getSimpleName();
-    private static final String CAMERA_PATH = "camera image";
-    private static final String CAMERA_VIDEO = "camera video";
-    private static final String CAMERA_THUMB = "thumb";
-    private static final String PREVIEW_POST = "preview post";
+    private static final String TAG = MoreFragment.class.getSimpleName();
     private SurfaceHolder surfaceHolder;
     private Camera camera;
     private Handler customHandler = new Handler();
@@ -68,6 +68,34 @@ public class CameraActivity extends AppCompatActivity  implements
     private static  final int MAX_VIDEO_DURATION = 60000; //MB
     private MediaRecorder mediaRecorder;
     private RunTimePermissions runTimePermission;
+
+
+    private static final String GALLERY_PATH ="gallery image";
+    private static final String GALLERY_VIDEO ="gallery video";
+    private static final String COLLECTION_TAG = CreateCollectionActivity.class.getSimpleName();
+    private static final String COLLECTION_SETTINGS_COVER = CollectionSettingsActivity.class.getSimpleName();
+    private static final String COLLECTION_POST = CreateCollectionPostActivity.class.getSimpleName();
+    private static final String PROFILE_PHOTO_PATH = "profile photo path";
+    private static final String PROFILE_COVER_PATH = "profile cover path";
+    private static final String COLLECTION_ID = "collection id";
+    private static final String EXTRA_ROOM_ID = "roomId";
+    private static final String EXTRA_USER_UID = "uid";
+    private static final String EXTRA_POST_ID = "post id";
+    private static final String CAMERA_PATH = "camera image";
+    private static final String CAMERA_VIDEO = "camera video";
+    private static final String CAMERA_THUMB = "thumb";
+    private static final String PREVIEW_POST = "preview post";
+
+    private String mUid;
+    private String mRoomId;
+    private String collection_post;
+    private String createCollection;
+    private String collectionId;
+    private String profileCoverIntent;
+    private String profilePhotoIntent;
+    private String collectionSettingsIntent;
+    private String  album_name;
+    private String postId;
 
     @Bind(R.id.changeCameraImageView)ImageView mChangeCameraImageView;
     @Bind(R.id.flashOnOffImageView)ImageView mFlashOnOffImageView;
@@ -115,6 +143,16 @@ public class CameraActivity extends AppCompatActivity  implements
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        album_name = getIntent().getStringExtra("name");
+        collection_post = getIntent().getStringExtra(COLLECTION_POST);
+        collectionId = getIntent().getStringExtra(COLLECTION_ID);
+        createCollection = getIntent().getStringExtra(COLLECTION_TAG);
+        collectionSettingsIntent  = getIntent().getStringExtra(COLLECTION_SETTINGS_COVER);
+        profileCoverIntent = getIntent().getStringExtra(PROFILE_COVER_PATH);
+        profilePhotoIntent = getIntent().getStringExtra(PROFILE_PHOTO_PATH);
+        mUid = getIntent().getStringExtra(EXTRA_USER_UID);
+        mRoomId = getIntent().getStringExtra(EXTRA_ROOM_ID);
+        postId = getIntent().getStringExtra(EXTRA_POST_ID);
 
     }
 

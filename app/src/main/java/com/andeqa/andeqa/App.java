@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.multidex.MultiDex;
 import android.util.Log;
 
-import com.andeqa.andeqa.utils.ForceUpdateChecker;
+import com.andeqa.andeqa.main.ForceUpdateChecker;
 import com.andeqa.andeqa.services.ConnectivityReceiver;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -28,7 +28,6 @@ public class App extends Application {
     private static App mInstance;
     private static final String TAG = App.class.getSimpleName();
     private FirebaseRemoteConfig firebaseRemoteConfig;
-    private Context context;
 
     @Override
     public void onCreate() {

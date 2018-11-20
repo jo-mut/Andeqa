@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.chatting.MessagingActivity;
+import com.andeqa.andeqa.chatting.ChatActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Room;
@@ -90,11 +90,11 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleRelationsViewHo
         }
 
         if (userId.equals(firebaseAuth.getCurrentUser().getUid())){
-            holder.sendMessageImageView.setVisibility(View.GONE);
+            holder.mSendMessageImageView.setVisibility(View.GONE);
 
         }else {
-            holder.sendMessageImageView.setVisibility(View.VISIBLE);
-            holder.sendMessageImageView.setOnClickListener(new View.OnClickListener() {
+            holder.mSendMessageImageView.setVisibility(View.VISIBLE);
+            holder.mSendMessageImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     processRoom = true;
@@ -112,7 +112,7 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleRelationsViewHo
                                         if (documentSnapshot.exists()){
                                             Room room = documentSnapshot.toObject(Room.class);
                                             roomId = room.getRoom_id();
-                                            Intent intent = new Intent(mContext, MessagingActivity.class);
+                                            Intent intent = new Intent(mContext, ChatActivity.class);
                                             intent.putExtra(FollowingAdapter.EXTRA_ROOM_UID, roomId);
                                             intent.putExtra(FollowingAdapter.EXTRA_USER_UID, userId);
                                             mContext.startActivity(intent);
@@ -133,7 +133,7 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleRelationsViewHo
                                                         if (documentSnapshot.exists()){
                                                             Room room = documentSnapshot.toObject(Room.class);
                                                             roomId = room.getRoom_id();
-                                                            Intent intent = new Intent(mContext, MessagingActivity.class);
+                                                            Intent intent = new Intent(mContext, ChatActivity.class);
                                                             intent.putExtra(FollowingAdapter.EXTRA_ROOM_UID, roomId);
                                                             intent.putExtra(FollowingAdapter.EXTRA_USER_UID, userId);
                                                             mContext.startActivity(intent);
@@ -143,7 +143,7 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleRelationsViewHo
                                                         }else {
                                                             //start a chat with mUid since they have no chatting history
                                                             roomId = databaseReference.push().getKey();
-                                                            Intent intent = new Intent(mContext, MessagingActivity.class);
+                                                            Intent intent = new Intent(mContext, ChatActivity.class);
                                                             intent.putExtra(FollowingAdapter.EXTRA_ROOM_UID, roomId);
                                                             intent.putExtra(FollowingAdapter.EXTRA_USER_UID, userId);
                                                             mContext.startActivity(intent);
@@ -181,17 +181,17 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleRelationsViewHo
                     final String uid = andeqan.getUser_id();
 
 
-                    holder.usernameTextView.setText(username);
-                    holder.fullNameTextView.setText(firstName + " " + secondName);
+                    holder.mUsernameTextView.setText(username);
+                    holder.mFullNameTextView.setText(firstName + " " + secondName);
                     Glide.with(mContext.getApplicationContext())
                             .load(profileImage)
                             .apply(new RequestOptions()
                                     .placeholder(R.drawable.ic_user)
                                     .diskCacheStrategy(DiskCacheStrategy.DATA))
-                            .into(holder.profileImageView);
+                            .into(holder.mProfileImageView);
 
                     //lauch user profile
-                    holder.profileImageView.setOnClickListener(new View.OnClickListener() {
+                    holder.mProfileImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             Intent intent = new Intent(mContext, ProfileActivity.class);
@@ -202,37 +202,34 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleRelationsViewHo
 
                     //show if following or not
                     followingCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
-                            .whereEqualTo("followed_id", userId)
-                            .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                @Override
-                                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                            .document(userId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                            if (e != null) {
+                                Log.w(TAG, "Listen error", e);
+                                return;
+                            }
 
-                                    if (e != null) {
-                                        Log.w(TAG, "Listen error", e);
-                                        return;
-                                    }
-
-                                    if (documentSnapshots.isEmpty()){
-                                        if (!uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                            holder.followButton.setVisibility(View.VISIBLE);
-                                            holder.followButton.setText("Follow");
-                                        }
-                                    }else {
-                                        if (!uid.equals(firebaseAuth.getCurrentUser().getUid())){
-                                            holder.followButton.setVisibility(View.VISIBLE);
-                                            holder.followButton.setText("Following");
-                                        }
-                                    }
+                            if (documentSnapshot.exists()){
+                                if (!uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                    holder.mFollowButton.setVisibility(View.VISIBLE);
+                                    holder.mFollowButton.setText("Follow");
                                 }
-                            });
-
+                            }else {
+                                if (!uid.equals(firebaseAuth.getCurrentUser().getUid())){
+                                    holder.mFollowButton.setVisibility(View.VISIBLE);
+                                    holder.mFollowButton.setText("Following");
+                                }
+                            }
+                        }
+                    });
 
                     //follow or unfollow
                     if (userId.equals(firebaseAuth.getCurrentUser().getUid())){
-                        holder.followButton.setVisibility(View.GONE);
+                        holder.mFollowButton.setVisibility(View.GONE);
                     }else {
-                        holder.followButton.setVisibility(View.VISIBLE);
-                        holder.followButton.setOnClickListener(new View.OnClickListener() {
+                        holder.mFollowButton.setVisibility(View.VISIBLE);
+                        holder.mFollowButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 processFollow = true;
@@ -284,7 +281,7 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleRelationsViewHo
                                                         following.setTime(System.currentTimeMillis());
                                                         followingCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
                                                                 .document(userId).set(following);
-                                                        holder.followButton.setText("Following");
+                                                        holder.mFollowButton.setText("Following");
 
                                                         processFollow = false;
                                                     }else {
@@ -301,6 +298,11 @@ public class FollowingAdapter extends RecyclerView.Adapter<PeopleRelationsViewHo
                             }
                         });
                     }
+                }else {
+                    //show if following or not
+                    followingCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
+                            .document(userId).delete();
+
                 }
 
 

@@ -3,7 +3,6 @@
     package="com.andeqa.andeqa">
 
     <supports-screens
-        android:anyDensity="true"
         android:largeScreens="true"
         android:normalScreens="true"
         android:smallScreens="true"
@@ -101,18 +100,17 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".home.ImageViewActivity"
+            android:name=".post_detail.ImageViewActivity"
             android:label="Photo"
             android:screenOrientation="portrait" />
         <activity
             android:name=".registration.CreateProfileActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".home.PostDetailActivity"
+            android:name=".post_detail.PostDetailActivity"
             android:label="Post"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
-
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -124,7 +122,6 @@
                 <data android:scheme="http" />
                 <data android:pathPattern=".*" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".main.MainActivity"
@@ -137,7 +134,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".chatting.MessagingActivity"
+            android:name=".chatting.ChatActivity"
             android:label="Chats"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
@@ -180,11 +177,6 @@
         <activity
             android:name=".camera.CameraPermissionsActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".home.DeepLinkActivity"
-            android:label="Post"
-            android:screenOrientation="portrait">
-        </activity>
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -197,7 +189,7 @@
         </provider>
 
         <activity
-            android:name=".chatting.ViewMessagePhoto"
+            android:name=".chatting.PhotoMessageActivity"
             android:label="Photo"
             android:screenOrientation="portrait" />
         <activity
@@ -209,11 +201,11 @@
             android:label="Posts"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".camera.PicturesActivity"
+            android:name=".creation.CreateActivity"
             android:label="Gallery"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".camera.AlbumActivity"
+            android:name=".gallery.AlbumActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".people.FollowersActivity"
@@ -240,7 +232,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".home.VideoDetailActivity"
+            android:name=".post_detail.VideoDetailActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".collections.InitialCollectionsActivity"
@@ -255,10 +247,6 @@
             android:label="Poeple"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".creation.ChooseCreationActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Translucent" />
-        <activity
             android:name=".search.SearchedCollectionsActivity"
             android:label="Search collections"
             android:screenOrientation="portrait" />
@@ -270,6 +258,22 @@
             android:name=".search.SearchPostsActivity"
             android:label="Search posts"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".suggestions.FollowSuggestedPeopleActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Translucent" />
+        <activity
+            android:name=".comments.CommentsActivity"
+            android:label="Comments"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".main.Hom"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".chatting.ChatsActivity"
+            android:label="Chats"
+            android:screenOrientation="portrait" />
+        <activity android:name=".collections.ExploreCollectionsActivity"></activity>
     </application>
 
 </manifest>

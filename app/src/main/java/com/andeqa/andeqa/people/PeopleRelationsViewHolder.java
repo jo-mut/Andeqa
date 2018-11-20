@@ -9,27 +9,23 @@ import android.widget.TextView;
 
 import com.andeqa.andeqa.R;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PeopleRelationsViewHolder extends RecyclerView.ViewHolder {
-    View mView;
     Context mContext;
-    public TextView fullNameTextView;
-    public CircleImageView profileImageView;
-    public Button followButton;
-    public TextView usernameTextView;
-    public ImageView sendMessageImageView;
+    View mView;
+    @Bind(R.id.usernameTextView)TextView mUsernameTextView;
+    @Bind(R.id.fullNameTextView)TextView mFullNameTextView;
+    @Bind(R.id.profileImageView)CircleImageView mProfileImageView;
+    @Bind(R.id.followButton) Button mFollowButton;
+    @Bind(R.id.sendMessageImageView)ImageView mSendMessageImageView;
 
     public PeopleRelationsViewHolder(View itemView) {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
-        fullNameTextView = (TextView) itemView.findViewById(R.id.fullNameTextView);
-        profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
-        followButton = (Button) itemView.findViewById(R.id.followButton);
-        usernameTextView = (TextView) itemView.findViewById(R.id.usernameTextView);
-        sendMessageImageView = (ImageView) itemView.findViewById(R.id.sendMessageImageView);
+        ButterKnife.bind(this, mView);
     }
 }
-
-

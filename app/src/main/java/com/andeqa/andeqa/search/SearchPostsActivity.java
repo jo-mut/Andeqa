@@ -21,16 +21,15 @@ import android.view.ViewGroup;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.collections.CollectionPostsActivity;
-import com.andeqa.andeqa.home.ExploreFragment;
+import com.andeqa.andeqa.more.MoreFragment;
 import com.andeqa.andeqa.home.PhotoPostViewHolder;
-import com.andeqa.andeqa.home.PostDetailActivity;
+import com.andeqa.andeqa.post_detail.PostDetailActivity;
 import com.andeqa.andeqa.impressions.ImpressionTracker;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.QueryOptions;
 import com.andeqa.andeqa.profile.ProfileActivity;
-import com.andeqa.andeqa.utils.EndlesssStaggeredRecyclerOnScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -56,7 +55,7 @@ import butterknife.ButterKnife;
 public class SearchPostsActivity extends AppCompatActivity {
     @Bind(R.id.searchPostsRecyclerView)RecyclerView mSearchPeopleRecyclerView;
     @Bind(R.id.toolbar)Toolbar toolbar;
-    private static final String TAG = ExploreFragment.class.getSimpleName();
+    private static final String TAG = MoreFragment.class.getSimpleName();
     //firestore reference
     private CollectionReference queryOptionsReference;
     //adapters
@@ -89,12 +88,6 @@ public class SearchPostsActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         //firestore
         queryOptionsReference = FirebaseFirestore.getInstance().collection(Constants.QUERY_OPTIONS);
-        mSearchPeopleRecyclerView.addOnScrollListener(new EndlesssStaggeredRecyclerOnScrollListener() {
-            @Override
-            public void onLoadMore() {
-
-            }
-        });
 
     }
 
@@ -359,7 +352,7 @@ public class SearchPostsActivity extends AppCompatActivity {
         @Override
         public PhotoPostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.layout_image_post, parent, false);
+                    .inflate(R.layout.layout_explore_posts, parent, false);
             return new PhotoPostViewHolder(view);
         }
 

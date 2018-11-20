@@ -25,7 +25,7 @@ import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.camera.PicturesActivity;
+import com.andeqa.andeqa.creation.CreateActivity;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.QueryOptions;
 import com.bumptech.glide.Glide;
@@ -374,7 +374,7 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
     @Override
     public void onClick(View v){
         if (v == mChangeCoverRelativeLayout){
-            Intent intent = new Intent(CollectionSettingsActivity.this, PicturesActivity.class);
+            Intent intent = new Intent(CollectionSettingsActivity.this, CreateActivity.class);
             intent.putExtra(CollectionSettingsActivity.COLLECTION_SETTINGS_COVER, CollectionSettingsActivity.class.getSimpleName());
             intent.putExtra(CollectionSettingsActivity.COLLECTION_ID, collectionId);
             startActivity(intent);

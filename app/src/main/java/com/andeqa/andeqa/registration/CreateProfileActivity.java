@@ -70,20 +70,12 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
 
     private static final String TAG = CreateProfileActivity.class.getSimpleName();
     private CollectionReference usersReference;
-    private CollectionReference walletReference;
     private FirebaseAuth firebaseAuth;
     private ProgressDialog mAuthProgressDialog;
     private ProgressDialog verifyingProgressDialog;
     private ProgressDialog createProfileProgressDialog;
     private static  final int GALLERY_PROFILE_PHOTO_REQUEST = 111;
-    private static final int GALLERY_PROFILE_COVER_PHOTO = 222;
-    private static final int MAX_WIDTH = 200;
-    private static final int MAX_HEIGHT = 200;
-    private static final int MAX_COVER_WIDTH = 400;
-    private static final int MAX_COVER_HEIGHT = 400;
     private Uri profileUri;
-    private Uri imageUri;
-    private Boolean flag;
     private String email;
     private String password;
     private String code;
@@ -102,7 +94,6 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
 
         if (firebaseAuth != null){
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            walletReference = FirebaseFirestore.getInstance().collection(Constants.WALLET);
 
             email = getIntent().getStringExtra(EMAIL);
             password = getIntent().getStringExtra(PASSWORD);
@@ -257,7 +248,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
                               Log.w(TAG, "signInWithEmail", task.getException());
 
                               mErrorRelativeLayout.setVisibility(View.VISIBLE);
-                              mErrorTextView.setText("Please confirm that your email and password match you are connected to the internet");
+                              mErrorTextView.setText("Please confirm that your email and password match and thet you are connected to the internet");
 
                               mErrorRelativeLayout.postDelayed(new Runnable() {
                                   public void run() {
@@ -474,26 +465,30 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
         }
 
         if (v == mSubmitUserInfoButton){
-           if (firebaseAuth.getCurrentUser() != null){
-               checkIfImailVerified();
-           }else {
-               mAuthProgressDialog.show();
-               usersReference.whereEqualTo("username", mUsernameEditText.getText().toString())
-                       .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                           @Override
-                           public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
+          if (password.equals("")){
+              if (firebaseAuth.getCurrentUser() != null){
+                  checkIfImailVerified();
+              }else {
+                  mAuthProgressDialog.show();
+                  usersReference.whereEqualTo("username", mUsernameEditText.getText().toString())
+                          .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                              @Override
+                              public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
 
 
-                               if (!documentSnapshots.isEmpty()){
-                                   Toast.makeText(CreateProfileActivity.this,"Please chooser a username that has not been taken",
-                                           Toast.LENGTH_SHORT).show();
-                               }else {
-                                   loginWithPassword();
-                               }
+                                  if (!documentSnapshots.isEmpty()){
+                                      Toast.makeText(CreateProfileActivity.this,"Please chooser a username that has not been taken",
+                                              Toast.LENGTH_SHORT).show();
+                                  }else {
+                                      loginWithPassword();
+                                  }
 
-                           }
-                       });
-           }
+                              }
+                          });
+              }
+          }else {
+              createProfile();
+          }
         }
 
         if (v == mResendLinkRelativeLayout){

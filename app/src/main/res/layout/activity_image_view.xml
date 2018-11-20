@@ -8,7 +8,7 @@
     android:fitsSystemWindows="false"
     android:background="#000000"
     android:orientation="vertical"
-    tools:context="com.andeqa.andeqa.home.ImageViewActivity">
+    tools:context="com.andeqa.andeqa.post_detail.ImageViewActivity">
 
 
     <ScrollView

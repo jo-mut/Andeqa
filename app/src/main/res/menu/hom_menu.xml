@@ -1,0 +1,22 @@
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.andeqa.andeqa.home.TestActivity">
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search"
+        app:showAsAction="always"
+        android:title="Search">
+
+    </item>
+
+    <item
+        android:id="@+id/action_chats"
+        android:icon="@drawable/ic_chats"
+        app:showAsAction="always"
+        android:title="Chats">
+
+    </item>
+</menu>

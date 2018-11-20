@@ -20,6 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ public class ImpressionTracker {
 
     private DatabaseReference impressionReference;
     private DatabaseReference databaseReference;
+    private DatabaseReference seenMessagesReference;
     private FirebaseAuth firebaseAuth;
 
     public interface VisibilityTrackerListener {
@@ -52,9 +54,12 @@ public class ImpressionTracker {
 
     public static class TrackingInfo {
         View view;
-        String post_id;
+        String id;
+        String type;
+        String userId;
         int minVisiblePercentage;
     }
+
 
     public ImpressionTracker(Activity activity) {
         View rootView = activity.getWindow().getDecorView();
@@ -87,11 +92,14 @@ public class ImpressionTracker {
         if (firebaseAuth.getCurrentUser() != null){
             impressionReference = FirebaseDatabase.getInstance().getReference(Constants.VIEWS);
             databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
+            seenMessagesReference = FirebaseDatabase.getInstance().getReference(Constants.MESSAGES);
+
             impressionReference.keepSynced(true);
+            seenMessagesReference.keepSynced(true);
         }
     }
 
-    public void addView(@NonNull View view, int minVisiblePercentageViewed, String postId) {
+    public void addView(@NonNull View view, int minVisiblePercentageViewed, String postId, String type, String userId) {
 
         TrackingInfo trackingInfo = mTrackedViews.get(view);
         if (trackingInfo == null) {
@@ -103,7 +111,10 @@ public class ImpressionTracker {
 
         trackingInfo.view = view;
         trackingInfo.minVisiblePercentage = minVisiblePercentageViewed;
-        trackingInfo.post_id = postId;
+        trackingInfo.id = postId;
+        trackingInfo.type = type;
+        trackingInfo.userId = userId;
+
     }
 
     public void setVisibilityTrackerListener(VisibilityTrackerListener listener) {
@@ -164,34 +175,40 @@ public class ImpressionTracker {
             processImpression = true;
             for (final Map.Entry<View, TrackingInfo> entry : mTrackedViews.entrySet()) {
                 final View view = entry.getKey();
-                final String postId = entry.getValue().post_id;
+                final String viewedId = entry.getValue().id;
+                final String type = entry.getValue().type;
                 final long time = System.currentTimeMillis();
+                final int percentage = entry.getValue().minVisiblePercentage;
                 final String impressionId = databaseReference.child("generateId").push().getKey();
 
-                impressionReference.child("post_views").child(postId)
-                        .child(firebaseAuth.getCurrentUser().getUid())
-                        .addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                                if (!dataSnapshot.exists()){
-                                    Impression impression = new Impression();
-                                    impression.setTime(time);
-                                    impression.setImpression_id(impressionId);
-                                    impression.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                    impression.setPost_id(postId);
-                                    impressionReference.child("post_views").child(postId)
-                                            .child(firebaseAuth.getCurrentUser().getUid())
-                                            .setValue(impression);
+                if (type.equals("post")){
+                    impressionReference.child("post_views").child(viewedId)
+                            .child(firebaseAuth.getCurrentUser().getUid())
+                            .addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                    if (!dataSnapshot.exists()){
+                                        Impression impression = new Impression();
+                                        impression.setTime(time);
+                                        impression.setImpression_id(impressionId);
+                                        impression.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                        impression.setPost_id(viewedId);
+                                        impressionReference.child("post_views").child(viewedId)
+                                                .child(firebaseAuth.getCurrentUser().getUid())
+                                                .setValue(impression);
+                                    }
+
                                 }
 
-                            }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                }
+                            });
+                }
 
-                            }
-                        });
             }
 
             if (mVisibilityTrackerListener != null) {

@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.utils.ProportionalImageView;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -40,7 +41,7 @@ public class PhotoPostViewHolder extends RecyclerView.ViewHolder {
     public LinearLayout captionLinearLayout;
     public LinearLayout mCreditsLinearLayout;
     public ConstraintLayout postConstraintLayout;
-    public ImageView postImageView;
+    public ProportionalImageView postImageView;
     public TextView collectionNameTextView;
 
     public PhotoPostViewHolder(View itemView) {
@@ -56,7 +57,7 @@ public class PhotoPostViewHolder extends RecyclerView.ViewHolder {
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
         titleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.titleRelativeLayout);
         descriptionRelativeLayout  = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
-        postImageView = (ImageView) mView.findViewById(R.id.postImageView);
+        postImageView = (ProportionalImageView) mView.findViewById(R.id.postImageView);
         postConstraintLayout = (ConstraintLayout) mView.findViewById(R.id.postConstrantLayout);
         senseCreditsTextView = (TextView) mView.findViewById(R.id.creditsTextView);
         mCommentsLinearLayout = (LinearLayout) mView.findViewById(R.id.commentsLinearLayout);
