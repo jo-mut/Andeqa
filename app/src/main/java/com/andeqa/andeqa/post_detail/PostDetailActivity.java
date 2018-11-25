@@ -34,7 +34,6 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.collections.CollectionPostsActivity;
 import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.comments.CommentsAdapter;
-import com.andeqa.andeqa.creation.CreateActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.CollectionPost;
@@ -50,7 +49,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -85,7 +83,7 @@ public class PostDetailActivity extends AppCompatActivity
         implements View.OnClickListener{
     @Bind(R.id.usernameTextView)TextView mUsernameTextView;
     @Bind(R.id.postImageView)ImageView postImageView;
-    @Bind(R.id.postConstrantLayout)ConstraintLayout postConstraintLayout;
+    @Bind(R.id.postConstraintLayout)ConstraintLayout postConstraintLayout;
     @Bind(R.id.profileImageView)CircleImageView mProfileImageView;
     @Bind(R.id.titleTextView)TextView titleTextView;
     @Bind(R.id.titleRelativeLayout)RelativeLayout mTitleRelativeLayout;
@@ -95,31 +93,22 @@ public class PostDetailActivity extends AppCompatActivity
     @Bind(R.id.commentsCountTextView)TextView mCommentCountTextView;
     @Bind(R.id.commentsRecyclerView)RecyclerView mCommentsRecyclerView;
     @Bind(R.id.collectionNameTextView)TextView mCollectionNameTextView;
-    @Bind(R.id.addRelativeLayout)RelativeLayout mAddRelativeLayout;
-    @Bind(R.id.relatedPostsContainer)RelativeLayout mPostsOfPostRelativeLayout;
+    @Bind(R.id.relatedPostsContainer)RelativeLayout mRelatedRelativeLayout;
     @Bind(R.id.commentsRelativeLayout)RelativeLayout mCommentsRelativeLayout;
 
     //firestore reference
-    private FirebaseFirestore firebaseFirestore;
     private CollectionReference postsCollections;
     private CollectionReference usersReference;
     private CollectionReference commentsCollection;
     private Query commentQuery;
     private CollectionReference collectionsPosts;
-    private CollectionReference likesReference;
-    private CollectionReference postWalletReference;
-    private CollectionReference timelineCollection;
-    private CollectionReference marketCollections;
     private CollectionReference collectionsCollection;
-    private CollectionReference viewsCollection;
     //firebase database
     private DatabaseReference impressionReference;
-    private com.google.firebase.firestore.Query likesQuery;
     //firebase references
     private DatabaseReference databaseReference;
     //firebase auth
     private FirebaseAuth firebaseAuth;
-    private FirebaseUser firebaseUser;
     //firestore adapter
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     //process likes
@@ -182,7 +171,6 @@ public class PostDetailActivity extends AppCompatActivity
         mCommentImageView.setOnClickListener(this);
         postImageView.setOnClickListener(this);
         mProfileImageView.setOnClickListener(this);
-        mAddRelativeLayout.setOnClickListener(this);
         //check that user is logged in;
         checkIfUserIsLoggedIn();
 
@@ -244,17 +232,12 @@ public class PostDetailActivity extends AppCompatActivity
         postsCollections = FirebaseFirestore.getInstance().collection(Constants.POSTS);
         usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
         commentsCollection = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
-        marketCollections = FirebaseFirestore.getInstance().collection(Constants.SELLING);
         collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
         //firebase references
         impressionReference = FirebaseDatabase.getInstance().getReference(Constants.VIEWS);
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
         impressionReference.keepSynced(true);
-        //firestore references
-        likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
-        postWalletReference = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
-        timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-        viewsCollection = FirebaseFirestore.getInstance().collection(Constants.VIEWS);
+
 
         setPostsOfThisPosts();
     }
@@ -816,11 +799,6 @@ public class PostDetailActivity extends AppCompatActivity
             startActivity(intent);
         }
 
-        if (v == mAddRelativeLayout){
-            Intent intent = new Intent(PostDetailActivity.this, CreateActivity.class);
-            intent.putExtra(PostDetailActivity.EXTRA_POST_ID, mPostId);
-            startActivity(intent);
-        }
     }
 
     private void loadComments(){
@@ -851,8 +829,7 @@ public class PostDetailActivity extends AppCompatActivity
 
 
     private void setPostsOfThisPosts(){
-        postsCollections.orderBy("post_id", Query.Direction.DESCENDING)
-                .whereEqualTo("collection_id", mPostId)
+        postsCollections.whereEqualTo("collection_id", mCollectionId)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot documentSnapshots,
@@ -863,9 +840,9 @@ public class PostDetailActivity extends AppCompatActivity
                         }
 
                         if (!documentSnapshots.isEmpty()){
-                            mPostsOfPostRelativeLayout.setVisibility(View.VISIBLE);
+                            mRelatedRelativeLayout.setVisibility(View.VISIBLE);
                             Bundle bundle = new Bundle();
-                            bundle.putString(PostDetailActivity.EXTRA_POST_ID, mPostId);
+                            bundle.putString(PostDetailActivity.COLLECTION_ID, mCollectionId);
                             RelatedPostsFragment relatedPostsFragment = new RelatedPostsFragment();
                             relatedPostsFragment.setArguments(bundle);
                             FragmentManager fragmentManager = getSupportFragmentManager();
@@ -874,7 +851,7 @@ public class PostDetailActivity extends AppCompatActivity
                             ft.commit();
 
                         }else {
-                            mPostsOfPostRelativeLayout.setVisibility(View.GONE);
+                            mRelatedRelativeLayout.setVisibility(View.GONE);
                         }
 
                     }

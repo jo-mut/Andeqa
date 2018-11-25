@@ -25,11 +25,11 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
     public TextView usernameTextView;
     public CircleImageView profileImageView;
     public TextView fullNameTextView;
-    @Bind(R.id.followRelativeLayout)RelativeLayout followRelativeLayout;
-    @Bind(R.id.followButton)Button followButton;
-    @Bind(R.id.sendMessageImageView)ImageView sendMessageImageView;
-    @Bind(R.id.sendMessageRelativeLayout) RelativeLayout mSendMessageRelativeLayout;
-    @Bind(R.id.commentTextView)TextView mCommentTextView;
+    public RelativeLayout followRelativeLayout;
+    public Button followButton;
+    public ImageView sendMessageImageView;
+    public RelativeLayout mSendMessageRelativeLayout;
+    public TextView mCommentTextView;
 
 
     public CommentViewHolder(View itemView) {

@@ -1,8 +1,10 @@
 package com.andeqa.andeqa.notifications;
 
+import android.arch.paging.PagedList;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -25,6 +27,8 @@ import com.andeqa.andeqa.profile.ProfileActivity;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
+import com.firebase.ui.firestore.paging.FirestorePagingOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -46,11 +50,10 @@ import javax.annotation.Nullable;
  * Created by J.EL on 1/18/2018.
  */
 
-public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class NotificationsAdapter extends FirestorePagingAdapter<Timeline, RecyclerView.ViewHolder> {
 
     private static final String TAG = NotificationsAdapter.class.getSimpleName();
     private Context mContext;
-    private static final String KEY_LAYOUT_POSITION = "layout pooition";
     private static final String EXTRA_USER_UID = "uid";
     private static final String EXTRA_POST_ID = "post id";
     private static final String COLLECTION_ID = "collection id";
@@ -58,42 +61,31 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
     private static final String POST_WIDTH = "width";
     private static final String TYPE = "type";
 
-    private static final int MAX_WIDTH = 200;
-    private static final int MAX_HEIGHT = 200;
     private FirebaseAuth firebaseAuth;
-    private static final int LIKE_TYPE=0;
     private static final int COMMENT_TYPE=1;
     private static final int FOLLOW_TYPE =2;
-    private static final int NOTHING =4;
     private boolean processFollow = false;
 
     private CollectionReference usersCollection;
     private CollectionReference postCollection;
     private CollectionReference collectionsPostCollections;
     private CollectionReference peopleCollection;
-    private CollectionReference likesCollection;
     private CollectionReference timelineCollection;
     private CollectionReference commentCollection;
     private DatabaseReference databaseReference;
-    private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
 
-
-    public NotificationsAdapter(Context mContext) {
+    public NotificationsAdapter(@NonNull FirestorePagingOptions<Timeline> options, Context mContext) {
+        super(options);
         this.mContext = mContext;
-    }
-
-    protected void setTimelineActivities(List<DocumentSnapshot> mSnapshots){
-        this.documentSnapshots = mSnapshots;
-        notifyDataSetChanged();
         initReferences();
     }
+
 
     private void initReferences(){
         firebaseAuth = FirebaseAuth.getInstance();
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
         postCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-        likesCollection = FirebaseFirestore.getInstance().collection(Constants.LIKES);
         collectionsPostCollections = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS);
         commentCollection = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
         peopleCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE_RELATIONS);
@@ -106,12 +98,12 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     protected DocumentSnapshot getSnapshot(int index) {
-        return documentSnapshots.get(index);
+        return getCurrentList().get(index);
     }
 
     @Override
     public int getItemCount() {
-        return documentSnapshots.size();
+        return super.getItemCount();
     }
 
     @Override
@@ -126,6 +118,12 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
             return FOLLOW_TYPE;
         }
 
+    }
+
+    @Nullable
+    @Override
+    public PagedList<DocumentSnapshot> getCurrentList() {
+        return super.getCurrentList();
     }
 
     @Override
@@ -147,7 +145,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position, Timeline model) {
         Timeline timeline = getSnapshot(position).toObject(Timeline.class);
         final String type = timeline.getType();
 

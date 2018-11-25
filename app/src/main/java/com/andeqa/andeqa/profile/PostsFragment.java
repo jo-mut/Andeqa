@@ -61,6 +61,7 @@ public class PostsFragment extends Fragment{
     private StaggeredGridLayoutManager layoutManager;
     private static final String EXTRA_USER_UID = "uid";
     private String mUid;
+    private String mPostId;
     private List<String> mSnapshotsIds = new ArrayList<>();
     private List<DocumentSnapshot> mSnapshots = new ArrayList<>();
     private ItemOffsetDecoration itemOffsetDecoration;
@@ -94,16 +95,12 @@ public class PostsFragment extends Fragment{
         //initialize click listener
         //FIREBASE AUTH
         firebaseAuth = FirebaseAuth.getInstance();
-        if (firebaseAuth.getCurrentUser()!= null){
+        mUid = getActivity().getIntent().getStringExtra(EXTRA_USER_UID);
 
-            mUid = getActivity().getIntent().getStringExtra(EXTRA_USER_UID);
-
-            postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            postsQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
-                    .whereEqualTo("user_id", mUid).limit(TOTAL_ITEMS);
-            firebaseAuth = FirebaseAuth.getInstance();
-
-        }
+        postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+        postsQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
+                .whereEqualTo("user_id", mUid).limit(TOTAL_ITEMS);
+        firebaseAuth = FirebaseAuth.getInstance();
 
         return view;
     }

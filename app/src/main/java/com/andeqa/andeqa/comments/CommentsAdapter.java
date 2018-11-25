@@ -18,6 +18,7 @@ import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Room;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.profile.ProfileActivity;
+import com.andeqa.andeqa.utils.BottomReachedListener;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
@@ -67,6 +68,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     private boolean showOnClick = false;
     private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
     private String roomId;
+    BottomReachedListener mBottomReachedListener;
+
 
 
     public CommentsAdapter(Context mContext) {
@@ -76,6 +79,10 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     public void setPostComments(List<DocumentSnapshot> mSnapshots){
         this.documentSnapshots = mSnapshots;
         notifyDataSetChanged();
+    }
+
+    public void setmBottomReachedListener(BottomReachedListener mBottomReachedListener){
+        this.mBottomReachedListener = mBottomReachedListener;
     }
 
 
@@ -103,6 +110,15 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
     @Override
     public void onBindViewHolder(final CommentViewHolder holder, int position) {
+
+        try {
+            if (position == documentSnapshots.size() - 1){
+                mBottomReachedListener.onBottomReached(position);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
         final Comment comment = getSnapshot(holder.getAdapterPosition()).toObject(Comment.class);
         final String userId = comment.getUser_id();
 

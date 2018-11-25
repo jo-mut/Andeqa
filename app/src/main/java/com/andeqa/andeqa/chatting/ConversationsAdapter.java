@@ -1,8 +1,11 @@
 package com.andeqa.andeqa.chatting;
 
+import android.arch.paging.PagedList;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
@@ -18,6 +21,8 @@ import com.andeqa.andeqa.models.Room;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
+import com.firebase.ui.firestore.paging.FirestorePagingOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -32,26 +37,29 @@ import java.util.List;
  * Created by J.EL on 3/30/2018.
  */
 
-public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ConversationsAdapter extends FirestorePagingAdapter<Room, RecyclerView.ViewHolder> {
     private static final String TAG = ConversationsAdapter.class.getSimpleName();
+    //firebase
+    private CollectionReference roomCollection;
+    private CollectionReference usersCollection;
+    private FirebaseAuth firebaseAuth;
     private static final String EXTRA_ROOM_ID = "roomId";
     private static final String EXTRA_USER_UID = "uid";
     private static final int TEXT = 1;
     private static final int PHOTO = 2;
-    private CollectionReference roomCollection;
-    private CollectionReference usersCollection;
-    private FirebaseAuth firebaseAuth;
     private Context mContext;
-    private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
 
 
-    public ConversationsAdapter(Context mContext) {
+    public ConversationsAdapter(@NonNull FirestorePagingOptions options, Context mContext) {
+        super(options);
         this.mContext = mContext;
     }
 
-    protected void setChatRooms(List<DocumentSnapshot> mSnapshots) {
-        this.documentSnapshots = mSnapshots;
-        notifyDataSetChanged();
+
+    @Nullable
+    @Override
+    public PagedList<DocumentSnapshot> getCurrentList() {
+        return super.getCurrentList();
     }
 
     @Override
@@ -71,8 +79,9 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     protected DocumentSnapshot getSnapshot(int index) {
-        return documentSnapshots.get(index);
+        return getCurrentList().get(index);
     }
+
 
     @Override
     public int getItemViewType(int position) {
@@ -93,10 +102,8 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        Room room = getSnapshot(position).toObject(Room.class);
-        final String type = room.getType();
-
+    protected void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull Room model) {
+        final String type = model.getType();
         firebaseAuth = FirebaseAuth.getInstance();
 
         if (firebaseAuth.getCurrentUser() != null) {
@@ -119,11 +126,11 @@ public class ConversationsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     }
 
-
     @Override
     public int getItemCount() {
-        return documentSnapshots.size();
+        return super.getItemCount();
     }
+
 
     private void populateText(final ConversationViewHolder holder, int position) {
         firebaseAuth = FirebaseAuth.getInstance();

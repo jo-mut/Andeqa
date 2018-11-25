@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.camera.GalleryPagerAdapter;
+import com.andeqa.andeqa.gallery.GalleryPagerAdapter;
 import com.andeqa.andeqa.utils.RunTimePermissions;
 import com.andeqa.andeqa.settings.CollectionSettingsActivity;
 

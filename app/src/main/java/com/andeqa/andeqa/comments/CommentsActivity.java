@@ -1,5 +1,6 @@
 package com.andeqa.andeqa.comments;
 
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,7 +18,7 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Comment;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Timeline;
-import com.google.android.exoplayer2.C;
+import com.andeqa.andeqa.utils.BottomReachedListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -107,6 +108,19 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     protected void onStart() {
         super.onStart();
         loadComments();
+
+        commentsAdapter.setmBottomReachedListener(new BottomReachedListener() {
+            @Override
+            public void onBottomReached(final int position) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        setNextComments();
+                    }
+                },1000);
+            }
+        });
+
     }
 
     @Override
@@ -192,8 +206,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     private void setCollections(){
         commentsCollection.document("post_ids").collection(mPostId)
                 .orderBy("time", Query.Direction.DESCENDING)
-                .limit(3)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                .limit(TOTAL_ITEMS).addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 

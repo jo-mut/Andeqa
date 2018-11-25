@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -23,7 +22,6 @@ public class PhotoPostViewHolder extends RecyclerView.ViewHolder {
 
     View mView;
     Context mContext;
-    ProgressBar progressBar;
     public LinearLayout commentsLinearLayout;
     public ImageView commentsImageView;
     public TextView titleTextView;
@@ -31,15 +29,10 @@ public class PhotoPostViewHolder extends RecyclerView.ViewHolder {
     public TextView usernameTextView;
     public CircleImageView profileImageView;
     public TextView commentsCountTextView;
-    public TextView senseCreditsTextView;
     public RelativeLayout titleRelativeLayout;
-    public static final int MAX_WIDTH = 400;
-    public static final int MAX_HEIGHT = 400;
     public RelativeLayout descriptionRelativeLayout;
-    public LinearLayout mCommentsLinearLayout;
     public TextView timeTextView;
     public LinearLayout captionLinearLayout;
-    public LinearLayout mCreditsLinearLayout;
     public ConstraintLayout postConstraintLayout;
     public ProportionalImageView postImageView;
     public TextView collectionNameTextView;
@@ -56,13 +49,10 @@ public class PhotoPostViewHolder extends RecyclerView.ViewHolder {
         profileImageView = (CircleImageView) itemView.findViewById(R.id.profileImageView);
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
         titleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.titleRelativeLayout);
-        descriptionRelativeLayout  = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
-        postImageView = (ProportionalImageView) mView.findViewById(R.id.postImageView);
-        postConstraintLayout = (ConstraintLayout) mView.findViewById(R.id.postConstrantLayout);
-        senseCreditsTextView = (TextView) mView.findViewById(R.id.creditsTextView);
-        mCommentsLinearLayout = (LinearLayout) mView.findViewById(R.id.commentsLinearLayout);
-        mCreditsLinearLayout = (LinearLayout) mView.findViewById(R.id.creditsLinearLayout);
-        collectionNameTextView = (TextView) mView.findViewById(R.id.collectionNameTextView);
+        descriptionRelativeLayout  = (RelativeLayout) itemView.findViewById(R.id.descriptionRelativeLayout);
+        postImageView = (ProportionalImageView) itemView.findViewById(R.id.postImageView);
+        postConstraintLayout = (ConstraintLayout) itemView.findViewById(R.id.postConstraintLayout);
+        collectionNameTextView = (TextView) itemView.findViewById(R.id.collectionNameTextView);
     }
 
 

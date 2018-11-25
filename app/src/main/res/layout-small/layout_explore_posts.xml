@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content">
 
                 <android.support.constraint.ConstraintLayout
-                    android:id="@+id/postConstrantLayout"
+                    android:id="@+id/postConstraintLayout"
                     android:background="@android:color/white"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">

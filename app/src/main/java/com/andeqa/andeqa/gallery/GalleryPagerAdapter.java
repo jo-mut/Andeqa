@@ -1,10 +1,10 @@
-package com.andeqa.andeqa.camera;
+package com.andeqa.andeqa.gallery;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.andeqa.andeqa.gallery.PicturesFragment;
+import com.andeqa.andeqa.camera.CameraFragment;
 
 public class GalleryPagerAdapter extends FragmentPagerAdapter {
     private static final String TAG = GalleryPagerAdapter.class.getSimpleName();

@@ -1,9 +1,11 @@
 package com.andeqa.andeqa.chatting;
 
 import android.app.Activity;
+import android.arch.paging.PagedList;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
@@ -17,9 +19,12 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.impressions.ImpressionTracker;
 import com.andeqa.andeqa.impressions.MessagingVisibilityTracker;
 import com.andeqa.andeqa.models.Message;
+import com.andeqa.andeqa.utils.BottomReachedListener;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
+import com.firebase.ui.firestore.paging.FirestorePagingOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -27,23 +32,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.WeakHashMap;
 
-import javax.annotation.Nullable;
-
-public class ChatsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+public class ChatsAdapter extends FirestorePagingAdapter<Message, RecyclerView.ViewHolder>
         implements ImpressionTracker.VisibilityTrackerListener{
+    //context
     private final String TAG = ChatsAdapter.class.getSimpleName();
     private Context mContext;
+    //strings
     private static final String EXTRA_MESSAGE_ID = "message id";
     private static final String EXTRA_ROOM_ID = "roomId";
     private static final int SEND_DEFAULT =0;
@@ -51,25 +53,24 @@ public class ChatsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private static final int RECEIVE_DEFAULT =2;
     private static final int RECEIVE_PHOTO =3;
     private static final int EMPTY =4;
+    //firebase
     private FirebaseAuth firebaseAuth;
     private CollectionReference messagesCollection;
     private DatabaseReference seenMessagesReference;
+    //boolean
     private boolean showOnClick = true;
-    private List<DocumentSnapshot> snapshots = new ArrayList<>();
+    //lists
     private MessagingVisibilityTracker visibilityTracker;
     private final WeakHashMap<View, Integer> mViewPositionMap = new WeakHashMap<>();
 
-    public ChatsAdapter(Activity activity) {
-        this.mContext = activity;
-        visibilityTracker = new MessagingVisibilityTracker(activity);
+
+    public ChatsAdapter(@NonNull FirestorePagingOptions<Message> options, Activity mContext) {
+        super(options);
+        this.mContext = mContext;
+        visibilityTracker = new MessagingVisibilityTracker(mContext);
         initReferences();
-
     }
 
-    public void setProfileMessages(List<DocumentSnapshot> messages){
-        this.snapshots = messages;
-        notifyDataSetChanged();
-    }
 
     private void initReferences(){
         firebaseAuth = FirebaseAuth.getInstance();
@@ -80,8 +81,13 @@ public class ChatsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     protected DocumentSnapshot getSnapshot(int index) {
+        return getCurrentList().get(index);
+    }
 
-        return snapshots.get(index);
+    @Nullable
+    @Override
+    public PagedList<DocumentSnapshot> getCurrentList() {
+        return super.getCurrentList();
     }
 
     @Override
@@ -93,6 +99,35 @@ public class ChatsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         for (View v : visibleViews) {
             Integer viewPosition = mViewPositionMap.get(v);
         }
+
+    }
+
+    private void messageSeen(int position){
+        final Message message = getCurrentList().get(position).toObject(Message.class);
+        final String receiverId = message.getReceiver_id();
+        final String senderId = message.getSender_id();
+        final String messageId = message.getMessage_id();
+
+        seenMessagesReference.child("seen_messages")
+                .child(receiverId).child(senderId)
+                .child(messageId).child("seen").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()){
+                    seenMessagesReference.child("seen_messages")
+                            .child(receiverId).child(senderId)
+                            .child(messageId).child("seen").setValue("seen");
+                    Log.d("view not seen", messageId);
+                }else {
+                    Log.d("view is seen", messageId);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
 
@@ -147,7 +182,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, Message model) {
 
         switch (holder.getItemViewType()){
             case 0:
@@ -163,11 +198,16 @@ public class ChatsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 populateReceivePhoto((MessageReceivePhotoViewHolder) holder, position);
                 break;
         }
+
+        // check if message is seen
+        messageSeen(position);
+
     }
+
 
     @Override
     public int getItemCount() {
-        return snapshots.size();
+        return super.getItemCount();
     }
 
     private void populateSendPhoto(final MessageSentPhotoViewHolder holder, final int position) {
@@ -222,53 +262,32 @@ public class ChatsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         });
 
 
-        messagesCollection.document(firebaseAuth.getCurrentUser().getUid())
-                .collection(message.getRoom_id()).orderBy("time", Query.Direction.DESCENDING).limit(1)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+        seenMessagesReference.child("seen_messages")
+                .child(message.getReceiver_id())
+                .child(firebaseAuth.getCurrentUser().getUid())
+                .child(message.getMessage_id()).child("seen")
+                .addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()){
+                            holder.timeTextView.setText("seen " + DateFormat.format("HH:mm", message.getTime()));
+                            holder.seenImageView.setVisibility(View.VISIBLE);
+                            holder.seenImageView.setImageResource(R.drawable.ic_done_double_tick);
 
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
+                        }else {
+                            holder.seenImageView.setVisibility(View.VISIBLE);
+                            holder.seenImageView.setImageResource(R.drawable.ic_done_tick);
+                            holder.timeTextView.setText("sent " + DateFormat.format("HH:mm", message.getTime()));
+
                         }
 
-                        if (!documentSnapshots.isEmpty()){
-                            seenMessagesReference.child("seen_messages")
-                                    .child(message.getReceiver_id())
-                                    .child(firebaseAuth.getCurrentUser().getUid())
-                                    .child(message.getMessage_id()).child("seen")
-                                    .addValueEventListener(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            if (dataSnapshot.exists()){
-                                                holder.timeTextView.setText("seen " + DateFormat.format("HH:mm", message.getTime()));
-                                                if (position == snapshots.size() - 1){
-                                                    holder.seenImageView.setVisibility(View.VISIBLE);
-                                                    holder.seenImageView.setImageResource(R.drawable.ic_seen_accent);
-                                                }
+                    }
 
-                                            }else {
-                                                if (position == snapshots.size() - 1){
-                                                    holder.statusRelativeLayout.setVisibility(View.VISIBLE);
-                                                    holder.seenImageView.setVisibility(View.VISIBLE);
-                                                    holder.seenImageView.setImageResource(R.drawable.ic_done_black);
-                                                }
-                                                holder.timeTextView.setText("sent " + DateFormat.format("HH:mm", message.getTime()));
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                            }
-
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                        }
-                                    });
-                        }
                     }
                 });
-
 
     }
 
@@ -286,60 +305,40 @@ public class ChatsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             public void onClick(View view) {
                 if (showOnClick) {
                     holder.dateTextView.setVisibility(View.GONE);
-                    holder.timeRelativeLayout.setVisibility(View.GONE);
+                    holder.statusRelativeLayout.setVisibility(View.GONE);
                     showOnClick = false;
                 } else {
                     showOnClick = true;
                     holder.dateTextView.setVisibility(View.VISIBLE);
-                    holder.timeRelativeLayout.setVisibility(View.VISIBLE);
+                    holder.statusRelativeLayout.setVisibility(View.VISIBLE);
                 }
             }
         });
 
-        messagesCollection.document(firebaseAuth.getCurrentUser().getUid())
-                .collection(message.getRoom_id()).orderBy("time", Query.Direction.DESCENDING).limit(1)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+        seenMessagesReference.child("seen_messages")
+                .child(message.getReceiver_id())
+                .child(firebaseAuth.getCurrentUser().getUid())
+                .child(message.getMessage_id()).child("seen")
+                .addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()){
+                            holder.timeTextView.setText("seen " + DateFormat.format("HH:mm", message.getTime()));
+                            holder.seenImageView.setVisibility(View.VISIBLE);
+                            holder.seenImageView.setImageResource(R.drawable.ic_done_double_tick);
 
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
+                        }else {
+                            holder.seenImageView.setVisibility(View.VISIBLE);
+                            holder.seenImageView.setImageResource(R.drawable.ic_done_tick);
+                            holder.timeTextView.setText("sent " + DateFormat.format("HH:mm", message.getTime()));
+
                         }
 
-                        if (!documentSnapshots.isEmpty()){
-                            seenMessagesReference.child("seen_messages")
-                                    .child(message.getReceiver_id())
-                                    .child(firebaseAuth.getCurrentUser().getUid())
-                                    .child(message.getMessage_id()).child("seen")
-                                    .addValueEventListener(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            if (dataSnapshot.exists()){
-                                                holder.timeTextView.setText("seen " + DateFormat.format("HH:mm", message.getTime()));
-                                                if (position == snapshots.size() - 1){
-                                                    holder.seenImageView.setVisibility(View.VISIBLE);
-                                                    holder.seenImageView.setImageResource(R.drawable.ic_seen_accent);
-                                                }
+                    }
 
-                                            }else {
-                                                if (position == snapshots.size() - 1){
-                                                    holder.timeRelativeLayout.setVisibility(View.VISIBLE);
-                                                    holder.seenImageView.setVisibility(View.VISIBLE);
-                                                    holder.seenImageView.setImageResource(R.drawable.ic_done_black);
-                                                }
-                                                holder.timeTextView.setText("sent " + DateFormat.format("HH:mm", message.getTime()));
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                            }
-
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                        }
-                                    });
-                        }
                     }
                 });
 
@@ -347,11 +346,6 @@ public class ChatsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private void populateReceivePhoto(final MessageReceivePhotoViewHolder holder, final int position){
         final Message message = getSnapshot(position).toObject(Message.class);
-
-//        //calculate view visibility and add visible views to impression tracker
-//        mViewPositionMap.put(holder.itemView, position);
-//        visibilityTracker.addView(holder.itemView, 50, message.getMessage_id(),
-//                "message", message.getReceiver_id(), message.getSender_id());
 
         holder.dateTextView.setText(DateFormat.format("dd-MM-yy", message.getTime()));
         if (message.getMessage() != null){
@@ -416,11 +410,6 @@ public class ChatsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private void populateReceive(final MessageReceiveViewHolder holder, final int position){
         final Message message = getSnapshot(position).toObject(Message.class);
-
-        //calculate view visibility and add visible views to impression tracker
-//        mViewPositionMap.put(holder.itemView, position);
-//        visibilityTracker.addView(holder.itemView, 50, message.getMessage_id(),
-//                "message", message.getReceiver_id(), message.getSender_id());
 
         holder.dateTextView.setText(DateFormat.format("dd-MM-yy", message.getTime()));
 

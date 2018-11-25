@@ -1,6 +1,7 @@
 package com.andeqa.andeqa.collections;
 
 
+import android.arch.paging.PagedList;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,7 +25,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
+import com.firebase.ui.firestore.paging.FirestorePagingOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -51,16 +53,14 @@ public class CollectionsFragment extends Fragment implements View.OnClickListene
     private Query collectionsQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
-    //firestore adapters
-    private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
-    private int TOTAL_ITEMS = 10;
-    private StaggeredGridLayoutManager layoutManager;
+    //strings
     private static final String EXTRA_USER_UID = "uid";
     private static final String COLLECTION_ID = "collection id";
-    private SearchView searchView;
-    private List<String> mSnapshotsIds = new ArrayList<>();
-    private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
+    //layouts
     private ItemOffsetDecoration itemOffsetDecoration;
+    private StaggeredGridLayoutManager layoutManager;
+    private SearchView searchView;
+
 
     public CollectionsFragment() {
         // Required empty public constructor
@@ -74,15 +74,11 @@ public class CollectionsFragment extends Fragment implements View.OnClickListene
         View view = inflater.inflate(R.layout.fragment_collections, container, false);
         ButterKnife.bind(this, view);
         //initialize click listener
-        //FIREBASE AUTH
-        firebaseAuth = FirebaseAuth.getInstance();
-        //initialize click listeners
         mViewCollectionsTextView.setOnClickListener(this);
-
-        usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
-        collectionsQuery = collectionsCollection.orderBy("name", Query.Direction.ASCENDING)
-                .limit(TOTAL_ITEMS);
+        // initialise firebase
+        initFirebase();
+        //set up adapter
+        setUpAdapter();
 
         return view;
     }
@@ -91,10 +87,6 @@ public class CollectionsFragment extends Fragment implements View.OnClickListene
     @Override
     public void onActivityCreated(@android.support.annotation.Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        documentSnapshots.clear();
-        setColections();
-        setRecyclerView();
-
     }
 
     @Override
@@ -112,7 +104,6 @@ public class CollectionsFragment extends Fragment implements View.OnClickListene
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        firestoreRecyclerAdapter.stopListening();
     }
 
     @Override
@@ -136,32 +127,38 @@ public class CollectionsFragment extends Fragment implements View.OnClickListene
     }
 
 
-    private void setRecyclerView(){
-        // RecyclerView
-        mCollectionsRecyclerView.setAdapter(firestoreRecyclerAdapter);
-        firestoreRecyclerAdapter.startListening();
-        mCollectionsRecyclerView.setHasFixedSize(false);
-        layoutManager = new StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL);
-        itemOffsetDecoration = new ItemOffsetDecoration(getContext(), R.dimen.item_off_set);
-        mCollectionsRecyclerView.setLayoutManager(layoutManager);
-
+    private void initFirebase(){
+        firebaseAuth = FirebaseAuth.getInstance();
+        usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
+        collectionsQuery = collectionsCollection.orderBy("name", Query.Direction.ASCENDING);
     }
 
-    private void setColections(){
-        FirestoreRecyclerOptions<Collection> options = new FirestoreRecyclerOptions.Builder<Collection>()
-                .setQuery(collectionsQuery, Collection.class)
+    private void setUpAdapter(){
+        PagedList.Config config = new PagedList.Config.Builder()
+                .setEnablePlaceholders(false)
+                .setPrefetchDistance(10)
+                .setPageSize(20)
                 .build();
 
-        firestoreRecyclerAdapter = new FirestoreRecyclerAdapter<Collection, CollectionViewHolder>(options) {
-            @Override
-            protected void onBindViewHolder(@NonNull CollectionViewHolder holder, int position, @NonNull final Collection model) {
+        FirestorePagingOptions<Collection> options = new FirestorePagingOptions.Builder<Collection>()
+                .setLifecycleOwner(this)
+                .setQuery(collectionsQuery, config, Collection.class)
+                .build();
 
+
+        FirestorePagingAdapter<Collection, CollectionViewHolder>
+                pagingAdapter = new FirestorePagingAdapter<Collection, CollectionViewHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull CollectionViewHolder holder, int position, @NonNull Collection model) {
+                final String collectionId = model.getCollection_id();
+                final String userId = model.getUser_id();
                 holder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(getActivity(), CollectionPostsActivity.class);
-                        intent.putExtra(CollectionsFragment.COLLECTION_ID, model.getCollection_id());
-                        intent.putExtra(CollectionsFragment.EXTRA_USER_UID, model.getUser_id());
+                        intent.putExtra(CollectionsFragment.COLLECTION_ID, collectionId);
+                        intent.putExtra(CollectionsFragment.EXTRA_USER_UID, userId);
                         startActivity(intent);
                     }
                 });
@@ -179,7 +176,6 @@ public class CollectionsFragment extends Fragment implements View.OnClickListene
                 }else {
                     holder.mCollectionNameTextView.setVisibility(View.GONE);
                 }
-
             }
 
             @NonNull
@@ -189,6 +185,12 @@ public class CollectionsFragment extends Fragment implements View.OnClickListene
                 return new CollectionViewHolder(view );
             }
         };
+
+        mCollectionsRecyclerView.setAdapter(pagingAdapter);
+        mCollectionsRecyclerView.setHasFixedSize(false);
+        layoutManager = new StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL);
+        itemOffsetDecoration = new ItemOffsetDecoration(getContext(), R.dimen.item_off_set);
+        mCollectionsRecyclerView.setLayoutManager(layoutManager);
 
 
     }
@@ -210,4 +212,6 @@ public class CollectionsFragment extends Fragment implements View.OnClickListene
 
         }
     }
-    }
+}
+
+

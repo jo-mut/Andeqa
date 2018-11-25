@@ -83,8 +83,7 @@ public class CameraActivity extends AppCompatActivity  implements
     private static final String EXTRA_POST_ID = "post id";
     private static final String CAMERA_PATH = "camera image";
     private static final String CAMERA_VIDEO = "camera video";
-    private static final String CAMERA_THUMB = "thumb";
-    private static final String PREVIEW_POST = "preview post";
+
 
     private String mUid;
     private String mRoomId;

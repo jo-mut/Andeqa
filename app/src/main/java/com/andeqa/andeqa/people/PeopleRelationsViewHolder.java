@@ -16,16 +16,20 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class PeopleRelationsViewHolder extends RecyclerView.ViewHolder {
     Context mContext;
     View mView;
-    @Bind(R.id.usernameTextView)TextView mUsernameTextView;
-    @Bind(R.id.fullNameTextView)TextView mFullNameTextView;
-    @Bind(R.id.profileImageView)CircleImageView mProfileImageView;
-    @Bind(R.id.followButton) Button mFollowButton;
-    @Bind(R.id.sendMessageImageView)ImageView mSendMessageImageView;
+    public ImageView mSendMessageImageView;
+    public CircleImageView mProfileImageView;
+    public Button mFollowButton;
+    public TextView mFullNameTextView;
+    public TextView mUsernameTextView;
 
     public PeopleRelationsViewHolder(View itemView) {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
-        ButterKnife.bind(this, mView);
+        mSendMessageImageView = (ImageView) mView.findViewById(R.id.sendMessageImageView);
+        mProfileImageView = (CircleImageView) mView.findViewById(R.id.profileImageView);
+        mFollowButton = (Button) mView.findViewById(R.id.followButton);
+        mFullNameTextView = (TextView) mView.findViewById(R.id.fullNameTextView);
+        mUsernameTextView = (TextView) mView.findViewById(R.id.usernameTextView);
     }
 }

@@ -20,7 +20,7 @@ public class MessageSentPhotoViewHolder extends RecyclerView.ViewHolder {
     public ImageView photoImageView;
     public TextView dateTextView;
     public LinearLayout photoLinearLayout;
-    public CircleImageView seenImageView;
+    public ImageView seenImageView;
     public LinearLayout statusRelativeLayout;
 
 
@@ -32,7 +32,7 @@ public class MessageSentPhotoViewHolder extends RecyclerView.ViewHolder {
         photoImageView = (ImageView) mView.findViewById(R.id.photoImageView);
         photoLinearLayout = (LinearLayout) mView.findViewById(R.id.photoLinearLayout);
         messageTextView = (TextView) mView.findViewById(R.id.messageTextView);
-        seenImageView = (CircleImageView) mView.findViewById(R.id.seenImageView);
+        seenImageView = (ImageView) mView.findViewById(R.id.seenImageView);
         statusRelativeLayout = (LinearLayout) mView.findViewById(R.id.timeRelativeLayout);
         dateTextView = (TextView) mView.findViewById(R.id.dateTextView);
 

@@ -29,36 +29,6 @@
             tools:ignore="HardcodedText,UnusedAttribute"
             app:titleTextColor="@android:color/white">
 
-            <ImageView
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_gravity="start"
-                android:id="@+id/backImageView"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:background="@drawable/ic_arrow"
-                android:scaleType="centerCrop"/>
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_gravity="start"
-                android:id="@+id/profileImageView"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:scaleType="centerCrop"/>
-
-            <TextView
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/usernameTextView"
-                android:textSize="12sp"
-                android:textColor="@android:color/white"
-                android:textStyle="normal|bold"
-                android:text="" />
-
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>

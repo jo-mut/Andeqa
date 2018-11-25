@@ -22,7 +22,7 @@
 
         <ImageView
             android:background="@drawable/accent_color"
-            app:srcCompat="@drawable/ic_done_dark"
+            app:srcCompat="@drawable/ic_done_circle_accent"
             android:layout_margin="5dp"
             android:layout_width="35dp"
             android:layout_height="35dp"

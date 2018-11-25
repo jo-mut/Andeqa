@@ -4,8 +4,8 @@
 
     <item
         android:id="@+id/action_view_profile"
-        android:icon="@drawable/ic_settings_vert"
-        app:showAsAction="never"
+        android:icon="@drawable/ic_info"
+        app:showAsAction="always"
         android:title="View profile">
     </item>
 

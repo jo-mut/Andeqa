@@ -113,7 +113,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        app:srcCompat="@drawable/ic_check"
+                        app:srcCompat="@drawable/ic_done_circle_white"
                         android:id="@+id/doneEditingImageView"
                         android:padding="10dp"
                         android:layout_centerVertical="true" />

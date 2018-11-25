@@ -91,7 +91,7 @@
                         android:layout_width="36dp"
                         android:layout_height="36dp"
                         android:scaleType="centerCrop"
-                        app:srcCompat="@drawable/ic_done" />
+                        app:srcCompat="@drawable/ic_done_circle_white" />
 
                 </RelativeLayout>
 

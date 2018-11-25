@@ -1,21 +1,46 @@
 package com.andeqa.andeqa.profile;
 
+import android.arch.paging.PagedList;
+import android.content.Intent;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintSet;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.collections.CollectionPostsActivity;
+import com.andeqa.andeqa.comments.CommentsActivity;
+import com.andeqa.andeqa.home.HomeFragment;
+import com.andeqa.andeqa.home.PhotoPostViewHolder;
 import com.andeqa.andeqa.models.Andeqan;
+import com.andeqa.andeqa.models.Collection;
+import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
+import com.andeqa.andeqa.post_detail.PostDetailActivity;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
+import com.firebase.ui.firestore.paging.FirestorePagingOptions;
+import com.firebase.ui.firestore.paging.LoadingState;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -34,37 +59,35 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class ProfilePostsActivity extends AppCompatActivity {
-    @Bind(R.id.postsRecyclerView)RecyclerView mPostssRecyclerView;
+    @Bind(R.id.postsRecyclerView)RecyclerView mPostsRecyclerView;
     @Bind(R.id.toolbar)Toolbar toolbar;
-    private static final String TAG = ProfilePostsActivity.class.getSimpleName();
-
+    @Bind(R.id.progressBar)ProgressBar mProgressBar;
+    @Bind(R.id.progressRelativeLayout)RelativeLayout mProgressRelativeLayout;
+    private static final String TAG = HomeFragment.class.getSimpleName();
     //firestore reference
     private CollectionReference postsCollection;
-    private CollectionReference collectionsPosts;
-    private Query profilePostsQuery;
     private CollectionReference usersReference;
+    private CollectionReference collectionsPosts;
+    private CollectionReference commentsReference;
+    private DatabaseReference impressionReference;
+    private CollectionReference collectionsPostReference;
+    private Query profilePostsQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
-    //firestore adapters
-    private ProfilePostsAdapters profilePostsAdapters;
-    private static final String KEY_LAYOUT_POSITION = "layout pooition";
-    private Parcelable recyclerViewState;
-    private  static final int MAX_WIDTH = 400;
-    private static final int MAX_HEIGHT = 400;
-    private int TOTAL_ITEMS = 10;
-    private StaggeredGridLayoutManager layoutManager;
-    private static final String EXTRA_USER_UID = "uid";
-
-    private String collectionId;
-    private String mUid;
-    private String mSource;
-    private static final String COLLECTION_ID = "collection id";
-    private List<String> mSnapshotsIds = new ArrayList<>();
-    private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
-    int spanCount = 2; // 3 columns
-    int spacing = 10; // 50px
-    boolean includeEdge = false;
+    //lists
+    private List<DocumentSnapshot> snapshots = new ArrayList<>();
+    //layouts
+    private ConstraintSet constraintSet;
     private ItemOffsetDecoration itemOffsetDecoration;
+    private StaggeredGridLayoutManager layoutManager;
+    //strings
+    private static final String EXTRA_POST_ID = "post id";
+    private static final String COLLECTION_ID = "collection id";
+    private static final String EXTRA_USER_UID =  "uid";
+    private static final String TYPE = "type";
+    private static final String POST_HEIGHT = "height";
+    private static final String POST_WIDTH = "width";
+    private String mUid;
 
 
     @Override
@@ -81,17 +104,11 @@ public class ProfilePostsActivity extends AppCompatActivity {
                 finish();
             }
         });
-        //FIREBASE AUTH
-        firebaseAuth = FirebaseAuth.getInstance();
-        mUid = getIntent().getStringExtra(EXTRA_USER_UID);
 
-        postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-        profilePostsQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
-                .whereEqualTo("user_id", mUid).limit(TOTAL_ITEMS);
-        collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS);
-        usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+        initReferences();
 
         setToolbarTitle();
+        setUpAdapter();
 
     }
 
@@ -104,14 +121,13 @@ public class ProfilePostsActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        loadData();
-        mPostssRecyclerView.addItemDecoration(itemOffsetDecoration);
+        mPostsRecyclerView.addItemDecoration(itemOffsetDecoration);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        mPostssRecyclerView.removeItemDecoration(itemOffsetDecoration);
+        mPostsRecyclerView.removeItemDecoration(itemOffsetDecoration);
     }
 
 
@@ -140,134 +156,348 @@ public class ProfilePostsActivity extends AppCompatActivity {
         });
     }
 
-    private void loadData(){
-        documentSnapshots.clear();
-        setRecyclerView();
-        setPosts();
+    private void initReferences(){
+        firebaseAuth = FirebaseAuth.getInstance();
+        //firestore
+        firebaseAuth = FirebaseAuth.getInstance();
+        mUid = getIntent().getStringExtra(EXTRA_USER_UID);
+
+        postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+        profilePostsQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
+                .whereEqualTo("user_id", mUid);
+        collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS);
+        usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+        usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+        usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+        collectionsPostReference = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
+        //firebase
+        //document reference
+        commentsReference  = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
+        //firebase database references
+        impressionReference = FirebaseDatabase.getInstance().getReference(Constants.VIEWS);
+        impressionReference.keepSynced(true);
     }
 
-    private void setRecyclerView(){
-        // RecyclerView
-        profilePostsAdapters = new ProfilePostsAdapters(this);
-        mPostssRecyclerView.setAdapter(profilePostsAdapters);
-        profilePostsAdapters.setCollectionPosts(documentSnapshots);
-        mPostssRecyclerView.setHasFixedSize(false);
-        layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
-        itemOffsetDecoration = new ItemOffsetDecoration(this, R.dimen.item_off_set);
-        mPostssRecyclerView.setLayoutManager(layoutManager);
+    private void setUpAdapter() {
+        Query query = profilePostsQuery.orderBy("time", Query.Direction.DESCENDING);
+        PagedList.Config config = new PagedList.Config.Builder()
+                .setEnablePlaceholders(false)
+                .setPrefetchDistance(10)
+                .setPageSize(20)
+                .build();
 
-    }
+        FirestorePagingOptions<Post> options = new FirestorePagingOptions.Builder<Post>()
+                .setLifecycleOwner(this)
+                .setQuery(query, config, Post.class)
+                .build();
 
-    private void setPosts(){
-        profilePostsQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        FirestorePagingAdapter<Post, PhotoPostViewHolder> pagingAdapter
+                = new FirestorePagingAdapter<Post, PhotoPostViewHolder>(options) {
             @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+            protected void onBindViewHolder(@NonNull final PhotoPostViewHolder holder, int position, @NonNull Post model) {
+                final Post post = model;
+                final String postId = post.getPost_id();
+                final String uid = post.getUser_id();
+                final String collectionId = post.getCollection_id();
+                final String type = post.getType();
 
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
+                if (post.getHeight() != null && post.getWidth() != null){
+                    final float width = (float) Integer.parseInt(post.getWidth());
+                    final float height = (float) Integer.parseInt(post.getHeight());
+                    float ratio = height/width;
+
+                    constraintSet = new ConstraintSet();
+                    constraintSet.clone(holder.postConstraintLayout);
+                    constraintSet.setDimensionRatio(holder.postImageView.getId(), "H," + ratio);
+                    holder.postImageView.setImageResource(R.drawable.post_placeholder);
+                    constraintSet.applyTo(holder.postConstraintLayout);
+
+                }else {
+                    constraintSet = new ConstraintSet();
+                    constraintSet.clone(holder.postConstraintLayout);
+                    constraintSet.setDimensionRatio(holder.postImageView.getId(), "H," + 1);
+                    holder.postImageView.setImageResource(R.drawable.post_placeholder);
+                    constraintSet.applyTo(holder.postConstraintLayout);
+
                 }
 
-                if (!documentSnapshots.isEmpty()) {
-                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                        switch (change.getType()) {
-                            case ADDED:
-                                Post post = change.getDocument().toObject(Post.class);
-                                String type = post.getType();
-                                if (!type.equals("single_video_post") || !type.equals("collection_video_post")){
-                                    onDocumentAdded(change);
-                                }
-                                break;
-                            case MODIFIED:
-                                onDocumentModified(change);
-                                break;
-                            case REMOVED:
-                                onDocumentRemoved(change);
-                                break;
-                        }
+
+                if (post.getUrl() == null){
+                    //firebase firestore references
+                    if (type.equals("single")|| type.equals("single_image_post")){
+                        collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
+                                .document("singles").collection(collectionId);
+                    }else{
+                        collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
+                                .document("collections").collection(collectionId);
                     }
-                }
+                    collectionsPosts.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                            if (e != null) {
+                                Log.w(TAG, "Listen error", e);
+                                return;
+                            }
 
-            }
-        });
+                            if (documentSnapshot.exists()){
+                                final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
+                                //set the image on the image view
+                                Glide.with(getApplicationContext())
+                                        .load(collectionPost.getImage())
+                                        .apply(new RequestOptions()
+                                                .placeholder(R.drawable.post_placeholder)
+                                                .diskCacheStrategy(DiskCacheStrategy.DATA))
+                                        .into(holder.postImageView);
 
-    }
+                                if (!TextUtils.isEmpty(collectionPost.getTitle())){
+                                    holder.captionLinearLayout.setVisibility(View.VISIBLE);
+                                    holder.titleTextView.setText(collectionPost.getTitle());
+                                    holder.titleRelativeLayout.setVisibility(View.VISIBLE);
+                                }else {
+                                    holder.titleRelativeLayout.setVisibility(View.GONE);
+                                }
 
-    private void setNextPosts(){
-        // Get the last visible document
-        final int snapshotSize = profilePostsAdapters.getItemCount();
-
-        if (snapshotSize != 0){
-            DocumentSnapshot lastVisible = profilePostsAdapters.getSnapshot(snapshotSize - 1);
-            //retrieve the first bacth of posts
-            Query nextSinglesQuery = postsCollection.orderBy("time", Query.Direction.DESCENDING)
-                    .whereEqualTo("user_id", mUid).startAfter(lastVisible)
-                    .limit(TOTAL_ITEMS);
-            nextSinglesQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                @Override
-                public void onSuccess(QuerySnapshot documentSnapshots) {
-                    if (!documentSnapshots.isEmpty()){
-                        //retrieve the first bacth of posts
-                        for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                            switch (change.getType()) {
-                                case ADDED:
-                                    Post post = change.getDocument().toObject(Post.class);
-                                    String type = post.getType();
-                                    if (!type.equals("single_video_post") || !type.equals("collection_video_post")){
-                                        onDocumentAdded(change);
+                                if (!TextUtils.isEmpty(collectionPost.getDescription())){
+                                    //prevent collection note from overlapping other layouts
+                                    final String [] strings = collectionPost.getDescription().split("");
+                                    final int size = strings.length;
+                                    if (size <= 50){
+                                        holder.captionLinearLayout.setVisibility(View.VISIBLE);
+                                        holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                                        holder.descriptionTextView.setText(collectionPost.getDescription());
+                                    }else{
+                                        holder.captionLinearLayout.setVisibility(View.VISIBLE);
+                                        holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                                        final String boldMore = "...";
+                                        String normalText = collectionPost.getDescription().substring(0, 49);
+                                        holder.descriptionTextView.setText(normalText + boldMore);
                                     }
-                                    break;
-                                case MODIFIED:
-                                    onDocumentModified(change);
-                                    break;
-                                case REMOVED:
-                                    onDocumentRemoved(change);
-                                    break;
+                                }else {
+                                    holder.captionLinearLayout.setVisibility(View.GONE);
+                                }
+                            }else {
+                                //post does not exist
                             }
                         }
+                    });
+                }else {
+                    Glide.with(getApplicationContext())
+                            .load(post.getUrl())
+                            .apply(new RequestOptions()
+                                    .placeholder(R.drawable.post_placeholder)
+                                    .diskCacheStrategy(DiskCacheStrategy.DATA))
+                            .into(holder.postImageView);
+
+                    if (!TextUtils.isEmpty(post.getTitle())){
+                        holder.captionLinearLayout.setVisibility(View.VISIBLE);
+                        holder.titleTextView.setText(post.getTitle());
+                        holder.titleRelativeLayout.setVisibility(View.VISIBLE);
+                    }else {
+                        holder.titleRelativeLayout.setVisibility(View.GONE);
+                    }
+
+                    if (!TextUtils.isEmpty(post.getDescription())){
+                        //prevent collection note from overlapping other layouts
+                        final String [] strings = post.getDescription().split("");
+                        final int size = strings.length;
+                        if (size <= 50){
+                            holder.captionLinearLayout.setVisibility(View.VISIBLE);
+                            holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                            holder.descriptionTextView.setText(post.getDescription());
+                        }else{
+                            holder. captionLinearLayout.setVisibility(View.VISIBLE);
+                            holder.descriptionRelativeLayout.setVisibility(View.VISIBLE);
+                            final String boldMore = "...";
+                            String normalText = post.getDescription().substring(0, 49);
+                            holder.descriptionTextView.setText(normalText + boldMore);
+                        }
+                    }else {
+                        holder.captionLinearLayout.setVisibility(View.GONE);
                     }
                 }
-            });
-        }
+
+
+                if (post.getWidth() != null && post.getHeight() != null){
+                    holder.postImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent =  new Intent(ProfilePostsActivity.this, PostDetailActivity.class);
+                            intent.putExtra(ProfilePostsActivity.EXTRA_POST_ID, postId);
+                            intent.putExtra(ProfilePostsActivity.COLLECTION_ID, collectionId);
+                            intent.putExtra(ProfilePostsActivity.EXTRA_USER_UID, uid);
+                            intent.putExtra(ProfilePostsActivity.TYPE, type);
+                            intent.putExtra(ProfilePostsActivity.POST_HEIGHT, post.getHeight());
+                            intent.putExtra(ProfilePostsActivity.POST_WIDTH, post.getWidth());
+                            startActivity(intent);
+                        }
+                    });
+                }else {
+                    holder.postImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent =  new Intent(ProfilePostsActivity.this, PostDetailActivity.class);
+                            intent.putExtra(ProfilePostsActivity.EXTRA_POST_ID, postId);
+                            intent.putExtra(ProfilePostsActivity.COLLECTION_ID, collectionId);
+                            intent.putExtra(ProfilePostsActivity.EXTRA_USER_UID, uid);
+                            intent.putExtra(ProfilePostsActivity.TYPE, type);
+                            startActivity(intent);
+                        }
+                    });
+
+                }
+
+                holder.profileImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(ProfilePostsActivity.this, ProfileActivity.class);
+                        intent.putExtra(ProfilePostsActivity.EXTRA_USER_UID, uid);
+                        startActivity(intent);
+                    }
+                });
+
+                holder.commentsImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(ProfilePostsActivity.this, CommentsActivity.class);
+                        intent.putExtra(ProfilePostsActivity.EXTRA_POST_ID, postId);
+                        startActivity(intent);
+                    }
+                });
+
+                collectionsPostReference.document(collectionId)
+                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                            @Override
+                            public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot,
+                                                @javax.annotation.Nullable FirebaseFirestoreException e) {
+                                if (e != null) {
+                                    Log.w(TAG, "Listen error", e);
+                                    return;
+                                }
+
+                                if (documentSnapshot.exists()){
+                                    Collection collection = documentSnapshot.toObject(Collection.class);
+                                    final String name = collection.getName();
+                                    final String creatorUid = collection.getUser_id();
+                                    holder.collectionNameTextView.setText("@" + name);
+                                    holder.collectionNameTextView.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            Intent intent = new Intent(ProfilePostsActivity.this, CollectionPostsActivity.class);
+                                            intent.putExtra(ProfilePostsActivity.COLLECTION_ID, collectionId);
+                                            intent.putExtra(ProfilePostsActivity.EXTRA_USER_UID, creatorUid);
+                                            startActivity(intent);
+                                        }
+                                    });
+                                }else {
+                                    holder.collectionNameTextView.setText("");
+                                }
+                            }
+                        });
+
+                usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (documentSnapshot.exists()){
+                            final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                            holder.usernameTextView.setText(andeqan.getUsername());
+
+                            Glide.with(getApplicationContext())
+                                    .load(andeqan.getProfile_image())
+                                    .apply(new RequestOptions()
+                                            .placeholder(R.drawable.ic_user)
+                                            .diskCacheStrategy(DiskCacheStrategy.DATA))
+                                    .into(holder.profileImageView);
+                        }
+                    }
+                });
+
+                //get the number of commments in a single
+                commentsReference.document("post_ids").collection(postId)
+                        .orderBy("comment_id").whereEqualTo("post_id", postId)
+                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                            @Override
+                            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                                if (e != null) {
+                                    Log.w(TAG, "Listen error", e);
+                                    return;
+                                }
+
+                                if (!documentSnapshots.isEmpty()){
+                                    final int commentsCount = documentSnapshots.size();
+                                    holder.commentsCountTextView.setText(commentsCount + "");
+                                }else {
+                                    holder.commentsCountTextView.setText("0");
+                                }
+                            }
+                        });
+
+            }
+
+            @NonNull
+            @Override
+            public PhotoPostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.layout_explore_posts, parent, false);
+                return new PhotoPostViewHolder(view);
+            }
+
+
+            @Override
+            public int getItemViewType(int position) {
+                return super.getItemViewType(position);
+            }
+
+            @Override
+            public void setHasStableIds(boolean hasStableIds) {
+                super.setHasStableIds(hasStableIds);
+            }
+
+            @Override
+            public long getItemId(int position) {
+                return super.getItemId(position);
+            }
+
+            @Override
+            protected void onLoadingStateChanged(@NonNull LoadingState state) {
+                switch (state) {
+                    case LOADING_INITIAL:
+                    case LOADING_MORE:
+                        mProgressBar.setVisibility(View.VISIBLE);
+                        mProgressRelativeLayout.setVisibility(View.VISIBLE);
+                        break;
+                    case LOADED:
+                        mProgressBar.setVisibility(View.GONE);
+                        break;
+                    case FINISHED:
+                        mProgressBar.setVisibility(View.GONE);
+                        mProgressRelativeLayout.setVisibility(View.GONE);
+                        showToast("Reached end of data set.");
+                        break;
+                    case ERROR:
+                        showToast("An error occurred.");
+                        retry();
+                        break;
+                }
+            }
+        };
+
+        pagingAdapter.setHasStableIds(true);
+        mPostsRecyclerView.setHasFixedSize(false);
+        mPostsRecyclerView.setAdapter(pagingAdapter);
+        layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+        itemOffsetDecoration = new ItemOffsetDecoration(this, R.dimen.item_off_set);
+        mPostsRecyclerView.setLayoutManager(layoutManager);
 
     }
 
-    protected void onDocumentAdded(DocumentChange change) {
-        mSnapshotsIds.add(change.getDocument().getId());
-        documentSnapshots.add(change.getDocument());
-        profilePostsAdapters.notifyItemInserted(documentSnapshots.size() -1);
-        profilePostsAdapters.getItemCount();
-
-    }
-
-    protected void onDocumentModified(DocumentChange change) {
-        if (change.getOldIndex() == change.getNewIndex()) {
-            // Item changed but remained in same position
-            documentSnapshots.set(change.getOldIndex(), change.getDocument());
-            profilePostsAdapters.notifyItemChanged(change.getOldIndex());
-        } else {
-            // Item changed and changed position
-            documentSnapshots.remove(change.getOldIndex());
-            documentSnapshots.add(change.getNewIndex(), change.getDocument());
-            profilePostsAdapters.notifyItemRangeChanged(0, documentSnapshots.size());
-        }
-    }
-
-    protected void onDocumentRemoved(DocumentChange change) {
-        try{
-            documentSnapshots.remove(change.getOldIndex());
-            profilePostsAdapters.notifyItemRemoved(change.getOldIndex());
-            profilePostsAdapters.notifyItemRangeChanged(0, documentSnapshots.size());
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
+    private void showToast(@NonNull String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
 }

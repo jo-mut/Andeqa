@@ -30,10 +30,12 @@ public class PreviewImagePostActivity extends AppCompatActivity implements View.
     private static final String HEIGHT = "height";
     private static final String WIDTH = "width";
     private static final String EXTRA_POST_ID = "post id";
+    private static final String IMAGE_PATH ="image path";
+    private static final String VIDEO_PATH = "video path";
     private String mCollectionId;
     private String galleryImage;
     private String cameraImage;
-    private String postId;
+    private String image;
     private String video;
     private int height;
     private int width;
@@ -65,9 +67,9 @@ public class PreviewImagePostActivity extends AppCompatActivity implements View.
         mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
         galleryImage = getIntent().getStringExtra(GALLERY_PATH);
         cameraImage = getIntent().getStringExtra(CAMERA_PATH);
-        postId = getIntent().getStringExtra(EXTRA_POST_ID);
 
         if (cameraImage != null){
+            image = cameraImage;
             Glide.with(PreviewImagePostActivity.this)
                     .asBitmap()
                     .load(new File(cameraImage))
@@ -75,6 +77,7 @@ public class PreviewImagePostActivity extends AppCompatActivity implements View.
         }
 
         if (galleryImage != null){
+            image = galleryImage;
             Glide.with(PreviewImagePostActivity.this)
                     .asBitmap()
                     .load(new File(galleryImage))
@@ -82,6 +85,7 @@ public class PreviewImagePostActivity extends AppCompatActivity implements View.
         }
 
         if (mCollectionId != null){
+            image = galleryImage;
             Glide.with(PreviewImagePostActivity.this)
                     .asBitmap()
                     .load(new File(galleryImage))
@@ -99,7 +103,7 @@ public class PreviewImagePostActivity extends AppCompatActivity implements View.
         //if this is from share action
         if(intent.ACTION_SEND.equals(action)){
             if (bundle.containsKey(Intent.EXTRA_STREAM)){
-                //get the resource path
+                //get the resource image
                 handleIntentData(intent);
             }
         }
@@ -123,66 +127,18 @@ public class PreviewImagePostActivity extends AppCompatActivity implements View.
             height = postImageView.getDrawable().getIntrinsicHeight();
             width = postImageView.getDrawable().getIntrinsicWidth();
 
-            if (postId != null){
-                if (cameraImage != null){
-                    Intent intent = new Intent(PreviewImagePostActivity.this, CreateSingleActivity.class);
-                    intent.putExtra(PreviewImagePostActivity.GALLERY_PATH, cameraImage);
-                    intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
-                    intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
-                    startActivity(intent);
-                    finish();
-                }
-
-                if (video != null){
-                    Intent intent = new Intent(PreviewImagePostActivity.this, CreateSingleActivity.class);
-                    intent.putExtra(PreviewImagePostActivity.PHOTO_URI, video);
-                    intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
-                    intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
-                    startActivity(intent);
-                    finish();
-                }
-
-                if (photoUri != null){
-                    Intent intent = new Intent(PreviewImagePostActivity.this, CreateSingleActivity.class);
-                    intent.putExtra(PreviewImagePostActivity.PHOTO_URI, photoUri.toString());
-                    intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
-                    intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
-                    startActivity(intent);
-                    finish();
-                }
-
-            }else {
-                if (cameraImage != null){
-                    Intent intent = new Intent(PreviewImagePostActivity.this, CreateSingleActivity.class);
-                    intent.putExtra(PreviewImagePostActivity.GALLERY_PATH, cameraImage);
-                    intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
-                    intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
-                    startActivity(intent);
-                    finish();
-                }
-
-                if (video != null){
-                    Intent intent = new Intent(PreviewImagePostActivity.this, CreateSingleActivity.class);
-                    intent.putExtra(PreviewImagePostActivity.PHOTO_URI, video);
-                    intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
-                    intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
-                    startActivity(intent);
-                    finish();
-                }
-
-                if (photoUri != null){
-                    Intent intent = new Intent(PreviewImagePostActivity.this, CreateSingleActivity.class);
-                    intent.putExtra(PreviewImagePostActivity.PHOTO_URI, photoUri.toString());
-                    intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
-                    intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
-                    startActivity(intent);
-                    finish();
-                }
+            if (image != null){
+                Intent intent = new Intent(this, CreateSingleActivity.class);
+                intent.putExtra(PreviewImagePostActivity.IMAGE_PATH, image);
+                intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
+                intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
+                startActivity(intent);
+                finish();
             }
 
             if (mCollectionId != null){
-                Intent intent = new Intent(PreviewImagePostActivity.this, CreateCollectionPostActivity.class);
-                intent.putExtra(PreviewImagePostActivity.GALLERY_PATH, galleryImage);
+                Intent intent = new Intent(this, CreateCollectionPostActivity.class);
+                intent.putExtra(PreviewImagePostActivity.IMAGE_PATH, image);
                 intent.putExtra(PreviewImagePostActivity.COLLECTION_ID, mCollectionId);
                 intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
                 intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");

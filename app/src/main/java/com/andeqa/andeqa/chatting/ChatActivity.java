@@ -1,5 +1,6 @@
 package com.andeqa.andeqa.chatting;
 
+import android.arch.paging.PagedList;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -16,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
@@ -26,26 +26,21 @@ import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Message;
 import com.andeqa.andeqa.models.Room;
 import com.andeqa.andeqa.profile.ProfileActivity;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
+import com.firebase.ui.firestore.paging.FirestorePagingOptions;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -68,42 +63,25 @@ public class ChatActivity extends AppCompatActivity
     @Bind(R.id.toolbar)Toolbar mToolBar;
     @Bind(R.id.sendMessageImageView)ImageView mSendMessageImageView;
     @Bind(R.id.attachFilesImageView)ImageView mGalleryImageView;
-    @Bind(R.id.profileImageView)ImageView mProfileImageView;
-    @Bind(R.id.backImageView)ImageView  mBackImageView;
-    @Bind(R.id.usernameTextView)TextView mUsernameTextView;
 
-    //firestore references
+    //firebase references
     private CollectionReference messagesCollection;
     private CollectionReference roomCollection;
     private CollectionReference usersCollection;
-    private CollectionReference usersReference;
-
     private DatabaseReference databaseReference;
-
+    private DatabaseReference seenMessagesReference;
     private Query messagesQuery;
     //firebase auth
     private FirebaseAuth firebaseAuth;
+    //memeber strings
     private static final String EXTRA_ROOM_ID = "roomId";
     private static final String EXTRA_USER_UID = "uid";
     private static final String GALLERY_PATH ="gallery image";
-    private static final String CLEAR_MESSAGES = "clear messages";
-
     private String mUid;
     private String roomId;
     private String image;
-
-    private static final String MESSAGE_PHOTO_PATH ="gallery image";
-    private  static final int MAX_WIDTH = 200;
-    private static final int MAX_HEIGHT = 200;
-    private static final int SEND_TYPE=0;
-    private static final int RECEIVE_TYPE=1;
+    //booleans
     private ChatsAdapter chatsAdapter;
-    private LinearLayoutManager layoutManager;
-    private boolean processMessage = false;
-
-    private List<String> messagesIds = new ArrayList<>();
-    private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
-    private static final int TOTAL_ITEMS = 50;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,45 +91,35 @@ public class ChatActivity extends AppCompatActivity
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        toolbar.setNavigationIcon(R.drawable.ic_arrow);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         //initilize click listeners
         mSendMessageImageView.setOnClickListener(this);
         mGalleryImageView.setOnClickListener(this);
-        mBackImageView.setOnClickListener(this);
-
         //initialize firebase auth
         firebaseAuth = FirebaseAuth.getInstance();
-        if (firebaseAuth.getCurrentUser() != null){
-            //get the passed uid
-            roomId = getIntent().getStringExtra(EXTRA_ROOM_ID);
-            mUid = getIntent().getStringExtra(EXTRA_USER_UID);
-            image =  getIntent().getStringExtra(GALLERY_PATH);
-            //firebase
-            databaseReference = FirebaseDatabase.getInstance().getReference(Constants.MESSAGES);
-            //initialize references
-            messagesCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
-            usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            roomCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
-            usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            messagesQuery = messagesCollection.document(firebaseAuth.getCurrentUser().getUid())
-                    .collection(roomId);
-
-            if(image != null){
-                sendPhoto();
-            }
-
-        }
+        //get intent extras
+        getIntents();
+        // init firebase
+        initFirebase();
+        //update the toolbar
+        getProfile();
+        //set messages
+        setUpAdapter();
 
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        documentSnapshots.clear();
-        getProfile();
-        setMessages();
-        setRecyclerView();
+
         mMessagesRecyclerView.getAdapter().registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeChanged(int positionStart, int itemCount) {
@@ -214,6 +182,32 @@ public class ChatActivity extends AppCompatActivity
         super.onDestroy();
     }
 
+    private void getIntents(){
+        roomId = getIntent().getStringExtra(EXTRA_ROOM_ID);
+        mUid = getIntent().getStringExtra(EXTRA_USER_UID);
+        image =  getIntent().getStringExtra(GALLERY_PATH);
+
+
+        if(image != null){
+            sendPhoto();
+        }
+
+    }
+
+    private void initFirebase(){
+        //firebase
+        databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
+        seenMessagesReference = FirebaseDatabase.getInstance().getReference(Constants.MESSAGES);
+        //initialize references
+        messagesCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
+        usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+        roomCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
+        messagesQuery = messagesCollection.document(firebaseAuth.getCurrentUser().getUid())
+                .collection(roomId);
+        seenMessagesReference.keepSynced(true);
+        databaseReference.keepSynced(true);
+    }
+
     /**get passed uid user profile*/
     private void getProfile(){
         usersCollection.document(mUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -227,139 +221,39 @@ public class ChatActivity extends AppCompatActivity
 
                 if (documentSnapshot.exists()){
                     Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                    mUsernameTextView.setText(andeqan.getUsername());
-                    Glide.with(ChatActivity.this)
-                            .load(andeqan.getProfile_image())
-                            .apply(new RequestOptions()
-                                    .placeholder(R.drawable.ic_user)
-                                    .diskCacheStrategy(DiskCacheStrategy.DATA))
-                            .into(mProfileImageView);
+                    mToolBar.setTitle(andeqan.getUsername());
                 }
             }
         });
     }
 
 
-    private void setRecyclerView(){
-        chatsAdapter = new ChatsAdapter(this);
+    private void setUpAdapter(){
+        messagesQuery.orderBy("time");
+
+        PagedList.Config config = new PagedList.Config.Builder()
+                .setEnablePlaceholders(false)
+                .setPrefetchDistance(10)
+                .setPageSize(20)
+                .build();
+
+        FirestorePagingOptions<Message> options = new FirestorePagingOptions.Builder<Message>()
+                .setLifecycleOwner(this)
+                .setQuery(messagesQuery, config, Message.class)
+                .build();
+
+
+        chatsAdapter = new ChatsAdapter(options,this);
         mMessagesRecyclerView.setAdapter(chatsAdapter);
         mMessagesRecyclerView.setHasFixedSize(false);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mMessagesRecyclerView.setLayoutManager(layoutManager);
-    }
-
-
-    private void setMessages(){
-        messagesQuery.orderBy("time").limit(TOTAL_ITEMS)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                        if (e != null) {
-                            Log.w(TAG, "Listen error", e);
-                            return;
-                        }
-
-                        if (!documentSnapshots.isEmpty()){
-                            //retrieve the first bacth of documentSnapshots
-                            for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                                switch (change.getType()) {
-                                    case ADDED:
-                                        onDocumentAdded(change);
-                                        mMessagesRecyclerView.scrollToPosition(chatsAdapter.getItemCount() - 1);
-                                        break;
-                                    case MODIFIED:
-                                        onDocumentModified(change);
-                                        break;
-                                    case REMOVED:
-                                        onDocumentRemoved(change);
-                                        break;
-                                }
-                            }
-
-                        }
-
-                    }
-                });
-    }
-
-
-    private void setNextMessages(){
-        // Get the last visible document
-        final int snapshotSize = chatsAdapter.getItemCount();
-
-        if (snapshotSize == 0){
-        }else {
-            DocumentSnapshot lastVisible = chatsAdapter.getSnapshot(snapshotSize - 1);
-
-            //retrieve the first bacth of documentSnapshots
-            Query nextSellingQuery =messagesCollection.document(firebaseAuth.getCurrentUser().getUid())
-                    .collection(roomId).orderBy("time").startAfter(lastVisible)
-                    .limit(TOTAL_ITEMS);
-
-            nextSellingQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                @Override
-                public void onSuccess(QuerySnapshot documentSnapshots) {
-
-                    if (!documentSnapshots.isEmpty()){
-                        //retrieve the first bacth of documentSnapshots
-                        for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                            switch (change.getType()) {
-                                case ADDED:
-                                    onDocumentAdded(change);
-                                    break;
-                                case MODIFIED:
-                                    onDocumentModified(change);
-                                    break;
-                                case REMOVED:
-                                    onDocumentRemoved(change);
-                                    break;
-                            }
-                        }
-                    }
-                }
-            });
-        }
-    }
-
-    protected void onDocumentAdded(DocumentChange change) {
-        messagesIds.add(change.getDocument().getId());
-        documentSnapshots.add(change.getDocument());
-        chatsAdapter.setProfileMessages(documentSnapshots);
-        chatsAdapter.notifyItemInserted(documentSnapshots.size() -1);
-        chatsAdapter.getItemCount();
 
     }
 
-    protected void onDocumentModified(DocumentChange change) {
-        if (change.getOldIndex() == change.getNewIndex()) {
-            // Item changed but remained in same position
-            documentSnapshots.set(change.getOldIndex(), change.getDocument());
-            chatsAdapter.notifyItemChanged(change.getOldIndex());
-        } else {
-            // Item changed and changed position
-            documentSnapshots.remove(change.getOldIndex());
-            documentSnapshots.add(change.getNewIndex(), change.getDocument());
-            chatsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
-        }
-    }
-
-    protected void onDocumentRemoved(DocumentChange change) {
-       try {
-           documentSnapshots.remove(change.getOldIndex());
-           chatsAdapter.notifyItemRemoved(change.getOldIndex());
-           chatsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
-       }catch (Exception e){
-           e.printStackTrace();
-       }
-    }
 
     @Override
     public void onClick(View v){
-
-        if (v == mBackImageView) {
-            finish();
-        }
 
         if (v==mGalleryImageView){
             Bundle bundle = new Bundle();

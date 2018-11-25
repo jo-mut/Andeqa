@@ -80,14 +80,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class CreateSingleActivity extends AppCompatActivity implements View.OnClickListener {
-    private static final String CAMERA_PATH = "camera image";
-    private static final String GALLERY_PATH ="gallery image";
-    private static final String IMAGE = "image";
-    private static final String VIDEO = "video";
+    private static final String IMAGE_PATH ="image path";
+    private static final String VIDEO_PATH = "video path";
     private static final String EXTRA_USER_UID = "uid";
-    private static final String CAMERA_VIDEO = "camera video";
-    private static final String GALLERY_VIDEO = "gallery video";
-    private static final String PHOTO_URI = "photo uri";
     private static final String HEIGHT = "height";
     private static final String EXTRA_POST_ID = "post id";
     private static final String COLLECTION_ID = "collection id";
@@ -96,14 +91,12 @@ public class CreateSingleActivity extends AppCompatActivity implements View.OnCl
     private static final String TYPE = "type";
     private static final String TITLE = "title";
     private static final String DESCRIPTION = "description";
-    private String postId;
     private static final String WIDTH = "width";
     private String height;
     private String width;
-    private String video;
-    private String photoUri;
     private String image;
     private Uri uri;
+    private String video;
     private int progress = 0;
     private Handler handler = new Handler();
     private ProgressDialog progressDialog;
@@ -180,64 +173,20 @@ public class CreateSingleActivity extends AppCompatActivity implements View.OnCl
         mTitleEditText.setFilters(new InputFilter[]{new InputFilter
                 .LengthFilter(DEFAULT_TITLE_LENGTH_LIMIT)});
 
-        if (getIntent().getExtras() != null){
-            if (getIntent().getStringExtra(GALLERY_PATH) != null) {
-                mPostRelativeLayout.setVisibility(View.VISIBLE);
-                image = getIntent().getStringExtra(GALLERY_PATH);
-                uri = Uri.fromFile(new File(image));
-                Glide.with(CreateSingleActivity.this)
-                        .asBitmap()
-                        .load(uri)
-                        .into(mPostImageView);
-            }
-            if(getIntent().getStringExtra(CAMERA_PATH) != null){
-                mPostRelativeLayout.setVisibility(View.VISIBLE);
-                image = getIntent().getStringExtra(CAMERA_PATH);
-                uri = Uri.fromFile(new File(image));
-                Glide.with(CreateSingleActivity.this)
-                        .asBitmap()
-                        .load(uri)
-                        .into(mPostImageView);
-            }
+        if (getIntent().getStringExtra(IMAGE_PATH) != null) {
+            mPostRelativeLayout.setVisibility(View.VISIBLE);
+            image = getIntent().getStringExtra(IMAGE_PATH);
+            uri = Uri.fromFile(new File(image));
+            Glide.with(CreateSingleActivity.this)
+                    .asBitmap()
+                    .load(uri)
+                    .into(mPostImageView);
+        }
 
-            if (getIntent().getStringExtra(PHOTO_URI) != null){
-                mPostRelativeLayout.setVisibility(View.VISIBLE);
-                photoUri = getIntent().getStringExtra(PHOTO_URI);
-                uri = Uri.parse(photoUri);
-                Glide.with(CreateSingleActivity.this)
-                        .asBitmap()
-                        .load(uri)
-                        .into(mPostImageView);
-            }
 
-            if (getIntent().getStringExtra(CAMERA_VIDEO) != null) {
-                mPostRelativeLayout.setVisibility(View.VISIBLE);
-                video = getIntent().getStringExtra(CAMERA_VIDEO);
-                uri = Uri.parse(video);
-                Glide.with(CreateSingleActivity.this)
-                        .asBitmap()
-                        .load(uri)
-                        .into(mPostImageView);
-            }
-
-            if (getIntent().getStringExtra(GALLERY_VIDEO) != null){
-                mPostRelativeLayout.setVisibility(View.VISIBLE);
-                video = getIntent().getStringExtra(CAMERA_VIDEO);
-                uri = Uri.parse(video);
-                Glide.with(CreateSingleActivity.this)
-                        .asBitmap()
-                        .load(uri)
-                        .into(mPostImageView);
-            }
-
-            if (getIntent().getStringExtra(HEIGHT)!=null){
-                width = getIntent().getStringExtra(WIDTH);
-                height = getIntent().getStringExtra(HEIGHT);
-            }
-
-            if (getIntent().getStringExtra(EXTRA_POST_ID) != null){
-                postId = getIntent().getStringExtra(EXTRA_POST_ID);
-            }
+        if (getIntent().getStringExtra(HEIGHT)!=null){
+            width = getIntent().getStringExtra(WIDTH);
+            height = getIntent().getStringExtra(HEIGHT);
         }
 
         textWatchers();
@@ -287,12 +236,10 @@ public class CreateSingleActivity extends AppCompatActivity implements View.OnCl
     @Override
     protected void onStart() {
         super.onStart();
-        if (postId == null){
-            loadData();
-            mCreateToCollectionsLinearLayout.setVisibility(View.VISIBLE);
-            setRecyclerView();
-            mCollectionsRecyclerView.addItemDecoration(itemOffsetDecoration);
-        }
+        loadData();
+        mCreateToCollectionsLinearLayout.setVisibility(View.VISIBLE);
+        setRecyclerView();
+        mCollectionsRecyclerView.addItemDecoration(itemOffsetDecoration);
     }
 
     @Override
@@ -323,21 +270,7 @@ public class CreateSingleActivity extends AppCompatActivity implements View.OnCl
     public void onClick(View v){
         if(v == mPostPostImageView){
             progressRelativeLayout.setVisibility(View.VISIBLE);
-
-            if (postId != null){
-                if (image != null){
-                    addToPost();
-                }
-            }else {
-                if (image != null){
-                    imagePost();
-                }
-
-                if (video != null){
-                    videoPost();
-                }
-            }
-
+            imagePost();
         }
 
     }
@@ -347,169 +280,6 @@ public class CreateSingleActivity extends AppCompatActivity implements View.OnCl
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Adding your post");
         progressDialog.setCancelable(false);
-    }
-
-    private void addToPost(){
-        progressBar.setVisibility(View.VISIBLE);
-        final Uri uri = Uri.fromFile(new File(image));
-        //current time
-        final long timeStamp = new Date().getTime();
-        //push id to organise the posts according to time
-        final DatabaseReference reference = randomReference.push();
-        final String pushId = reference.getKey();
-        if (uri != null){
-            final String title = mTitleEditText.getText().toString();
-            final String description = mDescriptionEditText.getText().toString();
-            storageReference = FirebaseStorage
-                    .getInstance().getReference()
-                    .child(Constants.COLLECTIONS)
-                    .child(Constants.IMAGES)
-                    .child(postId);
-
-            UploadTask uploadTask = storageReference.putFile(uri);
-            Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                @Override
-                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                    if (!task.isSuccessful()) {
-                        throw task.getException();
-                    }
-
-                    // Continue with the task to get the download URL
-                    return storageReference.getDownloadUrl();
-                }
-            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                @Override
-                public void onComplete(@NonNull Task<Uri> task) {
-                    if (task.isSuccessful()) {
-                        final Uri downloadUri = task.getResult();
-
-                        Post post = new Post();
-                        postsCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                            @Override
-                            public void onSuccess(QuerySnapshot snapshots) {
-                                final int size = snapshots.size();
-                                final int number = size + 1;
-                                final double random = new Random().nextDouble();
-
-                                Post post = new Post();
-                                post.setCollection_id(postId);
-                                post.setType("video");
-                                post.setPost_id(pushId);
-                                post.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                post.setRandom_number(random);
-                                post.setNumber(number);
-                                post.setTime(timeStamp);
-                                post.setDeeplink("");
-                                post.setHeight(height);
-                                post.setWidth(width);
-                                post.setTitle(title);
-                                post.setDescription(description);
-                                post.setUrl(downloadUri.toString());
-
-
-                                final String titleToLowercase [] = title.toLowerCase().split(" ");
-                                final String descriptionToLowercase [] = description.toLowerCase().split(" ");
-
-                                QueryOptions queryOptions = new QueryOptions();
-                                queryOptions.setOption_id(pushId);
-                                queryOptions.setUser_id(firebaseAuth.getCurrentUser().getUid());
-                                queryOptions.setType("post");
-                                queryOptions.setOne(Arrays.asList(titleToLowercase));
-                                queryOptions.setTwo(Arrays.asList(descriptionToLowercase));
-                                queryOptionsReference.document(pushId).set(queryOptions);
-
-                                postsCollection.document(pushId).set(post);
-
-                                //reset input fields
-                                mTitleEditText.setText("");
-                                mDescriptionEditText.setText("");
-                                mPostImageView.setImageBitmap(null);
-
-
-                                postsCollection.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-
-                                        if (e != null) {
-                                            Log.w(TAG, "Listen error", e);
-                                            return;
-                                        }
-
-                                        if (documentSnapshot.exists()){
-                                            final Post p = documentSnapshot.toObject(Post.class);
-                                            if (p.getWidth() != null && p.getHeight() != null){
-                                                Intent intent =  new Intent(CreateSingleActivity.this, PostDetailActivity.class);
-                                                intent.putExtra(CreateSingleActivity.EXTRA_POST_ID, p.getPost_id());
-                                                intent.putExtra(CreateSingleActivity.COLLECTION_ID, p.getCollection_id());
-                                                intent.putExtra(CreateSingleActivity.EXTRA_USER_UID, p.getUser_id());
-                                                intent.putExtra(CreateSingleActivity.TYPE, p.getType());
-                                                intent.putExtra(CreateSingleActivity.POST_HEIGHT, p.getHeight());
-                                                intent.putExtra(CreateSingleActivity.POST_WIDTH, p.getWidth());
-                                                startActivity(intent);
-                                                finish();
-                                            }else {
-                                                Intent intent =  new Intent(CreateSingleActivity.this, PostDetailActivity.class);
-                                                intent.putExtra(CreateSingleActivity.EXTRA_POST_ID, p.getPost_id());
-                                                intent.putExtra(CreateSingleActivity.COLLECTION_ID, p.getCollection_id());
-                                                intent.putExtra(CreateSingleActivity.EXTRA_USER_UID, p.getUser_id());
-                                                intent.putExtra(CreateSingleActivity.TYPE, p.getType());
-                                                startActivity(intent);
-                                                finish();
-                                            }
-
-                                        }
-
-                                    }
-                                });
-
-                            }
-                        });
-
-
-                    } else {
-                        // Handle failures
-                        // ...
-                    }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(CreateSingleActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-
-            uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                    double progression = (100.0 * taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
-                    progress = (int) progression;
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            while (progress < 100){
-                                progress += 1;
-                                handler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        progressBar.setProgress(progress);
-                                    }
-                                });
-
-                                if (progress == 100){
-                                    progressBar.setIndeterminate(true);
-                                }
-
-                                try {
-                                    Thread.sleep(100);
-                                }catch (InterruptedException ex){
-                                    ex.printStackTrace();
-                                }
-                            }
-                        }
-                    }).start();
-                }
-            });
-        }
     }
 
     private void imagePost(){
@@ -908,7 +678,7 @@ public class CreateSingleActivity extends AppCompatActivity implements View.OnCl
         }
 
         @Override
-        public void onBindViewHolder(final @NonNull CreateToCollectionViewHolder holder, int position) {
+        public void onBindViewHolder(final @NonNull CreateToCollectionViewHolder holder, final int position) {
             final Collection collection = getSnapshot(position).toObject(Collection.class);
             final String collectionId = collection.getCollection_id();
             final String userId = collection.getUser_id();
@@ -954,7 +724,7 @@ public class CreateSingleActivity extends AppCompatActivity implements View.OnCl
                        intent.putExtra(CreateSingleActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
                        intent.putExtra(CreateSingleActivity.TITLE, mTitleEditText.getText().toString());
                        intent.putExtra(CreateSingleActivity.DESCRIPTION, mDescriptionEditText.getText().toString());
-                       intent.putExtra(CreateSingleActivity.IMAGE, image);
+                       intent.putExtra(CreateSingleActivity.IMAGE_PATH, image);
                        intent.putExtra(CreateSingleActivity.POST_HEIGHT, height);
                        intent.putExtra(CreateSingleActivity.POST_WIDTH, width);
                        mContext.startActivity(intent);
@@ -966,7 +736,7 @@ public class CreateSingleActivity extends AppCompatActivity implements View.OnCl
                        intent.putExtra(CreateSingleActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
                        intent.putExtra(CreateSingleActivity.TITLE, mTitleEditText.getText().toString());
                        intent.putExtra(CreateSingleActivity.DESCRIPTION, mDescriptionEditText.getText().toString());
-                       intent.putExtra(CreateSingleActivity.VIDEO, video);
+                       intent.putExtra(CreateSingleActivity.VIDEO_PATH, video);
                        mContext.startActivity(intent);
                    }
                 }

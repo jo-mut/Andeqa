@@ -26,30 +26,11 @@
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
     </style>
-    
-    <!--<style name="BottomSheetAppearance" parent="Widget.Design.BottomSheet.Modal">-->
-        <!--<item name="android:background">@color/transparentColor</item>-->
-    <!--</style>-->
-
-    <!--<style name="BottomSheetTheme" parent="Theme.Design.Light.BottomSheetDialog">-->
-        <!--<item name="bottomSheetStyle">@style/BottomSheetAppearance</item>-->
-    <!--</style>-->
 
     <style name="tablayoutTextAppearance" parent="TextAppearance.Design.Tab">
         <item name="tabTextAppearance">@style/tablayoutTextAppearance</item>
         <item name="android:textSize">12sp</item>
         <item name="textAllCaps">true</item>
-    </style>
-
-    <style name="profileTabTextAppearance" parent="TextAppearance.Design.Tab">
-        <item name="tabTextAppearance">@style/tablayoutTextAppearance</item>
-        <item name="android:textSize">12sp</item>
-        <item name="textAllCaps">true</item>
-        <item name="android:textColorSecondary">@android:color/black</item>
-    </style>
-
-    <style name="nameToolbarTextSize" parent="@style/Base.TextAppearance.AppCompat.Title">
-        <item name="android:textSize">24sp</item>
     </style>
 
     <style name="toolbarTextAppearance" parent="@style/Base.TextAppearance.AppCompat.Title">
@@ -62,14 +43,5 @@
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:textColor">@android:color/black</item>
     </style>
-
-    <declare-styleable name="AspectRatioImageView">
-        <attr name="aspectRatio" format="float"/>
-        <attr name="aspectRatioEnabled" format="boolean"/>
-        <attr name="dominantMeasurement">
-            <enum name="width" value="0"/>
-            <enum name="height" value="1"/>
-        </attr>
-    </declare-styleable>
 
 </resources>

@@ -5,13 +5,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Message;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 
 /**
@@ -28,8 +25,8 @@ public class MessageSendViewHolder extends RecyclerView.ViewHolder {
     public TextView photoTextView;
     public ImageView photoImageView;
     public LinearLayout photoLinearLayout;
-    public CircleImageView seenImageView;
-    public LinearLayout timeRelativeLayout;
+    public ImageView seenImageView;
+    public LinearLayout statusRelativeLayout;
 
 
     public MessageSendViewHolder(View itemView) {
@@ -41,8 +38,8 @@ public class MessageSendViewHolder extends RecyclerView.ViewHolder {
         photoImageView = (ImageView) mView.findViewById(R.id.photoImageView);
         photoLinearLayout = (LinearLayout) mView.findViewById(R.id.photoLinearLayout);
         photoTextView = (TextView) mView.findViewById(R.id.messageTextView);
-        seenImageView = (CircleImageView) mView.findViewById(R.id.seenImageView);
-        timeRelativeLayout = (LinearLayout) mView.findViewById(R.id.timeRelativeLayout);
+        seenImageView = (ImageView) mView.findViewById(R.id.seenImageView);
+        statusRelativeLayout = (LinearLayout) mView.findViewById(R.id.timeRelativeLayout);
         dateTextView = (TextView) mView.findViewById(R.id.dateTextView);
 
 
