@@ -93,7 +93,7 @@
                 android:id="@+id/sendMessageImageView"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                app:srcCompat="@drawable/ic_start_chat"
+                app:srcCompat="@drawable/ic_chats"
                 android:tint="@color/colorAccent" />
 
          </RelativeLayout>

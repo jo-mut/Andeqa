@@ -10,7 +10,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.utils.ProportionalImageView;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -34,8 +33,11 @@ public class PhotoPostViewHolder extends RecyclerView.ViewHolder {
     public TextView timeTextView;
     public LinearLayout captionLinearLayout;
     public ConstraintLayout postConstraintLayout;
-    public ProportionalImageView postImageView;
+    public ImageView postImageView;
     public TextView collectionNameTextView;
+    public LinearLayout mLikesLinearLayout;
+    public ImageView mLikeImageView;
+    public TextView  mLikesTextView;
 
     public PhotoPostViewHolder(View itemView) {
         super(itemView);
@@ -50,9 +52,12 @@ public class PhotoPostViewHolder extends RecyclerView.ViewHolder {
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
         titleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.titleRelativeLayout);
         descriptionRelativeLayout  = (RelativeLayout) itemView.findViewById(R.id.descriptionRelativeLayout);
-        postImageView = (ProportionalImageView) itemView.findViewById(R.id.postImageView);
+        postImageView = (ImageView) itemView.findViewById(R.id.postImageView);
         postConstraintLayout = (ConstraintLayout) itemView.findViewById(R.id.postConstraintLayout);
         collectionNameTextView = (TextView) itemView.findViewById(R.id.collectionNameTextView);
+        mLikesLinearLayout = (LinearLayout) itemView.findViewById(R.id.likesLinearLayout);
+        mLikesTextView = (TextView) itemView.findViewById(R.id.likesTextView);
+        mLikeImageView = (ImageView) itemView.findViewById(R.id.likesImageView);
     }
 
 

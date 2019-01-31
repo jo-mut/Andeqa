@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.SparseArray;
 import android.view.ViewGroup;
 
-public abstract  class SmartBottomFragmentStateAdapter extends FragmentStatePagerAdapter {
+public abstract class SmartBottomFragmentStateAdapter extends FragmentStatePagerAdapter {
     private SparseArray<Fragment> registeredFragments =new SparseArray<>();
 
     public SmartBottomFragmentStateAdapter(FragmentManager fm) {

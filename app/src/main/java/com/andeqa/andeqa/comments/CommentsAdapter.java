@@ -66,24 +66,17 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     private boolean processRoom = false;
     private boolean processFollow = false;
     private boolean showOnClick = false;
-    private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
+    private List<DocumentSnapshot> documentSnapshots;
     private String roomId;
-    BottomReachedListener mBottomReachedListener;
 
 
-
-    public CommentsAdapter(Context mContext) {
+    public CommentsAdapter(Context mContext, List<DocumentSnapshot> mSnapshots) {
         this.mContext = mContext;
-    }
-
-    public void setPostComments(List<DocumentSnapshot> mSnapshots){
+        this.documentSnapshots = new ArrayList<>();
         this.documentSnapshots = mSnapshots;
-        notifyDataSetChanged();
+
     }
 
-    public void setmBottomReachedListener(BottomReachedListener mBottomReachedListener){
-        this.mBottomReachedListener = mBottomReachedListener;
-    }
 
 
     @Override
@@ -111,13 +104,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     @Override
     public void onBindViewHolder(final CommentViewHolder holder, int position) {
 
-        try {
-            if (position == documentSnapshots.size() - 1){
-                mBottomReachedListener.onBottomReached(position);
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
 
         final Comment comment = getSnapshot(holder.getAdapterPosition()).toObject(Comment.class);
         final String userId = comment.getUser_id();

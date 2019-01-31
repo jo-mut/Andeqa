@@ -1,9 +1,12 @@
 package com.andeqa.andeqa.models;
 
+import org.parceler.Parcel;
+
 /**
  * Created by J.EL on 3/13/2018.
  */
 
+@Parcel
 public class Post {
     long time;
     long number;
@@ -20,6 +23,7 @@ public class Post {
     String url;
 
     public Post() {
+
     }
 
     public String getCollection_id() {

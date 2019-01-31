@@ -36,13 +36,6 @@ public class ImpressionTracker {
     private VisibilityChecker mVisibilityChecker;
     private Handler mVisibilityHandler;
     private Runnable mVisibilityRunnable;
-    private String postId;
-    //current user impression
-    private boolean processCompiledImpression = false;
-    //all users impressions
-    private boolean processOverallImpressions = false;
-    private boolean processImpression = false;
-
     private DatabaseReference impressionReference;
     private DatabaseReference databaseReference;
     private DatabaseReference seenMessagesReference;
@@ -170,9 +163,6 @@ public class ImpressionTracker {
         @Override
         public void run() {
             mIsVisibilityCheckScheduled = false;
-            processOverallImpressions = true;
-            processCompiledImpression = true;
-            processImpression = true;
             for (final Map.Entry<View, TrackingInfo> entry : mTrackedViews.entrySet()) {
                 final View view = entry.getKey();
                 final String viewedId = entry.getValue().id;

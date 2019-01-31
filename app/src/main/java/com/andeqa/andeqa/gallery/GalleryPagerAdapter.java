@@ -20,15 +20,15 @@ public class GalleryPagerAdapter extends FragmentPagerAdapter {
                 CameraFragment cameraFragment = new CameraFragment();
                 return cameraFragment;
             case 1:
-                PicturesFragment picturesFragment = new PicturesFragment();
-                return picturesFragment;
+                AlbumFragment albumFragment = new AlbumFragment();
+                return albumFragment;
         }
         return null;
     }
 
     @Override
     public int getCount() {
-        // Show 2 total pages.
+        // Show 3 total pages.
         return 2;
     }
 
@@ -38,7 +38,7 @@ public class GalleryPagerAdapter extends FragmentPagerAdapter {
             case 0:
                 return "Camera";
             case 1:
-                return "Photos";
+                return "Gallery";
         }
         return null;
     }

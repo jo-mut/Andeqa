@@ -21,7 +21,7 @@ public class GalleryImageViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         context = itemView.getContext();
         view = itemView;
-        videoView = (VideoView) view.findViewById(R.id.simpleExoPlayerView);
+        videoView = (VideoView) view.findViewById(R.id.exoPlayerView);
         picsImageView = (ImageView) view.findViewById(R.id.galleryImageView);
         imageRelativeLayout = (RelativeLayout) view.findViewById(R.id.imageRelativeLayout);
     }

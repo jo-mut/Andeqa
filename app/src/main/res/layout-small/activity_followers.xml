@@ -72,7 +72,6 @@
             android:layout_height="0dp">
 
             <ProgressBar
-                android:visibility="gone"
                 android:layout_centerInParent="true"
                 android:id="@+id/progressBar"
                 style="?android:attr/progressBarStyle"

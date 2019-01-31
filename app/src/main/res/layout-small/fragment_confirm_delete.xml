@@ -1,87 +1,101 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="200dp"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="5dp"
     tools:context="com.andeqa.andeqa.settings.ConfirmDeleteFragment"
     android:background="@android:color/white">
 
 <!-- TODO: Update blank fragment layout -->
-
-
-    <RelativeLayout
-        android:padding="5dp"
-        android:layout_height="40dp"
-        android:layout_width="match_parent">
-
-        <TextView
-            android:text=""
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="normal"
-            android:id="@+id/confirmTextView"
-            android:textSize="12sp"
-            android:layout_centerVertical="true" />
-    </RelativeLayout>
-
-    <RelativeLayout
+    <android.support.v7.widget.CardView
+        app:cardCornerRadius="5dp"
+        app:cardElevation="0dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <RelativeLayout
-            android:layout_margin="1dp"
-            android:layout_toStartOf="@+id/dividerView"
-            android:layout_toLeftOf="@+id/dividerView"
-            android:background="@drawable/border_rectangle"
-            android:id="@+id/YesRelativeLayout"
-            android:layout_height="38sp"
-            android:layout_width="match_parent">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-            <TextView
-                android:text="Yes"
+            <RelativeLayout
                 android:padding="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textStyle="normal|bold"
-                android:textColor="@android:color/black"
-                android:layout_centerInParent="true"
-                android:textAllCaps="true"
-                android:textSize="14sp" />
+                android:layout_height="40dp"
+                android:layout_width="match_parent">
+
+                <TextView
+                    android:text=""
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="normal"
+                    android:id="@+id/confirmTextView"
+                    android:textSize="12sp"
+                    android:layout_centerVertical="true" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:layout_margin="1dp"
+                    android:layout_toStartOf="@+id/dividerView"
+                    android:layout_toLeftOf="@+id/dividerView"
+                    android:background="@drawable/border_rectangle"
+                    android:id="@+id/YesRelativeLayout"
+                    android:layout_height="38sp"
+                    android:layout_width="match_parent">
+
+                    <TextView
+                        android:text="Yes"
+                        android:padding="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="normal|bold"
+                        android:textColor="@android:color/black"
+                        android:layout_centerInParent="true"
+                        android:textAllCaps="true"
+                        android:textSize="14sp" />
 
 
-        </RelativeLayout>
+                </RelativeLayout>
 
-        <View
-            android:id="@+id/dividerView"
-            android:layout_width="0.1dp"
-            android:layout_height="0.1dp"
-            android:layout_centerInParent="true" />
+                <View
+                    android:id="@+id/dividerView"
+                    android:layout_width="0.1dp"
+                    android:layout_height="0.1dp"
+                    android:layout_centerInParent="true" />
 
-        <RelativeLayout
-            android:layout_margin="1dp"
-            android:layout_toRightOf="@+id/dividerView"
-            android:layout_toEndOf="@+id/dividerView"
-            android:background="@drawable/border_rectangle"
-            android:id="@+id/noRelativeLayout"
-            android:layout_height="38sp"
-            android:layout_width="match_parent">
+                <RelativeLayout
+                    android:layout_margin="1dp"
+                    android:layout_toRightOf="@+id/dividerView"
+                    android:layout_toEndOf="@+id/dividerView"
+                    android:background="@drawable/border_rectangle"
+                    android:id="@+id/noRelativeLayout"
+                    android:layout_height="38sp"
+                    android:layout_width="match_parent">
 
-            <TextView
-                android:text="No"
-                android:padding="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textStyle="normal|bold"
-                android:textColor="@android:color/black"
-                android:layout_centerInParent="true"
-                android:textAllCaps="true"
-                android:textSize="14sp" />
+                    <TextView
+                        android:text="No"
+                        android:padding="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="normal|bold"
+                        android:textColor="@android:color/black"
+                        android:layout_centerInParent="true"
+                        android:textAllCaps="true"
+                        android:textSize="14sp" />
 
-        </RelativeLayout>
+                </RelativeLayout>
 
-    </RelativeLayout>
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
 </LinearLayout>
 
 

@@ -12,10 +12,8 @@ import android.view.View;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -39,13 +37,12 @@ public class ChooseCollectionActivity extends AppCompatActivity {
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore adapters
-    private ExploreCollectionsAdapter exploreCollectionsAdapter;
+    private CollectionsAdapter collectionsAdapter;
     private int TOTAL_ITEMS = 10;
     private StaggeredGridLayoutManager layoutManager;
     private static final String EXTRA_USER_UID = "uid";
     private SearchView searchView;
-    private List<String> mSnapshotsIds = new ArrayList<>();
-    private List<DocumentSnapshot> documentSnapshots = new ArrayList<>();
+    private List<DocumentSnapshot> snapshots = new ArrayList<>();
     private ItemOffsetDecoration itemOffsetDecoration;
 
     @Override
@@ -79,7 +76,6 @@ public class ChooseCollectionActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        documentSnapshots.clear();
         setRecyclerView();
         mCollectionsRecyclerView.addItemDecoration(itemOffsetDecoration);
         setColections();
@@ -100,8 +96,8 @@ public class ChooseCollectionActivity extends AppCompatActivity {
 
     private void setRecyclerView(){
         // RecyclerView
-        exploreCollectionsAdapter = new ExploreCollectionsAdapter(this);
-        mCollectionsRecyclerView.setAdapter(exploreCollectionsAdapter);
+        collectionsAdapter = new CollectionsAdapter(this, snapshots);
+        mCollectionsRecyclerView.setAdapter(collectionsAdapter);
         mCollectionsRecyclerView.setHasFixedSize(false);
         layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
         itemOffsetDecoration = new ItemOffsetDecoration(this, R.dimen.item_off_set);
@@ -121,18 +117,9 @@ public class ChooseCollectionActivity extends AppCompatActivity {
                 }
 
                 if (!documentSnapshots.isEmpty()) {
-                    for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                        switch (change.getType()) {
-                            case ADDED:
-                                onDocumentAdded(change);
-                                break;
-                            case MODIFIED:
-                                onDocumentModified(change);
-                                break;
-                            case REMOVED:
-                                onDocumentRemoved(change);
-                                break;
-                        }
+                    for (DocumentSnapshot snapshot: documentSnapshots){
+                        snapshots.add(snapshot);
+                        collectionsAdapter.notifyItemInserted(snapshots.size() - 1);
                     }
                 }
 
@@ -140,78 +127,6 @@ public class ChooseCollectionActivity extends AppCompatActivity {
         });
 
     }
-
-
-    private void setNextCollections(){
-        // Get the last visible document
-        final int snapshotSize = exploreCollectionsAdapter.getItemCount();
-
-        if (snapshotSize == 0){
-        }else {
-            DocumentSnapshot lastVisible = exploreCollectionsAdapter.getSnapshot(snapshotSize - 1);
-
-            //retrieve the first bacth of posts
-            Query nextSinglesQuery = collectionsCollection.orderBy("time", Query.Direction.ASCENDING)
-                    .startAfter(lastVisible).limit(TOTAL_ITEMS);
-
-            nextSinglesQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                @Override
-                public void onSuccess(QuerySnapshot documentSnapshots) {
-                    if (!documentSnapshots.isEmpty()){
-                        //retrieve the first bacth of posts
-                        for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                            switch (change.getType()) {
-                                case ADDED:
-                                    onDocumentAdded(change);
-                                    break;
-                                case MODIFIED:
-                                    onDocumentModified(change);
-                                    break;
-                                case REMOVED:
-                                    onDocumentRemoved(change);
-                                    break;
-                            }
-                        }
-                    }
-                }
-            });
-
-        }
-
-    }
-
-    protected void onDocumentAdded(DocumentChange change) {
-        mSnapshotsIds.add(change.getDocument().getId());
-        documentSnapshots.add(change.getDocument());
-        exploreCollectionsAdapter.setCollections(documentSnapshots);
-        exploreCollectionsAdapter.notifyItemInserted(documentSnapshots.size() -1);
-        exploreCollectionsAdapter.getItemCount();
-
-    }
-
-    protected void onDocumentModified(DocumentChange change) {
-        if (change.getOldIndex() == change.getNewIndex()) {
-            // Item changed but remained in same position
-            documentSnapshots.set(change.getOldIndex(), change.getDocument());
-            exploreCollectionsAdapter.notifyItemChanged(change.getOldIndex());
-        } else {
-            // Item changed and changed position
-            documentSnapshots.remove(change.getOldIndex());
-            documentSnapshots.add(change.getNewIndex(), change.getDocument());
-            exploreCollectionsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
-        }
-    }
-
-    protected void onDocumentRemoved(DocumentChange change) {
-        try{
-            documentSnapshots.remove(change.getOldIndex());
-            exploreCollectionsAdapter.notifyItemRemoved(change.getOldIndex());
-            exploreCollectionsAdapter.notifyItemRangeChanged(0, documentSnapshots.size());
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
 
     @Override
     public void onResume() {

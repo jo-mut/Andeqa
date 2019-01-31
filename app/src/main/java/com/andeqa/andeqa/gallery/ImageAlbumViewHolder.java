@@ -13,7 +13,6 @@ public class ImageAlbumViewHolder extends RecyclerView.ViewHolder {
     Context context;
     View view;
     public ImageView albumImageView;
-    public TextView galleryCountTextView;
     public TextView galleryTitleTextView;
     public LinearLayout albumLinearLayout;
 
@@ -23,7 +22,6 @@ public class ImageAlbumViewHolder extends RecyclerView.ViewHolder {
         view = itemView;
         albumImageView = (ImageView) view.findViewById(R.id.galleryImageView);
         albumLinearLayout = (LinearLayout) view.findViewById(R.id.albumLinearLayout);
-        galleryCountTextView = (TextView) view.findViewById(R.id.galleryCount);
-        galleryTitleTextView = (TextView) view.findViewById(R.id.galleryTitle);
+        galleryTitleTextView = (TextView) view.findViewById(R.id.galleryTitleTextView);
     }
 }

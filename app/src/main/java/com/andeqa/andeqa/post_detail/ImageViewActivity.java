@@ -85,10 +85,10 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnClick
         mType = getIntent().getStringExtra(TYPE);
         //firestore
         if (mType.equals("single") || mType.equals("single_image_post")){
-            collectionPost = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
+            collectionPost = FirebaseFirestore.getInstance().collection(Constants.POSTS_OF_COLLECTION)
                     .document("singles").collection(mCollectionId);
         }else {
-            collectionPost = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
+            collectionPost = FirebaseFirestore.getInstance().collection(Constants.POSTS_OF_COLLECTION)
                     .document("collections").collection(mCollectionId);
         }
 

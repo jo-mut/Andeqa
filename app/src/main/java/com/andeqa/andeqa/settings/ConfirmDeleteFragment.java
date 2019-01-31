@@ -115,10 +115,10 @@ public class ConfirmDeleteFragment extends DialogFragment implements View.OnClic
 
             if (mType != null){
                 if (mType.equals("single")|| mType.equals("single_image_post")){
-                    collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
+                    collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.POSTS_OF_COLLECTION)
                             .document("singles").collection(mCollectionId);
                 }else{
-                    collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
+                    collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.POSTS_OF_COLLECTION)
                             .document("collections").collection(mCollectionId);
                 }
 

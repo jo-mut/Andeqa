@@ -128,57 +128,51 @@
                 app:layout_collapseMode="pin"
                 tools:ignore="HardcodedText,UnusedAttribute">
 
-                <RelativeLayout
-                    android:visibility="gone"
-                    android:id="@+id/collectionSettingsRelativeLayout"
+                <LinearLayout
                     android:layout_gravity="end"
-                    android:padding="10dp"
+                    android:orientation="horizontal"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="match_parent">
 
-                    <ImageView
-                        app:srcCompat="@drawable/ic_settings_vert"
-                        android:tint="@android:color/white"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:id="@+id/collectionSettingsImageView"
-                        android:textColor="@android:color/white"
-                        android:layout_gravity="end"/>
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_margin="15dp"
-                    android:layout_gravity="end|center_vertical"
-                    android:id="@+id/addRelativeLayout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <android.support.v7.widget.CardView
-                        app:cardBackgroundColor="@android:color/white"
-                        app:cardElevation="0dp"
-                        app:cardCornerRadius="15dp"
+                    <RelativeLayout
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginRight="15dp"
+                        android:padding="15dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:id="@+id/addRelativeLayout"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                        android:layout_height="match_parent">
 
-                        <TextView
-                            android:paddingBottom="10dp"
-                            android:paddingTop="10dp"
-                            android:paddingRight="15dp"
-                            android:paddingEnd="15dp"
-                            android:paddingStart="15dp"
-                            android:paddingLeft="15dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="21sp"
-                            android:textColor="@color/grey_700"
-                            android:textStyle="normal|bold"
-                            android:text="Add" />
+                        <ImageView
+                            android:layout_centerInParent="true"
+                            app:srcCompat="@drawable/ic_plus_white"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:id="@+id/addPostImageView"
+                            android:textColor="@android:color/white"
+                            android:layout_gravity="end"/>
 
-                    </android.support.v7.widget.CardView>
+                    </RelativeLayout>
 
-                </RelativeLayout>
+                    <RelativeLayout
+                        android:id="@+id/collectionSettingsRelativeLayout"
+                        android:padding="15dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent">
 
+                        <ImageView
+                            android:layout_centerInParent="true"
+                            app:srcCompat="@drawable/ic_settings_vert"
+                            android:tint="@android:color/white"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:id="@+id/collectionSettingsImageView"
+                            android:textColor="@android:color/white"
+                            android:layout_gravity="end"/>
+
+                    </RelativeLayout>
+
+                </LinearLayout>
             </android.support.v7.widget.Toolbar>
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>

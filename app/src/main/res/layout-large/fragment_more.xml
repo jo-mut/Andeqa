@@ -10,50 +10,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".more.MoreFragment">
 
-    <FrameLayout
-        android:id="@+id/collectionsContainerFrameLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <RelativeLayout
-            android:layout_weight="90"
-            android:layout_width="match_parent"
-            android:layout_height="0dp">
-
-            <android.support.v7.widget.RecyclerView
-                android:overScrollMode="never"
-                android:clipToPadding="false"
-                android:padding="@dimen/item_off_set"
-                android:id="@+id/morePostsRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:visibility="gone"
-            android:id="@+id/progressRelativeLayout"
-            android:layout_weight="10"
-            android:layout_width="match_parent"
-            android:layout_height="0dp">
-
-            <ProgressBar
-                android:visibility="gone"
-                android:layout_margin="15dp"
-                android:layout_centerInParent="true"
-                android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="75dp"
-                android:layout_height="75dp" />
-
-        </RelativeLayout>
-
-    </LinearLayout>
 
 </LinearLayout>

@@ -26,7 +26,7 @@ import android.widget.ViewAnimator;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.creation.CreateActivity;
+import com.andeqa.andeqa.camera.CameraActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
@@ -84,8 +84,8 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     private static final int DEFAULT_TITLE_LENGTH_LIMIT = 250;
 
     //intent extras
-    private String profileCoverIntent;
-    private String profilePhotoIntent;
+    private Uri profileUri;
+    private Uri coverUri;
     private static final String PROFILE_PHOTO_PATH = "profile photo path";
     private static final String PROFILE_COVER_PATH = "profile cover path";
     private static final String GALLERY_PATH ="gallery image";
@@ -143,21 +143,19 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     }
 
     private void loadProfileImage(){
-        profilePhotoIntent = getIntent().getStringExtra(PROFILE_PHOTO_PATH);
-        if (profilePhotoIntent != null){
+        if (profileUri != null){
             Glide.with(this)
                     .asBitmap()
-                    .load(new File(profilePhotoIntent))
+                    .load(profileUri)
                     .into(mProfilePictureImageView);
         }
     }
 
     private void loadProfileCover(){
-        profileCoverIntent = getIntent().getStringExtra(PROFILE_COVER_PATH);
-        if (profileCoverIntent != null){
+        if (coverUri != null){
             Glide.with(this)
                     .asBitmap()
-                    .load(new File(profileCoverIntent))
+                    .load(coverUri)
                     .into(mProfileCoverImageView);
         }
     }
@@ -203,22 +201,41 @@ public class UpdateProfileActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == RESULT_OK) {
+            //update the profile photo
+            if (requestCode == GALLERY_PROFILE_PHOTO_REQUEST) {
+                profileUri = data.getData();
+
+                Glide.with(this)
+                        .asBitmap()
+                        .load(profileUri)
+                        .into(mProfilePictureImageView);
+
+            }
+
+        }
+    }
+
+    @Override
     public void onClick(View v){
         if(v == mUpdateProfileImageButton){
-            Intent intent = new Intent(UpdateProfileActivity.this, CreateActivity.class);
-            intent.putExtra(UpdateProfileActivity.PROFILE_PHOTO_PATH, UpdateProfileActivity.class.getSimpleName());
-            startActivity(intent);
-            finish();
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            intent.setType("image/*");
+            startActivityForResult(intent, GALLERY_PROFILE_PHOTO_REQUEST);
         }
 
         if (v ==  mDoneEditingImageView){
             updateUsernameAndBio();
 
-            if (profilePhotoIntent != null){
+            if (profileUri != null){
                 updateProfilePhoto();
             }
 
-            if (profileCoverIntent != null){
+            if (coverUri != null){
                 updateCoverPhoto();
             }
 
@@ -226,7 +243,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
 
 
         if (v == mUpdateCoverTextView){
-            Intent intent = new Intent(UpdateProfileActivity.this, CreateActivity.class);
+            Intent intent = new Intent(UpdateProfileActivity.this, CameraActivity.class);
             intent.putExtra(UpdateProfileActivity.PROFILE_COVER_PATH, UpdateProfileActivity.class.getSimpleName());
             startActivity(intent);
             finish();
@@ -245,7 +262,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String uid = user.getUid();
 
-        if ( profilePhotoIntent!= null){
+        if (profileUri!= null){
             progressDialog.show();
             mProfilePictureImageView.setDrawingCacheEnabled(true);
             Bitmap bitmap = ((BitmapDrawable) mProfilePictureImageView.getDrawable()).getBitmap();
@@ -302,7 +319,7 @@ public class UpdateProfileActivity extends AppCompatActivity implements
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String uid = user.getUid();
 
-        if (profileCoverIntent != null){
+        if (coverUri != null){
             progressDialog.show();
             mProfileCoverImageView.setDrawingCacheEnabled(true);
             Bitmap bitmap = ((BitmapDrawable) mProfileCoverImageView.getDrawable()).getBitmap();

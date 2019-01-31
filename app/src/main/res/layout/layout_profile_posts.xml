@@ -12,7 +12,7 @@
         android:layout_height="150dp">
 
         <RelativeLayout
-            android:id="@+id/postRelativeLayout"
+            android:id="@+id/postCardView"
             android:background="@android:color/white"
             android:orientation="vertical"
             android:layout_width="match_parent"

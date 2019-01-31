@@ -13,12 +13,7 @@ public class Andeqan {
     String email;
     String first_name;
     String second_name;
-    String device_id;
-    String phone_number;
-    String gender;
-    String location;
-    String age;
-    long time;
+
 
     public Andeqan(){
         //EMPTY CONSTRUCTOR REQUIRED
@@ -90,51 +85,4 @@ public class Andeqan {
         this.second_name = second_name;
     }
 
-    public String getDevice_id() {
-        return device_id;
-    }
-
-    public void setDevice_id(String device_id) {
-        this.device_id = device_id;
-    }
-
-    public String getPhone_number() {
-        return phone_number;
-    }
-
-    public void setPhone_number(String phone_number) {
-        this.phone_number = phone_number;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public String getAge() {
-        return age;
-    }
-
-    public void setAge(String age) {
-        this.age = age;
-    }
-
-    public long getTime() {
-        return time;
-    }
-
-    public void setTime(long time) {
-        this.time = time;
-    }
 }

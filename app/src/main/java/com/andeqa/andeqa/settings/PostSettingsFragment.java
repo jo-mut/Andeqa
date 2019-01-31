@@ -7,16 +7,20 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Post;
+import com.andeqa.andeqa.post_detail.PostDetailActivity;
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -24,7 +28,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import butterknife.Bind;
@@ -34,24 +37,21 @@ import static android.app.Activity.RESULT_OK;
 
 
 public class PostSettingsFragment extends BottomSheetDialogFragment implements View.OnClickListener {
-    @Bind(R.id.shareViaLinearLayout)LinearLayout mShareViaLinearLayout;
-    @Bind(R.id.deleteLinearLayout)LinearLayout mDeleteLinearLayout;
-    @Bind(R.id.redeemLinearLayout)LinearLayout mRedeemLinearLayout;
-    @Bind(R.id.reportLinearLayout)LinearLayout mReportLinearLayout;
+    @Bind(R.id.shareRelativeLayout)RelativeLayout mShareViaLinearLayout;
+    @Bind(R.id.deleteRelativeLayout)RelativeLayout mDeleteLinearLayout;
+    @Bind(R.id.editRelativeLayout)RelativeLayout mRedeemLinearLayout;
+    @Bind(R.id.reportRelativeLayout)RelativeLayout mReportLinearLayout;
+    @Bind(R.id.progressBar)ProgressBar mProgressBar;
 
     //firebase auth
     private FirebaseAuth firebaseAuth;
     //firestore
-    private CollectionReference marketCollections;
     private CollectionReference postsCollections;
-    private CollectionReference shareCollections;
-    private StorageReference storageReference;
     private static final String TAG = PostSettingsFragment.class.getSimpleName();
 
     private static final String COLLECTION_ID = "collection id";
     private static final String EXTRA_POST_ID = "post id";
     private static final String TYPE = "type";
-    private static final String EXTRA_USER_UID = "uid";
     private static final String EXTRA_URI = "uri";
     private static final String DELETE_POST = "delete post";
     private static final int REQUEST_INVITE = 0;
@@ -64,6 +64,8 @@ public class PostSettingsFragment extends BottomSheetDialogFragment implements V
     private String mUri;
 
 
+    private PostDetailActivity mPostDetailActivity;
+
     public static PostSettingsFragment newInstance() {
         final PostSettingsFragment fragment = new PostSettingsFragment();
         final Bundle args = new Bundle();
@@ -75,6 +77,7 @@ public class PostSettingsFragment extends BottomSheetDialogFragment implements V
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(PostSettingsFragment.STYLE_NORMAL, R.style.Theme_AppCompat_Translucent);
+        mPostDetailActivity = (PostDetailActivity) getActivity();
     }
 
     @Nullable
@@ -96,12 +99,10 @@ public class PostSettingsFragment extends BottomSheetDialogFragment implements V
             mCollectionId = bundle.getString(PostSettingsFragment.COLLECTION_ID);
             mPostId = bundle.getString(PostSettingsFragment.EXTRA_POST_ID);
             mType = bundle.getString(PostSettingsFragment.TYPE);
-            mUri = bundle.getString(PostSettingsFragment.EXTRA_URI);
 
             mShareViaLinearLayout.setVisibility(View.VISIBLE);
 
             postsCollections = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            shareCollections = FirebaseFirestore.getInstance().collection(Constants.SHARES);
             postsCollections.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
                 public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot,
@@ -160,6 +161,8 @@ public class PostSettingsFragment extends BottomSheetDialogFragment implements V
         }
 
         if (v == mShareViaLinearLayout){
+            mProgressBar.setVisibility(View.VISIBLE);
+            mUri = mPostDetailActivity.shareUri();
             postsCollections.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
                 public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot,

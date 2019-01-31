@@ -1,7 +1,6 @@
 package com.andeqa.andeqa.profile;
 
 import android.content.Intent;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,7 +21,8 @@ import android.widget.TextView;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.chatting.ChatActivity;
-import com.andeqa.andeqa.creation.CreateActivity;
+import com.andeqa.andeqa.camera.CameraActivity;
+import com.andeqa.andeqa.creation.CreateChannelActivity;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Room;
@@ -31,6 +31,7 @@ import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.people.FollowersActivity;
 import com.andeqa.andeqa.people.FollowingActivity;
 import com.andeqa.andeqa.settings.SettingsActivity;
+import com.andeqa.andeqa.utils.FirebaseUtil;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
@@ -71,8 +72,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Bind(R.id.post_container)FrameLayout mPostContainerFrameLayout;
     @Bind(R.id.createPostRelativeLayout)RelativeLayout mCreatePostRelativeLayout;
     @Bind(R.id.viewPostRelativelayout)RelativeLayout mViewPostRelativeLayout;
-    @Bind(R.id.postsLinearLayout)LinearLayout mPostsLinearLayout;
     @Bind(R.id.connectLinearLayout)LinearLayout mConnectLinearLayout;
+    @Bind(R.id.addChannelImageView)ImageView mAddChannelImageView;
+    @Bind(R.id.channels_container) FrameLayout mChannelsFrameLayout;
+    @Bind(R.id.viewChannelsRelativelayout) RelativeLayout mViewChannelsRelativeLayout;
+    @Bind(R.id.createChannelRelativeLayout)RelativeLayout mCreateChannelRelativeLayout;
+    @Bind(R.id.channelsCountTextView) TextView mChannelCountTextView;
 
     private static final String TAG = ProfileActivity.class.getSimpleName();
     //firestore reference
@@ -83,13 +88,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private CollectionReference peopleCollection;
     private CollectionReference followingCollection;
     private CollectionReference timelineCollection;
+    private CollectionReference mChannelsCollection;
     private Query followersQuery;
     private Query followingQuery;
-    private Query followQuery;
     //firebase
     private DatabaseReference databaseReference;
-    //firebase auth
-    private FirebaseAuth firebaseAuth;
     //firestore adapters
     private  static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
@@ -100,7 +103,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private boolean processFollow = false;
     private String roomId;
     private boolean processRoom = false;
-    private FragmentManager fragmentManager = getSupportFragmentManager();
+
+    private FirebaseUtil mFirebaseUtil;
+    private String mCurrentUser;
 
 
     @Override
@@ -109,10 +114,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         setContentView(R.layout.activity_profile);
         ButterKnife.bind(this);
 
-        //FIREBASE AUTH
-        firebaseAuth = FirebaseAuth.getInstance();
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mFirebaseUtil = new FirebaseUtil(this);
+        mCurrentUser = mFirebaseUtil.firebaseAuth().getUid();
 
         toolbar.setNavigationIcon(R.drawable.ic_arrow);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -122,69 +128,63 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
 
-        if (firebaseAuth.getCurrentUser()!= null){
+        mUid = getIntent().getStringExtra(EXTRA_USER_UID);
+        usersCollections = mFirebaseUtil.usersPath();
+        collectionCollection = mFirebaseUtil.collectionsPath();
+        roomsCollection = mFirebaseUtil.collectionsPath();
+        postsCollection = mFirebaseUtil.postsPath();
+        peopleCollection = mFirebaseUtil.peoplePath();
+        followersQuery = peopleCollection.document("followers")
+                .collection(mUid);
+        followingQuery = peopleCollection.document("following")
+                .collection(mUid);
+        //firebase
+        databaseReference = mFirebaseUtil.pushPath();
+        timelineCollection = mFirebaseUtil.timelinePath();
+        fetchData();
 
-            mUid = getIntent().getStringExtra(EXTRA_USER_UID);
-            usersCollections = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-            collectionCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
-            roomsCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
-            postsCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-            peopleCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE_RELATIONS);
-
-            followersQuery = peopleCollection.document("followers")
-                    .collection(mUid);
-            followingQuery = peopleCollection.document("following")
-                    .collection(mUid);
-            followQuery = peopleCollection.document("followers")
-                    .collection(mUid);
-            //firebase
-            databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
-            timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-            fetchData();
-
-            //show hidden views
-            if (!firebaseAuth.getCurrentUser().getUid().equals(mUid)){
-                mConnectLinearLayout.setVisibility(View.VISIBLE);
-            }else {
-                addPostImageView.setVisibility(View.VISIBLE);
-            }
-
-            usersCollections.document(mUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                @Override
-                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                    if (e != null) {
-                        Log.w(TAG, "Listen error", e);
-                        return;
-                    }
-
-                    if (documentSnapshot.exists()){
-                        Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
-                        if (firebaseAuth.getCurrentUser().getUid().equals(mUid)){
-                            toolbar.setTitle("Profile");
-                        }else {
-                            toolbar.getMenu().clear();
-                            toolbar.setTitle(andeqan.getUsername());
-                        }
-                    }
-
-                }
-            });
-
-            /**initialize click listners*/
-            mSendMessageButton.setOnClickListener(this);
-            followButton.setOnClickListener(this);
-            mViewPostRelativeLayout.setOnClickListener(this);
-            mFollowerCountTextView.setOnClickListener(this);
-            mFollowingCountTextView.setOnClickListener(this);
-            addPostImageView.setOnClickListener(this);
-
-            PostsFragment postsFragment = new PostsFragment();
-            fragmentManager = this.getSupportFragmentManager();
-            FragmentTransaction ft = fragmentManager.beginTransaction();
-            ft.replace(R.id.post_container, postsFragment);
-            ft.commit();
+        //show hidden views
+        if (mCurrentUser.equals(mUid)){
+            mConnectLinearLayout.setVisibility(View.VISIBLE);
+        }else {
+            addPostImageView.setVisibility(View.VISIBLE);
         }
+
+        usersCollections.document(mUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (documentSnapshot.exists()){
+                    Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                    if (mCurrentUser.equals(mUid)){
+                        toolbar.setTitle("Profile");
+                    }else {
+                        toolbar.getMenu().clear();
+                        toolbar.setTitle(andeqan.getUsername());
+                    }
+                }
+
+            }
+        });
+
+        /**initialize click listners*/
+        mSendMessageButton.setOnClickListener(this);
+        followButton.setOnClickListener(this);
+        mViewPostRelativeLayout.setOnClickListener(this);
+        mFollowerCountTextView.setOnClickListener(this);
+        mFollowingCountTextView.setOnClickListener(this);
+        addPostImageView.setOnClickListener(this);
+        mAddChannelImageView.setOnClickListener(this);
+
+        PostsFragment postsFragment = new PostsFragment();
+        FragmentTransaction ft = this.getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.post_container, postsFragment);
+        ft.commit();
 
     }
 
@@ -195,7 +195,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         inflater.inflate(R.menu.profile_menu, menu);
         MenuItem item = menu.findItem(R.id.action_people);
         item.setVisible(false);
-        if (!mUid.equals(firebaseAuth.getCurrentUser().getUid())){
+        if (!mUid.equals(mCurrentUser)){
             menu.clear();
         }
 
@@ -228,9 +228,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void fetchData(){
-        followQuery.orderBy("time").whereEqualTo("following_id",
-                firebaseAuth.getCurrentUser().getUid())
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+        followersQuery.orderBy("time").whereEqualTo("following_id",
+                mCurrentUser).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot documentSnapshots,
                                 @Nullable FirebaseFirestoreException e) {
@@ -308,7 +307,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                             mFullNameTextView.setText(firstName + " " + secondName);
 
                             if (TextUtils.isEmpty(bio)){
-                                if (firebaseAuth.getCurrentUser().getUid().equals(mUid)){
+                                if (mCurrentUser.equals(mUid)){
                                     mBioTextView.setText(username + " you can add bio line to your profile");
                                 }else {
                                     mBioTextView.setText("Your are looking at " + username +"'s" + " profile");
@@ -365,7 +364,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onStart() {
         super.onStart();
-        postCount();
+        getProfilePostCount();
+        getProfileChannels();
     }
 
     @Override
@@ -403,7 +403,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         }
 
         if (v == addPostImageView){
-            Intent intent = new Intent(this, CreateActivity.class);
+            Intent intent = new Intent(this, CameraActivity.class);
+            startActivity(intent);
+        }
+
+        if (v == mAddChannelImageView){
+            Intent intent = new Intent(this, CreateChannelActivity.class);
             startActivity(intent);
         }
     }
@@ -412,7 +417,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         //follow or unfollow
         processFollow = true;
         peopleCollection.document("followers")
-                .collection(mUid).whereEqualTo("following_id", firebaseAuth.getCurrentUser().getUid())
+                .collection(mUid).whereEqualTo("following_id", mCurrentUser)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -427,12 +432,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                             if (documentSnapshots.isEmpty()){
                                 //set followers and following
                                 Relation follower = new Relation();
-                                follower.setFollowing_id(firebaseAuth.getCurrentUser().getUid());
+                                follower.setFollowing_id(mCurrentUser);
                                 follower.setFollowed_id(mUid);
                                 follower.setType("followed_user");
                                 follower.setTime(System.currentTimeMillis());
                                 peopleCollection.document("followers").collection(mUid)
-                                        .document(firebaseAuth.getCurrentUser().getUid()).set(follower)
+                                        .document(mCurrentUser).set(follower)
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
@@ -441,30 +446,30 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                                 final String postid =  databaseReference.push().getKey();
                                                 timeline.setPost_id(mUid);
                                                 timeline.setTime(time);
-                                                timeline.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                                timeline.setUser_id(mCurrentUser);
                                                 timeline.setType("follow");
                                                 timeline.setActivity_id(postid);
                                                 timeline.setStatus("un_read");
 
                                                 timelineCollection.document(mUid).collection("activities")
-                                                        .document(firebaseAuth.getCurrentUser().getUid())
+                                                        .document(mCurrentUser)
                                                         .set(timeline);
                                             }
                                         });
                                 final Relation following = new Relation();
-                                following.setFollowing_id(firebaseAuth.getCurrentUser().getUid());
+                                following.setFollowing_id(mCurrentUser);
                                 following.setFollowed_id(mUid);
                                 following.setType("following_user");
                                 following.setTime(System.currentTimeMillis());
-                                peopleCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
+                                peopleCollection.document("following").collection(mCurrentUser)
                                         .document(mUid).set(following);
                                 followButton.setText("Following");
 
                                 processFollow = false;
                             }else {
                                 peopleCollection.document("followers").collection(mUid)
-                                        .document(firebaseAuth.getCurrentUser().getUid()).delete();
-                                peopleCollection.document("following").collection(firebaseAuth.getCurrentUser().getUid())
+                                        .document(mCurrentUser).delete();
+                                peopleCollection.document("following").collection(mCurrentUser)
                                         .document(mUid).delete();
                                 followButton.setText("Follow");
                                 processFollow = false;
@@ -475,7 +480,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
-    private void postCount(){
+    private void getProfilePostCount(){
         postsCollection.orderBy("user_id").whereEqualTo("user_id", mUid)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -491,8 +496,13 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                             mViewPostRelativeLayout.setVisibility(View.VISIBLE);
                             final int count = queryDocumentSnapshots.size();
                             mPostCountTextView.setText("Posts: " + count);
+                            if (mFirebaseUtil.firebaseAuth().getUid().equals(mUid)){
+                                addPostImageView.setVisibility(View.VISIBLE);
+                            }else {
+                                addPostImageView.setVisibility(View.GONE);
+                            }
                         }else {
-                           if (firebaseAuth.getCurrentUser().getUid().equals(mUid)){
+                           if (mCurrentUser.equals(mUid)){
                                mPostCountTextView.setText("Posts: 0");
                                mCreatePostRelativeLayout.setVisibility(View.VISIBLE);
                                addPostImageView.setVisibility(View.VISIBLE);
@@ -505,12 +515,45 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 });
     }
 
+    private void getProfileChannels() {
+        mFirebaseUtil.channelsPath().whereEqualTo("user_id",
+                mFirebaseUtil.firebaseAuth().getUid())
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (!documentSnapshots.isEmpty()) {
+                    final int count = documentSnapshots.size();
+                    mChannelCountTextView.setText("Channels: " + count);
+                    mChannelsFrameLayout.setVisibility(View.VISIBLE);
+                    mViewChannelsRelativeLayout.setVisibility(View.VISIBLE);
+                    if (mFirebaseUtil.firebaseAuth().getUid().equals(mUid)){
+                        mAddChannelImageView.setVisibility(View.VISIBLE);
+                    }else {
+                        mAddChannelImageView.setVisibility(View.GONE);
+                    }
+                }else {
+                    if (mFirebaseUtil.firebaseAuth().getUid().equals(mUid)){
+                        mChannelCountTextView.setText("Channels: 0" );
+                        mAddChannelImageView.setVisibility(View.VISIBLE);
+                        mCreateChannelRelativeLayout.setVisibility(View.VISIBLE);
+                    }else {
+                        mAddChannelImageView.setVisibility(View.GONE);
+                    }
+                }
+            }
+        });
+    }
 
     private void sendMessage(){
         //look to see if current user has a chat history with mUid
         processRoom = true;
         roomsCollection.document(mUid).collection("last message")
-                .document(firebaseAuth.getCurrentUser().getUid())
+                .document(mFirebaseUtil.firebaseAuth().getUid())
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
@@ -530,7 +573,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
                                 processRoom = false;
                             }else {
-                                roomsCollection.document(firebaseAuth.getCurrentUser().getUid())
+                                roomsCollection.document(mCurrentUser)
                                         .collection("last message")
                                         .document(mUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                     @Override

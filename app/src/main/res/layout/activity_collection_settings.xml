@@ -172,7 +172,7 @@
                         android:padding="20dp"
                         android:hint="Your collection's name"
                         android:textStyle="normal|bold"
-                        android:background="@drawable/input_background" />
+                        android:background="@drawable/edit_text_background" />
 
                     <Button
                         android:textAllCaps="false"

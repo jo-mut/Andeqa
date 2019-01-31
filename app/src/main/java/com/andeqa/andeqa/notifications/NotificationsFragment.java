@@ -1,9 +1,10 @@
 package com.andeqa.andeqa.notifications;
 
 
-import android.arch.paging.PagedList;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
@@ -20,12 +21,11 @@ import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.chatting.ChatsAdapter;
-import com.andeqa.andeqa.models.Message;
-import com.andeqa.andeqa.models.Timeline;
+import com.andeqa.andeqa.main.HomeActivity;
 import com.andeqa.andeqa.search.SearchPostsActivity;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.paging.FirestorePagingOptions;
+import com.andeqa.andeqa.utils.BottomReachedListener;
+import com.andeqa.andeqa.utils.EndlessStaggeredScrollListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -51,21 +51,24 @@ public class NotificationsFragment extends Fragment {
     @Bind(R.id.placeHolderRelativeLayout)RelativeLayout mPlaceHolderRelativeLayout;
 
     private static final String TAG = NotificationsFragment.class.getSimpleName();
-    private static final String EXTRA_USER_UID = "uid";
-    private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
-    private FirebaseAuth firebaseAuth;
+    private NotificationsAdapter notificationsAdapter;
+    private List<DocumentSnapshot> mSnapshots = new ArrayList<>();
+    private HomeActivity mHomeActivity;
+    //firebase
     private CollectionReference timelineCollection;
     private Query timelineQuery;
-    private NotificationsAdapter notificationsAdapter;
-    private int TOTAL_ITEMS = 30;
-
-    private List<String> activitiesIds = new ArrayList<>();
-    private List<DocumentSnapshot> timelineSnapshots = new ArrayList<>();
+    private FirebaseAuth firebaseAuth;
+    private int TOTAL_ITEMS = 20;
 
     public NotificationsFragment() {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -73,19 +76,28 @@ public class NotificationsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_activities, container, false);
         ButterKnife.bind(this, view);
-        //initialise firebase
         initFirebase();
-        //set up the adapter
-        setUpAdapter();
+        getNotification();
+        setRecyclerView();
+
+        mTimelineRecyclerView.addOnScrollListener(new EndlessStaggeredScrollListener() {
+            @Override
+            public void onLoadMore() {
+                notificationsAdapter.setBottomReachedListener(new BottomReachedListener() {
+                    @Override
+                    public void onBottomReached(int position) {
+                        getNextNotification();                    }
+                });
+            }
+        });
 
         return  view;
     }
 
-
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
     }
 
     @Override
@@ -123,7 +135,6 @@ public class NotificationsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
     }
 
 
@@ -148,6 +159,15 @@ public class NotificationsFragment extends Fragment {
     }
 
 
+    private void setRecyclerView(){
+        notificationsAdapter = new NotificationsAdapter(getContext(), mSnapshots);
+        mTimelineRecyclerView.setAdapter(notificationsAdapter);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        mTimelineRecyclerView.setHasFixedSize(false);
+        mTimelineRecyclerView.setLayoutManager(layoutManager);
+        ViewCompat.setNestedScrollingEnabled(mTimelineRecyclerView,false);
+    }
+
     private void initFirebase(){
         firebaseAuth = FirebaseAuth.getInstance();
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
@@ -155,27 +175,106 @@ public class NotificationsFragment extends Fragment {
                 .collection("activities");
     }
 
-    private void setUpAdapter(){
-        timelineQuery.orderBy("time", Query.Direction.DESCENDING);
+    public void getNotification(){
+        timelineQuery.orderBy("time", Query.Direction.DESCENDING)
+                .limit(TOTAL_ITEMS).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@javax.annotation.Nullable QuerySnapshot documentSnapshots,
+                                @javax.annotation.Nullable FirebaseFirestoreException e) {
 
-        PagedList.Config config = new PagedList.Config.Builder()
-                .setEnablePlaceholders(false)
-                .setPrefetchDistance(10)
-                .setPageSize(20)
-                .build();
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
 
-        FirestorePagingOptions<Timeline> options = new FirestorePagingOptions.Builder<Timeline>()
-                .setLifecycleOwner(this)
-                .setQuery(timelineQuery, config, Timeline.class)
-                .build();
+                if (!documentSnapshots.isEmpty()){
+                    for (final DocumentChange documentChange : documentSnapshots.getDocumentChanges()) {
+                        switch (documentChange.getType()) {
+                            case ADDED:
+                                onDocumentAdded(documentChange);
+                                break;
+                            case MODIFIED:
+                                onDocumentModified(documentChange);
+                                break;
+                            case REMOVED:
+                                onDocumentRemoved(documentChange);
+                                break;
+                        }
+                    }
+                }
+            }
+        });
 
-        notificationsAdapter = new NotificationsAdapter(options, getContext());
-        mTimelineRecyclerView.setAdapter(notificationsAdapter);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        mTimelineRecyclerView.setHasFixedSize(false);
-        mTimelineRecyclerView.setLayoutManager(layoutManager);
-        ViewCompat.setNestedScrollingEnabled(mTimelineRecyclerView,false);
+    }
 
+    public void getNextNotification(){
+        DocumentSnapshot last = mSnapshots.get(mSnapshots.size() - 1);
+        Query query =  timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
+                .collection("activities").orderBy("time", Query.Direction.DESCENDING)
+                .startAfter(last).limit(TOTAL_ITEMS);
+        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(final QuerySnapshot documentSnapshots) {
+
+                if (!documentSnapshots.isEmpty()){
+                    // get remote data
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (final DocumentChange documentChange : documentSnapshots.getDocumentChanges()) {
+                                switch (documentChange.getType()) {
+                                    case ADDED:
+                                        onDocumentAdded(documentChange);
+                                        break;
+                                    case MODIFIED:
+                                        onDocumentModified(documentChange);
+                                        break;
+                                    case REMOVED:
+                                        onDocumentRemoved(documentChange);
+                                        break;
+                                }
+                            }
+                        }
+                    }, 4000);
+                }else {
+                    mSnapshots.add(null);
+                }
+            }
+        });
+
+    }
+
+    protected void onDocumentAdded(DocumentChange change) {
+        mSnapshots.add(change.getDocument());
+        notificationsAdapter.notifyItemInserted(mSnapshots.size() - 1);
+        notificationsAdapter.getItemCount();
+    }
+
+    protected void onDocumentModified(DocumentChange change) {
+        try {
+            if (change.getOldIndex() == change.getNewIndex()) {
+                // Item changed but remained in same position
+                mSnapshots.set(change.getOldIndex(), change.getDocument());
+                notificationsAdapter.notifyItemChanged(change.getOldIndex());
+            } else {
+                // Item changed and changed position
+                mSnapshots.remove(change.getOldIndex());
+                mSnapshots.add(change.getNewIndex(), change.getDocument());
+                notificationsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    protected void onDocumentRemoved(DocumentChange change) {
+        try {
+            mSnapshots.remove(change.getOldIndex());
+            notificationsAdapter.notifyItemRemoved(change.getOldIndex());
+            notificationsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

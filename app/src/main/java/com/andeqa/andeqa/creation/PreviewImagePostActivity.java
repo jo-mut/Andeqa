@@ -23,20 +23,14 @@ public class PreviewImagePostActivity extends AppCompatActivity implements View.
     @Bind(R.id.toolbar)Toolbar mToolbar;
     @Bind(R.id.nextImageView)ImageView mNextImageView;
 
-    private static final String COLLECTION_ID = "collection id";
-    private static final String CAMERA_PATH = "camera image";
-    private static final String PHOTO_URI = "photo uri";
-    private static final String GALLERY_PATH ="gallery image";
     private static final String HEIGHT = "height";
     private static final String WIDTH = "width";
-    private static final String EXTRA_POST_ID = "post id";
     private static final String IMAGE_PATH ="image path";
-    private static final String VIDEO_PATH = "video path";
+    private static final String COLLECTION_ID = "collection id";
+    private static final String POST_ID = "post id";
     private String mCollectionId;
-    private String galleryImage;
-    private String cameraImage;
+    private String postId;
     private String image;
-    private String video;
     private int height;
     private int width;
     private Uri photoUri;
@@ -63,35 +57,57 @@ public class PreviewImagePostActivity extends AppCompatActivity implements View.
         mNextImageView.setOnClickListener(this);
 
         getShareIntent();
-
+        image = getIntent().getStringExtra(IMAGE_PATH);
         mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
-        galleryImage = getIntent().getStringExtra(GALLERY_PATH);
-        cameraImage = getIntent().getStringExtra(CAMERA_PATH);
+        postId = getIntent().getStringExtra(POST_ID);
 
-        if (cameraImage != null){
-            image = cameraImage;
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (image != null){
             Glide.with(PreviewImagePostActivity.this)
                     .asBitmap()
-                    .load(new File(cameraImage))
+                    .load(new File(image))
                     .into(postImageView);
         }
+    }
 
-        if (galleryImage != null){
-            image = galleryImage;
-            Glide.with(PreviewImagePostActivity.this)
-                    .asBitmap()
-                    .load(new File(galleryImage))
-                    .into(postImageView);
+
+    @Override
+    public void onClick(View v){
+        if (v == mNextImageView){
+            height = postImageView.getDrawable().getIntrinsicHeight();
+            width = postImageView.getDrawable().getIntrinsicWidth();
+
+            if (image != null && mCollectionId != null){
+                Intent intent = new Intent(this, CreatePostActivity.class);
+                intent.putExtra(PreviewImagePostActivity.IMAGE_PATH, image);
+                intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
+                intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
+                intent.putExtra(PreviewImagePostActivity.COLLECTION_ID, mCollectionId);
+                startActivity(intent);
+                finish();
+            }else if (image != null && postId != null){
+                Intent intent = new Intent(this, CreatePostActivity.class);
+                intent.putExtra(PreviewImagePostActivity.IMAGE_PATH, image);
+                intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
+                intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
+                intent.putExtra(PreviewImagePostActivity.POST_ID, postId);
+                startActivity(intent);
+                finish();
+            }else {
+                Intent intent = new Intent(this, CreatePostActivity.class);
+                intent.putExtra(PreviewImagePostActivity.IMAGE_PATH, image);
+                intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
+                intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
+                startActivity(intent);
+                finish();
+            }
+
         }
-
-        if (mCollectionId != null){
-            image = galleryImage;
-            Glide.with(PreviewImagePostActivity.this)
-                    .asBitmap()
-                    .load(new File(galleryImage))
-                    .into(postImageView);
-        }
-
     }
 
     private void getShareIntent(){
@@ -119,34 +135,5 @@ public class PreviewImagePostActivity extends AppCompatActivity implements View.
                     .into(postImageView);
         }
 
-    }
-
-    @Override
-    public void onClick(View v){
-        if (v == mNextImageView){
-            height = postImageView.getDrawable().getIntrinsicHeight();
-            width = postImageView.getDrawable().getIntrinsicWidth();
-
-            if (image != null){
-                Intent intent = new Intent(this, CreateSingleActivity.class);
-                intent.putExtra(PreviewImagePostActivity.IMAGE_PATH, image);
-                intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
-                intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
-                startActivity(intent);
-                finish();
-            }
-
-            if (mCollectionId != null){
-                Intent intent = new Intent(this, CreateCollectionPostActivity.class);
-                intent.putExtra(PreviewImagePostActivity.IMAGE_PATH, image);
-                intent.putExtra(PreviewImagePostActivity.COLLECTION_ID, mCollectionId);
-                intent.putExtra(PreviewImagePostActivity.HEIGHT, height + "");
-                intent.putExtra(PreviewImagePostActivity.WIDTH, width + "");
-                startActivity(intent);
-                finish();
-            }
-
-
-        }
     }
 }

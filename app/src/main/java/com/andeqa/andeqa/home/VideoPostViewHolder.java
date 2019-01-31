@@ -1,6 +1,7 @@
 package com.andeqa.andeqa.home;
 
 import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -8,11 +9,9 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.VideoView;
 
 import com.andeqa.andeqa.R;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
-import com.google.firebase.firestore.CollectionReference;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -41,7 +40,7 @@ public class VideoPostViewHolder extends RecyclerView.ViewHolder {
     public LinearLayout mCommentsLinearLayout;
     public TextView timeTextView;
     public LinearLayout bottomLinearLayout;
-    public RelativeLayout postRelativeLayout;
+    public CardView postCardView;
 
     public VideoPostViewHolder(View itemView) {
         super(itemView);
@@ -58,9 +57,8 @@ public class VideoPostViewHolder extends RecyclerView.ViewHolder {
         commentsCountTextView = (TextView) itemView.findViewById(R.id.commentsCountTextView);
         titleRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.titleRelativeLayout);
         descriptionRelativeLayout  = (RelativeLayout) mView.findViewById(R.id.descriptionRelativeLayout);
-        postVideoView = (SimpleExoPlayerView) mView.findViewById(R.id.simpleExoPlayerView);
-        senseCreditsTextView = (TextView) mView.findViewById(R.id.creditsTextView);
+        postVideoView = (SimpleExoPlayerView) mView.findViewById(R.id.exoPlayerView);
         mCommentsLinearLayout = (LinearLayout) mView.findViewById(R.id.commentsLinearLayout);
-        postRelativeLayout = (RelativeLayout) mView.findViewById(R.id.postRelativeLayout);
+        postCardView = (CardView) mView.findViewById(R.id.postCardView);
     }
 }

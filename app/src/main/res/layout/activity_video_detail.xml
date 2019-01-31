@@ -6,309 +6,215 @@
     android:id="@+id/activity_detail"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     tools:context="com.andeqa.andeqa.post_detail.PostDetailActivity">
 
-    <ScrollView
-        android:fillViewport="true"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
-        <LinearLayout
-            android:orientation="vertical"
+    <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+        android:id="@+id/exoPlayerView"
+        android:focusable="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:use_controller="false"
+        app:resize_mode="fit"
+        app:controller_layout_id="@layout/playback_control_view">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/stateRelativeLayout"
+            android:visibility="gone"
+            android:background="#CCDEDEDE">
+
+            <ProgressBar
+                android:layout_centerInParent="true"
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
+    </com.google.android.exoplayer2.ui.SimpleExoPlayerView>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:padding="10dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_gravity="top"
-                app:titleTextAppearance="@style/toolbarTextAppearance"
-                android:layout_height="56dp"
-                android:background="@color/colorPrimary"
-                app:layout_scrollFlags="scroll|enterAlways"
-                app:popupTheme="@style/AppTheme.PopupOverlay"
-                app:titleTextColor="@android:color/white"
-                app:contentInsetLeft="0dp"
-                app:contentInsetStart="0dp">
-
-            </android.support.v7.widget.Toolbar>
-
-            <android.support.v7.widget.CardView
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:cardPreventCornerOverlap="false"
-                app:cardCornerRadius="0dp"
-                app:cardElevation="0dp"
-                app:cardMaxElevation="1dp">
+                android:id="@+id/collectionNameTextView"
+                android:textSize="12sp"
+                android:textColor="@color/colorAccent"
+                android:textStyle="normal"
+                android:text="" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:id="@+id/toolsRelativeLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
                 <LinearLayout
+                    android:id="@+id/likesLinearLayout"
                     android:orientation="horizontal"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:gravity="center"
+                        android:drawableStart="@drawable/ic_heart_grey"
+                        android:drawableLeft="@drawable/ic_heart_grey"
+                        android:drawablePadding="5dp"
+                        android:textColor="@color/grey_700"
+                        android:id="@+id/likesTextView"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp">
-
-                        <de.hdodenhof.circleimageview.CircleImageView
-                            android:layout_margin="5dp"
-                            android:id="@+id/profileImageView"
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:layout_centerVertical="true"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true"
-                            android:scaleType="centerCrop" />
-
-                        <LinearLayout
-                            android:layout_toLeftOf="@+id/settingsRelativeLayout"
-                            android:layout_toStartOf="@+id/settingsRelativeLayout"
-                            android:layout_toRightOf="@+id/profileImageView"
-                            android:layout_toEndOf="@+id/profileImageView"
-                            android:orientation="vertical"
-                            android:padding="5dp"
-                            android:layout_centerVertical="true"
-                            android:id="@+id/nameLinearLayout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:id="@+id/usernameTextView"
-                                android:textSize="14sp"
-                                android:textColor="@color/grey_700"
-                                android:textStyle="normal|bold"
-                                android:text="" />
-
-                            <LinearLayout
-                                android:visibility="gone"
-                                android:id="@+id/creditsLinearLayout"
-                                android:orientation="horizontal"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
-
-                                <ImageView
-                                    android:layout_gravity="center_vertical"
-                                    android:id="@+id/creditsImageView"
-                                    android:layout_width="15dp"
-                                    android:tint="@color/grey_700"
-                                    android:layout_height="15dp"
-                                    app:srcCompat="@drawable/ic_credits" />
-
-                                <TextView
-                                    android:layout_gravity="center_vertical"
-                                    android:text=""
-                                    android:textColor="@color/grey_700"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:id="@+id/creditsTextView"
-                                    android:textStyle="normal|bold"
-                                    android:textSize="12sp"
-                                    android:paddingTop="3dp"
-                                    android:paddingBottom="3dp"
-                                    android:layout_marginStart="10dp"
-                                    android:layout_marginLeft="10dp" />
-
-                            </LinearLayout>
-
-                        </LinearLayout>
-
-                        <RelativeLayout
-                            android:padding="10dp"
-                            android:layout_centerVertical="true"
-                            android:layout_alignParentRight="true"
-                            android:layout_alignParentEnd="true"
-                            android:id="@+id/settingsRelativeLayout"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
-
-                            <ImageView
-                                android:id="@+id/postSettingsImageView"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:tint="@color/grey_700"
-                                app:srcCompat="@drawable/ic_settings_vert" />
-
-                        </RelativeLayout>
-
-                    </RelativeLayout>
+                        android:text="0"
+                        android:padding="10dp"
+                        android:textSize="12sp"
+                        android:textStyle="normal" />
 
                 </LinearLayout>
 
-            </android.support.v7.widget.CardView>
+                <LinearLayout
+                    android:id="@+id/commentsLinearLayout"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:gravity="center"
+                        android:drawableStart="@drawable/ic_comment"
+                        android:drawableLeft="@drawable/ic_comment"
+                        android:drawablePadding="5dp"
+                        android:textColor="@color/grey_700"
+                        android:id="@+id/commentsCountTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textSize="12sp"
+                        android:padding="10dp"
+                        android:textStyle="normal|bold" />
+
+                </LinearLayout>
+
+            </LinearLayout>
 
             <RelativeLayout
-                android:background="@android:color/white"
-                android:orientation="vertical"
-                android:padding="0.3dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:padding="10dp"
+                android:id="@+id/addPostRelativeLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/addPostImageView"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:tint="@color/grey_700"
+                    app:srcCompat="@drawable/ic_plus" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:visibility="gone"
+                android:id="@+id/titleRelativeLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <com.google.android.exoplayer2.ui.SimpleExoPlayerView
-                    android:id="@+id/simpleExoPlayerView"
-                    android:focusable="true"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/titleTextView"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:use_controller="false"
-                    app:resize_mode="fixed_width"
-                    app:controller_layout_id="@layout/playback_control_view">
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:id="@+id/stateRelativeLayout"
-                        android:visibility="gone"
-                        android:background="#CCDEDEDE">
-
-                        <ProgressBar
-                            android:layout_centerInParent="true"
-                            android:id="@+id/progressBar"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-
-                    </RelativeLayout>
-
-                </com.google.android.exoplayer2.ui.SimpleExoPlayerView>
-
+                    android:text=""
+                    android:textColor="@color/grey_700"
+                    android:textSize="12sp"
+                    android:textStyle="normal|bold" />
 
             </RelativeLayout>
 
             <RelativeLayout
-                android:padding="2dp"
-                android:layout_marginBottom="10dp"
+                android:visibility="gone"
+                android:id="@+id/descriptionRelativeLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <android.support.v7.widget.CardView
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/descriptionTextView"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:cardPreventCornerOverlap="false"
-                    app:cardCornerRadius="0dp">
-
-                    <LinearLayout
-                        android:background="@drawable/border_rectangle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="1dp"
-                        android:orientation="vertical">
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <LinearLayout
-                                android:orientation="horizontal"
-                                android:id="@+id/toolsRelativeLayout"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
-
-                                <LinearLayout
-                                    android:orientation="horizontal"
-                                    android:id="@+id/viewsLinearLayout"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content">
-
-                                    <ImageView
-                                        android:id="@+id/viewsImageView"
-                                        android:layout_width="22dp"
-                                        android:layout_height="22dp"
-                                        android:tint="@color/grey_700"
-                                        app:srcCompat="@drawable/ic_views" />
-
-
-                                    <TextView
-                                        android:textColor="@color/grey_700"
-                                        android:id="@+id/viewsCountTextView"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="0"
-                                        android:padding="5dp"
-                                        android:textSize="15sp"
-                                        android:textStyle="normal" />
-
-
-                                </LinearLayout>
-
-
-                                <LinearLayout
-                                    android:id="@+id/commentsLinearLayout"
-                                    android:orientation="horizontal"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content">
-
-                                    <ImageView
-                                        android:id="@+id/commentsImageView"
-                                        android:layout_width="24dp"
-                                        android:layout_height="24dp"
-                                        android:layout_marginLeft="5dp"
-                                        android:layout_marginStart="5dp"
-                                        android:tint="@color/grey_700"
-                                        app:srcCompat="@drawable/ic_comment" />
-
-                                    <TextView
-                                        android:textColor="@color/grey_700"
-                                        android:id="@+id/commentsCountTextView"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="0"
-                                        android:textSize="12sp"
-                                        android:padding="10dp"
-                                        android:layout_gravity="bottom"
-                                        android:textStyle="normal|bold" />
-
-                                </LinearLayout>
-
-                            </LinearLayout>
-
-                        </RelativeLayout>
-
-
-                        <RelativeLayout
-                            android:visibility="gone"
-                            android:id="@+id/titleRelativeLayout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:id="@+id/titleTextView"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text=""
-                                android:textColor="@color/grey_700"
-                                android:textSize="16sp"
-                                android:textStyle="normal" />
-
-                        </RelativeLayout>
-
-                        <RelativeLayout
-                            android:visibility="gone"
-                            android:id="@+id/descriptionRelativeLayout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:id="@+id/descriptionTextView"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text=""
-                                android:textColor="@color/grey_700"
-                                android:textSize="14sp" />
-
-                        </RelativeLayout>
-
-                    </LinearLayout>
-
-                </android.support.v7.widget.CardView>
+                    android:text=""
+                    android:textColor="@color/grey_700"
+                    android:textSize="12sp" />
 
             </RelativeLayout>
 
         </LinearLayout>
 
+    </LinearLayout>
 
-    </ScrollView>
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_gravity="top"
+        app:titleTextAppearance="@style/toolbarTextAppearance"
+        android:layout_height="56dp"
+        android:background="@color/transparent_color"
+        app:layout_scrollFlags="scroll|enterAlways"
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+        app:titleTextColor="@android:color/white"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp">
+
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_below="@id/toolbar"
+        android:padding="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profileImageView"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:padding="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/usernameTextView"
+            android:textSize="14sp"
+            android:textColor="@color/grey_700"
+            android:textStyle="normal|bold"
+            android:text="" />
+
+    </LinearLayout>
 
 </RelativeLayout>
+

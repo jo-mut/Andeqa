@@ -24,6 +24,7 @@ import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Relation;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.profile.ProfileActivity;
+import com.andeqa.andeqa.utils.BottomReachedListener;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
@@ -50,7 +51,7 @@ import javax.annotation.Nullable;
  * Created by J.EL on 1/18/2018.
  */
 
-public class NotificationsAdapter extends FirestorePagingAdapter<Timeline, RecyclerView.ViewHolder> {
+public class NotificationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final String TAG = NotificationsAdapter.class.getSimpleName();
     private Context mContext;
@@ -64,32 +65,42 @@ public class NotificationsAdapter extends FirestorePagingAdapter<Timeline, Recyc
     private FirebaseAuth firebaseAuth;
     private static final int COMMENT_TYPE=1;
     private static final int FOLLOW_TYPE =2;
+    private static final int LIKE_TYPE = 3;
     private boolean processFollow = false;
 
     private CollectionReference usersCollection;
     private CollectionReference postCollection;
-    private CollectionReference collectionsPostCollections;
     private CollectionReference peopleCollection;
     private CollectionReference timelineCollection;
     private CollectionReference commentCollection;
     private DatabaseReference databaseReference;
+    private CollectionReference likeReference;
+    //lists
+    private List<DocumentSnapshot> documentSnapshots;
 
-    public NotificationsAdapter(@NonNull FirestorePagingOptions<Timeline> options, Context mContext) {
-        super(options);
+    private BottomReachedListener mBottomReachedListener;
+
+
+    public NotificationsAdapter(Context mContext, List<DocumentSnapshot> documents) {
         this.mContext = mContext;
+        this.documentSnapshots = new ArrayList<>();
+        this.documentSnapshots = documents;
         initReferences();
     }
 
+    public void setBottomReachedListener(BottomReachedListener bottomReachedListener){
+        this.mBottomReachedListener = bottomReachedListener;
+    }
 
     private void initReferences(){
         firebaseAuth = FirebaseAuth.getInstance();
         usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
         timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
         postCollection = FirebaseFirestore.getInstance().collection(Constants.POSTS);
-        collectionsPostCollections = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS);
         commentCollection = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
         peopleCollection = FirebaseFirestore.getInstance().collection(Constants.PEOPLE_RELATIONS);
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
+        likeReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
     }
 
     @Override
@@ -98,33 +109,28 @@ public class NotificationsAdapter extends FirestorePagingAdapter<Timeline, Recyc
     }
 
     protected DocumentSnapshot getSnapshot(int index) {
-        return getCurrentList().get(index);
+        return documentSnapshots.get(index);
     }
 
     @Override
     public int getItemCount() {
-        return super.getItemCount();
+        return documentSnapshots.size();
     }
 
     @Override
     public int getItemViewType(int position) {
-        Timeline timeline = getSnapshot(position).toObject(Timeline.class);
-
-        if ( timeline.getType() != null &&  timeline.getType().equals("comment")){
-            return COMMENT_TYPE;
-        }else if ( timeline.getType() != null &&  timeline.getType().equals("follow")){
-            return FOLLOW_TYPE;
-        }else {
-            return FOLLOW_TYPE;
-        }
-
+        if (getSnapshot(position) != null){
+            Timeline timeline = getSnapshot(position).toObject(Timeline.class);
+            if ( timeline.getType() != null &&  timeline.getType().equals("comment")){
+                return COMMENT_TYPE;
+            }else if ( timeline.getType() != null &&  timeline.getType().equals("follow")){
+                return FOLLOW_TYPE;
+            }else {
+                return LIKE_TYPE;
+            }
+        }return position;
     }
 
-    @Nullable
-    @Override
-    public PagedList<DocumentSnapshot> getCurrentList() {
-        return super.getCurrentList();
-    }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -139,29 +145,42 @@ public class NotificationsAdapter extends FirestorePagingAdapter<Timeline, Recyc
                 view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.layout_notifications_people, parent, false);
                 return new PeopleNotificationsViewHolder(view);
+            case LIKE_TYPE:
+                view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.layout_notification_like, parent, false);
+                return new NotificationLikeViewHolder(view);
         }
 
         return null;
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position, Timeline model) {
-        Timeline timeline = getSnapshot(position).toObject(Timeline.class);
-        final String type = timeline.getType();
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
-        if (type != null && type.equals("comment")){
-            populateTimelineComment((NotificationsCommentViewHolder)holder, position);
-        }else if (type != null && type.equals("follow")){
-            populateNotificationPeople((PeopleNotificationsViewHolder)holder, position);
-        }else {
-            //nothing
+        switch (holder.getItemViewType()){
+            case COMMENT_TYPE:
+                populateTimelineComment((NotificationsCommentViewHolder)holder, position);
+                break;
+            case FOLLOW_TYPE:
+                populateNotificationPeople((PeopleNotificationsViewHolder)holder, position);
+                break;
+            case LIKE_TYPE:
+                populateNotificationLike((NotificationLikeViewHolder) holder, position);
+                break;
+        }
+
+        try {
+            if (position == getItemCount() - 1){
+                mBottomReachedListener.onBottomReached(position);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
 
     private void populateTimelineComment(final NotificationsCommentViewHolder holder, int position){
         Timeline timeline = getSnapshot(position).toObject(Timeline.class);
-        holder.bindTimelineComment(timeline);
         final String activityId = timeline.getActivity_id();
         final String uid = timeline.getUser_id();
         final String status = timeline.getStatus();
@@ -177,72 +196,47 @@ public class NotificationsAdapter extends FirestorePagingAdapter<Timeline, Recyc
                 }
 
                 if (documentSnapshot.exists()){
-                    Post post = documentSnapshot.toObject(Post.class);
+                    final Post post = documentSnapshot.toObject(Post.class);
                     final String collectionId = post.getCollection_id();
                     final String type  = post.getType();
+                    final String url = post.getUrl();
 
+                    Glide.with(mContext.getApplicationContext())
+                            .load(url)
+                            .apply(new RequestOptions()
+                                    .placeholder(R.drawable.post_placeholder)
+                                    .diskCacheStrategy(DiskCacheStrategy.DATA))
+                            .into(holder.postImageView);
 
-                    if (type.equals("single") || type.equals("single_image_post") || type.equals("single_video_post")){
-                        collectionsPostCollections = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
-                                .document("singles").collection(collectionId);
+                    if (post.getWidth() != null && post.getHeight() != null){
+                        holder.postImageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent =  new Intent(mContext, PostDetailActivity.class);
+                                intent.putExtra(NotificationsAdapter.EXTRA_POST_ID, postId);
+                                intent.putExtra(NotificationsAdapter.COLLECTION_ID, collectionId);
+                                intent.putExtra(NotificationsAdapter.EXTRA_USER_UID, uid);
+                                intent.putExtra(NotificationsAdapter.TYPE, type);
+                                intent.putExtra(NotificationsAdapter.POST_HEIGHT, post.getHeight());
+                                intent.putExtra(NotificationsAdapter.POST_WIDTH, post.getWidth());
+                                mContext.startActivity(intent);
+                            }
+                        });
                     }else {
-                        collectionsPostCollections = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
-                                .document("collections").collection(collectionId);
+                        holder.postImageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent = new Intent(mContext, PostDetailActivity.class);
+                                intent.putExtra(NotificationsAdapter.EXTRA_USER_UID, uid);
+                                intent.putExtra(NotificationsAdapter.EXTRA_POST_ID, postId);
+                                intent.putExtra(NotificationsAdapter.COLLECTION_ID, collectionId);
+                                intent.putExtra(NotificationsAdapter.TYPE, type);
+                                mContext.startActivity(intent);
+                            }
+                        });
+
+
                     }
-
-                    collectionsPostCollections.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
-
-                            if (documentSnapshot.exists()){
-                                final CollectionPost collectionPost = documentSnapshot.toObject(CollectionPost.class);
-                                final String image = collectionPost.getImage();
-
-                                Glide.with(mContext.getApplicationContext())
-                                        .load(image)
-                                        .apply(new RequestOptions()
-                                                .placeholder(R.drawable.post_placeholder)
-                                                .diskCacheStrategy(DiskCacheStrategy.DATA))
-                                        .into(holder.postImageView);
-
-                                if (collectionPost.getWidth() != null && collectionPost.getHeight() != null){
-                                    holder.postImageView.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            Intent intent =  new Intent(mContext, PostDetailActivity.class);
-                                            intent.putExtra(NotificationsAdapter.EXTRA_POST_ID, postId);
-                                            intent.putExtra(NotificationsAdapter.COLLECTION_ID, collectionId);
-                                            intent.putExtra(NotificationsAdapter.EXTRA_USER_UID, uid);
-                                            intent.putExtra(NotificationsAdapter.TYPE, type);
-                                            intent.putExtra(NotificationsAdapter.POST_HEIGHT, collectionPost.getHeight());
-                                            intent.putExtra(NotificationsAdapter.POST_WIDTH, collectionPost.getWidth());
-                                            mContext.startActivity(intent);
-                                        }
-                                    });
-                                }else {
-                                    holder.postImageView.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            Intent intent = new Intent(mContext, PostDetailActivity.class);
-                                            intent.putExtra(NotificationsAdapter.EXTRA_USER_UID, uid);
-                                            intent.putExtra(NotificationsAdapter.EXTRA_POST_ID, postId);
-                                            intent.putExtra(NotificationsAdapter.COLLECTION_ID, collectionId);
-                                            intent.putExtra(NotificationsAdapter.TYPE, type);
-                                            mContext.startActivity(intent);
-                                        }
-                                    });
-
-
-                                }
-                            }
-
-                        }
-                    });
                 }
             }
         });
@@ -309,45 +303,23 @@ public class NotificationsAdapter extends FirestorePagingAdapter<Timeline, Recyc
                     });
 
                 }else {
-                    holder.profileImageView.setImageResource(R.drawable.ic_user);
-                    commentCollection.document("post_ids").collection(postId)
-                            .document(activityId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                            if (e != null) {
-                                Log.w(TAG, "Listen error", e);
-                                return;
-                            }
+                    timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
+                            .collection("activities").document(activityId)
+                            .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                @Override
+                                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                                    if (e != null) {
+                                        Log.w(TAG, "Listen error", e);
+                                        return;
+                                    }
 
-                            if (documentSnapshot.exists()){
-                                Comment comment = documentSnapshot.toObject(Comment.class);
-                                String commentText = comment.getComment_text();
-                                String boldText = "User";
-                                SpannableString str = new SpannableString(boldText);
-                                str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                holder.usernameTextView.setText(str);
-                                holder.activityTextView.setText("commented on your post. " + '"' + commentText + '"');
-                            }else {
-                                timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
-                                        .collection("activities").document(activityId)
-                                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                            @Override
-                                            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                                                if (e != null) {
-                                                    Log.w(TAG, "Listen error", e);
-                                                    return;
-                                                }
-
-                                                if (documentSnapshot.exists()){
-                                                    timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
-                                                            .collection("activities").document(activityId)
-                                                            .delete();
-                                                }
-                                            }
-                                        });
-                            }
-                        }
-                    });
+                                    if (documentSnapshot.exists()){
+                                        timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
+                                                .collection("activities").document(activityId)
+                                                .delete();
+                                    }
+                                }
+                            });
                 }
             }
         });
@@ -538,5 +510,163 @@ public class NotificationsAdapter extends FirestorePagingAdapter<Timeline, Recyc
 
     }
 
+    private void populateNotificationLike(final NotificationLikeViewHolder holder, int position) {
+        Timeline timeline = getSnapshot(position).toObject(Timeline.class);
+        final String userId = timeline.getUser_id();
+        final String activityId = timeline.getActivity_id();
+        final String uid = timeline.getUser_id();
+        final String postId = timeline.getPost_id();
+
+
+        holder.profileImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(mContext, ProfileActivity.class);
+                intent.putExtra(NotificationsAdapter.EXTRA_USER_UID, uid);
+                mContext.startActivity(intent);
+            }
+        });
+
+        postCollection.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (documentSnapshot.exists()){
+                    final Post post = documentSnapshot.toObject(Post.class);
+                    final String collectionId = post.getCollection_id();
+                    final String type  = post.getType();
+                    final String url = post.getUrl();
+
+                    Glide.with(mContext.getApplicationContext())
+                            .load(url)
+                            .apply(new RequestOptions()
+                                    .placeholder(R.drawable.post_placeholder)
+                                    .diskCacheStrategy(DiskCacheStrategy.DATA))
+                            .into(holder.postImageView);
+
+                    if (post.getWidth() != null && post.getHeight() != null){
+                        holder.postImageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent =  new Intent(mContext, PostDetailActivity.class);
+                                intent.putExtra(NotificationsAdapter.EXTRA_POST_ID, postId);
+                                intent.putExtra(NotificationsAdapter.COLLECTION_ID, collectionId);
+                                intent.putExtra(NotificationsAdapter.EXTRA_USER_UID, uid);
+                                intent.putExtra(NotificationsAdapter.TYPE, type);
+                                intent.putExtra(NotificationsAdapter.POST_HEIGHT, post.getHeight());
+                                intent.putExtra(NotificationsAdapter.POST_WIDTH, post.getWidth());
+                                mContext.startActivity(intent);
+                            }
+                        });
+                    }else {
+                        holder.postImageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent = new Intent(mContext, PostDetailActivity.class);
+                                intent.putExtra(NotificationsAdapter.EXTRA_USER_UID, uid);
+                                intent.putExtra(NotificationsAdapter.EXTRA_POST_ID, postId);
+                                intent.putExtra(NotificationsAdapter.COLLECTION_ID, collectionId);
+                                intent.putExtra(NotificationsAdapter.TYPE, type);
+                                mContext.startActivity(intent);
+                            }
+                        });
+
+
+                    }
+                }
+            }
+        });
+
+
+        usersCollection.document(userId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (documentSnapshot.exists()){
+                    final Andeqan andeqan = documentSnapshot.toObject(Andeqan.class);
+                    final String username = andeqan.getUsername();
+                    final String profileImage = andeqan.getProfile_image();
+                    final String uid = andeqan.getUser_id();
+
+                    String boldText = username;
+                    SpannableString str = new SpannableString(boldText);
+                    str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    holder.usernameTextView.setText(str);
+                    holder.activityTextView.setText(username + " is now following you");
+                    Glide.with(mContext)
+                            .load(profileImage)
+                            .apply(new RequestOptions()
+                                    .placeholder(R.drawable.ic_user)
+                                    .diskCacheStrategy(DiskCacheStrategy.DATA))
+                            .into(holder.profileImageView);
+
+                    timelineCollection.document("post_ids").collection(postId)
+                            .document(userId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                            if (e != null) {
+                                Log.w(TAG, "Listen error", e);
+                                return;
+                            }
+
+                            if (documentSnapshot.exists()){
+                                String boldText = username;
+                                SpannableString str = new SpannableString(boldText);
+                                str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                holder.usernameTextView.setText(str);
+                                holder.activityTextView.setText("likes your post");
+                            }else {
+                                timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
+                                        .collection("activities").document(activityId)
+                                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                                                if (e != null) {
+                                                    Log.w(TAG, "Listen error", e);
+                                                    return;
+                                                }
+
+                                                if (documentSnapshot.exists()){
+                                                    timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
+                                                            .collection("activities").document(activityId)
+                                                            .delete();
+                                                }
+                                            }
+                                        });
+                            }
+                        }
+                    });
+
+                }else {
+                    timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
+                            .collection("activities").document(activityId)
+                            .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                @Override
+                                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                                    if (e != null) {
+                                        Log.w(TAG, "Listen error", e);
+                                        return;
+                                    }
+
+                                    if (documentSnapshot.exists()){
+                                        timelineCollection.document(userId).collection("activities")
+                                                .document(firebaseAuth.getCurrentUser().getUid())
+                                                .delete();
+                                    }
+                                }
+                            });
+                }
+            }
+        });
+
+    }
 
 }

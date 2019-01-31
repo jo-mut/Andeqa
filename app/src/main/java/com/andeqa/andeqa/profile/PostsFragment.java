@@ -20,6 +20,7 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.post_detail.PostDetailActivity;
+import com.andeqa.andeqa.post_detail.VideoDetailActivity;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -168,12 +169,11 @@ public class PostsFragment extends Fragment{
                 final String collectionId = post.getCollection_id();
                 final String type = post.getType();
 
-
                 if (type.equals("single") || type.equals("single_image_post")){
-                    collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
+                    collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.POSTS_OF_COLLECTION)
                             .document("singles").collection(collectionId);
                 }else {
-                    collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
+                    collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.POSTS_OF_COLLECTION)
                             .document("collections").collection(collectionId);
                 }
 
@@ -213,33 +213,47 @@ public class PostsFragment extends Fragment{
 
 
 
-                if (post.getWidth() != null && post.getHeight() != null){
+                if (type.equals("video")){
                     holder.postImageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent intent =  new Intent(getActivity(), PostDetailActivity.class);
+                            Intent intent =  new Intent(getActivity(), VideoDetailActivity.class);
                             intent.putExtra(PostsFragment.EXTRA_POST_ID, postId);
                             intent.putExtra(PostsFragment.COLLECTION_ID, collectionId);
                             intent.putExtra(PostsFragment.EXTRA_USER_UID, uid);
                             intent.putExtra(PostsFragment.TYPE, type);
-                            intent.putExtra(PostsFragment.POST_HEIGHT, post.getHeight());
-                            intent.putExtra(PostsFragment.POST_WIDTH, post.getWidth());
                             startActivity(intent);
                         }
                     });
                 }else {
-                    holder.postImageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent intent =  new Intent(getActivity(), PostDetailActivity.class);
-                            intent.putExtra(PostsFragment.EXTRA_POST_ID, postId);
-                            intent.putExtra(PostsFragment.COLLECTION_ID, collectionId);
-                            intent.putExtra(PostsFragment.EXTRA_USER_UID, uid);
-                            intent.putExtra(PostsFragment.TYPE, type);
-                            startActivity(intent);
-                        }
-                    });
+                    if (post.getWidth() != null && post.getHeight() != null){
+                        holder.postImageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent =  new Intent(getActivity(), PostDetailActivity.class);
+                                intent.putExtra(PostsFragment.EXTRA_POST_ID, postId);
+                                intent.putExtra(PostsFragment.COLLECTION_ID, collectionId);
+                                intent.putExtra(PostsFragment.EXTRA_USER_UID, uid);
+                                intent.putExtra(PostsFragment.TYPE, type);
+                                intent.putExtra(PostsFragment.POST_HEIGHT, post.getHeight());
+                                intent.putExtra(PostsFragment.POST_WIDTH, post.getWidth());
+                                startActivity(intent);
+                            }
+                        });
+                    }else {
+                        holder.postImageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent =  new Intent(getActivity(), PostDetailActivity.class);
+                                intent.putExtra(PostsFragment.EXTRA_POST_ID, postId);
+                                intent.putExtra(PostsFragment.COLLECTION_ID, collectionId);
+                                intent.putExtra(PostsFragment.EXTRA_USER_UID, uid);
+                                intent.putExtra(PostsFragment.TYPE, type);
+                                startActivity(intent);
+                            }
+                        });
 
+                    }
                 }
 
             }
@@ -250,6 +264,11 @@ public class PostsFragment extends Fragment{
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.layout_profile_posts, parent, false);
                 return new ProfilePostViewHolder(view);
+            }
+
+            @Override
+            public int getItemViewType(int position) {
+                return super.getItemViewType(position);
             }
         };
 

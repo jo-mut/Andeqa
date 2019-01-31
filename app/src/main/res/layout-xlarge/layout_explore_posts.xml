@@ -29,7 +29,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <com.andeqa.andeqa.utils.ProportionalImageView
+                    <ImageView
+                        android:src="@drawable/post_placeholder"
+                        app:layout_constraintDimensionRatio="1:1"
                         android:id="@+id/postImageView"
                         android:scaleType="centerCrop"
                         android:layout_width="match_parent"
@@ -145,6 +147,31 @@
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:id="@+id/likesLinearLayout"
+                            android:orientation="horizontal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:id="@+id/likesImageView"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:background="@drawable/ic_heart_grey"  />
+
+                            <TextView
+                                android:textColor="@color/grey_700"
+                                android:id="@+id/likesTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:padding="5dp"
+                                android:textSize="20sp"
+                                android:textStyle="normal" />
+
+
+                        </LinearLayout>
 
                         <LinearLayout
                             android:id="@+id/commentsLinearLayout"

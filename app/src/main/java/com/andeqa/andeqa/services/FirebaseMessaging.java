@@ -10,7 +10,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.creation.CreateCollectionPostActivity;
+import com.andeqa.andeqa.main.HomeActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -42,7 +42,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
 
     private void sendNotification(String body) {
         // Add custom implementation, as needed.
-        Intent intent = new Intent(this, CreateCollectionPostActivity.class);
+        Intent intent = new Intent(this, HomeActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0/*request code*/, intent, PendingIntent.FLAG_ONE_SHOT);
@@ -52,7 +52,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_log)
-                .setContentTitle("Andeqa")
+                .setContentTitle("Invoved")
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(body))
                 .setContentText(body)
                 .setAutoCancel(true)

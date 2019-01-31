@@ -83,7 +83,9 @@ public class Player implements com.google.android.exoplayer2.Player.EventListene
     }
 
     private void showBuffering() {
-        stateRelativeLayout.setVisibility(View.VISIBLE);
+        if (stateRelativeLayout != null) {
+            stateRelativeLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     private void showError() {
@@ -93,7 +95,9 @@ public class Player implements com.google.android.exoplayer2.Player.EventListene
     }
 
     private void showReady() {
-        stateRelativeLayout.setVisibility(View.GONE);
+        if (stateRelativeLayout != null) {
+            stateRelativeLayout.setVisibility(View.GONE);
+        }
     }
 
     public void releasePlayer(){
@@ -116,7 +120,7 @@ public class Player implements com.google.android.exoplayer2.Player.EventListene
 
     @Override
     public void onLoadingChanged(boolean isLoading) {
-//        showBuffering();
+        showBuffering();
     }
 
     @Override

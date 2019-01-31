@@ -19,11 +19,11 @@ import com.andeqa.andeqa.models.Comment;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.utils.BottomReachedListener;
+import com.andeqa.andeqa.utils.EndlessLinearScrollListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -60,8 +60,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     private CommentsAdapter commentsAdapter;
     private static final int DEFAULT_COMMENT_LENGTH_LIMIT = 500;
     private static final int TOTAL_ITEMS = 25;
-    private List<String> commentsIds = new ArrayList<>();
-    private List<DocumentSnapshot> comments = new ArrayList<>();
+    private List<DocumentSnapshot> snapshots = new ArrayList<>();
     private static final String TAG = CommentsActivity.class.getSimpleName();
 
     @Override
@@ -107,20 +106,20 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onStart() {
         super.onStart();
-        loadComments();
+        // clear the recycler view before adding new data
+        snapshots.clear();
+        // set the recyclee view adapter
+        setRecyclerView();
+        // get remote snapshots
+        setCollections();
 
-        commentsAdapter.setmBottomReachedListener(new BottomReachedListener() {
+
+        mCommentsRecyclerView.addOnScrollListener(new EndlessLinearScrollListener() {
             @Override
-            public void onBottomReached(final int position) {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        setNextComments();
-                    }
-                },1000);
+            public void onLoadMore() {
+                setNextComments();
             }
         });
-
     }
 
     @Override
@@ -133,11 +132,6 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         super.onDestroy();
     }
 
-    private void loadComments(){
-        comments.clear();
-        setRecyclerView();
-        setCollections();
-    }
 
     private void sendComment(){
         final long time = new Date().getTime();
@@ -195,7 +189,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void setRecyclerView(){
-        commentsAdapter = new CommentsAdapter(this);
+        commentsAdapter = new CommentsAdapter(this, snapshots);
         mCommentsRecyclerView.setAdapter(commentsAdapter);
         mCommentsRecyclerView.setHasFixedSize(false);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -216,19 +210,9 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                         }
 
                         if (!documentSnapshots.isEmpty()){
-                            //retrieve the first bacth of documentSnapshots
-                            for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                                switch (change.getType()) {
-                                    case ADDED:
-                                        onDocumentAdded(change);
-                                        break;
-                                    case MODIFIED:
-                                        onDocumentModified(change);
-                                        break;
-                                    case REMOVED:
-                                        onDocumentRemoved(change);
-                                        break;
-                                }
+                            for (DocumentSnapshot snapshot: documentSnapshots){
+                                snapshots.add(snapshot);
+                                commentsAdapter.notifyItemInserted(snapshots.size() - 1);
                             }
                         }
 
@@ -251,7 +235,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
             nextSellingQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
-                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                public void onEvent(final QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
                     if (e != null) {
                         Log.w(TAG, "Listen error", e);
@@ -259,20 +243,15 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                     }
 
                     if (!documentSnapshots.isEmpty()){
-                        //retrieve the first bacth of documentSnapshots
-                        for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                            switch (change.getType()) {
-                                case ADDED:
-                                    onDocumentAdded(change);
-                                    break;
-                                case MODIFIED:
-                                    onDocumentModified(change);
-                                    break;
-                                case REMOVED:
-                                    onDocumentRemoved(change);
-                                    break;
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (DocumentSnapshot snapshot: documentSnapshots){
+                                    snapshots.add(snapshot);
+                                    commentsAdapter.notifyItemInserted(snapshots.size() - 1);
+                                }
                             }
-                        }
+                        },1000);
                     }
                 }
             });
@@ -280,40 +259,4 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-
-    protected void onDocumentAdded(DocumentChange change) {
-        commentsIds.add(change.getDocument().getId());
-        comments.add(change.getDocument());
-        commentsAdapter.setPostComments(comments);
-        commentsAdapter.notifyItemInserted(comments.size() -1);
-        commentsAdapter.getItemCount();
-
     }
-
-    protected void onDocumentModified(DocumentChange change) {
-        try {
-            if (change.getOldIndex() == change.getNewIndex()) {
-                // Item changed but remained in same position
-                comments.set(change.getOldIndex(), change.getDocument());
-                commentsAdapter.notifyItemChanged(change.getOldIndex());
-            } else {
-                // Item changed and changed position
-                comments.remove(change.getOldIndex());
-                comments.add(change.getNewIndex(), change.getDocument());
-                commentsAdapter.notifyItemRangeChanged(0, comments.size());
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    protected void onDocumentRemoved(DocumentChange change) {
-        try {
-            comments.remove(change.getOldIndex());
-            commentsAdapter.notifyItemRemoved(change.getOldIndex());
-            commentsAdapter.notifyItemRangeChanged(0, comments.size());
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-}

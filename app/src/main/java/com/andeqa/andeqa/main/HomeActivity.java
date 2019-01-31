@@ -7,34 +7,35 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.ColorRes;
+import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.chatting.ConversationsFragment;
+import com.andeqa.andeqa.channels.ChannelsFragment;
+import com.andeqa.andeqa.channels.VideosFragment;
+import com.andeqa.andeqa.chatting.InboxFragment;
 import com.andeqa.andeqa.collections.CollectionsFragment;
-import com.andeqa.andeqa.creation.CreateActivity;
-import com.andeqa.andeqa.more.MoreFragment;
 import com.andeqa.andeqa.home.HomeFragment;
 
+import com.andeqa.andeqa.home.NoSwipePager;
 import com.andeqa.andeqa.models.Andeqan;
-import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.notifications.NotificationsFragment;
 import com.andeqa.andeqa.profile.ProfileActivity;
-import com.andeqa.andeqa.home.NoSwipePager;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.aurelhubert.ahbottomnavigation.notification.AHNotification;
@@ -42,6 +43,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -60,66 +63,58 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener,
-        ForceUpdateChecker.OnUpdateNeededListener  {
+        ForceUpdateChecker.OnUpdateNeededListener{
+    @Bind(R.id.profileImageView) CircleImageView mProfileImageView;
+    @Bind(R.id.toolbar)Toolbar mToolBar;
     @Bind(R.id.bottomNavigationView)AHBottomNavigation mBottomNavigationView;
     @Bind(R.id.noSwipeViewPager)NoSwipePager noSwipePager;
-    @Bind(R.id.profileImageView) CircleImageView mProfileImageView;
-    @Bind(R.id.floatingActionButton)FloatingActionButton mFloatingActionButton;
+    @Bind(R.id.appbar)AppBarLayout mAppBarLayout;
 
-
-//    @Bind(R.id.toolbar)Toolbar toolbar;
-//    @Bind(R.id.titleTextView)TextView titleTextView;
-//    @Bind(R.id.mProfileImageView) CircleImageView mProfileImageView;
-
-    private Uri photoUri;
     private static final String TAG = HomeActivity.class.getSimpleName();
-    private static final String KEY_STATE = "state";
-    private int mSelectedItem;
     private static final String EXTRA_USER_UID = "uid";
-
-    private CollectionReference timelineCollection;
-    private CollectionReference collectionsCollection;
     private CollectionReference usersReference;
-    private Query timelineQuery;
     private FirebaseAuth firebaseAuth;
 
+    //firebase references
+    private CollectionReference timelineCollection;
+    private CollectionReference collectionsCollection;
+    private CollectionReference roomsCollections;
+    private Query roomsQuery;
+    private Query timelineQuery;
+    private CollectionReference postsCollectionReference;
+    private DatabaseReference impressionReference;
+    private Query collectionsQuery;
+    private int TOTAL_ITEMS = 20;
+
     //bottom navigation view
-    final FragmentManager fragmentManager = getSupportFragmentManager();
     final Fragment homeFragment = new HomeFragment();
-    final Fragment exploreFragment = new MoreFragment();
+    //    final Fragment moreFragment = new MoreFragment();
     final Fragment collectionFragment = new CollectionsFragment();
-    final Fragment moreFragment = new MoreFragment();
     final Fragment activitiesFragment = new NotificationsFragment();
-    final Fragment chatsFragment = new ConversationsFragment();
+    final Fragment chatsFragment = new InboxFragment();
+    final Fragment channelsFragment = new VideosFragment();
+    private Fragment active = homeFragment;
     private BottomNavigationPagerAdapter navigationPagerAdapter;
     private boolean notificationVisible = false;
-
-    private static final int SECONDS_TO_FORCED_UPDATE = 1296000;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
+        setSupportActionBar(mToolBar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         // initialize force update checker
         ForceUpdateChecker.with(this).onUpdateNeeded(this).check();
-        // initialize firebase authentication
-        firebaseAuth = FirebaseAuth.getInstance();
         //click listeners
         mProfileImageView.setOnClickListener(this);
-        mFloatingActionButton.setOnClickListener(this);
         // firestore references
-        timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-        timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-        timelineQuery = timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
-                .collection("activities").whereEqualTo("status", "un_read");
-        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
-        usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+        initReferences();
+        //get firebase data
         setProfile();
-        initializeCollections();
+        // set up the bottom navigation fragments
         setUpWithViewPager();
         addFragmentsToBottomNavigation();
         setUpBottomNavigationStyle();
@@ -132,26 +127,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 mBottomNavigationView.getLayoutParams();
         layoutParams.setBehavior(new BottomNavigationViewBehavior());
 
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        return super.onOptionsItemSelected(item);
     }
 
 
@@ -159,7 +135,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public void onUpdateNeeded(final String updateUrl) {
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("New version available")
-                .setMessage("Please update app to Andeqa to the newer version to experience new features")
+                .setMessage("Update Andeqa to the latest version")
                 .setPositiveButton("Update",
                         new DialogInterface.OnClickListener() {
                             @Override
@@ -184,117 +160,22 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    @Override
+    public void onClick(View v){
+
+        if (v == mProfileImageView){
+            Intent intent = new Intent(this, ProfileActivity.class);
+            intent.putExtra(HomeActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
+            startActivity(intent);
+        }
+
+    }
+
+
     private void redirectStore(String updateUrl) {
         final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(updateUrl));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-    }
-
-    private void addFragmentsToBottomNavigation(){
-        AHBottomNavigationItem home = new AHBottomNavigationItem(R.string.home,
-                R.drawable.ic_home, R.color.grey_700);
-        AHBottomNavigationItem explore = new AHBottomNavigationItem(R.string.more,
-                R.drawable.ic_more_bottom_nav, R.color.grey_700);
-        AHBottomNavigationItem notifications = new AHBottomNavigationItem(R.string.notifications,
-                R.drawable.ic_notification, R.color.grey_700);
-        AHBottomNavigationItem chats = new AHBottomNavigationItem(R.string.inbox,
-                R.drawable.ic_inbox_nv, R.color.grey_700);
-        mBottomNavigationView.addItem(home);
-        mBottomNavigationView.addItem(explore);
-        mBottomNavigationView.addItem(notifications);
-        mBottomNavigationView.addItem(chats);
-    }
-
-    private void bottomNavigationListener(){
-        mBottomNavigationView.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
-            @Override
-            public boolean onTabSelected(int position, boolean wasSelected) {
-                if (!wasSelected)
-                    selectFragment(position);
-                    noSwipePager.setCurrentItem(position);
-                    int lastPosition = mBottomNavigationView.getItemsCount()-1;
-                    if (notificationVisible && position == lastPosition){
-                        mBottomNavigationView.setNotification(new AHNotification(), lastPosition);
-                    }
-
-                return true;
-            }
-        });
-    }
-
-    private void setUpWithViewPager(){
-        noSwipePager.setPagingEnabled(false);
-        navigationPagerAdapter = new BottomNavigationPagerAdapter(getSupportFragmentManager());
-        navigationPagerAdapter.addFragments(homeFragment);
-        navigationPagerAdapter.addFragments(exploreFragment);
-//        navigationPagerAdapter.addFragments(collectionFragment);
-        navigationPagerAdapter.addFragments(activitiesFragment);
-        navigationPagerAdapter.addFragments(chatsFragment);
-        noSwipePager.setAdapter(navigationPagerAdapter);
-
-    }
-
-    private void setUpBottomNavigationStyle(){
-        mBottomNavigationView.setForceTint(false);
-        mBottomNavigationView.setDefaultBackgroundColor(Color.WHITE);
-        mBottomNavigationView.setAccentColor(fetchColor(R.color.colorPrimary));
-        mBottomNavigationView.setInactiveColor(fetchColor(R.color.grey_700));
-        mBottomNavigationView.setTitleState(AHBottomNavigation.TitleState.ALWAYS_SHOW);
-    }
-
-    private void initializeCollections(){
-        collectionsCollection.orderBy("time").addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (documentSnapshots.isEmpty()){
-                    List<Collection> collections = new ArrayList<>();
-
-                }
-
-            }
-        });
-    }
-
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-
-    @Override
-    protected void onResumeFragments() {
-        super.onResumeFragments();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
     private void setProfile(){
@@ -321,6 +202,100 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 });
     }
 
+    private void initReferences(){
+        firebaseAuth = FirebaseAuth.getInstance();
+        usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
+        postsCollectionReference = FirebaseFirestore.getInstance().collection(Constants.POSTS);
+        impressionReference = FirebaseDatabase.getInstance().getReference(Constants.VIEWS);
+        roomsCollections = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
+        roomsQuery = roomsCollections.document("last messages")
+                .collection(firebaseAuth.getCurrentUser().getUid());
+        timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
+        timelineQuery = timelineCollection.document(firebaseAuth.getCurrentUser().getUid())
+                .collection("activities");
+        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
+        collectionsQuery = collectionsCollection.orderBy("name", Query.Direction.ASCENDING);
+        impressionReference.keepSynced(true);
+    }
+
+    private void addFragmentsToBottomNavigation(){
+        AHBottomNavigationItem home = new AHBottomNavigationItem(R.string.home,
+                R.drawable.ic_home, R.color.grey_700);
+        AHBottomNavigationItem collection = new AHBottomNavigationItem(R.string.collections,
+                R.drawable.ic_collection, R.color.grey_700);
+        AHBottomNavigationItem channels = new AHBottomNavigationItem(R.string.channels,
+                R.drawable.ic_play, R.color.grey_700);
+        AHBottomNavigationItem notifications = new AHBottomNavigationItem(R.string.notifications,
+                R.drawable.ic_notifications, R.color.grey_700);
+        AHBottomNavigationItem chats = new AHBottomNavigationItem(R.string.inbox,
+                R.drawable.ic_inbox, R.color.grey_700);
+        mBottomNavigationView.addItem(home);
+        mBottomNavigationView.addItem(collection);
+        mBottomNavigationView.addItem(channels);
+        mBottomNavigationView.addItem(notifications);
+        mBottomNavigationView.addItem(chats);
+    }
+
+    private void bottomNavigationListener(){
+        mBottomNavigationView.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
+            @Override
+            public boolean onTabSelected(int position, boolean wasSelected) {
+
+                if (!wasSelected){
+                    setBackground(position);
+                    noSwipePager.setCurrentItem(position);
+                    int lastPosition = mBottomNavigationView.getItemsCount()-1;
+                    if (notificationVisible && position == lastPosition){
+                        mBottomNavigationView.setNotification(new AHNotification(), lastPosition);
+                    }
+
+                }
+                return true;
+            }
+        });
+    }
+
+    private void setUpWithViewPager(){
+        noSwipePager.setPagingEnabled(false);
+        navigationPagerAdapter = new BottomNavigationPagerAdapter(this.getSupportFragmentManager());
+        navigationPagerAdapter.addFragments(homeFragment);
+        navigationPagerAdapter.addFragments(collectionFragment);
+        navigationPagerAdapter.addFragments(channelsFragment);
+        navigationPagerAdapter.addFragments(activitiesFragment);
+        navigationPagerAdapter.addFragments(chatsFragment);
+        noSwipePager.setAdapter(navigationPagerAdapter);
+        noSwipePager.setOffscreenPageLimit(5);
+
+    }
+
+    private void setUpBottomNavigationStyle(){
+        mBottomNavigationView.setForceTint(false);
+        mBottomNavigationView.setDefaultBackgroundColor(Color.WHITE);
+        mBottomNavigationView.setAccentColor(fetchColor(R.color.colorPrimary));
+        mBottomNavigationView.setInactiveColor(fetchColor(R.color.grey_700));
+        mBottomNavigationView.setTitleState(AHBottomNavigation.TitleState.ALWAYS_HIDE);
+    }
+
+    private void setBackground(int position) {
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) noSwipePager.getLayoutParams();
+        if (position == 2) {
+            mAppBarLayout.setVisibility(View.GONE);
+            mBottomNavigationView.setDefaultBackgroundColor(Color.TRANSPARENT);
+            params.setBehavior(null);
+            noSwipePager.requestLayout();
+        }else {
+            params.setBehavior(new AppBarLayout.ScrollingViewBehavior());
+            noSwipePager.requestLayout();
+            mAppBarLayout.setVisibility(View.VISIBLE);
+            mBottomNavigationView.setDefaultBackgroundColor(Color.WHITE);
+        }
+    }
+
+    private int fetchColor(@ColorRes int color){
+        return ContextCompat.getColor(this, color);
+    }
+
     private void timelineNotifications(){
         timelineQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -338,59 +313,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                             .setTextColor(fetchColor(R.color.grey_1000))
                             .build();
                     mBottomNavigationView.setNotification(notification, mBottomNavigationView.getItemsCount()-1);
-                            notificationVisible = true;
+                    notificationVisible = true;
                 }
             }
         });
 
-    }
-
-
-
-    private void selectFragment(int position){
-        //initialize each corresponding fragment
-        switch (position){
-            case 0:
-                FragmentTransaction homeTransaction = fragmentManager.beginTransaction();
-                homeTransaction.replace(R.id.noSwipeViewPager, homeFragment).commit();
-                break;
-            case 1:
-                FragmentTransaction exploreTransaction = fragmentManager.beginTransaction();
-                exploreTransaction.replace(R.id.noSwipeViewPager, exploreFragment).commit();
-                break;
-            case 2:
-                FragmentTransaction activitiesTransaction = fragmentManager.beginTransaction();
-                activitiesTransaction.replace(R.id.noSwipeViewPager, activitiesFragment).commit();
-                break;
-            case 4:
-                FragmentTransaction chatsTransaction = fragmentManager.beginTransaction();
-                chatsTransaction.replace(R.id.noSwipeViewPager, chatsFragment).commit();
-                break;
-        }
-
-    }
-
-
-
-    @Override
-    public void onClick(View v){
-
-        if (v == mProfileImageView){
-            Intent intent = new Intent(this, ProfileActivity.class);
-            intent.putExtra(HomeActivity.EXTRA_USER_UID, firebaseAuth.getCurrentUser().getUid());
-            startActivity(intent);
-        }
-
-        if (v == mFloatingActionButton){
-            Intent intent = new Intent(this, CreateActivity.class);
-            startActivity(intent);
-        }
-
-    }
-
-
-    private int fetchColor(@ColorRes int color){
-        return ContextCompat.getColor(this, color);
     }
 
 }

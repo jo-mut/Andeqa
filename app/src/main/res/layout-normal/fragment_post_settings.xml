@@ -1,152 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/blue_grey_50"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_margin="1dp"
-        android:orientation="vertical"
+    <RelativeLayout
+        android:background="@drawable/bottom_fragment_background"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="56dp">
 
-        <RelativeLayout
-            android:background="@drawable/bottom_fragment_background"
-            android:layout_width="match_parent"
-            android:layout_height="56dp">
+        <TextView
+            android:layout_margin="10dp"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/titleTextView"
+            android:textStyle="normal|bold"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:text="Post settings" />
 
-            <TextView
-                android:layout_margin="10dp"
-                android:layout_centerVertical="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/titleTextView"
-                android:textStyle="normal|bold"
-                android:textColor="@android:color/white"
-                android:textSize="14sp"
-                android:text="Post settings" />
+    </RelativeLayout>
 
-        </RelativeLayout>
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:background="@android:color/white"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:visibility="gone"
-                android:id="@+id/deleteLinearLayout"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:orientation="horizontal"
-                android:padding="10dp">
-
-                <ImageView
-                    android:tint="@color/grey_700"
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    app:srcCompat="@drawable/ic_delete" />
-
-                <TextView
-                    android:textColor="@color/grey_700"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginStart="30dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:text="Delete"
-                    android:textSize="16sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:visibility="gone"
-                android:id="@+id/redeemLinearLayout"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:orientation="horizontal"
-                android:padding="10dp">
-
-                <ImageView
-                    android:tint="@color/grey_700"
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    app:srcCompat="@drawable/ic_redeem" />
-
-                <TextView
-                    android:textColor="@color/grey_700"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginStart="30dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:text="Redeem"
-                    android:textSize="16sp" />
-
-            </LinearLayout>
+    <RelativeLayout
+        android:background="@android:color/white"
+        android:visibility="gone"
+        android:id="@+id/deleteRelativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:padding="10dp">
 
 
-            <LinearLayout
-                android:visibility="gone"
-                android:id="@+id/reportLinearLayout"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:orientation="horizontal"
-                android:padding="10dp">
+        <TextView
+            android:layout_centerVertical="true"
+            android:textColor="@color/grey_700"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="Delete"
+            android:textSize="16sp" />
 
-                <ImageView
-                    android:tint="@color/grey_700"
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    app:srcCompat="@drawable/ic_info" />
+    </RelativeLayout>
 
-                <TextView
-                    android:textColor="@color/grey_700"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginStart="30dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:text="Report"
-                    android:textSize="16sp" />
 
-            </LinearLayout>
+    <RelativeLayout
+        android:background="@android:color/white"
+        android:visibility="gone"
+        android:id="@+id/shareRelativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:padding="10dp">
 
-            <LinearLayout
-                android:visibility="gone"
-                android:id="@+id/shareViaLinearLayout"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:orientation="horizontal"
-                android:padding="10dp">
 
-                <ImageView
-                    android:tint="@color/grey_700"
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    app:srcCompat="@drawable/ic_share" />
+        <TextView
+            android:layout_centerVertical="true"
+            android:textColor="@color/grey_700"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="Share via..."
+            android:textSize="16sp" />
 
-                <TextView
-                    android:textColor="@color/grey_700"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginStart="30dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:text="Share via..."
-                    android:textSize="16sp" />
+        <ProgressBar
+            android:visibility="gone"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:indeterminate="false"
+            android:max="100"
+            android:progress="0"
+            android:secondaryProgress="0"
+            android:id="@+id/progressBar"
+            android:progressDrawable="@drawable/progress_drawable"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="15dp"
+            android:layout_height="15dp" />
 
-            </LinearLayout>
+    </RelativeLayout>
 
-        </LinearLayout>
+    <RelativeLayout
+        android:background="@android:color/white"
+        android:visibility="gone"
+        android:id="@+id/editRelativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:padding="10dp">
 
-    </LinearLayout>
+        <TextView
+            android:layout_centerVertical="true"
+            android:textColor="@color/grey_700"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="Edit your post"
+            android:textSize="16sp" />
 
-</RelativeLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:background="@android:color/white"
+        android:visibility="gone"
+        android:id="@+id/reportRelativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_centerVertical="true"
+            android:textColor="@color/grey_700"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="Report"
+            android:textSize="16sp" />
+
+    </RelativeLayout>
+
+
+</LinearLayout>

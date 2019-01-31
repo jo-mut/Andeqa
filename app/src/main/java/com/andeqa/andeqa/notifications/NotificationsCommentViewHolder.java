@@ -36,14 +36,6 @@ public class NotificationsCommentViewHolder extends RecyclerView.ViewHolder {
         postImageView = (ImageView) itemView.findViewById(R.id.postImageView);
         activityTextView = (TextView) itemView.findViewById(R.id.activityTextView);
 
-
-
-    }
-
-    public void bindTimelineComment(final Timeline timeline){
-
-
-
     }
 
 }

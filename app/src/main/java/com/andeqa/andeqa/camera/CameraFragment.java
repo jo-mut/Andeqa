@@ -15,6 +15,7 @@ import android.hardware.SensorManager;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.media.ThumbnailUtils;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -38,16 +39,20 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.gallery.AlbumFragment;
+import com.andeqa.andeqa.gallery.Function;
+import com.andeqa.andeqa.registration.CreateProfileActivity;
 import com.andeqa.andeqa.utils.RunTimePermissions;
-import com.andeqa.andeqa.creation.CreateCollectionActivity;
-import com.andeqa.andeqa.creation.CreateCollectionPostActivity;
 import com.andeqa.andeqa.creation.PreviewImagePostActivity;
 import com.andeqa.andeqa.creation.PreviewVideoPostActivity;
 import com.andeqa.andeqa.more.MoreFragment;
 import com.andeqa.andeqa.profile.UpdateProfileActivity;
 import com.andeqa.andeqa.settings.CollectionSettingsActivity;
+import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -55,59 +60,43 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
+
+import static android.app.Activity.RESULT_OK;
 
 public class CameraFragment extends Fragment implements
         SurfaceHolder.Callback, View.OnClickListener {
     private static final String TAG = MoreFragment.class.getSimpleName();
-    private static final String CAMERA_PATH = "camera image";
-    private static final String CAMERA_VIDEO = "camera video";
-    private static final String CAMERA_THUMB = "thumb";
-    private static final String PREVIEW_POST = "preview post";
-    private static final String GALLERY_PATH ="gallery image";
-    private static final String GALLERY_VIDEO ="gallery video";
-    private static final String COLLECTION_TAG = CreateCollectionActivity.class.getSimpleName();
-    private static final String COLLECTION_SETTINGS_COVER = CollectionSettingsActivity.class.getSimpleName();
-    private static final String COLLECTION_POST = CreateCollectionPostActivity.class.getSimpleName();
-    private static final String PROFILE_PHOTO_PATH = "profile photo path";
-    private static final String PROFILE_COVER_PATH = "profile cover path";
+    private static final String IMAGE_PATH ="image path";
+    private static final String VIDEO_PATH = "video path";
     private static final String COLLECTION_ID = "collection id";
-    private static final String EXTRA_ROOM_ID = "roomId";
-    private static final String EXTRA_USER_UID = "uid";
-    private static final String EXTRA_POST_ID = "post id";
-
-
-    private String mUid;
-    private String collection_post;
-    private String createCollection;
-    private String collectionId;
+    private static final String POST_ID = "post id";
+    private String mCollectionId;
     private String postId;
-    private String profileCoverIntent;
-    private String profilePhotoIntent;
-    private String collectionSettingsIntent;
 
     private SurfaceHolder surfaceHolder;
     private Camera camera;
     private Handler customHandler = new Handler();
     int flag = 0;
+    private Uri uri;
     private File tempFile = null;
     private Camera.PictureCallback jpegCallback;
     private static  final int MAX_VIDEO_DURATION = 60000; //MB
+    private static  final int GALLERY_PROFILE_PHOTO_REQUEST = 111;
     private MediaRecorder mediaRecorder;
     private RunTimePermissions runTimePermission;
 
     @Bind(R.id.changeCameraImageView)ImageView mChangeCameraImageView;
     @Bind(R.id.flashOnOffImageView)ImageView mFlashOnOffImageView;
     @Bind({R.id.imageSurfaceView})SurfaceView mSurfaceSurfaceView;
-    @Bind(R.id.imageCaptureImageView)ImageView mImageCaptureImageView;
+    @Bind(R.id.captureImageView)ImageView mImageCaptureImageView;
     @Bind(R.id.countTextView) TextView mCountTextView;
-    @Bind(R.id.recordVideoImageView)ImageView mRecordVideoImageView;
-    @Bind(R.id.nextRelativeLayout)RelativeLayout mNextRelativeLayout;
-    @Bind(R.id.imageDisplayImageView)ImageView mImageDisplayImageView;
-    @Bind(R.id.nextTextView)TextView mNextTextView;
     @Bind(R.id.captureOptionRelativeLayout)RelativeLayout mCaptureOptionsRelativeLayout;
-
+    @Bind(R.id.backImageView) ImageView mBackImageView;
 
     public CameraFragment() {
         // Required empty public constructor
@@ -159,14 +148,8 @@ public class CameraFragment extends Fragment implements
         View view = inflater.inflate(R.layout.fragment_camera, container, false);
         ButterKnife.bind(this, view);
 
-        createCollection = getActivity().getIntent().getStringExtra(COLLECTION_TAG);
-        collection_post = getActivity().getIntent().getStringExtra(COLLECTION_POST);
-        collectionId = getActivity().getIntent().getStringExtra(COLLECTION_ID);
-        collectionSettingsIntent  = getActivity().getIntent().getStringExtra(COLLECTION_SETTINGS_COVER);
-        profileCoverIntent = getActivity().getIntent().getStringExtra(PROFILE_COVER_PATH);
-        profilePhotoIntent = getActivity().getIntent().getStringExtra(PROFILE_PHOTO_PATH);
-        mUid = getActivity().getIntent().getStringExtra(EXTRA_USER_UID);
-        postId = getActivity().getIntent().getStringExtra(EXTRA_POST_ID);
+        mCollectionId = getActivity().getIntent().getStringExtra(COLLECTION_ID);
+        postId = getActivity().getIntent().getStringExtra(POST_ID);
 
 
         return view;
@@ -209,6 +192,9 @@ public class CameraFragment extends Fragment implements
             public void permissionDenied() {
             }
         });
+
+        // chose the first photo from the gallery
+//        chooseGalleryPhoto();
 
     }
 
@@ -255,43 +241,21 @@ public class CameraFragment extends Fragment implements
             activeCameraCapture();
             tempFile = new File(result);
             if (tempFile != null){
-                if (collection_post != null) {
+                if (mCollectionId != null){
                     Intent intent = new Intent(getActivity(), PreviewImagePostActivity.class);
-                    intent.putExtra(CameraFragment.GALLERY_PATH, tempFile.toString());
-                    intent.putExtra(CameraFragment.COLLECTION_ID, collectionId);
-                    startActivity(intent);
-                }  else if (createCollection != null){
-                    Intent intent = new Intent(getActivity(), CreateCollectionActivity.class);
-                    intent.putExtra(CameraFragment.GALLERY_PATH, tempFile.toString());
-                    intent.putExtra(CameraFragment.COLLECTION_TAG, createCollection);
+                    intent.putExtra(CameraFragment.IMAGE_PATH, tempFile.toString());
+                    intent.putExtra(CameraFragment.COLLECTION_ID, mCollectionId);
                     startActivity(intent);
                     getActivity().finish();
-                }else if (collectionSettingsIntent != null) {
-                    Intent intent = new Intent(getActivity(), CollectionSettingsActivity.class);
-                    intent.putExtra(CameraFragment.GALLERY_PATH, tempFile.toString());
-                    intent.putExtra(CameraFragment.COLLECTION_ID, collectionId);
-                    startActivity(intent);
-                    getActivity().finish();
-                }else if (profilePhotoIntent != null){
-                    Intent intent = new Intent(getActivity(), UpdateProfileActivity.class);
-                    intent.putExtra(CameraFragment.PROFILE_PHOTO_PATH, tempFile.toString());
-                    startActivity(intent);
-                    getActivity().finish();
-                } else if (profileCoverIntent != null){
-                    Intent intent = new Intent(getActivity(), UpdateProfileActivity.class);
-                    intent.putExtra(CameraFragment.PROFILE_COVER_PATH, tempFile.toString());
-                    intent.putExtra(CameraFragment.COLLECTION_ID, collectionId);
-                    startActivity(intent);
-                    getActivity().finish();
-                }else if (postId != null){
+                } else if (postId != null){
                     Intent intent = new Intent(getActivity(), PreviewImagePostActivity.class);
-                    intent.putExtra(CameraFragment.GALLERY_PATH, tempFile.toString());
-                    intent.putExtra(CameraFragment.EXTRA_POST_ID, postId);
+                    intent.putExtra(CameraFragment.IMAGE_PATH, tempFile.toString());
+                    intent.putExtra(CameraFragment.POST_ID, postId);
                     startActivity(intent);
                     getActivity().finish();
-                }else {
+                } else {
                     Intent intent = new Intent(getActivity(), PreviewImagePostActivity.class);
-                    intent.putExtra(CameraFragment.GALLERY_PATH, tempFile.toString());
+                    intent.putExtra(CameraFragment.IMAGE_PATH, tempFile.toString());
                     startActivity(intent);
                     getActivity().finish();
                 }
@@ -485,15 +449,18 @@ public class CameraFragment extends Fragment implements
         mCountTextView.setVisibility(View.GONE);
         mChangeCameraImageView.setOnClickListener(this);
         mFlashOnOffImageView.setOnClickListener(this);
-        mRecordVideoImageView.setOnClickListener(this);
+        mBackImageView.setOnClickListener(this);
+
         activeCameraCapture();
 
     }
 
     @Override
     public void onClick(View v) {
-        final Intent intent;
         switch (v.getId()) {
+            case R.id.backImageView:
+                getActivity().finish();
+                break;
             case R.id.flashOnOffImageView:
                 flashToggle();
                 break;
@@ -840,48 +807,48 @@ public class CameraFragment extends Fragment implements
     private void activeCameraCapture() {
         if (mImageCaptureImageView != null) {
             mImageCaptureImageView.setAlpha(1.0f);
-            mRecordVideoImageView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    try {
-                        if (prepareMediaRecorder()) {
-                            myOrientationEventListener.disable();
-                            mediaRecorder.start();
-                            startTime = SystemClock.uptimeMillis();
-                            customHandler.postDelayed(updateTimerThread, 0);
-                        } else {
-                            return false;
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    mCountTextView.setVisibility(View.VISIBLE);
-                    mChangeCameraImageView.setVisibility(View.GONE);
-                    mFlashOnOffImageView.setVisibility(View.GONE);
-
-                    mRecordVideoImageView.setOnTouchListener(new View.OnTouchListener() {
-                        @Override
-                        public boolean onTouch(View v, MotionEvent event) {
-                            if (event.getAction() == MotionEvent.ACTION_BUTTON_PRESS) {
-                                return true;
-                            }
-
-                            if (event.getAction() == MotionEvent.ACTION_UP) {
-
-                                cancelSaveVideoTaskIfNeed();
-                                saveVideoTask = new SaveVideoTask();
-                                saveVideoTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-
-                                return true;
-                            }
-                            return true;
-
-                        }
-                    });
-                    return true;
-                }
-
-            });
+//            mRecordVideoImageView.setOnLongClickListener(new View.OnLongClickListener() {
+//                @Override
+//                public boolean onLongClick(View v) {
+//                    try {
+//                        if (prepareMediaRecorder()) {
+//                            myOrientationEventListener.disable();
+//                            mediaRecorder.start();
+//                            startTime = SystemClock.uptimeMillis();
+//                            customHandler.postDelayed(updateTimerThread, 0);
+//                        } else {
+//                            return false;
+//                        }
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                    mCountTextView.setVisibility(View.VISIBLE);
+//                    mChangeCameraImageView.setVisibility(View.GONE);
+//                    mFlashOnOffImageView.setVisibility(View.GONE);
+//
+//                    mRecordVideoImageView.setOnTouchListener(new View.OnTouchListener() {
+//                        @Override
+//                        public boolean onTouch(View v, MotionEvent event) {
+//                            if (event.getAction() == MotionEvent.ACTION_BUTTON_PRESS) {
+//                                return true;
+//                            }
+//
+//                            if (event.getAction() == MotionEvent.ACTION_UP) {
+//
+//                                cancelSaveVideoTaskIfNeed();
+//                                saveVideoTask = new SaveVideoTask();
+//                                saveVideoTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+//
+//                                return true;
+//                            }
+//                            return true;
+//
+//                        }
+//                    });
+//                    return true;
+//                }
+//
+//            });
 
             mImageCaptureImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -904,20 +871,21 @@ public class CameraFragment extends Fragment implements
             @Override
             public void run() {
                 if (videopath != null) {
-                    if (collection_post != null) {
+                    if (mCollectionId != null){
                         Intent intent = new Intent(getActivity(), PreviewVideoPostActivity.class);
-                        intent.putExtra(CameraFragment.GALLERY_PATH, videopath.toString());
-                        intent.putExtra(CameraFragment.COLLECTION_ID, collectionId);
+                        intent.putExtra(CameraFragment.VIDEO_PATH, videopath.toString());
+                        intent.putExtra(CameraFragment.COLLECTION_ID, mCollectionId);
                         startActivity(intent);
+                        getActivity().finish();
                     }else if (postId != null){
                         Intent intent = new Intent(getActivity(), PreviewVideoPostActivity.class);
-                        intent.putExtra(CameraFragment.GALLERY_PATH, videopath.toString());
-                        intent.putExtra(CameraFragment.EXTRA_POST_ID, postId);
+                        intent.putExtra(CameraFragment.VIDEO_PATH, videopath.toString());
+                        intent.putExtra(CameraFragment.POST_ID, postId);
                         startActivity(intent);
                         getActivity().finish();
                     }else {
                         Intent intent = new Intent(getActivity(), PreviewVideoPostActivity.class);
-                        intent.putExtra(CameraFragment.GALLERY_PATH, videopath.toString());
+                        intent.putExtra(CameraFragment.VIDEO_PATH, videopath.toString());
                         startActivity(intent);
                         getActivity().finish();
                     }

@@ -6,36 +6,24 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.player.Player;
-import com.andeqa.andeqa.settings.PostSettingsFragment;
+import com.andeqa.andeqa.utils.FirebaseUtil;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-
-import javax.annotation.Nullable;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -44,46 +32,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class VideoDetailActivity extends AppCompatActivity implements View.OnClickListener{
 
     @Bind(R.id.usernameTextView)TextView mUsernameTextView;
-    @Bind(R.id.simpleExoPlayerView) SimpleExoPlayerView postVideoView;
+    @Bind(R.id.exoPlayerView) SimpleExoPlayerView exoPlayerView;
     @Bind(R.id.profileImageView)CircleImageView mProfileImageView;
     @Bind(R.id.titleTextView)TextView titleTextView;
     @Bind(R.id.titleRelativeLayout)RelativeLayout mTitleRelativeLayout;
     @Bind(R.id.descriptionRelativeLayout)RelativeLayout mDescriptionRelativeLayout;
     @Bind(R.id.descriptionTextView)TextView mDescriptionTextView;
-    @Bind(R.id.viewsCountTextView)TextView mViewsCountTextView;
-    @Bind(R.id.viewsLinearLayout)LinearLayout mViewsLinearLayout;
-    @Bind(R.id.viewsImageView)ImageView mViewsImageView;
-    @Bind(R.id.settingsRelativeLayout)RelativeLayout mSettingsRelativeLayout;
-    @Bind(R.id.creditsLinearLayout)LinearLayout mCreditLinearLayout;
 
     //firestore reference
-    private FirebaseFirestore firebaseFirestore;
-    private CollectionReference postsCollections;
-    private com.google.firebase.firestore.Query commentsCountQuery;
-    private CollectionReference usersReference;
-    private CollectionReference commentsReference;
-    private CollectionReference sellingCollection;
-    private CollectionReference likesReference;
-    private CollectionReference postWalletReference;
-    private CollectionReference timelineCollection;
-    private CollectionReference collectionsPosts;
-    private CollectionReference marketCollections;
-    private CollectionReference collectionsCollection;
-    private CollectionReference viewsCollection;
-    private CollectionReference creditsCollection;
-    private com.google.firebase.firestore.Query likesQuery;
-    //firebase references
-    private DatabaseReference databaseReference;
-    //firebase auth
-    private FirebaseAuth firebaseAuth;
-    private FirebaseUser firebaseUser;
-    //firestore adapter
-    private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
-    //process likes
-    private boolean processLikes = false;
-    private boolean processDislikes = false;
-    private static final double DEFAULT_PRICE = 1.5;
-    private static final double GOLDEN_RATIO = 1.618;
     private String mPostId;
     private String mUid;
     private String mType;
@@ -92,26 +48,17 @@ public class VideoDetailActivity extends AppCompatActivity implements View.OnCli
     private static final String EXTRA_POST_ID = "post id";
     private static final String EXTRA_USER_UID = "uid";
     private static final String TYPE = "type";
-    private static final String EXTRA_URI = "uri";
-    private static final String SOURCE = PostDetailActivity.class.getSimpleName();
-    private static final int MAX_WIDTH = 200;
-    private static final int MAX_HEIGHT = 200;
     private static final String TAG = PostDetailActivity.class.getSimpleName();
     private ProgressDialog progressDialog;
     private boolean showOnClick = false;
-    private boolean processCredit = false;
-    private long startTime;
-    private long stopTime;
-    private long duration;
     private Player player;
+    private FirebaseUtil mFirebaseUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_detail);
         ButterKnife.bind(this);
-
-        firebaseAuth = FirebaseAuth.getInstance();
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -123,36 +70,17 @@ public class VideoDetailActivity extends AppCompatActivity implements View.OnCli
             }
         });
 
-        //Initialise click listners
-        mSettingsRelativeLayout.setOnClickListener(this);
 
+        player = new Player(getApplicationContext(), exoPlayerView);
+        mFirebaseUtil = new FirebaseUtil(this);
+
+        //get intent extras
         mPostId = getIntent().getStringExtra(EXTRA_POST_ID);
         mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
         mUid = getIntent().getStringExtra(EXTRA_USER_UID);
         mType = getIntent().getStringExtra(TYPE);
 
-        if  (mType.equals("single_video_post")){
-            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
-                    .document("singles").collection(mCollectionId);
-        }else {
-            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
-                    .document("collections").collection(mCollectionId);
-        }
 
-        usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-        commentsReference = FirebaseFirestore.getInstance().collection(Constants.COMMENTS)
-                .document("post_ids").collection(mPostId);
-        sellingCollection = FirebaseFirestore.getInstance().collection(Constants.SELLING);
-        marketCollections = FirebaseFirestore.getInstance().collection(Constants.SELLING);
-        collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
-        //firebase
-        databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
-        commentsCountQuery = commentsReference;
-        likesReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
-        postWalletReference = FirebaseFirestore.getInstance().collection(Constants.POST_WALLET);
-        timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
-        creditsCollection  = FirebaseFirestore.getInstance().collection(Constants.CREDITS);
-        viewsCollection = FirebaseFirestore.getInstance().collection(Constants.VIEWS);
     }
 
 
@@ -162,21 +90,19 @@ public class VideoDetailActivity extends AppCompatActivity implements View.OnCli
         //RETRIEVE DATA FROM FIREBASE
         setPostInfo();
         deletePostDialog();
-        finishActivity();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         player.releasePlayer();
-        postVideoView.setPlayer(null);
+        exoPlayerView.setPlayer(null);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        player.releasePlayer();
-        postVideoView.setPlayer(null);
+
     }
 
     @Override
@@ -196,30 +122,10 @@ public class VideoDetailActivity extends AppCompatActivity implements View.OnCli
         progressDialog.setCancelable(false);
     }
 
-    /**finish activity if the post does not exist*/
-    private void finishActivity(){
-        collectionsPosts.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-
-                if (e != null) {
-                    android.util.Log.w(TAG, "Listen error", e);
-                    return;
-                }
-
-                if (!documentSnapshot.exists()){
-                    finish();
-                }
-
-            }
-        });
-    }
-
 
     /**display the price of the cingle*/
     private void setPostInfo() {
-
-        collectionsPosts.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        mFirebaseUtil.postsPath().document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -233,10 +139,10 @@ public class VideoDetailActivity extends AppCompatActivity implements View.OnCli
                     final String uid = post.getUser_id();
                     final String title = post.getTitle();
 
-                    player = new Player(getApplicationContext(), postVideoView);
                     player.addMedia(post.getUrl());
-                    postVideoView.getPlayer().setPlayWhenReady(true);
-
+                    if (exoPlayerView.getPlayer() != null) {
+                        exoPlayerView.getPlayer().setPlayWhenReady(true);
+                    }
                     //set the title of the single
                     if (title.equals("")){
                         mTitleRelativeLayout.setVisibility(View.GONE);
@@ -279,7 +185,7 @@ public class VideoDetailActivity extends AppCompatActivity implements View.OnCli
                         mDescriptionRelativeLayout.setVisibility(View.GONE);
                     }
 
-                    usersReference.document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    mFirebaseUtil.usersPath().document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                             if (e != null) {
@@ -314,16 +220,7 @@ public class VideoDetailActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onClick(View v){
 
-        if (v == mSettingsRelativeLayout){
-            Bundle bundle = new Bundle();
-            bundle.putString(VideoDetailActivity.EXTRA_POST_ID, mPostId);
-            bundle.putString(VideoDetailActivity.COLLECTION_ID, mCollectionId);
-            bundle.putString(VideoDetailActivity.TYPE, mType);
-            PostSettingsFragment postSettingsFragment = PostSettingsFragment.newInstance();
-            postSettingsFragment.setArguments(bundle);
-            postSettingsFragment.show(getSupportFragmentManager(), "share bottom fragment");
 
-        }
 
     }
 
@@ -336,26 +233,5 @@ public class VideoDetailActivity extends AppCompatActivity implements View.OnCli
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
-
-
-//
-//    private void displayPopupWindow(View anchorView) {
-//        PopupWindow popup = new PopupWindow(PostDetailActivity.this);
-//        View layout = getLayoutInflater().inflate(R.layout.popup_layout, null);
-//
-//        TextView textView = (TextView) layout.findViewById(R.id.popupTextView);
-//        textView.setText("Like this post");
-//
-//        popup.setContentView(layout);
-//        // Set content width and height
-//        popup.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-//        popup.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
-//        // Closes the popup window when touch outside of it - when looses focus
-//        popup.setOutsideTouchable(true);
-//        popup.setFocusable(true);
-//        // Show anchored to button
-//        popup.setBackgroundDrawable(new BitmapDrawable());
-//        popup.showAsDropDown(anchorView);
-//    }
 
 }

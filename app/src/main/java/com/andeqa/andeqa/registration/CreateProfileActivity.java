@@ -64,9 +64,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
     @Bind(R.id.profileImageView)CircleImageView mProfileImageView;
     @Bind(R.id.profilePhotoImageButton)ImageButton mUpdateProfilePictureImageButton;
     @Bind(R.id.submitUserInfoButton)Button mSubmitUserInfoButton;
-    @Bind(R.id.errorRelativeLayout)RelativeLayout mErrorRelativeLayout;
-    @Bind(R.id.errorTextView)TextView mErrorTextView;
-    @Bind(R.id.resendLinkRelativeLayout)RelativeLayout mResendLinkRelativeLayout;
+    @Bind(R.id.progressRelativeLayout) RelativeLayout mProgressRelativeLayout;
 
     private static final String TAG = CreateProfileActivity.class.getSimpleName();
     private CollectionReference usersReference;
@@ -78,9 +76,9 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
     private Uri profileUri;
     private String email;
     private String password;
-    private String code;
     private static final String PASSWORD = "password";
     private static final String EMAIL = "email";
+    private boolean createProfile = false;
 
 
     @Override
@@ -90,7 +88,6 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
         ButterKnife.bind(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
-
 
         if (firebaseAuth != null){
             usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
@@ -113,7 +110,6 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
 
             mUpdateProfilePictureImageButton.setOnClickListener(this);
             mSubmitUserInfoButton.setOnClickListener(this);
-            mResendLinkRelativeLayout.setOnClickListener(this);
 
             mUsernameEditText.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -175,7 +171,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
 
 
 
-    private void uniqueUsernameName(final String name){
+    private Boolean uniqueUsernameName(final String name){
         usersReference.whereEqualTo("username", name)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -191,26 +187,52 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
                                 Andeqan andeqan = change.getDocument().toObject(Andeqan.class);
                                 if (andeqan.getUser_id().equals(name) && andeqan.getUser_id()
                                         .equals(firebaseAuth.getCurrentUser().getUid())){
+                                    mProgressRelativeLayout.setVisibility(View.VISIBLE);
+                                    new Handler().postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            mProgressRelativeLayout.setVisibility(View.GONE);
+                                            Toast toast = Toast.makeText(CreateProfileActivity.this,"Username available",
+                                                    Toast.LENGTH_SHORT);
+                                            toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 0);
+                                            toast.show();
+                                        }
+                                    }, 1000);
+
+                                }else {
+                                    mProgressRelativeLayout.setVisibility(View.VISIBLE);
+                                    new Handler().postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            mProgressRelativeLayout.setVisibility(View.GONE);
+                                            Toast toast = Toast.makeText(CreateProfileActivity.this,"Username has been taken",
+                                                    Toast.LENGTH_SHORT);
+                                            toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 0);
+                                            toast.show();
+                                        }
+                                    }, 1000);
+
+                                }
+                            }
+                        }else {
+                            mProgressRelativeLayout.setVisibility(View.VISIBLE);
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mProgressRelativeLayout.setVisibility(View.GONE);
                                     Toast toast = Toast.makeText(CreateProfileActivity.this,"Username available",
                                             Toast.LENGTH_SHORT);
                                     toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 0);
                                     toast.show();
-                                }else {
-                                    Toast toast = Toast.makeText(CreateProfileActivity.this,"Username has been taken",
-                                            Toast.LENGTH_SHORT);
-                                    toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 0);
-                                    toast.show();
                                 }
-                            }
-                        }else {
-                            Toast toast = Toast.makeText(CreateProfileActivity.this,"Username available",
-                                    Toast.LENGTH_SHORT);
-                            toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 0);
-                            toast.show();
+                            }, 1000);
+                            createProfile = true;
                         }
 
                     }
                 });
+
+        return createProfile;
 
     }
 
@@ -246,19 +268,8 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
                           mAuthProgressDialog.dismiss();
                           if (!task.isSuccessful()) {
                               Log.w(TAG, "signInWithEmail", task.getException());
-
-                              mErrorRelativeLayout.setVisibility(View.VISIBLE);
-                              mErrorTextView.setText("Please confirm that your email and password match and thet you are connected to the internet");
-
-                              mErrorRelativeLayout.postDelayed(new Runnable() {
-                                  public void run() {
-                                      mErrorRelativeLayout.setVisibility(View.GONE);
-                                  }
-                              }, 5000);
-
-
                           }else {
-                              checkIfImailVerified();
+                              sendVerificationEmail();
                           }
                       }
                   });
@@ -268,29 +279,13 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
 
 
 
-    public void checkIfImailVerified(){
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (firebaseUser.isEmailVerified()){
-            createProfileProgressDialog.show();
-            createProfile();
-            //user is verified sp you can finish this activity or send user to activity you want
-
-        }else {
-            //email is not verified so just prompt the massge to the user and restart this activity
-            FirebaseAuth.getInstance().signOut();
-            mErrorRelativeLayout.setVisibility(View.VISIBLE);
-            mErrorTextView.setText("Check that you have confirmed your email");
-
-            mErrorRelativeLayout.postDelayed(new Runnable() {
-                public void run() {
-                    mErrorRelativeLayout.setVisibility(View.GONE);
-                }
-            }, 5000);
-
-            mResendLinkRelativeLayout.setVisibility(View.VISIBLE);
-
-        }
-    }
+//    public void checkIfImailVerified(){
+//        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+//        if (firebaseUser.isEmailVerified()){
+//            //user is verified sp you can finish this activity or send user to activity you want
+//        }
+//
+//    }
 
     private void sendVerificationEmail(){
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -299,23 +294,10 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()){
                     //email sent
-                    Toast.makeText(CreateProfileActivity.this, "Confirm your email! Verification email successfully sent to" + " " +
+                    Toast.makeText(CreateProfileActivity.this, "Email confirmation link sent to "  +
                             firebaseUser.getEmail(), Toast.LENGTH_LONG).show();
-                    FirebaseAuth.getInstance().signOut();
-
-                }else {
-                    //email not sent, so display a message and restart the activity and restart this activity
-                    overridePendingTransition(0,0);
-                    finish();
-                    overridePendingTransition(0,0);
-                    startActivity(getIntent());
-                    new AlertDialog.Builder(CreateProfileActivity.this)
-                            .setMessage("Andeqa could not send verification email, please confirm that you " +
-                                    "entered the right email and check your internet connection")
-                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
-                            }).setIcon(android.R.drawable.ic_dialog_alert).show();
+                    //creat user profile
+                    createProfile();
                 }
             }
         });
@@ -323,6 +305,7 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
 
     //get user input and submit info
     public void createProfile(){
+        createProfileProgressDialog.show();
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String uid = user.getUid();
 
@@ -338,66 +321,86 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
 
         if (!validName|| !validFirstName || !validSecondName) return;
 
+        sendVerificationEmail();
 
-        Andeqan andeqan = new Andeqan();
-        andeqan.setFirst_name(firstName);
-        andeqan.setSecond_name(secondName);
-        andeqan.setUsername(username);
-        andeqan.setUser_id(uid);
-        andeqan.setEmail(email);
-        andeqan.setDevice_id(deviceId);
-        createProfileProgressDialog.dismiss();
-        usersReference.document(uid).set(andeqan)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
+        final Andeqan andeqan = new Andeqan();
 
-                //move to next actvity even if the user doesnt submit a profile image
-                if (profileUri != null){
-                    StorageReference storageRef = FirebaseStorage
-                            .getInstance().getReference()
-                            .child("profile images")
-                            .child(uid);
+        //move to next actvity even if the user doesnt submit a profile image
+        if (profileUri != null){
+            StorageReference storageRef = FirebaseStorage
+                    .getInstance().getReference()
+                    .child("profile images")
+                    .child(uid);
 
-                    final StorageReference path = storageRef.child(profileUri.getLastPathSegment());
-                    UploadTask uploadTask = storageRef.putFile(profileUri);
-                    Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            final StorageReference path = storageRef.child(profileUri.getLastPathSegment());
+            UploadTask uploadTask = storageRef.putFile(profileUri);
+            Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+
+                    // Continue with the task to get the download URL
+                    return path.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        final Uri downloadUri = task.getResult();
+                        final String profileImage = (downloadUri.toString());
+
+                        andeqan.setFirst_name(firstName);
+                        andeqan.setSecond_name(secondName);
+                        andeqan.setUsername(username);
+                        andeqan.setUser_id(uid);
+                        andeqan.setEmail(email);
+                        andeqan.setProfile_image(profileImage);
+                        createProfileProgressDialog.dismiss();
+
+                        usersReference.document(uid).set(andeqan)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+
+                                        Intent intent = new Intent(CreateProfileActivity.this, HomeActivity.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                });
+
+
+
+                    } else {
+                        // Handle failures
+                        // ...
+                    }
+                }
+            });
+
+        }else {
+
+            andeqan.setFirst_name(firstName);
+            andeqan.setSecond_name(secondName);
+            andeqan.setUsername(username);
+            andeqan.setUser_id(uid);
+            andeqan.setEmail(email);
+            createProfileProgressDialog.dismiss();
+
+            usersReference.document(uid).set(andeqan)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
-                        public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                            if (!task.isSuccessful()) {
-                                throw task.getException();
-                            }
+                        public void onSuccess(Void aVoid) {
+                            Intent intent = new Intent(CreateProfileActivity.this, HomeActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            finish();
 
-                            // Continue with the task to get the download URL
-                            return path.getDownloadUrl();
-                        }
-                    }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Uri> task) {
-                            if (task.isSuccessful()) {
-                                final Uri downloadUri = task.getResult();
-
-                                final String profileImage = (downloadUri.toString());
-                                Log.d("profile image", profileImage);
-                                usersReference.document(uid).update("profile_image", profileImage);
-                                Intent intent = new Intent(CreateProfileActivity.this, HomeActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                finish();
-
-                            } else {
-                                // Handle failures
-                                // ...
-                            }
                         }
                     });
-
-                }
-
-
-            }
-        });
-
+        }
     }
 
     private boolean isValidName(String name) {
@@ -424,15 +427,6 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
         return true;
     }
 
-    private boolean isValidPicture(){
-        if (profileUri == null){
-            mErrorRelativeLayout.setVisibility(View.VISIBLE);
-            mErrorTextView.setText("Please add your profile picture so other Cinggulans can see you."
-                    + " " + "You can change your profile picture later");
-            return false;
-        }
-        return true;
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -465,60 +459,13 @@ public class CreateProfileActivity extends AppCompatActivity implements View.OnC
         }
 
         if (v == mSubmitUserInfoButton){
-          if (password.equals("")){
-              if (firebaseAuth.getCurrentUser() != null){
-                  checkIfImailVerified();
-              }else {
-                  mAuthProgressDialog.show();
-                  usersReference.whereEqualTo("username", mUsernameEditText.getText().toString())
-                          .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                              @Override
-                              public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
-
-
-                                  if (!documentSnapshots.isEmpty()){
-                                      Toast.makeText(CreateProfileActivity.this,"Please chooser a username that has not been taken",
-                                              Toast.LENGTH_SHORT).show();
-                                  }else {
-                                      loginWithPassword();
-                                  }
-
-                              }
-                          });
-              }
-          }else {
-              createProfile();
-          }
-        }
-
-        if (v == mResendLinkRelativeLayout){
-            firebaseAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
-                            mAuthProgressDialog.dismiss();
-                            if (task.isSuccessful()) {
-                                Log.w(TAG, "signInWithEmail", task.getException());
-                                sendVerificationEmail();
-                            }else {
-                                mErrorRelativeLayout.setVisibility(View.VISIBLE);
-                                mErrorTextView.setText("Check that you are connected to the internet");
-
-                                mErrorRelativeLayout.postDelayed(new Runnable() {
-                                    public void run() {
-                                        mErrorRelativeLayout.setVisibility(View.GONE);
-                                    }
-                                }, 5000);
-
-                            }
-                        }
-                    });
-
+           if (!password.equals("")){
+             if (createProfile) {
+                 loginWithPassword();
+             }
+           }
         }
 
     }
-
-
 
 }

@@ -20,8 +20,8 @@ import android.view.ViewGroup;
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.collections.CollectionPostsActivity;
-import com.andeqa.andeqa.collections.ExploreCollectionViewHolder;
-import com.andeqa.andeqa.collections.ExploreCollectionsAdapter;
+import com.andeqa.andeqa.collections.CollectionViewHolder;
+import com.andeqa.andeqa.collections.CollectionsAdapter;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.QueryOptions;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
@@ -270,8 +270,8 @@ public class SearchedCollectionsActivity extends AppCompatActivity {
     }
 
 
-    public static class SearchCollectionsAdapter extends RecyclerView.Adapter<ExploreCollectionViewHolder>{
-        private static final String TAG = ExploreCollectionsAdapter.class.getSimpleName();
+    public static class SearchCollectionsAdapter extends RecyclerView.Adapter<CollectionViewHolder>{
+        private static final String TAG = CollectionsAdapter.class.getSimpleName();
 
         private Context mContext;
         //firestore
@@ -314,20 +314,20 @@ public class SearchedCollectionsActivity extends AppCompatActivity {
 
         @NonNull
         @Override
-        public ExploreCollectionViewHolder onCreateViewHolder(final @NonNull ViewGroup parent, int viewType) {
+        public CollectionViewHolder onCreateViewHolder(final @NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_explore_collections, parent, false);
-            return new ExploreCollectionViewHolder(view );
+            return new CollectionViewHolder(view );
         }
 
         @Override
-        public void onBindViewHolder(final @NonNull ExploreCollectionViewHolder holder, int position) {
+        public void onBindViewHolder(final @NonNull CollectionViewHolder holder, int position) {
             final QueryOptions queryOptions = getSnapshot(position).toObject(QueryOptions.class);
             final String collectionId = queryOptions.getOption_id();
             final String userId = queryOptions.getUser_id();
 
             firebaseAuth = FirebaseAuth.getInstance();
             collectionsReference = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
-            collectionsPostsReference = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS);
+            collectionsPostsReference = FirebaseFirestore.getInstance().collection(Constants.POSTS_OF_COLLECTION);
             postCountQuery = collectionsPostsReference.document("collections").collection(collectionId)
                     .orderBy("collection_id");
             followingCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_RELATIONS);

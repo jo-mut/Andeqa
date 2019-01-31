@@ -1,37 +1,40 @@
 package com.andeqa.andeqa.collections;
 
 
-import android.arch.paging.PagedList;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.RelativeLayout;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.models.Collection;
+import com.andeqa.andeqa.search.SearchedCollectionsActivity;
+import com.andeqa.andeqa.utils.BottomReachedListener;
+import com.andeqa.andeqa.utils.EndlessLinearScrollListener;
+import com.andeqa.andeqa.utils.EndlessStaggeredScrollListener;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
-import com.firebase.ui.firestore.paging.FirestorePagingOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,26 +47,54 @@ import butterknife.ButterKnife;
  */
 public class CollectionsFragment extends Fragment implements View.OnClickListener{
     @Bind(R.id.collectionsRecyclerView)RecyclerView mCollectionsRecyclerView;
-    @Bind(R.id.viewCollectionsTextView)TextView mViewCollectionsTextView;
+    @Bind(R.id.progressRelativeLayout)RelativeLayout mProgressRelativeLayout;
 
     private static final String TAG = CollectionsFragment.class.getSimpleName();
-    //firestore reference
-    private CollectionReference collectionsCollection;
-    private CollectionReference usersReference;
-    private Query collectionsQuery;
-    //firebase auth
-    private FirebaseAuth firebaseAuth;
-    //strings
-    private static final String EXTRA_USER_UID = "uid";
-    private static final String COLLECTION_ID = "collection id";
     //layouts
     private ItemOffsetDecoration itemOffsetDecoration;
     private StaggeredGridLayoutManager layoutManager;
     private SearchView searchView;
+    // adapters
+    private CollectionsAdapter collectionsAdapter;
+    // lists
+    private List<DocumentSnapshot> mSnapshots = new ArrayList<>();
+    //firebase
+    private CollectionReference collectionsCollection;
+    private FirebaseAuth firebaseAuth;
+    private int TOTAL_ITEMS = 20;
 
+
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
+    }
 
     public CollectionsFragment() {
         // Required empty public constructor
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        inflater.inflate(R.menu.collection_menu, menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_search){
+            Intent intent =  new Intent(getActivity(),SearchedCollectionsActivity.class);
+            startActivity(intent);
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 
@@ -73,13 +104,22 @@ public class CollectionsFragment extends Fragment implements View.OnClickListene
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_collections, container, false);
         ButterKnife.bind(this, view);
-        //initialize click listener
-        mViewCollectionsTextView.setOnClickListener(this);
-        // initialise firebase
         initFirebase();
-        //set up adapter
-        setUpAdapter();
+        getCollections();
+        setRecyclerView();
 
+        mCollectionsRecyclerView.addOnScrollListener(new EndlessStaggeredScrollListener() {
+            @Override
+            public void onLoadMore() {
+                collectionsAdapter.setBottomReachedListener(new BottomReachedListener() {
+                    @Override
+                    public void onBottomReached(int position) {
+                        mProgressRelativeLayout.setVisibility(View.VISIBLE);
+                        getNextCollections();
+                    }
+                });
+            }
+        });
         return view;
     }
 
@@ -119,99 +159,130 @@ public class CollectionsFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onClick(View v){
-        if (v == mViewCollectionsTextView){
-            Intent intent = new Intent(getActivity(), ExploreCollectionsActivity.class);
-            startActivity(intent);
-        }
 
     }
-
 
     private void initFirebase(){
         firebaseAuth = FirebaseAuth.getInstance();
-        usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
         collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
-        collectionsQuery = collectionsCollection.orderBy("name", Query.Direction.ASCENDING);
     }
 
-    private void setUpAdapter(){
-        PagedList.Config config = new PagedList.Config.Builder()
-                .setEnablePlaceholders(false)
-                .setPrefetchDistance(10)
-                .setPageSize(20)
-                .build();
-
-        FirestorePagingOptions<Collection> options = new FirestorePagingOptions.Builder<Collection>()
-                .setLifecycleOwner(this)
-                .setQuery(collectionsQuery, config, Collection.class)
-                .build();
-
-
-        FirestorePagingAdapter<Collection, CollectionViewHolder>
-                pagingAdapter = new FirestorePagingAdapter<Collection, CollectionViewHolder>(options) {
-            @Override
-            protected void onBindViewHolder(@NonNull CollectionViewHolder holder, int position, @NonNull Collection model) {
-                final String collectionId = model.getCollection_id();
-                final String userId = model.getUser_id();
-                holder.mView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(getActivity(), CollectionPostsActivity.class);
-                        intent.putExtra(CollectionsFragment.COLLECTION_ID, collectionId);
-                        intent.putExtra(CollectionsFragment.EXTRA_USER_UID, userId);
-                        startActivity(intent);
-                    }
-                });
-
-                Glide.with(CollectionsFragment.this)
-                        .asBitmap()
-                        .load(model.getImage())
-                        .apply(new RequestOptions()
-                                .placeholder(R.drawable.post_placeholder)
-                                .diskCacheStrategy(DiskCacheStrategy.DATA))
-                        .into(holder.mCollectionCoverImageView);
-
-                if (!TextUtils.isEmpty(model.getName())){
-                    holder.mCollectionNameTextView.setText(model.getName());
-                }else {
-                    holder.mCollectionNameTextView.setVisibility(View.GONE);
-                }
-            }
-
-            @NonNull
-            @Override
-            public CollectionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_collections, parent, false);
-                return new CollectionViewHolder(view );
-            }
-        };
-
-        mCollectionsRecyclerView.setAdapter(pagingAdapter);
+    private void setRecyclerView(){
+        collectionsAdapter = new CollectionsAdapter(getContext(), mSnapshots);
+        collectionsAdapter.setHasStableIds(true);
+        mCollectionsRecyclerView.setAdapter(collectionsAdapter);
         mCollectionsRecyclerView.setHasFixedSize(false);
-        layoutManager = new StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL);
+        layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
         itemOffsetDecoration = new ItemOffsetDecoration(getContext(), R.dimen.item_off_set);
         mCollectionsRecyclerView.setLayoutManager(layoutManager);
+    }
 
+    public void getCollections(){
+        collectionsCollection.orderBy("time", Query.Direction.ASCENDING)
+                .limit(TOTAL_ITEMS).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
+
+                if (!documentSnapshots.isEmpty()) {
+                    for (final DocumentChange documentChange : documentSnapshots.getDocumentChanges()) {
+                        switch (documentChange.getType()) {
+                            case ADDED:
+                                onDocumentAdded(documentChange);
+                                break;
+                            case MODIFIED:
+                                onDocumentModified(documentChange);
+                                break;
+                            case REMOVED:
+                                onDocumentRemoved(documentChange);
+                                break;
+                        }
+                    }
+
+                }
+
+            }
+        });
 
     }
 
-    public class CollectionViewHolder extends RecyclerView.ViewHolder {
+    public void getNextCollections(){
+        DocumentSnapshot lastVisible = mSnapshots.get(mSnapshots.size() - 1);
 
-        View mView;
-        Context mContext;
-        public ImageView mCollectionCoverImageView;
-        public TextView mCollectionNameTextView;
+        //retrieve the first bacth of posts
+        Query nextQuery = collectionsCollection.orderBy("time", Query.Direction.ASCENDING)
+                .startAfter(lastVisible).limit(TOTAL_ITEMS);
 
+        nextQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(final QuerySnapshot documentSnapshots) {
+                if (!documentSnapshots.isEmpty()){
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (final DocumentChange documentChange : documentSnapshots.getDocumentChanges()) {
+                                switch (documentChange.getType()) {
+                                    case ADDED:
+                                        onDocumentAdded(documentChange);
+                                        break;
+                                    case MODIFIED:
+                                        onDocumentModified(documentChange);
+                                        break;
+                                    case REMOVED:
+                                        onDocumentRemoved(documentChange);
+                                        break;
+                                }
+                            }
 
-        public CollectionViewHolder(View itemView) {
-            super(itemView);
-            mContext = itemView.getContext();
-            mView = itemView;
-            mCollectionCoverImageView = (ImageView) mView.findViewById(R.id.collectionCoverImageView);
-            mCollectionNameTextView = (TextView) mView.findViewById(R.id.collectionNameTextView);
+                        }
+                    }, 4000);
+                    mProgressRelativeLayout.setVisibility(View.GONE);
+                }else {
+                    mProgressRelativeLayout.setVisibility(View.GONE);
+                }
+            }
+        });
 
+    }
+
+    protected void onDocumentAdded(DocumentChange change) {
+        mSnapshots.add(change.getDocument());
+        collectionsAdapter.notifyItemInserted(mSnapshots.size() - 1);
+        collectionsAdapter.getItemCount();
+
+    }
+
+    protected void onDocumentModified(DocumentChange change) {
+        try {
+            if (change.getOldIndex() == change.getNewIndex()) {
+                // Item changed but remained in same position
+                mSnapshots.set(change.getOldIndex(), change.getDocument());
+                collectionsAdapter.notifyItemChanged(change.getOldIndex());
+            } else {
+                // Item changed and changed position
+                mSnapshots.remove(change.getOldIndex());
+                mSnapshots.add(change.getNewIndex(), change.getDocument());
+                collectionsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
+
+    protected void onDocumentRemoved(DocumentChange change) {
+        try {
+            mSnapshots.remove(change.getOldIndex());
+            collectionsAdapter.notifyItemRemoved(change.getOldIndex());
+            collectionsAdapter.notifyItemRangeChanged(0, mSnapshots.size());
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
 
 

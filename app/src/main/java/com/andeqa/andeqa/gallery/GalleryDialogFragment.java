@@ -21,7 +21,7 @@ import android.view.WindowManager;
 
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.chatting.ChatActivity;
-import com.andeqa.andeqa.creation.CreateSingleActivity;
+import com.andeqa.andeqa.creation.CreatePostActivity;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.bumptech.glide.Glide;
 
@@ -132,7 +132,7 @@ public class GalleryDialogFragment extends BottomSheetDialogFragment {
                     album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME));
                     timestamp = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_MODIFIED));
 
-                    mediaFiles.add(Function.mappingInbox(album, path, timestamp, Function.converToTime(timestamp), null));
+                    mediaFiles.add(Function.mappingInbox(album, path, timestamp, Function.converToTime(timestamp), null, "image"));
 
                 }catch (Exception e){
                     e.printStackTrace();
@@ -270,7 +270,7 @@ public class GalleryDialogFragment extends BottomSheetDialogFragment {
                 holder.picsImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(getActivity(), CreateSingleActivity.class);
+                        Intent intent = new Intent(getActivity(), CreatePostActivity.class);
                         intent.putExtra(GalleryDialogFragment.GALLERY_PATH, mediaFiles.get(position).get(Function.KEY_PATH));
                         intent.putExtra(GalleryDialogFragment.EXTRA_POST_ID, mPostId);
                         startActivity(intent);
@@ -308,7 +308,7 @@ public class GalleryDialogFragment extends BottomSheetDialogFragment {
                 holder.playImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(getActivity(), CreateSingleActivity.class);
+                        Intent intent = new Intent(getActivity(), CreatePostActivity.class);
                         intent.putExtra(GalleryDialogFragment.GALLERY_PATH, mediaFiles.get(position).get(Function.KEY_PATH));
                         intent.putExtra(GalleryDialogFragment.EXTRA_POST_ID, mPostId);
                         startActivity(intent);

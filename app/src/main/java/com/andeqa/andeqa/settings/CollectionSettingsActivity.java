@@ -25,7 +25,7 @@ import android.widget.Toast;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.creation.CreateActivity;
+import com.andeqa.andeqa.camera.CameraActivity;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.QueryOptions;
 import com.bumptech.glide.Glide;
@@ -82,9 +82,10 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
 
     private static final int DEFAULT_TITLE_LENGTH_LIMIT = 25;
     private static final int DEFAULT_DESCRIPTION_LENGTH_LIMIT = 100;
-    private static final int IMAGE_GALLERY_REQUEST = 112;
     private  static final int MAX_WIDTH = 400;
     private static final int MAX_HEIGHT = 400;
+    private static  final int GALLERY_PROFILE_PHOTO_REQUEST = 111;
+
 
     //intent extras
     private static final String COLLECTION_ID = "collection id";
@@ -354,7 +355,7 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK){
-            if(requestCode == IMAGE_GALLERY_REQUEST && data != null){
+            if(requestCode == GALLERY_PROFILE_PHOTO_REQUEST && data != null){
                 photoUri = data.getData();
                 if (photoUri != null){
                     Glide.with(this)
@@ -374,11 +375,10 @@ public class CollectionSettingsActivity extends AppCompatActivity implements Vie
     @Override
     public void onClick(View v){
         if (v == mChangeCoverRelativeLayout){
-            Intent intent = new Intent(CollectionSettingsActivity.this, CreateActivity.class);
-            intent.putExtra(CollectionSettingsActivity.COLLECTION_SETTINGS_COVER, CollectionSettingsActivity.class.getSimpleName());
-            intent.putExtra(CollectionSettingsActivity.COLLECTION_ID, collectionId);
-            startActivity(intent);
-            finish();
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            intent.setType("image/*");
+            startActivityForResult(intent, GALLERY_PROFILE_PHOTO_REQUEST);
 
         }
 

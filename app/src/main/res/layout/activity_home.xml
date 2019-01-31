@@ -6,9 +6,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+
     tools:context="com.andeqa.andeqa.main.HomeActivity">
 
     <android.support.design.widget.AppBarLayout
+        android:background="@drawable/default_gradient_color"
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,31 +22,32 @@
             android:layout_gravity="top"
             app:titleTextAppearance="@style/toolbarTextAppearance"
             android:layout_height="56dp"
-            android:background="@drawable/default_gradient_color"
             app:contentInsetStart="0dp"
             app:contentInsetLeft="0dp"
+            android:background="@drawable/transparent_background"
             app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/AppTheme.PopupOverlay"
             app:titleTextColor="@android:color/white">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:layout_marginRight="15dp"
-                android:layout_marginEnd="15dp"
-                android:layout_gravity="end"
+                android:layout_marginLeft="15dp"
+                android:layout_marginStart="15dp"
+                android:layout_gravity="start"
                 android:id="@+id/profileImageView"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:scaleType="centerCrop"/>
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:layout_marginRight="15dp"
-                android:layout_marginEnd="15dp"
-                android:layout_gravity="end"
-                android:id="@+id/searchImageView"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:background="@drawable/ic_search"
-                android:scaleType="centerCrop"/>
+            <TextView
+                android:id="@+id/appNameTextView"
+                android:layout_gravity="center"
+                android:textStyle="bold"
+                android:textColor="@color/blue_grey_50"
+                android:text="@string/app_name"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
 
         </android.support.v7.widget.Toolbar>
 
@@ -69,15 +72,5 @@
         android:layout_height="56dp"
         android:layout_gravity="bottom"
         app:itemTextColor="@color/grey_700" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatingActionButton"
-        android:layout_marginBottom="60dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginEnd="16dp"
-        app:srcCompat="@drawable/ic_create"
-        android:layout_gravity="bottom|end"
-        android:layout_width="60dp"
-        android:layout_height="60dp" />
 
 </android.support.design.widget.CoordinatorLayout>

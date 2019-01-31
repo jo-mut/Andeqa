@@ -9,6 +9,7 @@
     tools:context="com.andeqa.andeqa.main.HomeActivity">
 
     <android.support.design.widget.AppBarLayout
+        android:background="@drawable/default_gradient_color"
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,7 +21,7 @@
             android:layout_gravity="top"
             app:titleTextAppearance="@style/toolbarTextAppearance"
             android:layout_height="112dp"
-            android:background="@drawable/default_gradient_color"
+            android:background="@drawable/transparent_background"
             app:contentInsetStart="0dp"
             app:contentInsetLeft="0dp"
             app:layout_scrollFlags="scroll|enterAlways"
@@ -28,22 +29,23 @@
             app:titleTextColor="@android:color/white">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:layout_marginRight="30dp"
-                android:layout_marginEnd="30dp"
-                android:layout_gravity="end"
+                android:layout_marginLeft="30dp"
+                android:layout_marginStart="30dp"
+                android:layout_gravity="start"
                 android:id="@+id/profileImageView"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:scaleType="centerCrop"/>
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:layout_marginRight="30dp"
-                android:layout_marginEnd="30dp"
-                android:layout_gravity="end"
-                android:id="@+id/searchImageView"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:scaleType="centerCrop"/>
+            <TextView
+                android:id="@+id/appNameTextView"
+                android:layout_gravity="center"
+                android:textStyle="bold"
+                android:textColor="@color/blue_grey_50"
+                android:text="@string/app_name"
+                android:textSize="40sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
         </android.support.v7.widget.Toolbar>
 
@@ -54,7 +56,11 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:id="@+id/noSwipeViewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+
+
+    </com.andeqa.andeqa.home.NoSwipePager>
+
 
     <com.aurelhubert.ahbottomnavigation.AHBottomNavigation
         android:visibility="invisible"
@@ -64,16 +70,5 @@
         android:layout_height="112dp"
         android:layout_gravity="bottom"
         app:itemTextColor="@color/grey_700" />
-
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatingActionButton"
-        android:layout_marginBottom="130dp"
-        android:layout_marginRight="32dp"
-        android:layout_marginEnd="32dp"
-        app:srcCompat="@drawable/ic_create"
-        android:layout_gravity="bottom|end"
-        android:layout_width="120dp"
-        android:layout_height="120dp" />
 
 </android.support.design.widget.CoordinatorLayout>

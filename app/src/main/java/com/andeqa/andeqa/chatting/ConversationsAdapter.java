@@ -1,11 +1,9 @@
 package com.andeqa.andeqa.chatting;
 
-import android.arch.paging.PagedList;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
@@ -18,11 +16,10 @@ import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Room;
+import com.andeqa.andeqa.utils.BottomReachedListener;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
-import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
-import com.firebase.ui.firestore.paging.FirestorePagingOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -37,7 +34,7 @@ import java.util.List;
  * Created by J.EL on 3/30/2018.
  */
 
-public class ConversationsAdapter extends FirestorePagingAdapter<Room, RecyclerView.ViewHolder> {
+public class ConversationsAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = ConversationsAdapter.class.getSimpleName();
     //firebase
     private CollectionReference roomCollection;
@@ -48,19 +45,34 @@ public class ConversationsAdapter extends FirestorePagingAdapter<Room, RecyclerV
     private static final int TEXT = 1;
     private static final int PHOTO = 2;
     private Context mContext;
+    private List<DocumentSnapshot> documentSnapshots;
+    private BottomReachedListener mBottomReachedListener;
 
 
-    public ConversationsAdapter(@NonNull FirestorePagingOptions options, Context mContext) {
-        super(options);
+    public ConversationsAdapter(Context mContext, List<DocumentSnapshot> documents) {
         this.mContext = mContext;
+        this.documentSnapshots = new ArrayList<>();
+        this.documentSnapshots = documents;
+        initFirebase();
     }
 
 
-    @Nullable
-    @Override
-    public PagedList<DocumentSnapshot> getCurrentList() {
-        return super.getCurrentList();
+    public void initFirebase(){
+        firebaseAuth = FirebaseAuth.getInstance();
+        roomCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
+        usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
+
     }
+
+    public void setBottomReachedListener(BottomReachedListener bottomReachedListener){
+        this.mBottomReachedListener = bottomReachedListener;
+    }
+
+    private DocumentSnapshot getSnapshot(int index){
+        return documentSnapshots.get(index);
+
+    }
+
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -68,19 +80,16 @@ public class ConversationsAdapter extends FirestorePagingAdapter<Room, RecyclerV
         switch (viewType) {
             case TEXT:
                 view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.room_text_layout, parent, false);
+                        .inflate(R.layout.layout_text_conversation, parent, false);
                 return new ConversationViewHolder(view);
             case PHOTO:
                 view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.room_photo_layout, parent, false);
+                        .inflate(R.layout.layout_photo_conversation, parent, false);
                 return new ConversationViewHolder(view);
         }
         return null;
     }
 
-    protected DocumentSnapshot getSnapshot(int index) {
-        return getCurrentList().get(index);
-    }
 
 
     @Override
@@ -102,33 +111,34 @@ public class ConversationsAdapter extends FirestorePagingAdapter<Room, RecyclerV
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull Room model) {
-        final String type = model.getType();
-        firebaseAuth = FirebaseAuth.getInstance();
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        Room room = getSnapshot(position).toObject(Room.class);
+        final String type = room.getType();
 
-        if (firebaseAuth.getCurrentUser() != null) {
-            roomCollection = FirebaseFirestore.getInstance().collection(Constants.MESSAGES);
-            usersCollection = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
-
+        switch (holder.getItemViewType()){
+            case PHOTO:
+                populatePhoto((ConversationViewHolder) holder, position);
+                break;
+            case TEXT:
+                populateText((ConversationViewHolder) holder, position);
+                break;
         }
 
-        if (type!=null){
-            if (type.equals("photo")) {
-                populatePhoto((ConversationViewHolder) holder, position);
-            } else if (type.equals("text")) {
-                populateText((ConversationViewHolder) holder, position);
-            } else {
-                populateText((ConversationViewHolder) holder, position);
+        // bottom reached
+        try {
+            if (position == getItemCount() - 1){
+                mBottomReachedListener.onBottomReached(position);
             }
-        }else {
-            populateText((ConversationViewHolder) holder, position);
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
     }
 
     @Override
     public int getItemCount() {
-        return super.getItemCount();
+        Log.d("adapter documents", documentSnapshots.size() + "");
+        return documentSnapshots.size();
     }
 
 

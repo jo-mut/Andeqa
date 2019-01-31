@@ -12,7 +12,6 @@
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -40,7 +39,6 @@
             android:layout_height="0dp">
 
             <ProgressBar
-                android:visibility="gone"
                 android:layout_centerInParent="true"
                 android:id="@+id/progressBar"
                 style="?android:attr/progressBarStyle"

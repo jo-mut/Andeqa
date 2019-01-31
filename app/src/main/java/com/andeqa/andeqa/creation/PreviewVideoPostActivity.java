@@ -6,11 +6,9 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.player.Player;
-import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 
 import java.io.File;
@@ -20,17 +18,18 @@ import butterknife.ButterKnife;
 
 public class PreviewVideoPostActivity extends AppCompatActivity
         implements View.OnClickListener {
-    @Bind(R.id.simpleExoPlayerView)SimpleExoPlayerView exoPlayerView;
+    @Bind(R.id.exoPlayerView)SimpleExoPlayerView exoPlayerView;
     @Bind(R.id.toolbar)Toolbar toolbar;
     @Bind(R.id.nextImageView)ImageView nextImageView;
 
-    private static final String CAMERA_VIDEO = "camera video";
-    private static final String CAMERA_THUMB = "thumb";
-    private static final String GALLERY_VIDEO = "gallery video";
+    private static final String IMAGE_PATH ="image path";
+    private static final String VIDEO_PATH = "video path";
     private static final String COLLECTION_ID = "collection id";
+    private static final String POST_ID = "post id";
+    private String mCollectionId;
+    private String postId;
     private String video;
     private String thumb;
-    private String mCollectionId;
     private Player player;
 
 
@@ -51,20 +50,19 @@ public class PreviewVideoPostActivity extends AppCompatActivity
 
         nextImageView.setOnClickListener(this);
         if (getIntent().getExtras() != null){
-            if (getIntent().getStringExtra(CAMERA_VIDEO) != null){
-                thumb = getIntent().getStringExtra(CAMERA_THUMB);
-                video = getIntent().getStringExtra(CAMERA_VIDEO);
+            if (getIntent().getStringExtra(VIDEO_PATH) != null){
+                thumb = getIntent().getStringExtra(IMAGE_PATH);
+                video = getIntent().getStringExtra(VIDEO_PATH);
                 player = new Player(getApplicationContext(), exoPlayerView);
                 player.addMedia(video);
             }
 
-            if (getIntent().getStringExtra(GALLERY_VIDEO) != null){
-                video = getIntent().getStringExtra(GALLERY_VIDEO);
+            if (getIntent().getStringExtra(VIDEO_PATH) != null){
+                video = getIntent().getStringExtra(VIDEO_PATH);
                 player = new Player(getApplicationContext(), exoPlayerView);
                 player.addMedia(video);
             }
 
-            mCollectionId = getIntent().getStringExtra(COLLECTION_ID);
         }
 
     }
@@ -112,25 +110,10 @@ public class PreviewVideoPostActivity extends AppCompatActivity
             long fileKiloBytes =  fileBytes / 1024;
             long fileMegaBytes = fileKiloBytes / 1024;
 
-            if (fileMegaBytes <= 6){
-                if (mCollectionId != null){
-                    if (video != null){
-                        Intent intent = new Intent(PreviewVideoPostActivity.this, CreateSingleActivity.class);
-                        intent.putExtra(PreviewVideoPostActivity.CAMERA_VIDEO, video);
-                        intent.putExtra(PreviewVideoPostActivity.CAMERA_THUMB, thumb);
-                        intent.putExtra(PreviewVideoPostActivity.COLLECTION_ID, mCollectionId);
-                        startActivity(intent);
-                    }
-                }else {
-                    if (video != null){
-                        Intent intent = new Intent(PreviewVideoPostActivity.this, CreateSingleActivity.class);
-                        intent.putExtra(PreviewVideoPostActivity.CAMERA_VIDEO, video);
-                        intent.putExtra(PreviewVideoPostActivity.CAMERA_THUMB, thumb);
-                        startActivity(intent);
-                    }
-                }
-            }else {
-                Toast.makeText(PreviewVideoPostActivity.this, "Video must be less that 6Mbs", Toast.LENGTH_SHORT).show();
+            if (video != null){
+                Intent intent = new Intent(PreviewVideoPostActivity.this, CreatePostActivity.class);
+                intent.putExtra(PreviewVideoPostActivity.VIDEO_PATH, video);
+                startActivity(intent);
             }
 
         }

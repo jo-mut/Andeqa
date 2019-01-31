@@ -1,8 +1,8 @@
 package com.andeqa.andeqa.chatting;
 
-import android.arch.paging.PagedList;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,21 +26,28 @@ import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Message;
 import com.andeqa.andeqa.models.Room;
 import com.andeqa.andeqa.profile.ProfileActivity;
-import com.firebase.ui.firestore.paging.FirestorePagingOptions;
+import com.andeqa.andeqa.utils.BottomReachedListener;
+import com.andeqa.andeqa.utils.EndlessLinearScrollListener;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -82,6 +89,10 @@ public class ChatActivity extends AppCompatActivity
     private String image;
     //booleans
     private ChatsAdapter chatsAdapter;
+    // lists
+    private int TOTAL_ITEMS = 50;
+    private List<DocumentSnapshot> snapshots = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,22 +122,29 @@ public class ChatActivity extends AppCompatActivity
         initFirebase();
         //update the toolbar
         getProfile();
-        //set messages
-        setUpAdapter();
+        // set the recycler view
+        setRecyclerView();
+        getChatMessages();
+        mMessagesRecyclerView.addOnScrollListener(new EndlessLinearScrollListener() {
+            @Override
+            public void onLoadMore() {
+                chatsAdapter.setBottomReachedListener(new BottomReachedListener() {
+                    @Override
+                    public void onBottomReached(int position) {
+                        getNextMessages();
+                    }
+                });
+            }
+        });
+
+
 
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
-        mMessagesRecyclerView.getAdapter().registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onItemRangeChanged(int positionStart, int itemCount) {
-                super.onItemRangeChanged(positionStart, itemCount);
-                mMessagesRecyclerView.scrollToPosition(itemCount - 1);
-            }
-        });
+        //set messages
     }
 
     @Override
@@ -208,6 +226,14 @@ public class ChatActivity extends AppCompatActivity
         databaseReference.keepSynced(true);
     }
 
+    private void setRecyclerView() {
+        chatsAdapter = new ChatsAdapter(ChatActivity.this, snapshots);
+        mMessagesRecyclerView.setAdapter(chatsAdapter);
+        mMessagesRecyclerView.setHasFixedSize(false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        mMessagesRecyclerView.setLayoutManager(layoutManager);
+    }
+
     /**get passed uid user profile*/
     private void getProfile(){
         usersCollection.document(mUid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -227,28 +253,141 @@ public class ChatActivity extends AppCompatActivity
         });
     }
 
+    private void getChatMessages(){
+        messagesQuery.orderBy("time", Query.Direction.ASCENDING)
+                .limit(TOTAL_ITEMS);
 
-    private void setUpAdapter(){
-        messagesQuery.orderBy("time");
+        messagesQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@javax.annotation.Nullable QuerySnapshot documentSnapshots,
+                                @javax.annotation.Nullable FirebaseFirestoreException e) {
 
-        PagedList.Config config = new PagedList.Config.Builder()
-                .setEnablePlaceholders(false)
-                .setPrefetchDistance(10)
-                .setPageSize(20)
-                .build();
+                if (e != null) {
+                    Log.w(TAG, "Listen error", e);
+                    return;
+                }
 
-        FirestorePagingOptions<Message> options = new FirestorePagingOptions.Builder<Message>()
-                .setLifecycleOwner(this)
-                .setQuery(messagesQuery, config, Message.class)
-                .build();
+                if (!documentSnapshots.isEmpty()){
+                    for (final DocumentChange documentChange : documentSnapshots.getDocumentChanges()) {
+                        switch (documentChange.getType()) {
+                            case ADDED:
+                                onDocumentAdded(documentChange);
+                                mMessagesRecyclerView.scrollToPosition(chatsAdapter.getItemCount() - 1);
+                                seenMessages(documentChange);
+                                break;
+                            case MODIFIED:
+                                onDocumentModified(documentChange);
+                                break;
+                            case REMOVED:
+                                onDocumentRemoved(documentChange);
+                                break;
+                        }
+                    }
 
+                }
+            }
+        });
 
-        chatsAdapter = new ChatsAdapter(options,this);
-        mMessagesRecyclerView.setAdapter(chatsAdapter);
-        mMessagesRecyclerView.setHasFixedSize(false);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        mMessagesRecyclerView.setLayoutManager(layoutManager);
+    }
 
+    private void getNextMessages(){
+        DocumentSnapshot last = snapshots.get(snapshots.size() - 1);
+        Query nextQuery = messagesQuery.orderBy("time", Query.Direction.ASCENDING)
+                .startAfter(last).limit(TOTAL_ITEMS);
+        nextQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(final QuerySnapshot documentSnapshots) {
+
+                if (!documentSnapshots.isEmpty()){
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (final DocumentChange documentChange : documentSnapshots.getDocumentChanges()) {
+                                switch (documentChange.getType()) {
+                                    case ADDED:
+                                        onDocumentAdded(documentChange);
+                                        mMessagesRecyclerView.scrollToPosition(chatsAdapter.getItemCount() - 1);
+                                        seenMessages(documentChange);
+                                        break;
+                                    case MODIFIED:
+                                        onDocumentModified(documentChange);
+                                        break;
+                                    case REMOVED:
+                                        onDocumentRemoved(documentChange);
+                                        break;
+                                }
+                            }
+                        }
+                    }, 4000);
+
+                }
+            }
+        });
+
+    }
+
+    private void seenMessages(DocumentChange change) {
+        Message message = change.getDocument().toObject(Message.class);
+        final String receiverUid = message.getReceiver_id();
+        final String senderUid = message.getSender_id();
+        final String messageId = message.getMessage_id();
+
+        if (receiverUid.equals(firebaseAuth.getCurrentUser().getUid())) {
+            seenMessagesReference.child("seen_messages")
+                    .child(receiverUid).child(senderUid)
+                    .child(senderUid).child("seen").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (!dataSnapshot.exists()){
+                        seenMessagesReference.child("seen_messages")
+                                .child(receiverUid).child(senderUid)
+                                .child(messageId).child("seen").setValue("seen");
+                        Log.d("view not seen", messageId);
+                    }else {
+                        Log.d("view is seen", messageId);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
+
+    protected void onDocumentAdded(DocumentChange change) {
+        snapshots.add(change.getDocument());
+        chatsAdapter.notifyItemInserted(snapshots.size() - 1);
+        chatsAdapter.getItemCount();
+
+    }
+
+    protected void onDocumentModified(DocumentChange change) {
+        try {
+            if (change.getOldIndex() == change.getNewIndex()) {
+                // Item changed but remained in same position
+                snapshots.set(change.getOldIndex(), change.getDocument());
+                chatsAdapter.notifyItemChanged(change.getOldIndex());
+            } else {
+                // Item changed and changed position
+                snapshots.remove(change.getOldIndex());
+                snapshots.add(change.getNewIndex(), change.getDocument());
+                chatsAdapter.notifyItemRangeChanged(0, snapshots.size());
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    protected void onDocumentRemoved(DocumentChange change) {
+        try {
+            snapshots.remove(change.getOldIndex());
+            chatsAdapter.notifyItemRemoved(change.getOldIndex());
+            chatsAdapter.notifyItemRangeChanged(0, snapshots.size());
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

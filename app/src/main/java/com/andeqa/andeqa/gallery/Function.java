@@ -22,7 +22,7 @@ public class Function {
     static final String KEY_TIMESTAMP = "timestamp";
     static final String KEY_TIME = "date";
     static final String KEY_COUNT = "date";
-
+    static final String KEY_TYPE = "type";
 
     public static  boolean hasPermissions(Context context, String... permissions) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
@@ -36,7 +36,7 @@ public class Function {
     }
 
 
-    public static HashMap<String, String> mappingInbox(String album, String path, String timestamp, String time, String count)
+    public static HashMap<String, String> mappingInbox(String album, String path, String timestamp, String time, String count, String type)
     {
         HashMap<String, String> map = new HashMap<String, String>();
         map.put(KEY_ALBUM, album);
@@ -44,6 +44,7 @@ public class Function {
         map.put(KEY_TIMESTAMP, timestamp);
         map.put(KEY_TIME, time);
         map.put(KEY_COUNT, count);
+        map.put(KEY_TYPE, type);
         return map;
     }
 
@@ -67,7 +68,6 @@ public class Function {
 
 
         Cursor cursor = new MergeCursor(new Cursor[]{imagesCursorExternal,imagesCursorInternal,videosCursorExternal,videosCursorInternal });
-
 
         return cursor.getCount() +"";
     }

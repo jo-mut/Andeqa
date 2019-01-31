@@ -14,6 +14,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -22,12 +23,12 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.andeqa.andeqa.R;
-import com.andeqa.andeqa.creation.CreateCollectionActivity;
-import com.andeqa.andeqa.creation.CreateCollectionPostActivity;
+import com.andeqa.andeqa.creation.PreviewImagePostActivity;
 import com.andeqa.andeqa.player.Player;
 import com.andeqa.andeqa.settings.CollectionSettingsActivity;
 import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -41,33 +42,17 @@ import butterknife.ButterKnife;
  * A simple {@link Fragment} subclass.
  */
 public class AlbumFragment extends Fragment {
-    static final int REQUEST_PERMISSION_KEY = 1;
     LoadAlbum loadAlbumTask;
     @Bind(R.id.albumRecyclerView)RecyclerView albumRecyclerView;
     ArrayList<HashMap<String, String>> albumList = new ArrayList<HashMap<String, String>>();
 
-    private static final String GALLERY_PATH ="gallery image";
-    private static final String GALLERY_VIDEO ="gallery video";
-    private static final String COLLECTION_TAG = CreateCollectionActivity.class.getSimpleName();
-    private static final String COLLECTION_SETTINGS_COVER = CollectionSettingsActivity.class.getSimpleName();
-    private static final String COLLECTION_POST = CreateCollectionPostActivity.class.getSimpleName();
-    private static final String PROFILE_PHOTO_PATH = "profile photo path";
-    private static final String PROFILE_COVER_PATH = "profile cover path";
     private static final String COLLECTION_ID = "collection id";
-    private static final String EXTRA_USER_UID = "uid";
-    private static final String EXTRA_POST_ID = "post id";
-
-    private String mUid;
+    private static final String POST_ID = "post id";
+    private String mCollectionId;
     private String postId;
-    private String collection_post;
-    private String createCollection;
-    private String collectionId;
-    private String profileCoverIntent;
-    private String profilePhotoIntent;
-    private String collectionSettingsIntent;
 
     private static final int VIDEO = 0;
-    private static final int IMAGE = 2;
+    private static final int IMAGE = 1;
 
     private ItemOffsetDecoration itemOffsetDecoration;
 
@@ -85,16 +70,13 @@ public class AlbumFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_album, container, false);
         ButterKnife.bind(this, view);
 
-        collection_post = getActivity().getIntent().getStringExtra(COLLECTION_POST);
-        createCollection = getActivity().getIntent().getStringExtra(COLLECTION_TAG);
-        collectionId = getActivity().getIntent().getStringExtra(COLLECTION_ID);
-        collectionSettingsIntent  = getActivity().getIntent().getStringExtra(COLLECTION_SETTINGS_COVER);
-        profileCoverIntent = getActivity().getIntent().getStringExtra(PROFILE_COVER_PATH);
-        profilePhotoIntent = getActivity().getIntent().getStringExtra(PROFILE_PHOTO_PATH);
-        mUid = getActivity().getIntent().getStringExtra(EXTRA_USER_UID);
-        postId = getActivity().getIntent().getStringExtra(EXTRA_POST_ID);
+        mCollectionId = getActivity().getIntent().getStringExtra(COLLECTION_ID);
+        postId = getActivity().getIntent().getStringExtra(POST_ID);
 
         itemOffsetDecoration = new ItemOffsetDecoration(getContext(), R.dimen.item_off_set);
+        loadAlbumTask = new LoadAlbum();
+        loadAlbumTask.execute();
+        albumRecyclerView.addItemDecoration(itemOffsetDecoration);
 
         return view;
     }
@@ -118,8 +100,6 @@ public class AlbumFragment extends Fragment {
             Uri videosInternalUri = android.provider.MediaStore.Video.Media.INTERNAL_CONTENT_URI;
             Uri videosExternalUri = android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
 
-
-
             String[] projection = { MediaStore.MediaColumns.DATA,
                     MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.MediaColumns.DATE_MODIFIED };
             Cursor imageCursorExternal = getActivity().getApplicationContext().getContentResolver()
@@ -134,30 +114,45 @@ public class AlbumFragment extends Fragment {
             Cursor videoCursorInternal = getActivity().getApplicationContext().getContentResolver()
                     .query(videosInternalUri, projection, "_data IS NOT NULL) GROUP BY (bucket_display_name",
                             null, null);
-            Cursor cursor = new MergeCursor(new Cursor[]{imageCursorExternal,imageCursorInternal});
+            Cursor imageCursor = new MergeCursor(new Cursor[]{imageCursorExternal,imageCursorInternal});
+            Cursor videoCursor = new MergeCursor(new Cursor[]{videoCursorExternal, videoCursorInternal});
 
-            while (cursor.moveToNext()) {
+            while (imageCursor.moveToNext()) {
 
                 try {
-                    path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA));
-                    album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME));
-                    timestamp = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_MODIFIED));
+                    path = imageCursor.getString(imageCursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA));
+                    album = imageCursor.getString(imageCursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME));
+                    timestamp = imageCursor.getString(imageCursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_MODIFIED));
                     countPhoto = Function.getImagesCount(getActivity().getApplicationContext(), album);
-                    albumList.add(Function.mappingInbox(album, path, timestamp, Function.converToTime(timestamp), countPhoto));
+                    albumList.add(Function.mappingInbox(album, path, timestamp, Function.converToTime(timestamp), countPhoto, "image"));
                 }catch (Exception e){
                     e.printStackTrace();
                 }
             }
-            cursor.close();
-            Collections.sort(albumList, new MapComparator(Function.KEY_TIMESTAMP, "dsc")); // Arranging photo album by timestamp decending
+
+            while (videoCursor.moveToNext()) {
+
+                try {
+                    path = videoCursor.getString(videoCursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA));
+                    album = videoCursor.getString(videoCursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME));
+                    timestamp = videoCursor.getString(videoCursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_MODIFIED));
+                    countPhoto = Function.getImagesCount(getActivity().getApplicationContext(), album);
+                    albumList.add(Function.mappingInbox(album, path, timestamp, Function.converToTime(timestamp), countPhoto, "video"));
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+            imageCursor.close();
+            videoCursor.close();
+            // Arranging photo album by timestamp decending
+            Collections.sort(albumList, new MapComparator(Function.KEY_TIMESTAMP, "dsc"));
             return xml;
         }
 
         @Override
         protected void onPostExecute(String xml) {
             AlbumsAdapter albumsAdapter = new AlbumsAdapter(getContext());
-            LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),
-                    LinearLayoutManager.HORIZONTAL, false);
+            GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
             albumRecyclerView.setLayoutManager(layoutManager);
             albumRecyclerView.setHasFixedSize(false);
             albumRecyclerView.setAdapter(albumsAdapter);
@@ -165,38 +160,10 @@ public class AlbumFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode)
-        {
-            case REQUEST_PERMISSION_KEY: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                {
-                    loadAlbumTask = new LoadAlbum();
-                    loadAlbumTask.execute();
-                } else
-                {
-                    Toast.makeText(getContext(), "You must accept permissions.", Toast.LENGTH_LONG).show();
-                }
-            }
-        }
-
-    }
-
 
     @Override
     public void onResume() {
         super.onResume();
-        albumRecyclerView.addItemDecoration(itemOffsetDecoration);
-        String[] PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-        if(!Function.hasPermissions(getContext(), PERMISSIONS)){
-            ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, REQUEST_PERMISSION_KEY);
-        }else{
-            loadAlbumTask = new LoadAlbum();
-            loadAlbumTask.execute();
-        }
-
     }
 
 
@@ -210,7 +177,6 @@ public class AlbumFragment extends Fragment {
         super.onPause();
         albumRecyclerView.removeItemDecoration(itemOffsetDecoration);
     }
-
 
 
     class AlbumsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
@@ -232,10 +198,10 @@ public class AlbumFragment extends Fragment {
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view;
             switch (viewType) {
-//                case VIDEO:
-//                    view = LayoutInflater.from(parent.getContext())
-//                            .inflate(R.layout.layout_video_album, parent, false);
-//                    return new VideoAlbumViewHolder(view);
+                case VIDEO:
+                    view = LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.layout_gallery_album, parent, false);
+                    return new ImageAlbumViewHolder(view);
                 case IMAGE:
                     view = LayoutInflater.from(parent.getContext())
                             .inflate(R.layout.layout_gallery_album, parent, false);
@@ -246,10 +212,9 @@ public class AlbumFragment extends Fragment {
 
         @Override
         public int getItemViewType(int position) {
-            final String path = albumList.get(position).get(Function.KEY_PATH);
-            final String fileExtension = path.substring(path.lastIndexOf(".") + 1);
+            final String type = albumList.get(position).get(Function.KEY_TYPE);
 
-            if (fileExtension.equals("mp4") || fileExtension.equals("3gp")){
+            if (type.equals("video")){
                 return VIDEO;
             }else {
                 return IMAGE;
@@ -260,13 +225,11 @@ public class AlbumFragment extends Fragment {
         @Override
         public void onBindViewHolder(final @NonNull RecyclerView.ViewHolder holder, final int position) {
 
-            final String path = albumList.get(position).get(Function.KEY_PATH);
-            final String fileExtension = path.substring(path.lastIndexOf(".") + 1);
-
-            if (fileExtension.equals("mp4") || fileExtension.equals("3gp")){
-                populateVideoAlbum((VideoAlbumViewHolder) holder, position);
-            }else {
-                populateImageAlbum((ImageAlbumViewHolder) holder, position);
+            switch (holder.getItemViewType()) {
+                case VIDEO:
+                    populateVideoAlbum((ImageAlbumViewHolder) holder, position);
+                case IMAGE:
+                    populateImageAlbum((ImageAlbumViewHolder) holder, position);
             }
 
         }
@@ -279,10 +242,12 @@ public class AlbumFragment extends Fragment {
         private void populateImageAlbum(final ImageAlbumViewHolder holder, final int position){
             try {
                 Glide.with(mContext)
-                        .load(new File(albumList.get(+position).get(Function.KEY_PATH))) // Uri of the picture
+                        .load(new File(albumList.get(+position).get(Function.KEY_PATH)))
+                        .apply(new RequestOptions()
+                                .override(400, 400)
+                                .centerCrop())// Uri of the picture
                         .into(holder.albumImageView);
                 holder.galleryTitleTextView.setText(albumList.get(position).get(Function.KEY_ALBUM));
-                holder.galleryCountTextView.setText(albumList.get(position).get(Function.KEY_COUNT));
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -291,37 +256,15 @@ public class AlbumFragment extends Fragment {
             holder.albumLinearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (collection_post != null) {
+                    if (mCollectionId != null){
                         Intent intent = new Intent(getActivity(), AlbumActivity.class);
                         intent.putExtra("name", albumList.get(position).get(Function.KEY_ALBUM));
-                        intent.putExtra(AlbumFragment.COLLECTION_ID, collectionId);
-                        intent.putExtra(AlbumFragment.COLLECTION_POST, CreateCollectionPostActivity.class.getSimpleName());
+                        intent.putExtra(AlbumFragment.COLLECTION_ID, mCollectionId);
                         startActivity(intent);
-                    } else if (createCollection != null){
-                        Intent intent = new Intent(getActivity(), CreateCollectionActivity.class);
-                        intent.putExtra(AlbumFragment.GALLERY_PATH, albumList.get(position).get(Function.KEY_PATH));
-                        intent.putExtra(AlbumFragment.COLLECTION_TAG, createCollection);
-                        startActivity(intent);
-                    }else if (collectionSettingsIntent != null) {
+                    } else if (postId != null){
                         Intent intent = new Intent(getActivity(), AlbumActivity.class);
                         intent.putExtra("name", albumList.get(position).get(Function.KEY_ALBUM));
-                        intent.putExtra(AlbumFragment.COLLECTION_SETTINGS_COVER, CollectionSettingsActivity.class.getSimpleName());
-                        intent.putExtra(AlbumFragment.COLLECTION_ID, collectionId);
-                        startActivity(intent);
-                    }else if (profilePhotoIntent != null){
-                        Intent intent = new Intent(getActivity(), AlbumActivity.class);
-                        intent.putExtra("name", albumList.get(position).get(Function.KEY_ALBUM));
-                        intent.putExtra(AlbumFragment.PROFILE_PHOTO_PATH, "profile photo path");
-                        startActivity(intent);
-                    } else if (profileCoverIntent != null){
-                        Intent intent = new Intent(getActivity(), AlbumActivity.class);
-                        intent.putExtra("name", albumList.get(position).get(Function.KEY_ALBUM));
-                        intent.putExtra(AlbumFragment.PROFILE_COVER_PATH, "profile cover path");
-                        startActivity(intent);
-                    }else if (postId != null){
-                        Intent intent = new Intent(getActivity(), AlbumActivity.class);
-                        intent.putExtra("name", albumList.get(position).get(Function.KEY_ALBUM));
-                        intent.putExtra(AlbumFragment.EXTRA_POST_ID, postId);
+                        intent.putExtra(AlbumFragment.POST_ID, postId);
                         startActivity(intent);
                     }else {
                         Intent intent = new Intent(getActivity(), AlbumActivity.class);
@@ -332,13 +275,12 @@ public class AlbumFragment extends Fragment {
             });
         }
 
-        private void populateVideoAlbum(final VideoAlbumViewHolder holder, final int position){
+        private void populateVideoAlbum(final ImageAlbumViewHolder holder, final int position){
             try {
                 Glide.with(mContext)
                         .load(new File(albumList.get(+position).get(Function.KEY_PATH))) // Uri of the picture
-                        .into(holder.videoImageView);
+                        .into(holder.albumImageView);
                 holder.galleryTitleTextView.setText(albumList.get(position).get(Function.KEY_ALBUM));
-                holder.galleryCountTextView.setText(albumList.get(position).get(Function.KEY_COUNT));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -346,36 +288,15 @@ public class AlbumFragment extends Fragment {
             holder.view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (collection_post != null) {
+                    if (mCollectionId != null){
                         Intent intent = new Intent(getActivity(), AlbumActivity.class);
                         intent.putExtra("name", albumList.get(position).get(Function.KEY_ALBUM));
-                        intent.putExtra(AlbumFragment.COLLECTION_ID, collectionId);
-                        startActivity(intent);
-                    }else if (createCollection != null){
-                        Intent intent = new Intent(getActivity(), AlbumActivity.class);
-                        intent.putExtra(AlbumFragment.GALLERY_PATH, albumList.get(position).get(Function.KEY_PATH));
-                        intent.putExtra(AlbumFragment.COLLECTION_TAG, createCollection);
-                        startActivity(intent);
-                    } else if (collectionSettingsIntent != null) {
-                        Intent intent = new Intent(getActivity(), AlbumActivity.class);
-                        intent.putExtra("name", albumList.get(position).get(Function.KEY_ALBUM));
-                        intent.putExtra(AlbumFragment.COLLECTION_SETTINGS_COVER, CollectionSettingsActivity.class.getSimpleName());
-                        intent.putExtra(AlbumFragment.COLLECTION_ID, collectionId);
-                        startActivity(intent);
-                    }else if (profilePhotoIntent != null){
-                        Intent intent = new Intent(getActivity(), AlbumActivity.class);
-                        intent.putExtra("name", albumList.get(position).get(Function.KEY_ALBUM));
-                        intent.putExtra(AlbumFragment.PROFILE_PHOTO_PATH, "profile photo path");
-                        startActivity(intent);
-                    } else if (profileCoverIntent != null){
-                        Intent intent = new Intent(getActivity(), AlbumActivity.class);
-                        intent.putExtra("name", albumList.get(position).get(Function.KEY_ALBUM));
-                        intent.putExtra(AlbumFragment.PROFILE_COVER_PATH, "profile cover path");
+                        intent.putExtra(AlbumFragment.COLLECTION_ID, mCollectionId);
                         startActivity(intent);
                     }else if (postId != null){
                         Intent intent = new Intent(getActivity(), AlbumActivity.class);
                         intent.putExtra("name", albumList.get(position).get(Function.KEY_ALBUM));
-                        intent.putExtra(AlbumFragment.EXTRA_POST_ID, postId);
+                        intent.putExtra(AlbumFragment.POST_ID, postId);
                         startActivity(intent);
                     }else {
                         Intent intent = new Intent(getActivity(), AlbumActivity.class);

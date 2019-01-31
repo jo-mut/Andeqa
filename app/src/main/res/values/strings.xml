@@ -38,7 +38,7 @@
     <string name="about">About</string>
     <string name="intro_tutorial">Introduction</string>
     <string name="extras">Help</string>
-    <string name="share">Share Andeqa</string>
+    <string name="share">Share Invoved</string>
     <string name="settings">Settings</string>
 
     <!-- Strings related to Settings -->
@@ -48,7 +48,7 @@
     <string name="pref_header_about">Help</string>
     <string name="summary_app_info">Andeqa</string>
     <string name="title_app_info">App Info</string>
-    <string name="app_version">1.4.0.Z0</string>
+    <string name="app_version">1.4.5.</string>
     <string name="summary_support">Got any queries? We are happy to help!</string>
     <string name="title_send_feedback">Send Feedback</string>
     <string name="title_faq">FAQ</string>
@@ -65,16 +65,6 @@
     <string name="key_notifications_new_message_ringtone">key_notifications_new_message_ringtone</string>
     <string name="key_vibrate">key_vibrate</string>
     <string name="key_send_feedback">key_send_feedback</string>
-
-    <!--u credits-->
-    <string name="credit">Credo</string>
-
-
-    <!--ifair related strings-->
-    <string name="invest">Invest</string>
-    <string name="merge">Merge</string>
-    <string name="buy">Buy</string>
-    <string name="lease">Lease</string>
     <!--animations-->
     <integer name="slide_animation_duration">300</integer>
 
@@ -99,14 +89,6 @@
     <string name="title_activity_create">CreateActivity</string>
 
     <!--home tabs-->
-    <string name="home_tab">Home</string>
-    <string name="market_tab">Market</string>
-    <string name="explore_tab">Explore</string>
-    <string name="collections_tab">Collections</string>
-    <string name="societies_tab">Societies</string>
-    <string name="tab_text_1">Tab 1</string>
-    <string name="tab_text_2">Tab 2</string>
-    <string name="tab_text_3">Tab 3</string>
     <string name="title_activity_bottom_navigation">BottomNavigationActivity</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
@@ -125,6 +107,8 @@
     <string name="notifications">Notifications</string>
     <string name="inbox">Inbox</string>
     <string name="more">More</string>
+    <string name="channels">Channels</string>
     <string name="collections">Collections</string>
+    <string name="title_activity_swipe">SwipeActivity</string>
 </resources>
 

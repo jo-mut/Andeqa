@@ -19,10 +19,14 @@ import com.andeqa.andeqa.R;
 import com.andeqa.andeqa.impressions.ImpressionTracker;
 import com.andeqa.andeqa.impressions.MessagingVisibilityTracker;
 import com.andeqa.andeqa.models.Message;
+import com.andeqa.andeqa.models.Post;
 import com.andeqa.andeqa.utils.BottomReachedListener;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.firebase.ui.firestore.ObservableSnapshotArray;
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
 import com.firebase.ui.firestore.paging.FirestorePagingOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,8 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.WeakHashMap;
 
-public class ChatsAdapter extends FirestorePagingAdapter<Message, RecyclerView.ViewHolder>
-        implements ImpressionTracker.VisibilityTrackerListener{
+public class ChatsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     //context
     private final String TAG = ChatsAdapter.class.getSimpleName();
     private Context mContext;
@@ -60,17 +63,16 @@ public class ChatsAdapter extends FirestorePagingAdapter<Message, RecyclerView.V
     //boolean
     private boolean showOnClick = true;
     //lists
-    private MessagingVisibilityTracker visibilityTracker;
-    private final WeakHashMap<View, Integer> mViewPositionMap = new WeakHashMap<>();
+    private List<DocumentSnapshot> documentSnapshots;
+    private BottomReachedListener mBottomReachedListener;
 
 
-    public ChatsAdapter(@NonNull FirestorePagingOptions<Message> options, Activity mContext) {
-        super(options);
+    public ChatsAdapter(Activity mContext,  List<DocumentSnapshot> documents) {
         this.mContext = mContext;
-        visibilityTracker = new MessagingVisibilityTracker(mContext);
+        this.documentSnapshots = new ArrayList<>();
+        this.documentSnapshots = documents;
         initReferences();
     }
-
 
     private void initReferences(){
         firebaseAuth = FirebaseAuth.getInstance();
@@ -80,60 +82,18 @@ public class ChatsAdapter extends FirestorePagingAdapter<Message, RecyclerView.V
 
     }
 
-    protected DocumentSnapshot getSnapshot(int index) {
-        return getCurrentList().get(index);
+    public void setBottomReachedListener(BottomReachedListener bottomReachedListener){
+        this.mBottomReachedListener = bottomReachedListener;
     }
 
-    @Nullable
-    @Override
-    public PagedList<DocumentSnapshot> getCurrentList() {
-        return super.getCurrentList();
+    private DocumentSnapshot getSnapshot(int index){
+        return documentSnapshots.get(index);
     }
 
-    @Override
-    public void onVisibilityChanged(List<View> visibleViews, List<View> invisibleViews) {
-        handleVisibleViews(visibleViews);
-    }
-
-    private void handleVisibleViews(List<View> visibleViews) {
-        for (View v : visibleViews) {
-            Integer viewPosition = mViewPositionMap.get(v);
-        }
-
-    }
-
-    private void messageSeen(int position){
-        final Message message = getCurrentList().get(position).toObject(Message.class);
-        final String receiverId = message.getReceiver_id();
-        final String senderId = message.getSender_id();
-        final String messageId = message.getMessage_id();
-
-        seenMessagesReference.child("seen_messages")
-                .child(receiverId).child(senderId)
-                .child(messageId).child("seen").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()){
-                    seenMessagesReference.child("seen_messages")
-                            .child(receiverId).child(senderId)
-                            .child(messageId).child("seen").setValue("seen");
-                    Log.d("view not seen", messageId);
-                }else {
-                    Log.d("view is seen", messageId);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-    }
 
     @Override
     public int getItemViewType(int position) {
-        Message message = getSnapshot(position).toObject(Message.class);
+        final Message message = getSnapshot(position).toObject(Message.class);
         final String senderUid = message.getSender_id();
         if (message.getType() != null && senderUid.equals(firebaseAuth.getCurrentUser().getUid())){
             if (message.getType().equals("sent_text") || message.getType().equals("text")){
@@ -156,6 +116,13 @@ public class ChatsAdapter extends FirestorePagingAdapter<Message, RecyclerView.V
         }
 
     }
+
+    @Override
+    public long getItemId(int position) {
+        Message message = documentSnapshots.get(position).toObject(Message.class);
+        return message.getTime();
+    }
+
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -182,7 +149,7 @@ public class ChatsAdapter extends FirestorePagingAdapter<Message, RecyclerView.V
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, Message model) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
         switch (holder.getItemViewType()){
             case 0:
@@ -199,15 +166,22 @@ public class ChatsAdapter extends FirestorePagingAdapter<Message, RecyclerView.V
                 break;
         }
 
-        // check if message is seen
-        messageSeen(position);
+
+        // bottom reached
+        try {
+            if (position == getItemCount() - 1){
+                mBottomReachedListener.onBottomReached(position);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
     }
 
 
     @Override
     public int getItemCount() {
-        return super.getItemCount();
+        return documentSnapshots.size();
     }
 
     private void populateSendPhoto(final MessageSentPhotoViewHolder holder, final int position) {

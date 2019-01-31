@@ -7,16 +7,17 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -26,27 +27,32 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andeqa.andeqa.Constants;
 import com.andeqa.andeqa.R;
+import com.andeqa.andeqa.camera.CameraActivity;
 import com.andeqa.andeqa.collections.CollectionPostsActivity;
 import com.andeqa.andeqa.comments.CommentsActivity;
 import com.andeqa.andeqa.comments.CommentsAdapter;
+import com.andeqa.andeqa.home.PostsAdapter;
 import com.andeqa.andeqa.models.Andeqan;
 import com.andeqa.andeqa.models.Collection;
 import com.andeqa.andeqa.models.CollectionPost;
 import com.andeqa.andeqa.models.Impression;
 import com.andeqa.andeqa.models.Post;
+import com.andeqa.andeqa.models.Timeline;
 import com.andeqa.andeqa.models.ViewDuration;
 import com.andeqa.andeqa.profile.ProfileActivity;
 import com.andeqa.andeqa.registration.SignInActivity;
 import com.andeqa.andeqa.settings.PostSettingsFragment;
+import com.andeqa.andeqa.utils.FirebaseUtil;
+import com.andeqa.andeqa.utils.ItemOffsetDecoration;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -66,10 +72,11 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -93,8 +100,13 @@ public class PostDetailActivity extends AppCompatActivity
     @Bind(R.id.commentsCountTextView)TextView mCommentCountTextView;
     @Bind(R.id.commentsRecyclerView)RecyclerView mCommentsRecyclerView;
     @Bind(R.id.collectionNameTextView)TextView mCollectionNameTextView;
-    @Bind(R.id.relatedPostsContainer)RelativeLayout mRelatedRelativeLayout;
+    @Bind(R.id.relatedRelativeLayout)RelativeLayout mRelatedRelativeLayout;
     @Bind(R.id.commentsRelativeLayout)RelativeLayout mCommentsRelativeLayout;
+    @Bind(R.id.addCardView) CardView mAddCardView;
+    @Bind(R.id.likesImageView) ImageView mLikesImageView;
+    @Bind(R.id.likesTextView) TextView mLikesTextView;
+    @Bind(R.id.likesLinearLayout) LinearLayout mLikesLinearLayout;
+    @Bind(R.id.postsRecyclerView)RecyclerView mPostsRecyclerView;
 
     //firestore reference
     private CollectionReference postsCollections;
@@ -103,17 +115,20 @@ public class PostDetailActivity extends AppCompatActivity
     private Query commentQuery;
     private CollectionReference collectionsPosts;
     private CollectionReference collectionsCollection;
-    //firebase database
-    private DatabaseReference impressionReference;
-    //firebase references
+    private CollectionReference mLikesCollectionsReference;
+    private CollectionReference timelineCollection;
     private DatabaseReference databaseReference;
+    private Query postsQuery;
+    private DatabaseReference impressionReference;
     //firebase auth
     private FirebaseAuth firebaseAuth;
-    //firestore adapter
-    private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
+    //lists
+    private List<DocumentSnapshot> snapshots = new ArrayList<>();
+    //layouts
+    private ItemOffsetDecoration itemOffsetDecoration;
+    private StaggeredGridLayoutManager layoutManager;
+    private PostsAdapter postsAdapter;
     //process likes
-    private boolean processLikes = false;
-    private boolean processDislikes = false;
     private static final double DEFAULT_PRICE = 1.5;
     private static final double GOLDEN_RATIO = 1.618;
     private String mPostId;
@@ -136,7 +151,7 @@ public class PostDetailActivity extends AppCompatActivity
     private ProgressDialog progressDialog;
     private boolean showOnClick = false;
     private ConstraintSet constraintSet;
-    private boolean processCredit = false;
+    private boolean processLikes = false;
     private boolean processCompiledImpression = false;
     private boolean processOverallImpressions = false;
     private boolean processImpression = false;
@@ -144,9 +159,9 @@ public class PostDetailActivity extends AppCompatActivity
     private long stopTime;
     private long duration;
     private CommentsAdapter commentsAdapter;
-    private List<String> commentsIds = new ArrayList<>();
     private List<DocumentSnapshot> comments = new ArrayList<>();
-
+    private FirebaseUtil firebaseUtil;
+    Uri bmpUri = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,6 +170,7 @@ public class PostDetailActivity extends AppCompatActivity
         ButterKnife.bind(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUtil = new FirebaseUtil(this);
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -171,6 +187,8 @@ public class PostDetailActivity extends AppCompatActivity
         mCommentImageView.setOnClickListener(this);
         postImageView.setOnClickListener(this);
         mProfileImageView.setOnClickListener(this);
+        mLikesLinearLayout.setOnClickListener(this);
+        mAddCardView.setOnClickListener(this);
         //check that user is logged in;
         checkIfUserIsLoggedIn();
 
@@ -203,7 +221,6 @@ public class PostDetailActivity extends AppCompatActivity
             intentHeight = getIntent().getStringExtra(POST_HEIGHT);
         }
 
-
         if (intentHeight != null && intentWidth != null){
             final float width = (float) Integer.parseInt(intentWidth);
             final float height = (float) Integer.parseInt(intentHeight);
@@ -222,10 +239,10 @@ public class PostDetailActivity extends AppCompatActivity
         startTime = System.currentTimeMillis();
         //firestore
         if (mType.equals("single") || mType.equals("single_image_post")){
-            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
+            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.POSTS_OF_COLLECTION)
                     .document("singles").collection(mCollectionId);
         }else {
-            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS_OF_POSTS)
+            collectionsPosts = FirebaseFirestore.getInstance().collection(Constants.POSTS_OF_COLLECTION)
                     .document("collections").collection(mCollectionId);
         }
 
@@ -233,13 +250,25 @@ public class PostDetailActivity extends AppCompatActivity
         usersReference = FirebaseFirestore.getInstance().collection(Constants.FIREBASE_USERS);
         commentsCollection = FirebaseFirestore.getInstance().collection(Constants.COMMENTS);
         collectionsCollection = FirebaseFirestore.getInstance().collection(Constants.COLLECTIONS);
+        mLikesCollectionsReference = FirebaseFirestore.getInstance().collection(Constants.LIKES);
+        timelineCollection = FirebaseFirestore.getInstance().collection(Constants.TIMELINE);
         //firebase references
         impressionReference = FirebaseDatabase.getInstance().getReference(Constants.VIEWS);
         databaseReference = FirebaseDatabase.getInstance().getReference(Constants.RANDOM_PUSH_ID);
         impressionReference.keepSynced(true);
+        firebaseAuth = FirebaseAuth.getInstance();
+        //firestore
+        postsQuery = postsCollections.orderBy("random_number");
+        impressionReference = FirebaseDatabase.getInstance().getReference(Constants.VIEWS);
+        impressionReference.keepSynced(true);
 
+        setPostInfo();
+        deletePostDialog();
+        finishActivity();
+        loadComments();
+        setRelatedPosts();
+        setLikes();
 
-        setPostsOfThisPosts();
     }
 
 
@@ -261,17 +290,14 @@ public class PostDetailActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.detail_settings){
-            final Uri bmpUri = getLocalBitmapUri(postImageView);
-            if (bmpUri != null) {
-                Bundle bundle = new Bundle();
-                bundle.putString(PostDetailActivity.EXTRA_POST_ID, mPostId);
-                bundle.putString(PostDetailActivity.COLLECTION_ID, mCollectionId);
-                bundle.putString(PostDetailActivity.TYPE, mType);
-                bundle.putString(PostDetailActivity.EXTRA_URI, bmpUri.toString());
-                PostSettingsFragment postSettingsFragment = PostSettingsFragment.newInstance();
-                postSettingsFragment.setArguments(bundle);
-                postSettingsFragment.show(getSupportFragmentManager(), "share bottom fragment");
-            }
+            Bundle bundle = new Bundle();
+            bundle.putString(PostDetailActivity.EXTRA_POST_ID, mPostId);
+            bundle.putString(PostDetailActivity.COLLECTION_ID, mCollectionId);
+            bundle.putString(PostDetailActivity.TYPE, mType);
+//                bundle.putString(PostDetailActivity.EXTRA_URI, bmpUri.toString());
+            PostSettingsFragment postSettingsFragment = PostSettingsFragment.newInstance();
+            postSettingsFragment.setArguments(bundle);
+            postSettingsFragment.show(getSupportFragmentManager(), "share bottom fragment");
         }
 
         return super.onOptionsItemSelected(item);
@@ -282,12 +308,7 @@ public class PostDetailActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        //RETRIEVE DATA FROM FIREBASE
-        setPostInfo();
-        deletePostDialog();
-        finishActivity();
-        loadComments();
-
+        mPostsRecyclerView.addItemDecoration(itemOffsetDecoration);
     }
 
 
@@ -295,7 +316,7 @@ public class PostDetailActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
-
+        mPostsRecyclerView.removeItemDecoration(itemOffsetDecoration);
     }
 
     @Override
@@ -441,7 +462,8 @@ public class PostDetailActivity extends AppCompatActivity
 
     /**finish activity if the post does not exist*/
     private void finishActivity(){
-        postsCollections.document(mPostId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        postsCollections.document(mPostId)
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
 
@@ -513,7 +535,7 @@ public class PostDetailActivity extends AppCompatActivity
 //                });
 
 
-        /**retrieve the counts of the posts comments*/
+        /*retrieve the counts of the posts comments*/
         commentsCollection.document("post_ids").collection(mPostId)
                 .orderBy("comment_id").whereEqualTo("post_id", mPostId)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -747,8 +769,12 @@ public class PostDetailActivity extends AppCompatActivity
 
     }
 
+    public String shareUri(){
+        getLocalBitmapUri(postImageView);
+        return bmpUri.toString();
+    }
 
-    public Uri getLocalBitmapUri(ImageView imageView) {
+    private Uri getLocalBitmapUri(ImageView imageView) {
         // Extract Bitmap from ImageView drawable
         Drawable drawable = imageView.getDrawable();
         Bitmap bmp = null;
@@ -758,7 +784,6 @@ public class PostDetailActivity extends AppCompatActivity
             return null;
         }
         // Store image to default external storage directory
-        Uri bmpUri = null;
         try {
 
             File file =  new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
@@ -784,12 +809,10 @@ public class PostDetailActivity extends AppCompatActivity
             startActivity(intent);
         }
 
-        if (v == mProfileImageView){
-            if (v == postImageView) {
-                Intent intent = new Intent(PostDetailActivity.this, ProfileActivity.class);
-                intent.putExtra(PostDetailActivity.EXTRA_USER_UID, mUid);
-                startActivity(intent);
-            }
+        if (v == mProfileImageView) {
+            Intent intent = new Intent(PostDetailActivity.this, ProfileActivity.class);
+            intent.putExtra(PostDetailActivity.EXTRA_USER_UID, mUid);
+            startActivity(intent);
         }
 
 
@@ -799,12 +822,29 @@ public class PostDetailActivity extends AppCompatActivity
             startActivity(intent);
         }
 
+        if (v == mAddCardView) {
+            if (mCollectionId.equals(mPostId)){
+                Intent intent = new Intent(PostDetailActivity.this, CameraActivity.class);
+                intent.putExtra(PostDetailActivity.COLLECTION_ID, mPostId);
+                startActivity(intent);
+            }else {
+                Intent intent = new Intent(PostDetailActivity.this, CameraActivity.class);
+                intent.putExtra(PostDetailActivity.COLLECTION_ID, mCollectionId);
+                startActivity(intent);
+            }
+        }
+
+        if (v == mLikesLinearLayout){
+            likePost();
+        }
+
     }
 
     private void loadComments(){
         comments.clear();
-        setRecyclerView();
+        //get top 3 comments
         setCollections();
+
     }
 
     //make sure if user is not logged int will first have to log
@@ -819,44 +859,99 @@ public class PostDetailActivity extends AppCompatActivity
     }
 
 
-    private void setRecyclerView(){
-        commentsAdapter = new CommentsAdapter(this);
-        mCommentsRecyclerView.setAdapter(commentsAdapter);
-        mCommentsRecyclerView.setHasFixedSize(false);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        mCommentsRecyclerView.setLayoutManager(layoutManager);
-    }
-
-
-    private void setPostsOfThisPosts(){
-        postsCollections.whereEqualTo("collection_id", mCollectionId)
+    private void setLikes() {
+        mLikesCollectionsReference.document("post_ids").collection(mPostId)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
-                    public void onEvent(@Nullable QuerySnapshot documentSnapshots,
-                                        @Nullable FirebaseFirestoreException e) {
+                    public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
                         if (e != null) {
                             Log.w(TAG, "Listen error", e);
                             return;
                         }
 
                         if (!documentSnapshots.isEmpty()){
-                            mRelatedRelativeLayout.setVisibility(View.VISIBLE);
-                            Bundle bundle = new Bundle();
-                            bundle.putString(PostDetailActivity.COLLECTION_ID, mCollectionId);
-                            RelatedPostsFragment relatedPostsFragment = new RelatedPostsFragment();
-                            relatedPostsFragment.setArguments(bundle);
-                            FragmentManager fragmentManager = getSupportFragmentManager();
-                            FragmentTransaction ft = fragmentManager.beginTransaction();
-                            ft.replace(R.id.relatedPostsContainer, relatedPostsFragment);
-                            ft.commit();
-
+                            final int count = documentSnapshots.size();
+                            mLikesTextView.setText(count + "");
                         }else {
-                            mRelatedRelativeLayout.setVisibility(View.GONE);
+                            mLikesTextView.setText("0");
+                        }
+                    }
+                });
+
+        mLikesCollectionsReference.document("post_ids").collection(mPostId)
+                .whereEqualTo("user_id", firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
                         }
 
+                        if (!documentSnapshots.isEmpty()){
+                            final int count = documentSnapshots.size();
+                            mLikesImageView.setBackgroundResource(R.drawable.ic_heart_fill);
+                        }else {
+                            mLikesImageView.setBackgroundResource(R.drawable.ic_heart_grey);
+
+                        }
                     }
                 });
     }
+
+    private void likePost(){
+        // like a post
+        processLikes = true;
+        mLikesCollectionsReference.document("post_ids")
+                .collection(mPostId).whereEqualTo("user_id",
+                firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (processLikes) {
+                            if (!documentSnapshots.isEmpty()){
+                                mLikesCollectionsReference.document("post_ids").collection(mPostId)
+                                        .document(firebaseAuth.getCurrentUser().getUid()).delete();
+                                mLikesImageView.setBackgroundResource(R.drawable.ic_heart_grey);
+                                processLikes = false;
+                            }else {
+                                Map<String, String> like = new HashMap<>();
+                                like.put("user_id", firebaseAuth.getCurrentUser().getUid());
+
+                                mLikesCollectionsReference.document("post_ids").collection(mPostId)
+                                        .document(firebaseAuth.getCurrentUser().getUid())
+                                        .set(like).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Timeline timeline = new Timeline();
+                                        final long time = new Date().getTime();
+                                        final String postid =  databaseReference.push().getKey();
+                                        timeline.setPost_id(mPostId);
+                                        timeline.setTime(time);
+                                        timeline.setUser_id(firebaseAuth.getCurrentUser().getUid());
+                                        timeline.setType("like");
+                                        timeline.setActivity_id(postid);
+                                        timeline.setStatus("un_read");
+
+                                        timelineCollection.document(mPostId).collection("activities")
+                                                .document(firebaseAuth.getCurrentUser().getUid())
+                                                .set(timeline);
+                                        mLikesImageView.setBackgroundResource(R.drawable.ic_heart_fill);
+
+                                    }
+                                });
+                                processLikes = false;
+                            }
+                        }
+                    }
+                });
+    }
+
 
     private void setCollections(){
         commentsCollection.document("post_ids").collection(mPostId)
@@ -871,71 +966,59 @@ public class PostDetailActivity extends AppCompatActivity
                         }
 
                         if (!documentSnapshots.isEmpty()){
-                            mCommentsRelativeLayout.setVisibility(View.VISIBLE);
-                            //retrieve the first bacth of documentSnapshots
-                            for (final DocumentChange change : documentSnapshots.getDocumentChanges()) {
-                                switch (change.getType()) {
-                                    case ADDED:
-                                        onDocumentAdded(change);
-                                        break;
-                                    case MODIFIED:
-                                        onDocumentModified(change);
-                                        break;
-                                    case REMOVED:
-                                        onDocumentRemoved(change);
-                                        break;
-                                }
+                            for (DocumentSnapshot documentSnapshot: documentSnapshots){
+                                comments.add(documentSnapshot);
+                                mCommentsRelativeLayout.setVisibility(View.VISIBLE);
                             }
-                        }else {
-                            mCommentsRelativeLayout.setVisibility(View.GONE);
                         }
 
                     }
                 });
+
+        //set the recycler view
+        commentsAdapter = new CommentsAdapter(this, comments);
+        mCommentsRecyclerView.setAdapter(commentsAdapter);
+        mCommentsRecyclerView.setHasFixedSize(false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        mCommentsRecyclerView.setLayoutManager(layoutManager);
+
+
     }
 
-    protected void onDocumentAdded(DocumentChange change) {
-        commentsIds.add(change.getDocument().getId());
-        comments.add(change.getDocument());
-        commentsAdapter.setPostComments(comments);
-        commentsAdapter.notifyItemInserted(comments.size() -1);
-        commentsAdapter.getItemCount();
+    private void setRelatedPosts(){
+        postsQuery.whereEqualTo("collection_id", mCollectionId).limit(10)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@javax.annotation.Nullable QuerySnapshot documentSnapshots,
+                                        @javax.annotation.Nullable FirebaseFirestoreException e) {
+
+                        if (e != null) {
+                            Log.w(TAG, "Listen error", e);
+                            return;
+                        }
+
+                        if (!documentSnapshots.isEmpty()){
+                            for (DocumentChange change: documentSnapshots.getDocumentChanges()){
+                                Post post = change.getDocument().toObject(Post.class);
+                                String postId = post.getPost_id();
+                                if (!postId.equals(mPostId)){
+                                    snapshots.add(change.getDocument());
+                                    mRelatedRelativeLayout.setVisibility(View.VISIBLE);
+                                }
+                            }
+
+                        }
+                    }
+                });
+
+        postsAdapter = new PostsAdapter(this, snapshots);
+        postsAdapter.setHasStableIds(true);
+        mPostsRecyclerView.setHasFixedSize(false);
+        mPostsRecyclerView.setAdapter(postsAdapter);
+        layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+        itemOffsetDecoration = new ItemOffsetDecoration(this, R.dimen.item_off_set);
+        mPostsRecyclerView.setLayoutManager(layoutManager);
 
     }
 
-    protected void onDocumentModified(DocumentChange change) {
-        try {
-            if (change.getOldIndex() == change.getNewIndex()) {
-                // Item changed but remained in same position
-                comments.set(change.getOldIndex(), change.getDocument());
-                commentsAdapter.notifyItemChanged(change.getOldIndex());
-            } else {
-                // Item changed and changed position
-                comments.remove(change.getOldIndex());
-                comments.add(change.getNewIndex(), change.getDocument());
-                commentsAdapter.notifyItemRangeChanged(0, comments.size());
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    protected void onDocumentRemoved(DocumentChange change) {
-        try {
-            comments.remove(change.getOldIndex());
-            commentsAdapter.notifyItemRemoved(change.getOldIndex());
-            commentsAdapter.notifyItemRangeChanged(0, comments.size());
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    //region listeners
-    public static double round(double value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
-
-        BigDecimal bd = new BigDecimal(value);
-        bd = bd.setScale(places, RoundingMode.HALF_UP);
-        return bd.doubleValue();
-    }
 }
