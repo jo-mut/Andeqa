@@ -135,7 +135,6 @@ public class CollectionPostsActivity extends AppCompatActivity
             @Override
             public void onLoadMore() {
                 getNextPosts();
-
             }
         });
     }

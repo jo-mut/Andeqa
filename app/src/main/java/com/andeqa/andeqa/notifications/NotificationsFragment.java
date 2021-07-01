@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -162,7 +163,7 @@ public class NotificationsFragment extends Fragment {
     private void setRecyclerView(){
         notificationsAdapter = new NotificationsAdapter(getContext(), mSnapshots);
         mTimelineRecyclerView.setAdapter(notificationsAdapter);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.VERTICAL);
         mTimelineRecyclerView.setHasFixedSize(false);
         mTimelineRecyclerView.setLayoutManager(layoutManager);
         ViewCompat.setNestedScrollingEnabled(mTimelineRecyclerView,false);
