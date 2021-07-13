@@ -48,7 +48,7 @@ public class Player implements com.google.android.exoplayer2.Player.EventListene
     }
 
     private void init_player() {
-        stateRelativeLayout = (RelativeLayout) playerView.findViewById(R.id.stateRelativeLayout);
+//        stateRelativeLayout = (RelativeLayout) playerView.findViewById(R.id.stateRelativeLayout);
         progressBar = (ProgressBar) playerView.findViewById(R.id.progressBar);
 
         window = new com.google.android.exoplayer2.Timeline.Window();
@@ -83,21 +83,21 @@ public class Player implements com.google.android.exoplayer2.Player.EventListene
     }
 
     private void showBuffering() {
-        if (stateRelativeLayout != null) {
-            stateRelativeLayout.setVisibility(View.VISIBLE);
-        }
+//        if (stateRelativeLayout != null) {
+//            stateRelativeLayout.setVisibility(View.VISIBLE);
+//        }
     }
 
     private void showError() {
-       if (stateRelativeLayout != null){
-           stateRelativeLayout.setVisibility(View.VISIBLE);
-       }
+//       if (stateRelativeLayout != null){
+//           stateRelativeLayout.setVisibility(View.VISIBLE);
+//       }
     }
 
     private void showReady() {
-        if (stateRelativeLayout != null) {
-            stateRelativeLayout.setVisibility(View.GONE);
-        }
+//        if (stateRelativeLayout != null) {
+//            stateRelativeLayout.setVisibility(View.GONE);
+//        }
     }
 
     public void releasePlayer(){
