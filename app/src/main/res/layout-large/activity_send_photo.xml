@@ -8,7 +8,7 @@
     android:fitsSystemWindows="false"
     android:background="#000000"
     android:orientation="vertical"
-    tools:context="com.andeqa.andeqa.chatting.SendPhotoActivity">
+    tools:context="com.andeka.andeka.chatting.SendPhotoActivity">
 
     <ScrollView
         android:layout_centerVertical="true"
@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <com.andeqa.andeqa.utils.ProportionalImageView
+            <com.andeka.andeka.utils.ProportionalImageView
                 android:id="@+id/photoImageView"
                 android:layout_width="match_parent"
                 android:layout_height="600dp"

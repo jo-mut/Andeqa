@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@android:color/white"
-    tools:context="com.andeqa.andeqa.main.MainActivity">
+    tools:context="com.andeka.andeka.main.MainActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

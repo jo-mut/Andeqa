@@ -8,7 +8,7 @@
     android:fitsSystemWindows="false"
     android:background="#000000"
     android:orientation="vertical"
-    tools:context="com.andeqa.andeqa.creation.PreviewImagePostActivity">
+    tools:context="com.andeka.andeka.creation.PreviewImagePostActivity">
 
 
     <ScrollView
@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <com.andeqa.andeqa.utils.ProportionalImageView
+            <com.andeka.andeka.utils.ProportionalImageView
                 android:id="@+id/postImageView"
                 android:layout_width="match_parent"
                 android:layout_height="800dp"

@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/blue_grey_50"
-    tools:context="com.andeqa.andeqa.registration.CreateProfileActivity">
+    tools:context="com.andeka.andeka.registration.CreateProfileActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

@@ -7,7 +7,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="#000000"
     android:fitsSystemWindows="false"
-    tools:context="com.andeqa.andeqa.post_detail.ImageViewActivity">
+    tools:context="com.andeka.andeka.post_detail.ImageViewActivity">
     <ScrollView
         android:layout_centerVertical="true"
         android:layout_width="match_parent"
@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <com.andeqa.andeqa.utils.ProportionalImageView
+            <com.andeka.andeka.utils.ProportionalImageView
                 android:id="@+id/postImageView"
                 android:layout_width="match_parent"
                 android:layout_height="800dp"

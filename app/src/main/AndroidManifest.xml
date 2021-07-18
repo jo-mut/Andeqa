@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.andeqa.andeqa">
+    package="com.andeka.andeka">
 
     <supports-screens
         android:largeScreens="true"
@@ -42,7 +42,7 @@
         android:required="false" />
 
     <application
-        android:name=".App"
+        android:name="com.andeka.andeka.App"
         android:allowBackup="true"
         android:allowClearUserData="true"
         android:icon="@mipmap/ic_launcher"
@@ -51,39 +51,39 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".registration.SignInActivity"
+            android:name="com.andeka.andeka.registration.SignInActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".registration.SignUpActivity"
+            android:name="com.andeka.andeka.registration.SignUpActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".profile.UpdateProfileActivity"
+            android:name="com.andeka.andeka.profile.UpdateProfileActivity"
             android:label="Account settings"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
 
-        <service android:name=".services.FirebaseMessaging">
+        <service android:name="com.andeka.andeka.services.FirebaseMessaging">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name=".services.FirebaseIDService">
+        <service android:name="com.andeka.andeka.services.FirebaseIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
 
         <activity
-            android:name=".profile.ProfileActivity"
+            android:name="com.andeka.andeka.profile.ProfileActivity"
             android:label="Profile"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".registration.ResetPasswordActivity"
+            android:name="com.andeka.andeka.registration.ResetPasswordActivity"
             android:screenOrientation="portrait" />
 
         <receiver
-            android:name=".services.ConnectivityReceiver"
+            android:name="com.andeka.andeka.services.ConnectivityReceiver"
             android:enabled="true"
             android:permission="android.permission.INSTALL_PACKAGES">
             <intent-filter>
@@ -92,18 +92,18 @@
         </receiver>
 
         <activity
-            android:name=".main.HomeActivity"
+            android:name="com.andeka.andeka.main.HomeActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".post_detail.ImageViewActivity"
+            android:name="com.andeka.andeka.post_detail.ImageViewActivity"
             android:label="Photo"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".registration.CreateProfileActivity"
+            android:name="com.andeka.andeka.registration.CreateProfileActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".post_detail.PostDetailActivity"
+            android:name="com.andeka.andeka.post_detail.PostDetailActivity"
             android:label="Post"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
@@ -120,7 +120,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".main.MainActivity"
+            android:name="com.andeka.andeka.main.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -130,38 +130,38 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".chatting.ChatActivity"
+            android:name="com.andeka.andeka.chatting.ChatActivity"
             android:label="Chats"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".settings.SettingsActivity"
+            android:name="com.andeka.andeka.settings.SettingsActivity"
             android:label="Settings"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".collections.CollectionPostsActivity"
+            android:name="com.andeka.andeka.collections.CollectionPostsActivity"
             android:label="Posts"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".settings.CollectionSettingsActivity"
+            android:name="com.andeka.andeka.settings.CollectionSettingsActivity"
             android:label="Collection settings"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".camera.CameraActivity"
+            android:name="com.andeka.andeka.camera.CameraActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".creation.CreatePostActivity"
+            android:name="com.andeka.andeka.creation.CreatePostActivity"
             android:label="Share"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".camera.CameraPermissionsActivity"
+            android:name="com.andeka.andeka.camera.CameraPermissionsActivity"
             android:screenOrientation="portrait" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.andeqa.andeqa"
+            android:authorities="com.andeka.andeka"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -170,35 +170,35 @@
         </provider>
 
         <activity
-            android:name=".chatting.PhotoMessageActivity"
+            android:name="com.andeka.andeka.chatting.PhotoMessageActivity"
             android:label="Photo"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".profile.ProfileCollectionsActivity"
+            android:name="com.andeka.andeka.profile.ProfileCollectionsActivity"
             android:label="Collections"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".profile.ProfilePostsActivity"
+            android:name="com.andeka.andeka.profile.ProfilePostsActivity"
             android:label="Posts"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".gallery.AlbumActivity"
+            android:name="com.andeka.andeka.gallery.AlbumActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".people.FollowersActivity"
+            android:name="com.andeka.andeka.people.FollowersActivity"
             android:label="Followers"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".people.FollowingActivity"
+            android:name="com.andeka.andeka.people.FollowingActivity"
             android:label="Following"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".creation.PreviewVideoPostActivity"
+            android:name="com.andeka.andeka.creation.PreviewVideoPostActivity"
             android:label="Video"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".creation.PreviewImagePostActivity"
-            android:label="Andeqa"
+            android:name="com.andeka.andeka.creation.PreviewImagePostActivity"
+            android:label="Andeka"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -210,36 +210,36 @@
         </activity>
         <activity
             android:label="Post"
-            android:name=".post_detail.VideoDetailActivity"
+            android:name="com.andeka.andeka.post_detail.VideoDetailActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".search.SearchPeopleActivity"
+            android:name="com.andeka.andeka.search.SearchPeopleActivity"
             android:label="Search people"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".search.SearchedCollectionsActivity"
+            android:name="com.andeka.andeka.search.SearchedCollectionsActivity"
             android:label="Search collections"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".collections.ChooseCollectionActivity"
+            android:name="com.andeka.andeka.collections.ChooseCollectionActivity"
             android:label="Add to collection"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".search.SearchPostsActivity"
+            android:name="com.andeka.andeka.search.SearchPostsActivity"
             android:label="Search posts"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".comments.CommentsActivity"
+            android:name="com.andeka.andeka.comments.CommentsActivity"
             android:label="Comments"
             android:screenOrientation="portrait" />
         <activity
             android:label="Collections"
-            android:name=".collections.CollectionsActivity"
+            android:name="com.andeka.andeka.collections.CollectionsActivity"
             android:screenOrientation="portrait" />
         <activity
             android:screenOrientation="portrait"
             android:label="Create channel"
-            android:name=".creation.CreateChannelActivity"/>
+            android:name="com.andeka.andeka.creation.CreateChannelActivity"/>
     </application>
 
 </manifest>

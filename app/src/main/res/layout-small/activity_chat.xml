@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/blue_grey_50"
     android:orientation="vertical"
-    tools:context="com.andeqa.andeqa.chatting.ChatActivity">
+    tools:context="com.andeka.andeka.chatting.ChatActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"

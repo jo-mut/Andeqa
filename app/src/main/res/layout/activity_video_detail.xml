@@ -6,7 +6,7 @@
     android:id="@+id/activity_detail"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context="com.andeqa.andeqa.post_detail.PostDetailActivity">
+    tools:context="com.andeka.andeka.post_detail.PostDetailActivity">
 
 
     <com.google.android.exoplayer2.ui.SimpleExoPlayerView

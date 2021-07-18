@@ -8,7 +8,7 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical"
     android:background="@android:color/white"
-    tools:context="com.andeqa.andeqa.profile.ProfileActivity">
+    tools:context="com.andeka.andeka.profile.ProfileActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"

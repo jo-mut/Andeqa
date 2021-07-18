@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/blue_grey_50"
     android:orientation="vertical"
-    tools:context="com.andeqa.andeqa.home.HomeFragment">
+    tools:context="com.andeka.andeka.home.HomeFragment">
 
 
     <LinearLayout

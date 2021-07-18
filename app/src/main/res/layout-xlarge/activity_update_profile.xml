@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.andeqa.andeqa.profile.UpdateProfileActivity">
+    tools:context="com.andeka.andeka.profile.UpdateProfileActivity">
 
 
     <android.support.design.widget.AppBarLayout
