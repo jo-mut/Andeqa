@@ -9,9 +9,14 @@ This README would normally document whatever steps are necessary to get your app
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
 
-![](screenshots/image1.jpeg)
-![](screenshots/image2.jpeg)
-![](screenshots/image3.jpeg)
+
+<p align="center">
+  <img src="https://github.com/jo-mut/Andeqa/blob/master/screenshots/image1.jpeg?raw=true" width="300" />
+  <img src="https://github.com/jo-mut/Andeqa/blob/master/screenshots/image2.jpeg?raw=true" width="300" />
+  <img src="https://github.com/jo-mut/Andeqa/blob/master/screenshots/image3.jpeg?raw=true" width="300"/>
+
+</p>
+
 
 ### How do I get set up? ###
 
