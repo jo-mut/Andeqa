@@ -11,9 +11,9 @@ This README would normally document whatever steps are necessary to get your app
 
 
 <p align="center">
-  <img src="https://github.com/jo-mut/Andeqa/blob/master/screenshots/image1.jpeg?raw=true" width="300" />
-  <img src="https://github.com/jo-mut/Andeqa/blob/master/screenshots/image2.jpeg?raw=true" width="300" />
-  <img src="https://github.com/jo-mut/Andeqa/blob/master/screenshots/image3.jpeg?raw=true" width="300"/>
+  <img src="https://github.com/jo-mut/Andeqa/blob/master/screenshots/image1.jpeg?raw=true" width="200" />
+  <img src="https://github.com/jo-mut/Andeqa/blob/master/screenshots/image2.jpeg?raw=true" width="200" />
+  <img src="https://github.com/jo-mut/Andeqa/blob/master/screenshots/image3.jpeg?raw=true" width="200"/>
 
 </p>
 
