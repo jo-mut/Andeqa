@@ -8,6 +8,11 @@ This README would normally document whatever steps are necessary to get your app
 * Version
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
+
+![](screenshots/image1.jpeg)
+![](screenshots/image2.jpeg)
+![](screenshots/image3.jpeg)
+
 ### How do I get set up? ###
 
 * Summary of set up
